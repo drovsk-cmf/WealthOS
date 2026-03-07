@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type Check
+        run: npm run type-check
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
+
+  security-check:
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for service_role key in frontend
+        run: |
+          echo "Checking for service_role key leaks in frontend code..."
+          if grep -r "SUPABASE_SERVICE_ROLE_KEY\|service_role" \
+            --include="*.tsx" --include="*.ts" \
+            src/app src/components src/lib/supabase/client.ts 2>/dev/null | \
+            grep -v "server.ts" | \
+            grep -v "// " | \
+            grep -v "node_modules"; then
+            echo "ERROR: service_role key reference found in frontend code!"
+            exit 1
+          fi
+          echo "OK: No service_role key leaks detected."
+
+      - name: Check RLS enabled on all tables
+        run: |
+          echo "Checking migration file for RLS enablement..."
+          TABLES=$(grep "CREATE TABLE " supabase/migrations/001_initial_schema.sql | \
+            sed 's/CREATE TABLE //' | sed 's/ (.*//' | sort)
+          RLS_TABLES=$(grep "ENABLE ROW LEVEL SECURITY" supabase/migrations/001_initial_schema.sql | \
+            sed 's/ALTER TABLE //' | sed 's/ ENABLE.*//' | sort)
+          
+          MISSING=$(comm -23 <(echo "$TABLES") <(echo "$RLS_TABLES"))
+          if [ -n "$MISSING" ]; then
+            echo "ERROR: Tables without RLS:"
+            echo "$MISSING"
+            exit 1
+          fi
+          echo "OK: All tables have RLS enabled."
