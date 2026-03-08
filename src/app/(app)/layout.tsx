@@ -13,6 +13,8 @@ const NAV_ITEMS = [
   { href: "/transactions", label: "Transações", icon: "ArrowLeftRight" },
   { href: "/accounts", label: "Contas", icon: "Wallet" },
   { href: "/categories", label: "Categorias", icon: "Tag" },
+  { href: "/chart-of-accounts", label: "Plano de Contas", icon: "BookOpen" },
+  { href: "/cost-centers", label: "Centros de Custo", icon: "Target" },
   { href: "/budgets", label: "Orçamento", icon: "PieChart" },
   { href: "/bills", label: "Contas a Pagar", icon: "Calendar" },
   { href: "/assets", label: "Patrimônio", icon: "Building" },
