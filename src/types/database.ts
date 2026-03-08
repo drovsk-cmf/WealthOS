@@ -206,6 +206,18 @@ export type Database = {
         Args: { p_user_id: string; p_year?: number; p_month?: number }
         Returns: Json
       }
+      generate_next_recurrence: {
+        Args: { p_user_id: string; p_recurrence_id: string }
+        Returns: Json
+      }
+      depreciate_asset: {
+        Args: { p_user_id: string; p_asset_id: string }
+        Returns: Json
+      }
+      get_assets_summary: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
