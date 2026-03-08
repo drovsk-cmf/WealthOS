@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/assets", label: "Patrimônio", icon: "Building" },
   { href: "/workflows", label: "Tarefas", icon: "CheckSquare" },
   { href: "/tax", label: "Fiscal", icon: "FileText" },
+  { href: "/indices", label: "Índices", icon: "TrendingUp" },
   { href: "/settings", label: "Configurações", icon: "Settings" },
 ];
 

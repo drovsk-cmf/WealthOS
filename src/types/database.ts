@@ -250,6 +250,14 @@ export type Database = {
         Args: { p_user_id: string; p_year?: number }
         Returns: Json
       }
+      get_economic_indices: {
+        Args: { p_index_type?: string; p_date_from?: string; p_date_to?: string; p_limit?: number }
+        Returns: Json
+      }
+      get_index_latest: {
+        Args: Record<string, never>
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
