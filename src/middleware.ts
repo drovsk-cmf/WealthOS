@@ -1,8 +1,36 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Routes that don't require authentication
-const PUBLIC_ROUTES = ["/login", "/register", "/api/auth/callback"];
+/**
+ * WealthOS Middleware
+ *
+ * Responsibilities:
+ * 1. Refresh auth session on every request
+ * 2. Redirect unauthenticated users to /login
+ * 3. Redirect authenticated users away from public auth pages
+ * 4. Allow MFA challenge and onboarding pages for authenticated users
+ *
+ * MFA AAL check happens client-side (app layout) because middleware
+ * should stay fast - MFA API calls add latency on every route.
+ */
+
+// Routes accessible without authentication
+const PUBLIC_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/api/auth/callback",
+  "/privacy",
+];
+
+// Auth routes that authenticated users CAN access (not redirected away)
+const AUTH_FLOW_ROUTES = [
+  "/onboarding",
+  "/mfa-challenge",
+  "/api/auth/callback",
+];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -28,20 +56,21 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // IMPORTANT: Do not remove this line.
-  // Refreshes the auth token and keeps the session alive.
+  // IMPORTANT: Refresh the auth token
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
 
-  // Check if route is public
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
+  const isAuthFlowRoute = AUTH_FLOW_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  // Redirect unauthenticated users to login
+  // Unauthenticated user trying to access protected route
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -49,10 +78,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect authenticated users away from auth pages
-  if (user && isPublicRoute && pathname !== "/api/auth/callback") {
+  // Authenticated user on public auth pages (but not auth flow pages)
+  if (user && isPublicRoute && !isAuthFlowRoute) {
+    // Check onboarding status to decide where to redirect
+    const { data: profile } = await supabase
+      .from("users_profile")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single();
+
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+
+    if (profile && !profile.onboarding_completed) {
+      url.pathname = "/onboarding";
+    } else {
+      url.pathname = "/dashboard";
+    }
+
     return NextResponse.redirect(url);
   }
 
@@ -61,13 +103,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico (favicon)
-     * - public folder
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

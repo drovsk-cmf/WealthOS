@@ -51,9 +51,9 @@ export async function deriveKEK(
       hash: "SHA-256",
       salt,
       info: encoder.encode("wealthos-e2e-kek"),
-    },
+    } as HkdfParams,
     keyMaterial,
-    { name: ALGORITHM, length: KEY_LENGTH },
+    { name: ALGORITHM, length: KEY_LENGTH } as AesKeyGenParams,
     false,
     ["wrapKey", "unwrapKey"]
   );
@@ -81,7 +81,7 @@ export async function encryptField(
   combined.set(iv);
   combined.set(new Uint8Array(ciphertext), iv.length);
 
-  return btoa(String.fromCharCode(...combined));
+  return btoa(Array.from(combined, (b) => String.fromCharCode(b)).join(""));
 }
 
 /**
@@ -123,8 +123,8 @@ export async function wrapDEK(
   });
 
   return {
-    encrypted: btoa(String.fromCharCode(...new Uint8Array(wrappedKey))),
-    iv: btoa(String.fromCharCode(...iv)),
+    encrypted: btoa(Array.from(new Uint8Array(wrappedKey), (b) => String.fromCharCode(b)).join("")),
+    iv: btoa(Array.from(iv, (b) => String.fromCharCode(b)).join("")),
   };
 }
 
