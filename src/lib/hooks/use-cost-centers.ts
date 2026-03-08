@@ -110,3 +110,175 @@ export function useDeleteCostCenter() {
     },
   });
 }
+
+// ═══ Phase 5: Advanced Center Hooks (CEN-03 to CEN-05) ═══════
+
+// ─── Types ──────────────────────────────────────────────────────
+
+export interface CenterPnl {
+  center_id: string;
+  center_name: string;
+  center_type: string;
+  period_from: string;
+  period_to: string;
+  total_income: number;
+  total_expense: number;
+  net_result: number;
+  monthly: { month: string; income: number; expense: number }[];
+}
+
+export interface CenterExport {
+  center: {
+    id: string;
+    name: string;
+    type: string;
+    color: string | null;
+    created_at: string;
+  };
+  transactions: {
+    id: string;
+    date: string;
+    type: string;
+    amount: number;
+    description: string | null;
+    is_paid: boolean;
+    center_percentage: number;
+    center_amount: number;
+    coa_name: string;
+    group_type: string;
+  }[];
+  exported_at: string;
+}
+
+export interface AllocationInput {
+  cost_center_id: string;
+  percentage: number;
+}
+
+// ─── CEN-04: P&L by center ─────────────────────────────────────
+
+export function useCenterPnl(
+  centerId: string | null,
+  dateFrom?: string,
+  dateTo?: string
+) {
+  return useQuery({
+    queryKey: ["cost_centers", "pnl", centerId, dateFrom, dateTo],
+    enabled: !!centerId,
+    staleTime: 2 * 60 * 1000,
+    queryFn: async (): Promise<CenterPnl> => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("get_center_pnl", {
+        p_user_id: user.id,
+        p_center_id: centerId!,
+        ...(dateFrom && { p_date_from: dateFrom }),
+        ...(dateTo && { p_date_to: dateTo }),
+      });
+      if (error) throw error;
+      return data as unknown as CenterPnl;
+    },
+  });
+}
+
+// ─── CEN-05: Export center data ─────────────────────────────────
+
+export function useCenterExport() {
+  return useMutation({
+    mutationFn: async (centerId: string): Promise<CenterExport> => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("get_center_export", {
+        p_user_id: user.id,
+        p_center_id: centerId,
+      });
+      if (error) throw error;
+      return data as unknown as CenterExport;
+    },
+  });
+}
+
+// ─── CEN-03: Allocate transaction to centers ────────────────────
+
+export function useAllocateToCenters() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      transactionId,
+      allocations,
+    }: {
+      transactionId: string;
+      allocations: AllocationInput[];
+    }) => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("allocate_to_centers", {
+        p_user_id: user.id,
+        p_transaction_id: transactionId,
+        p_allocations: JSON.stringify(allocations),
+      });
+      if (error) throw error;
+      return data as unknown as {
+        status: string;
+        transaction_id: string;
+        allocations: {
+          cost_center_id: string;
+          percentage: number;
+          amount: number;
+        }[];
+      };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+}
+
+// ─── CEN-05: Client-side CSV helper ─────────────────────────────
+
+export function exportToCsv(data: CenterExport): string {
+  const header =
+    "Data,Tipo,Descrição,Valor Total,% Centro,Valor Centro,Conta Contábil,Grupo,Pago";
+  const rows = data.transactions.map((tx) =>
+    [
+      tx.date,
+      tx.type === "income" ? "Receita" : "Despesa",
+      `"${(tx.description || "").replace(/"/g, '""')}"`,
+      tx.amount.toFixed(2),
+      tx.center_percentage.toFixed(1),
+      tx.center_amount.toFixed(2),
+      `"${tx.coa_name}"`,
+      tx.group_type,
+      tx.is_paid ? "Sim" : "Não",
+    ].join(",")
+  );
+  return [header, ...rows].join("\n");
+}
+
+export function downloadFile(
+  content: string,
+  filename: string,
+  type: string
+) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}

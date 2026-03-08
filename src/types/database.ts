@@ -218,6 +218,18 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: Json
       }
+      allocate_to_centers: {
+        Args: { p_user_id: string; p_transaction_id: string; p_allocations: string }
+        Returns: Json
+      }
+      get_center_pnl: {
+        Args: { p_user_id: string; p_center_id: string; p_date_from?: string; p_date_to?: string }
+        Returns: Json
+      }
+      get_center_export: {
+        Args: { p_user_id: string; p_center_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
