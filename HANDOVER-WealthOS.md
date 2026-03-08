@@ -1,280 +1,270 @@
-# WealthOS - Handover de Sessão (Atualizado)
+# WealthOS - Handover de Sessão
 
 **Data:** 08 de março de 2026
-**Sessão anterior:** 07-08/03/2026
 **Projeto:** WealthOS - Sistema Integrado de Gestão Financeira e Patrimonial
-**Repositório GitHub:** https://github.com/drovsk-cmf/WealthOS (privado)
-**Supabase Project:** hmwdfcsxtmbzlslxgqus (sa-east-1, PostgreSQL 17)
-**Ambiente local:** C:\Users\claud\Documents\PC_WealthOS (Windows 10/11)
+**Repositório GitHub:** drovsk-cmf/WealthOS (privado)
+**Supabase:** projeto hmwdfcsxtmbzlslxgqus (sa-east-1)
+**Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
 
 ---
 
 ## 1. O que é o WealthOS
 
-Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
+Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza". Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
 
-**Modelo contábil:** partida dobrada como motor interno (invisível ao usuário), com plano de contas híbrido (estrutura CPC simplificada por baixo, linguagem natural na interface). Filosofia Apple: mecânica complexa invisível, resultado simples entregue ao usuário.
-
----
-
-## 2. O que foi feito NESTA sessão (07-08/03/2026)
-
-### 2.1 Infraestrutura
-- Conector MCP do Supabase vinculado ao Claude (leitura/escrita, OAuth)
-- Verificação de conexão: projeto ativo, PostgreSQL 17, sa-east-1
-
-### 2.2 Banco de dados (Supabase)
-- **Migration 001 aplicada** via MCP (6 partes):
-  - 001_initial_schema_enums_and_tables (9 ENUMs + 13 tabelas)
-  - 001_initial_schema_indexes (30 indexes)
-  - 001_initial_schema_rls (52 políticas RLS, todas as tabelas)
-  - 001_initial_schema_triggers (13 triggers + 5 functions)
-  - 001_initial_schema_storage (bucket user-documents + 4 storage policies)
-  - 001_seed_default_categories (função create_default_categories)
-- **Trigger handle_new_user() confirmado funcionando** (criou perfil do Claudio no login via Google)
-- Usuário no banco: Claudio Filho, id=04c41302-5429-4f97-9aeb-e21294d014ff, onboarding_completed=false
-
-### 2.3 Repositório GitHub (8 commits)
-```
-37d2842 docs: rewrite setup guide for Windows (PowerShell)
-6126f4c docs: rewrite setup guide from absolute zero
-32cad77 docs: add comprehensive local setup guide (Fase 0 completion)
-cdc2494 docs: add technical specs, data catalogs, and Fase 1.5 migrations
-1f98df5 feat: add Fase 0 application code (19 files)
-8550422 feat(db): add migration 001 initial schema + seed default categories
-295c5df Add files via upload
-c66b6d1 Initial commit
-```
-
-### 2.4 Código da aplicação (Fase 0 - 31 arquivos no repo)
-- **Layouts:** root (QueryProvider), auth (centralizado), app (sidebar responsiva)
-- **Páginas:** login (email/senha + Google + Apple OAuth), register, onboarding (placeholder), dashboard (4 cards)
-- **API routes:** /api/auth/callback (troca code por sessão + detecção de onboarding)
-- **Libs:** supabase/client.ts (browser), supabase/server.ts (SSR + admin), crypto/index.ts (E2E completo com DEK/KEK), utils/index.ts (cn, formatCurrency, formatDate), query-provider.tsx
-- **Middleware:** proteção de rotas + refresh de sessão
-- **Types:** database.ts placeholder (4 tabelas tipadas, restante genérico)
-- **CI/CD:** GitHub Actions (lint, type-check, build, security checks: service_role leak + RLS coverage)
-- **Config:** supabase/config.toml (Auth, MFA, Google, Apple), capacitor.config.ts, next.config.js (security headers), tailwind.config.ts (tema customizado com income/expense colors)
-
-### 2.5 Documentação no repo (docs/)
-- **docs/specs/**: 8 documentos técnicos (.docx) - especificação, funcional, 4 adendos, estudo contábil, estudo técnico
-- **docs/data/**: 2 catálogos (.xlsx) - BCB SGS (6.922 séries) + IBGE SIDRA (9.029 tabelas)
-- **docs/SETUP-LOCAL.md**: guia passo a passo para Windows (PowerShell)
-
-### 2.6 Migrations da Fase 1.5 (no repo, NÃO aplicadas)
-- `supabase/migrations/002_accounting_model.sql` (552 linhas)
-- `supabase/seed/002_default_chart_of_accounts.sql` (386 linhas, 111 contas + economic_indices_sources)
-
-### 2.7 Setup local concluído
-- Ambiente Windows com PowerShell
-- Git 2.52.0, Node.js v24.13.0, npm 11.8.0
-- Repositório clonado em C:\Users\claud\Documents\PC_WealthOS
-- .env.local configurado com anon key + service_role key
-- npm install + npm run dev funcionando em localhost:3000
-- Google OAuth configurado e testado (login com Google funcionando)
-- Apple Sign-In: NÃO configurado (requer Apple Developer Program)
+**Modelo contábil:** partida dobrada como motor interno (invisível ao usuário), com plano de contas híbrido (estrutura CPC simplificada por baixo, linguagem natural na interface).
 
 ---
 
-## 3. Estado atual do projeto
+## 2. Stack Tecnológica
 
-### Fase 0 (Setup): CONCLUÍDA ✅
-
-| Componente | Status |
-|---|---|
-| Repo GitHub com 31 arquivos | ✅ |
-| Supabase: 13 tabelas, RLS, triggers | ✅ Aplicado |
-| Storage bucket user-documents | ✅ |
-| Seed create_default_categories() | ✅ Aplicado |
-| .env.local com keys | ✅ |
-| Google OAuth | ✅ |
-| Apple Sign-In | ⏳ (opcional, requer Apple Developer Program) |
-| npm run dev funcionando | ✅ |
-| Login testado e perfil criado no banco | ✅ |
-
-### Próximo: Fase 1 (Auth + Segurança) - AUTH-01 a AUTH-08
-
-| Story | Escopo | Status |
+| Camada | Tecnologia | Versão |
 |---|---|---|
-| AUTH-01 | Login social (Google + Apple) | ✅ Google funcional. Apple pendente. |
-| AUTH-02 | Login email/senha com requisitos | Parcial. Falta validação de senha fraca. |
-| AUTH-03 | MFA obrigatório (TOTP) | **Não iniciado. Prioridade alta.** |
-| AUTH-04 | Biometria iOS (Face ID/Touch ID) | Não iniciado. Depende de device iOS. |
-| AUTH-05 | Onboarding completo | Placeholder existe. Falta chamar create_default_categories(), gerar DEK, setup MFA. |
-| AUTH-06 | Logout + invalidação de sessões | Parcial (logout básico existe na sidebar). Falta timeout 30min, logout remoto. |
-| AUTH-07 | Exclusão de conta (7 dias carência) | Não iniciado. |
-| AUTH-08 | Testes de segurança RLS | Não iniciado. Pode ser feito via MCP. |
+| Frontend | Next.js (App Router) + TypeScript | 14.2.14 |
+| UI | shadcn/ui + Tailwind CSS | 3.4.x |
+| Backend/BaaS | Supabase (PostgreSQL + Auth + RLS + Storage) | supabase-js 2.98, ssr 0.9 |
+| Mobile iOS | Capacitor 6 (empacotamento PWA) | 6.x |
+| Hospedagem | Vercel | - |
+| State | React Query + Zustand | RQ 5.56, Zustand 4.5 |
+| Validação | Zod | 3.23 |
+| CI/CD | GitHub Actions | lint + type-check + build + security |
+| APIs externas | BCB SGS + IBGE SIDRA + fallback IPEADATA | - |
 
 ---
 
-## 4. Conexões e acessos
+## 3. Estado Atual do Projeto
 
-### GitHub
-- Repositório: https://github.com/drovsk-cmf/WealthOS (privado)
-- Fine-grained PAT: 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
-- Classic PAT: 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
-
-### Supabase
-- Conexão via MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth
-- Project ref: hmwdfcsxtmbzlslxgqus
-- URL: https://hmwdfcsxtmbzlslxgqus.supabase.co
-- Região: sa-east-1 (São Paulo)
-- PostgreSQL: 17.6.1
-- Ferramentas MCP disponíveis: execute_sql, apply_migration, list_tables, list_migrations, list_extensions, get_project_url, get_publishable_keys, list_edge_functions, get_logs, etc.
-
-### Google OAuth
-- Google Cloud Project: WealthOS
-- OAuth Client: WealthOS Supabase (Aplicativo da Web)
-- Client ID: 458121785240-33oplmcej5g2q2mss18mj5f4ah3cbhh4.apps.googleusercontent.com
-- Redirect URI: https://hmwdfcsxtmbzlslxgqus.supabase.co/auth/v1/callback
-- Provider ativo no Supabase: ✅
-
----
-
-## 5. Decisões técnicas tomadas (referência rápida)
-
-| Decisão | Escolha | Documento |
-|---|---|---|
-| Mobile | PWA + Capacitor iOS | Especificação v1.0 |
-| Backend | Supabase (free tier) | Especificação v1.0 |
-| Saldo de contas | Dois saldos: atual (pagas) + previsto (pagas+pendentes) | Adendo v1.1 |
-| Exclusão de conta | 7 dias de carência | Adendo v1.1 |
-| Relatório fiscal | Gerado client-side (jsPDF) | Adendo v1.1 |
-| Chave E2E | Aleatória, protegida por HKDF do JWT | Adendo v1.1 |
-| Push notifications | APNs direto (sem Firebase) | Adendo v1.1 |
-| OCR | Apple Vision Framework (iOS) + Tesseract.js (web) | Adendo v1.2 |
-| Offline | React Query + IndexedDB + Service Worker | Adendo v1.2 |
-| Integração bancária | Via agregador (Pluggy ou Belvo), Fase 2 | Adendo v1.3 |
-| Modelo contábil | Partida dobrada como motor interno, invisível ao usuário | Estudo Contábil v1.5 |
-| Plano de contas | Híbrido: CPC simplificado (interno) + linguagem natural (UI). 133 contas-semente | Estudo Contábil v1.5 |
-| Imutabilidade journal entries | Append-only estrito (estorno obrigatório) | Estudo Contábil v1.5 |
-| Índices econômicos | BCB SGS (primário) + IBGE SIDRA + IPEADATA (fallback) | Estudo Contábil v1.5 |
-| Nomenclatura na UI | Agnóstica de marcas. Sem referência a empresas específicas | Estudo Contábil v1.5 |
-
----
-
-## 6. Pontos de atenção para a próxima sessão
-
-### 6.1 Bugs conhecidos na migration 002 (corrigir ANTES de aplicar)
-A migration 002_accounting_model.sql (Fase 1.5) tem 3 inconsistências com a 001:
-1. **Triggers referenciam `update_updated_at()`** mas a function na 001 se chama `handle_updated_at()`
-2. **Storage bucket `WHERE id = 'documents'`** mas o bucket na 001 se chama `'user-documents'`
-3. **Usa `uuid_generate_v4()`** onde a 001 usa `gen_random_uuid()` (cosmético, ambos funcionam)
-
-### 6.2 Seed 002 tem 111 contas, handover citava 133
-A diferença (22 contas) são subcontas de investimentos/bens (depth 3) que serão adicionadas quando o detalhamento estiver disponível. O mecanismo is_active = false garante que aparecem sob demanda.
-
-### 6.3 Ambiente do Claudio
-- Windows 10/11, PowerShell
-- Familiaridade com terminal: básica (sabe abrir e digitar comandos, mas copia blocos inteiros sem filtrar)
-- **Instruções devem ser uma linha por vez**, sem texto explicativo misturado com comandos
-- Evitar Bloco de Notas para edições complexas; preferir comandos PowerShell que geram o arquivo inteiro
-
----
-
-## 7. Plano de fases (atualizado)
+### 3.1 Fases Concluídas
 
 | Fase | Escopo | Status |
 |---|---|---|
-| 0. Setup | Repo, Supabase, Next.js, Capacitor, CI/CD, schema v1.0 | ✅ CONCLUÍDA |
-| 1. Auth + Segurança | Login, MFA, RLS, biometria. AUTH-01 a AUTH-08 | **PRÓXIMO** |
-| 1.5 Schema Contábil | Migration v2.0: 10 novas tabelas, 12 ENUMs, indexes, triggers, seed 133 contas | Após Fase 1 |
-| 2. Financeiro (Core) | CRUD transações + journal_entries. Plano de contas. Centros básico. | Após Fase 1.5 |
-| 3. Dashboard + Orçamento | Balanço patrimonial, solvência, orçamento com chart_of_accounts. | Após Fase 2 |
-| 4. Contas a Pagar + Patrimônio | Recorrências com reajuste. Bens no Grupo 1.2. | Após Fase 2 |
-| 5. Centros Avançados | Rateio, P&L por centro, cisão e exportação. | Após Fase 2 |
-| 6. Workflows | Workflows automáticos, tarefas, upload com OCR. | Após Fase 2 |
-| 7. Fiscal Integrado | Relatório via tax_treatment, validações, IRRF tracking. | Após Fase 2 |
-| 8. Índices Econômicos | Job coleta BCB/SIDRA, projeções indexadas, alertas de reajuste. | Após Fase 3 |
-| 9. Integração Bancária | Open Finance via agregador. Pipeline categorização. | Após Fase 2 |
-| 10. Polish + App Store | Testes finais, PWA, build Capacitor, submissão. | Todas |
+| 0. Setup | Repo, Supabase, Next.js, Capacitor, CI/CD, schema v1.0 | CONCLUÍDA |
+| 1. Auth + Segurança | Login, MFA TOTP obrigatório, RLS, biometria stub, session timeout | CONCLUÍDA |
+| 1.5 Schema Contábil | 10 novas tabelas, 12 ENUMs, triggers, seed 140 contas | CONCLUÍDA |
+| 2. Financeiro (Core) | CRUD contas/categorias/transações, motor contábil, plano de contas, centros | CONCLUÍDA |
+| **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **PRÓXIMO** |
 
----
-
-## 8. Totais consolidados
+### 3.2 Banco de Dados
 
 | Métrica | Valor |
 |---|---|
-| Documentos técnicos | 8 (.docx no repo em docs/specs/) |
-| Tabelas no banco (schema v1.0, aplicado) | 13 |
-| Tabelas no banco (schema v2.0, especificado) | 23 (13 + 10 novas) |
-| ENUMs aplicados | 9 |
-| ENUMs especificados (v2.0) | 12 adicionais |
-| Indexes aplicados | 30 |
-| Políticas RLS aplicadas | 52 (public) + 4 (storage) |
-| Triggers aplicados | 13 |
-| Functions aplicadas | 5 (handle_updated_at, handle_new_user, recalculate_account_balance, create_default_categories + 1 internal) |
-| Contas no plano-semente | 111 (implementado) / 133 (especificado) |
+| Tabelas | 23 |
+| Políticas RLS | 76 |
+| Functions | 10 |
+| Triggers | 16 |
+| ENUMs | 21 |
+| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil, 4 parts) + 003 (transaction engine) |
+| Contas no plano-semente (user Claudio) | 140 |
+| Centros de custo | 1 ("Pessoal", neutral, default) |
+| Categorias | 16 (10 despesa + 6 receita, todas system) |
 | User stories total | 90 |
-| Edge Functions | 0 implantadas / 10 especificadas |
-| Fases de desenvolvimento | 11 (0 a 10) |
-| Arquivos no repo | 43 |
-| Commits no main | 8 |
+
+### 3.3 Código Fonte (42 arquivos em src/)
+
+```
+src/
+├── app/
+│   ├── (app)/                          # Rotas autenticadas
+│   │   ├── accounts/page.tsx           # CRUD contas bancárias (FIN-01,02,04,05)
+│   │   ├── categories/page.tsx         # CRUD categorias (FIN-06,07)
+│   │   ├── chart-of-accounts/page.tsx  # Plano de contas tree view (CTB-03,04)
+│   │   ├── cost-centers/page.tsx       # Centros de custo (CEN-01,02)
+│   │   ├── dashboard/page.tsx          # Placeholder (a implementar Fase 3)
+│   │   ├── transactions/page.tsx       # Transações + filtros (FIN-01-03,08-10)
+│   │   ├── settings/page.tsx           # Menu configurações
+│   │   ├── settings/security/page.tsx  # MFA status, logout all, exclusão conta
+│   │   └── layout.tsx                  # Sidebar + session timeout + AAL check
+│   ├── (auth)/                         # Rotas públicas de auth
+│   │   ├── forgot-password/page.tsx    # AUTH-08
+│   │   ├── login/page.tsx              # AUTH-02,03 (Suspense wrapper)
+│   │   ├── mfa-challenge/page.tsx      # AUTH-04 (Suspense wrapper)
+│   │   ├── onboarding/page.tsx         # AUTH-05 (wizard 7 steps)
+│   │   ├── register/page.tsx           # AUTH-01
+│   │   ├── reset-password/page.tsx     # AUTH-08
+│   │   └── layout.tsx                  # Layout centralizado
+│   ├── api/auth/callback/route.ts      # OAuth + email confirm + MFA redirect
+│   ├── globals.css                     # Tailwind + CSS vars (light/dark)
+│   └── layout.tsx                      # Root layout + QueryProvider
+├── components/
+│   ├── accounts/account-form.tsx       # Dialog criar/editar conta
+│   ├── categories/category-form.tsx    # Dialog criar/editar categoria
+│   └── transactions/transaction-form.tsx # Dialog nova transação (3 tipos)
+├── lib/
+│   ├── auth/
+│   │   ├── encryption-manager.ts       # DEK lifecycle (init, load, rotate, clear)
+│   │   ├── index.ts                    # Barrel export
+│   │   ├── mfa.ts                      # Supabase MFA API wrapper (TOTP)
+│   │   ├── password-blocklist.ts       # 38 senhas comuns bloqueadas
+│   │   ├── use-biometric.ts            # Stub Face ID/Touch ID (Fase 10)
+│   │   └── use-session-timeout.ts      # 30min inatividade → logout
+│   ├── crypto/index.ts                 # AES-256-GCM E2E (DEK/KEK/HKDF)
+│   ├── hooks/
+│   │   ├── use-accounts.ts             # CRUD + auto-link COA + liquidity tier
+│   │   ├── use-categories.ts           # CRUD + type filter + icons/colors
+│   │   ├── use-chart-of-accounts.ts    # Tree builder + toggle active
+│   │   ├── use-cost-centers.ts         # CRUD + default protection
+│   │   └── use-transactions.ts         # Query com filtros + batch join
+│   ├── services/
+│   │   └── transaction-engine.ts       # createTransaction, createTransfer, reverseTransaction
+│   ├── supabase/
+│   │   ├── client.ts                   # Browser client
+│   │   └── server.ts                   # Server client + admin client
+│   ├── utils/index.ts                  # cn(), formatCurrency(), formatDate()
+│   ├── validations/auth.ts             # Zod schemas + password strength meter
+│   └── query-provider.tsx              # React Query provider
+├── middleware.ts                        # Route protection + session refresh
+└── types/database.ts                   # Supabase generated types (23 tables, 21 ENUMs, 5 RPCs)
+```
+
+### 3.4 Stored Procedures (RPCs)
+
+| Function | Descrição | Criada em |
+|---|---|---|
+| create_default_categories(p_user_id) | Seed 16 categorias (10 desp + 6 rec) | Migration 001 |
+| create_default_chart_of_accounts(p_user_id) | Seed 111+ contas hierárquicas | Migration 002e |
+| create_default_cost_center(p_user_id) | Cria centro "Pessoal" (neutral) | Migration 002d |
+| create_transaction_with_journal(...) | Atômica: transaction + journal_entry + 2 journal_lines | Migration 003 |
+| reverse_transaction(p_user_id, p_transaction_id) | Soft-delete + journal reverso (append-only) | Migration 003 |
+
+### 3.5 Motor Contábil (Regras de Débito/Crédito)
+
+```
+Receita:          D asset (banco ↑)       C revenue (receita ↑)
+Despesa (banco):  D expense (gasto ↑)     C asset (banco ↓)
+Despesa (cartão): D expense (gasto ↑)     C liability (dívida ↑)
+Estorno:          Linhas invertidas (D↔C)  is_reversal=true, append-only
+```
+
+Mapeamento automático account_type → chart_of_accounts:
+- checking → 1.1.01, savings → 1.1.02, cash → 1.1.03
+- investment → 1.2.01, credit_card → 2.1.01
+
+### 3.6 CI/CD (GitHub Actions)
+
+Pipeline: lint → type-check → build → security checks
+
+Fixes aplicados nesta sessão:
+1. @typescript-eslint plugin instalado (rules not found)
+2. @supabase/ssr 0.5→0.9 (19 type errors com supabase-js 2.98)
+3. Suspense boundary em login/mfa-challenge (Next.js 14 SSG)
 
 ---
 
-## 9. Estrutura do repositório
+## 4. Documentação Técnica (8 documentos no Google Drive)
 
-```
-WealthOS/ (43 arquivos)
-├── .env.example
-├── .eslintrc.json
-├── .gitignore
-├── .github/workflows/ci.yml
-├── README.md
-├── capacitor.config.ts
-├── next.config.js
-├── package.json
-├── postcss.config.js
-├── tailwind.config.ts
-├── tsconfig.json
-├── public/
-│   └── manifest.json
-├── docs/
-│   ├── SETUP-LOCAL.md              (guia Windows/PowerShell)
-│   ├── specs/                      (8 documentos .docx)
-│   └── data/                       (2 catálogos .xlsx)
-├── supabase/
-│   ├── config.toml
-│   ├── migrations/
-│   │   ├── 001_initial_schema.sql  ✅ Aplicada
-│   │   └── 002_accounting_model.sql ⏳ Fase 1.5 (com bugs a corrigir)
-│   └── seed/
-│       ├── 001_default_categories.sql ✅ Aplicada
-│       └── 002_default_chart_of_accounts.sql ⏳ Fase 1.5
-└── src/
-    ├── middleware.ts
-    ├── app/
-    │   ├── globals.css
-    │   ├── layout.tsx
-    │   ├── (auth)/layout.tsx
-    │   ├── (auth)/login/page.tsx
-    │   ├── (auth)/register/page.tsx
-    │   ├── (auth)/onboarding/page.tsx
-    │   ├── (app)/layout.tsx
-    │   ├── (app)/dashboard/page.tsx
-    │   └── api/auth/callback/route.ts
-    ├── lib/
-    │   ├── supabase/client.ts
-    │   ├── supabase/server.ts
-    │   ├── crypto/index.ts
-    │   ├── utils/index.ts
-    │   └── query-provider.tsx
-    └── types/
-        └── database.ts
-```
+| Documento | Conteúdo principal |
+|---|---|
+| wealthos-especificacao-v1.docx | Visão geral, stack, segurança, modelo de dados v1.0, fases |
+| wealthos-funcional-v1.docx | 62 user stories com critérios de aceite |
+| wealthos-adendo-v1.1.docx | Decisões de negócio, 4 tabelas novas, key management E2E, Edge Functions |
+| wealthos-adendo-v1.2.docx | Apple App Store, importação, OCR, offline, acessibilidade |
+| wealthos-adendo-v1.3.docx | Integração bancária Open Finance (Fase 9) |
+| wealthos-adendo-v1.4.docx | Solvência, evoluções futuras |
+| wealthos-estudo-contabil-v1.5-final.docx | Modelo contábil partida dobrada, 133 contas, centros, workflows |
+| wealthos-estudo-tecnico-v2.0.docx | Schema v2.0, 10 novas tabelas, 14 stories, plano de fases revisado |
 
 ---
 
-## 10. Preferências do usuário
+## 5. Decisões Técnicas Consolidadas
+
+| Decisão | Escolha |
+|---|---|
+| Saldo de contas | Dois saldos: atual (pagas) + previsto (pagas+pendentes) |
+| Exclusão de conta | 7 dias de carência |
+| Relatório fiscal | Client-side (jsPDF) |
+| Chave E2E | DEK aleatória, KEK derivada do JWT via HKDF |
+| MFA | Obrigatório sempre (TOTP) |
+| Biometria | Stub agora, full na Fase 10 |
+| Confirmação email | Ativada |
+| Push notifications | APNs direto (sem Firebase) |
+| OCR | Apple Vision (iOS) + Tesseract.js (web) |
+| Modelo contábil | Partida dobrada invisível ao usuário |
+| Imutabilidade journal | Append-only (estorno obrigatório) |
+| Nomenclatura UI | Agnóstica de marcas |
+
+---
+
+## 6. Plano de Fases
+
+| Fase | Escopo | Status | Stories |
+|---|---|---|---|
+| 0. Setup | Repo, Supabase, Next.js, CI/CD | CONCLUÍDA | - |
+| 1. Auth + Segurança | Login, MFA, RLS, biometria | CONCLUÍDA | AUTH-01 a AUTH-08 |
+| 1.5 Schema Contábil | Migration v2.0, seed 140 contas | CONCLUÍDA | - |
+| 2. Financeiro (Core) | CRUD transações + journal_entries | CONCLUÍDA | FIN-01-15, CTB-01-04, CEN-01-02 |
+| **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **PRÓXIMO** | **DASH-01-12, CTB-05, ORC-01-06** |
+| 4. Contas a Pagar + Patrimônio | Recorrências, bens, depreciação | Após Fase 3 | CAP-01-06, PAT-01-07 |
+| 5. Centros Avançados | Rateio, P&L por centro | Após Fase 2 | CEN-03-05 |
+| 6. Workflows | Automações, tarefas, OCR | Após Fase 2 | WKF-01-04 |
+| 7. Fiscal Integrado | tax_treatment, IRRF tracking | Após Fase 2 | FIS-01-06 |
+| 8. Índices Econômicos | BCB/SIDRA, projeções indexadas | Após Fase 3 | A definir |
+| 9. Integração Bancária | Open Finance via agregador | Após Fase 2 | BANK-01-06 |
+| 10. Polish + App Store | PWA, Capacitor, submissão | Todas | - |
+
+---
+
+## 7. Próximo: Fase 3 (Dashboard + Orçamento)
+
+### 7.1 Stories a implementar
+
+**Dashboard (DASH-01 a DASH-12):**
+- DASH-01: Tela home com indicadores (saldo consolidado, receita/despesa do mês)
+- DASH-02 a DASH-04: Gráficos (pizza por categoria, barras receita/despesa, evolução mensal)
+- DASH-05 a DASH-08: Cards de resumo, evolução patrimonial, snapshot mensal
+- DASH-09 a DASH-12: Indicadores de solvência (LCR, runway, burn rate, tiers)
+- CTB-05: Balanço patrimonial (Ativo - Passivo = PL, calculado via journal_lines)
+
+**Orçamento (ORC-01 a ORC-06):**
+- ORC-01: Definir orçamento mensal por categoria/conta contábil
+- ORC-02: Barra de progresso de gasto vs planejado
+- ORC-03: Alertas quando threshold atingido
+- ORC-04: Copiar orçamento do mês anterior
+- ORC-05: Relatório mensal (real vs planejado)
+- ORC-06: Gráfico comparativo
+
+### 7.2 Sugestão de micro-lotes
+
+| Lote | Escopo |
+|---|---|
+| 3.0 | Dashboard page: cards de saldo consolidado, receita/despesa do mês |
+| 3.1 | Gráficos: pizza por categoria, barras receita/despesa (Recharts) |
+| 3.2 | Balanço patrimonial: Ativo - Passivo = PL via journal_lines (CTB-05) |
+| 3.3 | Solvência: LCR, runway, burn rate, tiers (DASH-09 a DASH-12) |
+| 3.4 | Snapshot mensal: generate_monthly_snapshot function + cron |
+| 3.5 | CRUD Orçamento: criar/editar por categoria, copiar mês anterior |
+| 3.6 | Barras de progresso + alertas de orçamento |
+| 3.7 | Relatório orçamento: real vs planejado |
+
+### 7.3 Dependências técnicas para Fase 3
+
+- Recharts (já no package.json) para gráficos
+- Queries em journal_lines agrupadas por group_type para balanço patrimonial
+- Tabela monthly_snapshots (já existe, campos de solvência já incluídos)
+- Tabela budgets (já existe, coa_id e cost_center_id já incluídos)
+- Possível Edge Function para generate_monthly_snapshot (pg_cron)
+
+---
+
+## 8. Dados do Usuário de Teste
+
+- ID: 04c41302-5429-4f97-9aeb-e21294d014ff
+- Nome: Claudio Filho
+- Provider: Google OAuth
+- onboarding_completed: false (MFA não finalizado - completar quando testar local)
+- DEK: não gerada (mesmo motivo)
+- Dados seed: 140 contas contábeis, 1 centro, 16 categorias
+- Transações: 0 (dados de teste foram limpos)
+- Contas bancárias: 0
+
+---
+
+## 9. Preferências do Usuário
 
 - Respostas em português (pt-BR), tom profissional e objetivo
 - Estrutura explícita (títulos, listas, tabelas)
-- Metodologia e premissas sempre claras
+- Metodologia e premissas claras
 - Postura cética: questionar premissas, apontar riscos
 - Orientação a resultados: recomendações acionáveis
-- Agnóstico de marcas na nomenclatura (sem "propaganda" gratuita)
-- Nome do usuário: Claudio
-- Windows 10/11, PowerShell
-- **Instruções de terminal: um comando por vez, sem misturar texto explicativo com comandos copiáveis**
-- Projeto pessoal, single-user escalável para família (2-4 usuários)
+- Agnóstico de marcas na nomenclatura
+- Windows 10/11 com PowerShell (terminal: um comando por vez)
+- Micro-lotes para sessões curtas
