@@ -44,6 +44,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | 2. Financeiro (Core) | CRUD contas/categorias/transações, motor contábil, plano de contas, centros | CONCLUÍDA |
 | **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **CONCLUÍDA** |
 | **4. Contas a Pagar + Patrimônio** | Recorrências, bens, depreciação, alertas | **CONCLUÍDA** |
+| **5. Centros Avançados** | Rateio, P&L por centro, exportação CSV/JSON | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -51,15 +52,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 19 (16 anteriores + 3 RPCs recurrence/asset) |
+| Functions | 22 (19 anteriores + 3 RPCs center advanced) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil) + 003 (transaction engine) + 004 (dashboard/budget RPCs) + 005 (recurrence/asset RPCs) |
+| Migrations aplicadas | 001-006 (schema v1.0 + modelo contábil + transaction engine + dashboard/budget + recurrence/asset + center advanced) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
 | User stories total | 90 |
-| Stories concluídas | 52 (39 fases 1-3 + 13 fase 4: CAP-01-06, PAT-01-07) |
+| Stories concluídas | 55 (52 fases 1-4 + 3 fase 5: CEN-03-05) |
 
 ### 3.3 Código Fonte (61 arquivos em src/)
 
@@ -196,8 +197,8 @@ Fixes aplicados nesta sessão:
 | 2. Financeiro (Core) | CRUD transações + journal_entries | CONCLUÍDA | FIN-01-15, CTB-01-04, CEN-01-02 |
 | **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **CONCLUÍDA** | **DASH-01-12, CTB-05, ORC-01-06** |
 | **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **CONCLUÍDA** | **CAP-01-06, PAT-01-07** |
-| **5. Centros Avançados** | **Rateio, P&L por centro** | **PRÓXIMO** | **CEN-03-05** |
-| 6. Workflows | Automações, tarefas, OCR | Após Fase 2 | WKF-01-04 |
+| **5. Centros Avançados** | **Rateio, P&L por centro, export** | **CONCLUÍDA** | **CEN-03-05** |
+| **6. Workflows** | **Automações, tarefas, OCR** | **PRÓXIMO** | **WKF-01-04** |
 | 7. Fiscal Integrado | tax_treatment, IRRF tracking | Após Fase 2 | FIS-01-06 |
 | 8. Índices Econômicos | BCB/SIDRA, projeções indexadas | Após Fase 3 | A definir |
 | 9. Integração Bancária | Open Finance via agregador | Após Fase 2 | BANK-01-06 |
@@ -251,15 +252,35 @@ Fixes aplicados nesta sessão:
 
 **Total: 8 arquivos, 1.868 linhas adicionadas, 13 stories concluídas.**
 
-### 7.3 Próximo: Fase 5 (Centros Avançados)
+### 7.3 Concluído: Fase 5 (Centros Avançados) - 08/03/2026
+
+**Migration 006** (aplicada via Supabase MCP):
+- 3 RPCs: allocate_to_centers, get_center_pnl, get_center_export
+
+**Hook update (+171 linhas):**
+- useCenterPnl: P&L por centro com período selecionável
+- useCenterExport: export para JSON/CSV
+- useAllocateToCenters: rateio percentual (validação sum=100%)
+- exportToCsv + downloadFile: helpers client-side
+
+**Page rewrite (427 linhas):**
+- P&L expandível por centro com KPIs (receitas/despesas/resultado)
+- Evolução mensal dentro do painel expandido
+- Botões "Exportar CSV" e "Exportar JSON" por centro
+- Info de rateio com referência ao fluxo via transações
+
+**Total: 4 arquivos, 451 linhas adicionadas, 3 stories concluídas.**
+
+### 7.4 Próximo: Fase 6 (Workflows)
 
 | Story | Escopo |
 |---|---|
-| CEN-03 | Rateio percentual entre centros |
-| CEN-04 | P&L por centro de lucro |
-| CEN-05 | Exportar centro com histórico |
+| WKF-01 | Workflows automáticos baseados na estrutura financeira |
+| WKF-02 | Tarefas pendentes como checklist |
+| WKF-03 | Upload de documento com OCR |
+| WKF-04 | Atualização de saldo como alternativa ao upload |
 
-Dependências: tabelas cost_centers e center_allocations já existem.
+Dependências: tabelas workflows e workflow_tasks já existem.
 
 ---
 
