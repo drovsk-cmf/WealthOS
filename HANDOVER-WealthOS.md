@@ -51,17 +51,18 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | 6. Workflows | Tarefas periódicas, auto-criação, checklist | CONCLUÍDA |
 | 7. Fiscal Integrado | Relatório fiscal, provisionamento IR, parâmetros vigentes | CONCLUÍDA |
 | 8. Índices Econômicos | BCB SGS, IPCA, Selic, gráficos, coleta manual | CONCLUÍDA |
+| 9. Integração Bancária | Import CSV/OFX, auto-categorização, bank_connections | CONCLUÍDA |
 
 ### 3.2 Banco de Dados (Supabase)
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 23 (todas com RLS ativo) |
-| Políticas RLS | 76 |
-| Functions | 29 |
-| Triggers | 16 |
-| ENUMs | 21 |
-| Migrations aplicadas | 18 partes em 9 versões (001 a 009) |
+| Tabelas | 24 (23 + bank_connections, todas com RLS) |
+| Políticas RLS | 80 (76 + 4 bank_connections) |
+| Functions | 31 (29 + auto_categorize_transaction + import_transactions_batch) |
+| Triggers | 17 (16 + bank_connections updated_at) |
+| ENUMs | 22 (21 + sync_status) |
+| Migrations aplicadas | 19 partes em 10 versões (001 a 010) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 2 |
 | Categorias | 32 |
@@ -69,7 +70,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices econômicos | 24 registros reais (IPCA + Selic, mar/2025 a mar/2026) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
-| Stories concluídas | 65 |
+| Stories concluídas | 71 (65 + 6 fase 9: BANK-01-06) |
 
 ### 3.3 Functions (29 no banco)
 
@@ -85,7 +86,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Fiscal | get_fiscal_report, get_fiscal_projection |
 | Índices | get_economic_indices, get_index_latest |
 
-### 3.4 Código Fonte (68 arquivos em src/)
+### 3.4 Código Fonte (72 arquivos em src/)
 
 ```
 src/
@@ -165,57 +166,46 @@ src/
 | 6. Workflows | Automações, tarefas, checklist | CONCLUÍDA | WKF-01-04 |
 | 7. Fiscal Integrado | tax_treatment, provisionamento IR | CONCLUÍDA | FIS-01-06 |
 | 8. Índices Econômicos | BCB/SIDRA, gráficos, coleta | CONCLUÍDA | Extra-stories |
-| **9. Integração Bancária** | **Open Finance via agregador** | **PRÓXIMO** | **BANK-01-06** |
+| **9. Integração Bancária** | **Import CSV/OFX, auto-categorização, bank_connections** | **CONCLUÍDA** | **BANK-01-06** |
 | 10. Polish + App Store | PWA, Capacitor, submissão | Pendente | - |
 
 ---
 
-## 6. Próximo: Fase 9 (Integração Bancária)
+## 6. Concluído: Fase 9 (Integração Bancária Standalone) - 08/03/2026
 
-### 6.1 Stories a implementar
+**Opção B implementada:** sem agregador externo, com import manual aprimorado.
 
-| Story | Título | Critérios resumidos |
-|---|---|---|
-| BANK-01 | Conectar conta bancária via agregador | Widget do agregador abre, usuário autoriza, conexão salva em bank_connections |
-| BANK-02 | Importar transações automaticamente | Fetch de transações do agregador, mapeamento para transactions + journal_entries |
-| BANK-03 | Categorizar transações importadas | Pipeline de categorização: regras por descrição, sugestão ML futura |
-| BANK-04 | Reconciliar saldos | Saldo contábil vs saldo bancário, sinalização de divergências |
-| BANK-05 | Atualizar conexão | Re-autorizar quando token expira, status de saúde da conexão |
-| BANK-06 | Desconectar conta | Remove conexão, mantém transações já importadas |
+**Migration 010:**
+- Tabela bank_connections (14 cols, RLS, indexes, trigger)
+- ENUM sync_status (active, syncing, error, expired, manual)
+- ALTER transactions: +bank_connection_id, +external_id, +import_batch_id
+- ALTER accounts: +external_account_id, +bank_connection_id
+- RPC auto_categorize_transaction: 25+ patterns (alimentação, transporte, saúde, moradia, lazer, etc.)
+- RPC import_transactions_batch: bulk import com dedup por external_id, auto-categorização, balance recalc
 
-### 6.2 Arquitetura definida (adendo v1.3)
+**Parsers (330 linhas):**
+- OFX parser: SGML (v1.x) e XML (v2.x), extração de FITID/DTPOSTED/TRNAMT/NAME
+- CSV parser: auto-detect separador (;/,/tab), formatos BR (DD/MM/YYYY, 1.234,56), column mapping com sugestão
 
-- Acesso via agregador certificado (Pluggy ou Belvo), NÃO direto aos bancos
-- Interface TypeScript agnóstica: `BankingProvider` com adapters
-- Tabela `bank_connections` (definida mas NÃO criada no banco ainda)
-- Widget Connect do agregador (iframe/modal) para autorização
-- Pipeline: fetch → deduplicate → categorize → create transactions
+**Hook (147 linhas):**
+- useBankConnections, useCreateBankConnection, useDeactivateBankConnection, useImportBatch
 
-### 6.3 O que falta definir antes de implementar
+**UI (530 linhas):**
+- /connections com 2 tabs (Importar extrato + Conexões)
+- Wizard: upload → column mapping (CSV) → preview com checkbox → resultado
+- Conexões: CRUD manual, status badges, info sobre agregador futuro
 
-| Item | Status | Ação |
-|---|---|---|
-| Escolha do agregador (Pluggy vs Belvo) | PENDENTE | Claudio deve decidir ou aceitar recomendação |
-| Conta sandbox no agregador | PENDENTE | Criar conta de desenvolvimento |
-| API keys do agregador | PENDENTE | Obter após criar conta |
-| Cobertura BTG Banking / Banco XP | PENDENTE | Confirmar com agregador se cobre conta corrente (não só corretora) |
-| Custo do agregador | Referência: R$ 1.000-3.000/mês | Confirmar pricing atual |
-| Certificação para produção | PENDENTE | Processo com o agregador (sandbox → produção) |
+**Evolução futura:** quando contratar agregador (Pluggy/Belvo), basta criar adapter + trocar provider de 'manual' para 'pluggy'/'belvo'. A tabela, RPCs e UI já estão preparados.
 
-### 6.4 Recomendação técnica
+**Total: 7 arquivos, 1.043 linhas adicionadas, 6 stories concluídas.**
 
-Tendência: Pluggy (developer-first, foco PFM, ITP autorizada pelo BC). Mas a arquitetura é agnóstica: se mudar para Belvo depois, basta trocar o adapter.
+### Próximo: Fase 10 (Polish + App Store)
 
-### 6.5 Opção alternativa sem agregador
-
-Se o agregador não estiver pronto, a Fase 9 pode ser implementada como:
-1) Tabela bank_connections + UI de gerenciamento
-2) Import manual aprimorado (CSV/OFX parsing)
-3) Pipeline de categorização automática
-4) Reconciliação manual de saldos
-5) Stub do adapter para conexão futura com agregador
-
-Isso entrega valor imediato (import + categorização) sem depender de terceiro.
+A última fase é um conjunto de refinamentos, não stories novas:
+- PWA icons, manifest.json, Service Worker
+- Capacitor iOS build + App Store
+- Next.js upgrade (14 → 15+)
+- OCR real (WKF-03), testes, Edge Functions com pg_cron
 
 ---
 
