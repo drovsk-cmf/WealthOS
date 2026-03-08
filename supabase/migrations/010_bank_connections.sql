@@ -1,0 +1,17 @@
+-- ============================================
+-- WealthOS - Migration 010: Bank Connections & Import
+-- ============================================
+-- Applied: 2026-03-08 via Supabase MCP
+-- Phase 9B: Standalone (without aggregator)
+-- ============================================
+
+-- 1. ENUM sync_status (active, syncing, error, expired, manual)
+-- 2. Table bank_connections (14 cols, RLS, indexes, trigger)
+-- 3. ALTER transactions: +bank_connection_id, +external_id, +import_batch_id
+-- 4. ALTER accounts: +external_account_id, +bank_connection_id
+-- 5. auto_categorize_transaction(p_user_id, p_description) → UUID
+--    Pattern matching: exact → substring → keyword rules (25+ patterns)
+-- 6. import_transactions_batch(p_user_id, p_account_id, p_bank_connection_id,
+--    p_batch_id, p_transactions JSONB) → JSON
+--    Bulk import with deduplication by external_id, auto-categorization,
+--    balance recalc via trigger. Returns {imported, skipped, categorized}

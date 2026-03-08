@@ -18,9 +18,9 @@ export type Database = {
   public: {
     Tables: {
       accounts: {
-        Row: { coa_id: string | null; color: string | null; created_at: string; current_balance: number; id: string; initial_balance: number; is_active: boolean; liquidity_tier: string; name: string; projected_balance: number; type: Database["public"]["Enums"]["account_type"]; updated_at: string; user_id: string }
-        Insert: { coa_id?: string | null; color?: string | null; created_at?: string; current_balance?: number; id?: string; initial_balance?: number; is_active?: boolean; liquidity_tier?: string; name: string; projected_balance?: number; type: Database["public"]["Enums"]["account_type"]; updated_at?: string; user_id: string }
-        Update: { coa_id?: string | null; color?: string | null; created_at?: string; current_balance?: number; id?: string; initial_balance?: number; is_active?: boolean; liquidity_tier?: string; name?: string; projected_balance?: number; type?: Database["public"]["Enums"]["account_type"]; updated_at?: string; user_id?: string }
+        Row: { bank_connection_id: string | null; coa_id: string | null; color: string | null; created_at: string; current_balance: number; external_account_id: string | null; id: string; initial_balance: number; is_active: boolean; liquidity_tier: string; name: string; projected_balance: number; type: Database["public"]["Enums"]["account_type"]; updated_at: string; user_id: string }
+        Insert: { bank_connection_id?: string | null; coa_id?: string | null; color?: string | null; created_at?: string; current_balance?: number; external_account_id?: string | null; id?: string; initial_balance?: number; is_active?: boolean; liquidity_tier?: string; name: string; projected_balance?: number; type: Database["public"]["Enums"]["account_type"]; updated_at?: string; user_id: string }
+        Update: { bank_connection_id?: string | null; coa_id?: string | null; color?: string | null; created_at?: string; current_balance?: number; external_account_id?: string | null; id?: string; initial_balance?: number; is_active?: boolean; liquidity_tier?: string; name?: string; projected_balance?: number; type?: Database["public"]["Enums"]["account_type"]; updated_at?: string; user_id?: string }
         Relationships: [{ foreignKeyName: "accounts_coa_id_fkey"; columns: ["coa_id"]; isOneToOne: false; referencedRelation: "chart_of_accounts"; referencedColumns: ["id"] }]
       }
       asset_value_history: {
@@ -34,6 +34,12 @@ export type Database = {
         Insert: { acquisition_date: string; acquisition_value: number; category: Database["public"]["Enums"]["asset_category"]; coa_id?: string | null; created_at?: string; current_value: number; depreciation_rate?: number; id?: string; insurance_expiry?: string | null; insurance_policy?: string | null; name: string; notes_encrypted?: string | null; updated_at?: string; user_id: string }
         Update: { acquisition_date?: string; acquisition_value?: number; category?: Database["public"]["Enums"]["asset_category"]; coa_id?: string | null; created_at?: string; current_value?: number; depreciation_rate?: number; id?: string; insurance_expiry?: string | null; insurance_policy?: string | null; name?: string; notes_encrypted?: string | null; updated_at?: string; user_id?: string }
         Relationships: [{ foreignKeyName: "assets_coa_id_fkey"; columns: ["coa_id"]; isOneToOne: false; referencedRelation: "chart_of_accounts"; referencedColumns: ["id"] }]
+      }
+      bank_connections: {
+        Row: { id: string; user_id: string; provider: string; provider_connection_id: string | null; institution_name: string; institution_logo_url: string | null; consent_expires_at: string | null; last_sync_at: string | null; sync_status: Database["public"]["Enums"]["sync_status"]; error_message: string | null; is_active: boolean; created_at: string; updated_at: string }
+        Insert: { id?: string; user_id: string; provider?: string; provider_connection_id?: string | null; institution_name: string; institution_logo_url?: string | null; consent_expires_at?: string | null; last_sync_at?: string | null; sync_status?: Database["public"]["Enums"]["sync_status"]; error_message?: string | null; is_active?: boolean; created_at?: string; updated_at?: string }
+        Update: { id?: string; user_id?: string; provider?: string; provider_connection_id?: string | null; institution_name?: string; institution_logo_url?: string | null; consent_expires_at?: string | null; last_sync_at?: string | null; sync_status?: Database["public"]["Enums"]["sync_status"]; error_message?: string | null; is_active?: boolean; created_at?: string; updated_at?: string }
+        Relationships: []
       }
       budgets: {
         Row: { adjustment_index: Database["public"]["Enums"]["adjustment_index_type"] | null; alert_threshold: number; category_id: string; coa_id: string | null; cost_center_id: string | null; created_at: string; id: string; month: string; planned_amount: number; updated_at: string; user_id: string }
@@ -258,6 +264,14 @@ export type Database = {
         Args: Record<string, never>
         Returns: Json
       }
+      auto_categorize_transaction: {
+        Args: { p_user_id: string; p_description: string }
+        Returns: string | null
+      }
+      import_transactions_batch: {
+        Args: { p_user_id: string; p_account_id: string; p_bank_connection_id: string; p_batch_id: string; p_transactions: string }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
@@ -272,6 +286,7 @@ export type Database = {
       notification_type: "bill_due" | "budget_alert" | "insurance_expiry" | "account_deletion"
       parameter_type: "irpf_monthly" | "irpf_annual" | "irpf_reduction" | "irpf_min_high_income" | "inss_employee" | "inss_ceiling" | "minimum_wage" | "capital_gains" | "crypto_exemption" | "stock_exemption"
       periodicity_type: "daily" | "monthly" | "annual"
+      sync_status: "active" | "syncing" | "error" | "expired" | "manual"
       recurrence_frequency: "daily" | "weekly" | "monthly" | "yearly"
       task_status: "pending" | "in_progress" | "completed" | "skipped"
       task_type: "upload_document" | "update_balance" | "categorize_transactions" | "review_fiscal"

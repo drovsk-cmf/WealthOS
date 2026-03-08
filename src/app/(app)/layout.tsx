@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/transactions", label: "Transações", icon: "ArrowLeftRight" },
   { href: "/accounts", label: "Contas", icon: "Wallet" },
+  { href: "/connections", label: "Importação", icon: "Download" },
   { href: "/categories", label: "Categorias", icon: "Tag" },
   { href: "/chart-of-accounts", label: "Plano de Contas", icon: "BookOpen" },
   { href: "/cost-centers", label: "Centros de Custo", icon: "Target" },
