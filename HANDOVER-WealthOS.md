@@ -42,7 +42,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | 1. Auth + Segurança | Login, MFA TOTP obrigatório, RLS, biometria stub, session timeout | CONCLUÍDA |
 | 1.5 Schema Contábil | 10 novas tabelas, 12 ENUMs, triggers, seed 140 contas | CONCLUÍDA |
 | 2. Financeiro (Core) | CRUD contas/categorias/transações, motor contábil, plano de contas, centros | CONCLUÍDA |
-| **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **PRÓXIMO** |
+| **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -50,16 +50,17 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 10 |
+| Functions | 16 (10 anteriores + 6 RPCs dashboard/budget) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil, 4 parts) + 003 (transaction engine) |
+| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil) + 003 (transaction engine) + 004 (dashboard/budget RPCs) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
 | User stories total | 90 |
+| Stories concluídas | 39 (AUTH 8 + FIN 15 + CTB 4 + CEN 2 + DASH 12 + CTB-05 + ORC 6 - contagem via fases 1-3) |
 
-### 3.3 Código Fonte (42 arquivos em src/)
+### 3.3 Código Fonte (55 arquivos em src/)
 
 ```
 src/
@@ -192,8 +193,8 @@ Fixes aplicados nesta sessão:
 | 1. Auth + Segurança | Login, MFA, RLS, biometria | CONCLUÍDA | AUTH-01 a AUTH-08 |
 | 1.5 Schema Contábil | Migration v2.0, seed 140 contas | CONCLUÍDA | - |
 | 2. Financeiro (Core) | CRUD transações + journal_entries | CONCLUÍDA | FIN-01-15, CTB-01-04, CEN-01-02 |
-| **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **PRÓXIMO** | **DASH-01-12, CTB-05, ORC-01-06** |
-| 4. Contas a Pagar + Patrimônio | Recorrências, bens, depreciação | Após Fase 3 | CAP-01-06, PAT-01-07 |
+| **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **CONCLUÍDA** | **DASH-01-12, CTB-05, ORC-01-06** |
+| **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **PRÓXIMO** | **CAP-01-06, PAT-01-07** |
 | 5. Centros Avançados | Rateio, P&L por centro | Após Fase 2 | CEN-03-05 |
 | 6. Workflows | Automações, tarefas, OCR | Após Fase 2 | WKF-01-04 |
 | 7. Fiscal Integrado | tax_treatment, IRRF tracking | Após Fase 2 | FIS-01-06 |
@@ -203,45 +204,41 @@ Fixes aplicados nesta sessão:
 
 ---
 
-## 7. Próximo: Fase 3 (Dashboard + Orçamento)
+## 7. Concluído: Fase 3 (Dashboard + Orçamento) - 08/03/2026
 
-### 7.1 Stories a implementar
+### 7.1 O que foi entregue
 
-**Dashboard (DASH-01 a DASH-12):**
-- DASH-01: Tela home com indicadores (saldo consolidado, receita/despesa do mês)
-- DASH-02 a DASH-04: Gráficos (pizza por categoria, barras receita/despesa, evolução mensal)
-- DASH-05 a DASH-08: Cards de resumo, evolução patrimonial, snapshot mensal
-- DASH-09 a DASH-12: Indicadores de solvência (LCR, runway, burn rate, tiers)
-- CTB-05: Balanço patrimonial (Ativo - Passivo = PL, calculado via journal_lines)
+**Migration 004** (aplicada via Supabase MCP):
+- 6 RPCs: get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual
 
-**Orçamento (ORC-01 a ORC-06):**
-- ORC-01: Definir orçamento mensal por categoria/conta contábil
-- ORC-02: Barra de progresso de gasto vs planejado
-- ORC-03: Alertas quando threshold atingido
-- ORC-04: Copiar orçamento do mês anterior
-- ORC-05: Relatório mensal (real vs planejado)
-- ORC-06: Gráfico comparativo
+**Hooks (2 arquivos, 555 linhas):**
+- use-dashboard.ts: 6 React Query hooks com tipos exportados
+- use-budgets.ts: 4 queries + 4 mutations (CRUD + copiar mês)
 
-### 7.2 Sugestão de micro-lotes
+**Dashboard (8 componentes + page, 1.215 linhas):**
+- SummaryCards (DASH-01, DASH-02): saldo atual/previsto + receitas/despesas/resultado
+- BalanceSheetCard (CTB-05): ativos líquidos/ilíquidos, passivos, PL com barra proporcional
+- TopCategoriesCard (DASH-03): top 5 categorias com barras horizontais e %
+- UpcomingBillsCard (DASH-04): transações pendentes com badges de urgência
+- BudgetSummaryCard (DASH-05): barra de progresso total + breakdown por categoria
+- SolvencyPanel (DASH-06, DASH-09 a DASH-12): 4 KPIs + barra empilhada de tiers
+- BalanceEvolutionChart (DASH-07): ComposedChart (recharts) barras + linha
+- QuickEntryFab (DASH-08): botão flutuante '+' que abre TransactionForm
 
-| Lote | Escopo |
+**Orçamento (2 arquivos, 703 linhas):**
+- BudgetForm: criar (ORC-01) e editar (ORC-03) com validação de duplicata
+- BudgetsPage: CRUD completo, navegação por mês, copiar mês anterior (ORC-02), remover (ORC-04), relatório planejado vs realizado (ORC-05), alertas visuais (ORC-06)
+
+**Total: 16 arquivos, 2.521 linhas adicionadas, 19 stories concluídas.**
+
+### 7.2 Próximo: Fase 4 (Contas a Pagar + Patrimônio)
+
+| Story | Escopo |
 |---|---|
-| 3.0 | Dashboard page: cards de saldo consolidado, receita/despesa do mês |
-| 3.1 | Gráficos: pizza por categoria, barras receita/despesa (Recharts) |
-| 3.2 | Balanço patrimonial: Ativo - Passivo = PL via journal_lines (CTB-05) |
-| 3.3 | Solvência: LCR, runway, burn rate, tiers (DASH-09 a DASH-12) |
-| 3.4 | Snapshot mensal: generate_monthly_snapshot function + cron |
-| 3.5 | CRUD Orçamento: criar/editar por categoria, copiar mês anterior |
-| 3.6 | Barras de progresso + alertas de orçamento |
-| 3.7 | Relatório orçamento: real vs planejado |
+| CAP-01 a CAP-06 | Recorrências com reajuste por índice, CRUD, próximas a vencer |
+| PAT-01 a PAT-07 | Bens vinculados ao Grupo 1.2, depreciação via journal_entry |
 
-### 7.3 Dependências técnicas para Fase 3
-
-- Recharts (já no package.json) para gráficos
-- Queries em journal_lines agrupadas por group_type para balanço patrimonial
-- Tabela monthly_snapshots (já existe, campos de solvência já incluídos)
-- Tabela budgets (já existe, coa_id e cost_center_id já incluídos)
-- Possível Edge Function para generate_monthly_snapshot (pg_cron)
+Dependências: tabelas recurrences e assets já existem com os campos v2.0.
 
 ---
 
