@@ -19,7 +19,8 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const rawRedirect = searchParams.get("redirectTo") || "/dashboard";
+  const redirectTo = rawRedirect === "/" ? "/dashboard" : rawRedirect;
 
   const supabase = await createClient();
 
