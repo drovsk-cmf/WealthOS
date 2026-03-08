@@ -43,6 +43,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | 1.5 Schema Contábil | 10 novas tabelas, 12 ENUMs, triggers, seed 140 contas | CONCLUÍDA |
 | 2. Financeiro (Core) | CRUD contas/categorias/transações, motor contábil, plano de contas, centros | CONCLUÍDA |
 | **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **CONCLUÍDA** |
+| **4. Contas a Pagar + Patrimônio** | Recorrências, bens, depreciação, alertas | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -50,17 +51,17 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 16 (10 anteriores + 6 RPCs dashboard/budget) |
+| Functions | 19 (16 anteriores + 3 RPCs recurrence/asset) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil) + 003 (transaction engine) + 004 (dashboard/budget RPCs) |
+| Migrations aplicadas | 001 (schema v1.0) + 002 (modelo contábil) + 003 (transaction engine) + 004 (dashboard/budget RPCs) + 005 (recurrence/asset RPCs) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
 | User stories total | 90 |
-| Stories concluídas | 39 (AUTH 8 + FIN 15 + CTB 4 + CEN 2 + DASH 12 + CTB-05 + ORC 6 - contagem via fases 1-3) |
+| Stories concluídas | 52 (39 fases 1-3 + 13 fase 4: CAP-01-06, PAT-01-07) |
 
-### 3.3 Código Fonte (55 arquivos em src/)
+### 3.3 Código Fonte (61 arquivos em src/)
 
 ```
 src/
@@ -194,8 +195,8 @@ Fixes aplicados nesta sessão:
 | 1.5 Schema Contábil | Migration v2.0, seed 140 contas | CONCLUÍDA | - |
 | 2. Financeiro (Core) | CRUD transações + journal_entries | CONCLUÍDA | FIN-01-15, CTB-01-04, CEN-01-02 |
 | **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **CONCLUÍDA** | **DASH-01-12, CTB-05, ORC-01-06** |
-| **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **PRÓXIMO** | **CAP-01-06, PAT-01-07** |
-| 5. Centros Avançados | Rateio, P&L por centro | Após Fase 2 | CEN-03-05 |
+| **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **CONCLUÍDA** | **CAP-01-06, PAT-01-07** |
+| **5. Centros Avançados** | **Rateio, P&L por centro** | **PRÓXIMO** | **CEN-03-05** |
 | 6. Workflows | Automações, tarefas, OCR | Após Fase 2 | WKF-01-04 |
 | 7. Fiscal Integrado | tax_treatment, IRRF tracking | Após Fase 2 | FIS-01-06 |
 | 8. Índices Econômicos | BCB/SIDRA, projeções indexadas | Após Fase 3 | A definir |
@@ -231,14 +232,34 @@ Fixes aplicados nesta sessão:
 
 **Total: 16 arquivos, 2.521 linhas adicionadas, 19 stories concluídas.**
 
-### 7.2 Próximo: Fase 4 (Contas a Pagar + Patrimônio)
+### 7.2 Concluído: Fase 4 (Contas a Pagar + Patrimônio) - 08/03/2026
+
+**Migration 005** (aplicada via Supabase MCP):
+- 3 RPCs: generate_next_recurrence, depreciate_asset, get_assets_summary
+
+**Hooks (2 arquivos, 671 linhas):**
+- use-recurrences.ts: 3 queries + 4 mutations (CRUD + pagar/gerar próxima)
+- use-assets.ts: 4 queries + 4 mutations (CRUD + depreciar + histórico)
+
+**Contas a Pagar (2 arquivos, 620 linhas):**
+- RecurrenceForm: criar/editar com frequência, reajuste manual, data fim
+- BillsPage: 2 tabs (Pendentes + Recorrências), pagar com auto-geração da próxima, alertas de vencimento
+
+**Patrimônio (2 arquivos, 542 linhas):**
+- AssetForm: criar/editar com categoria, depreciação, seguro
+- AssetsPage: CRUD, totalização por categoria, depreciação manual, histórico expandível, alertas de seguro
+
+**Total: 8 arquivos, 1.868 linhas adicionadas, 13 stories concluídas.**
+
+### 7.3 Próximo: Fase 5 (Centros Avançados)
 
 | Story | Escopo |
 |---|---|
-| CAP-01 a CAP-06 | Recorrências com reajuste por índice, CRUD, próximas a vencer |
-| PAT-01 a PAT-07 | Bens vinculados ao Grupo 1.2, depreciação via journal_entry |
+| CEN-03 | Rateio percentual entre centros |
+| CEN-04 | P&L por centro de lucro |
+| CEN-05 | Exportar centro com histórico |
 
-Dependências: tabelas recurrences e assets já existem com os campos v2.0.
+Dependências: tabelas cost_centers e center_allocations já existem.
 
 ---
 
