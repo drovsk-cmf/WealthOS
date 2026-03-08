@@ -134,14 +134,28 @@ export default function OnboardingPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // Call create_default_categories RPC
-      const { error: rpcError } = await supabase.rpc("create_default_categories", {
+      // 1. Create default categories (receitas/despesas)
+      const { error: catError } = await supabase.rpc("create_default_categories", {
         p_user_id: user.id,
       });
+      if (catError) {
+        console.warn("[WealthOS] Category seed:", catError.message);
+      }
 
-      if (rpcError) {
-        // Categories might already exist (re-run safe), log and continue
-        console.warn("[WealthOS] Category seed:", rpcError.message);
+      // 2. Create default chart of accounts (111 contas contábeis)
+      const { error: coaError } = await supabase.rpc("create_default_chart_of_accounts", {
+        p_user_id: user.id,
+      });
+      if (coaError) {
+        console.warn("[WealthOS] Chart of accounts seed:", coaError.message);
+      }
+
+      // 3. Create default cost center ("Pessoal")
+      const { error: ccError } = await supabase.rpc("create_default_cost_center", {
+        p_user_id: user.id,
+      });
+      if (ccError) {
+        console.warn("[WealthOS] Cost center seed:", ccError.message);
       }
 
       // Mark onboarding as completed
@@ -154,7 +168,7 @@ export default function OnboardingPage() {
 
       setStep("done");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao criar categorias.");
+      setError(err instanceof Error ? err.message : "Erro ao configurar conta.");
     } finally {
       setLoading(false);
     }
@@ -217,7 +231,7 @@ export default function OnboardingPage() {
               { icon: "💰", title: "Moeda padrão", desc: "Escolha sua moeda principal" },
               { icon: "🔐", title: "Criptografia", desc: "Sua chave de segurança será gerada automaticamente" },
               { icon: "📱", title: "Autenticação 2FA", desc: "Configure seu app autenticador (obrigatório)" },
-              { icon: "📂", title: "Categorias", desc: "Categorias padrão serão criadas para você" },
+              { icon: "📂", title: "Dados iniciais", desc: "Categorias, plano de contas e centro de custo serão criados" },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-3 rounded-lg border bg-card p-3">
                 <span className="text-xl">{item.icon}</span>
@@ -354,9 +368,9 @@ export default function OnboardingPage() {
       {step === "categories" && !error && (
         <div className="text-center">
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">Criando categorias</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Preparando sua conta</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Preparando suas categorias padrão de receitas e despesas...
+            Criando categorias, plano de contas e centro de custo padrão...
           </p>
         </div>
       )}
