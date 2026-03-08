@@ -18,7 +18,6 @@ import {
   unwrapDEK,
 } from "@/lib/crypto/index";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabaseClient = SupabaseClient<any, any, any>;
 
 // In-memory DEK reference (cleared on logout/timeout)

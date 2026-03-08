@@ -196,7 +196,7 @@ export default function OnboardingPage() {
         <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {error}
           {(step === "security" || step === "mfa_enroll" || step === "categories") && (
-            <button onClick={() => { setError(null); step === "security" ? handleSecurity() : step === "mfa_enroll" ? handleMfaEnroll() : handleCategories(); }}
+            <button onClick={() => { setError(null); if (step === "security") handleSecurity(); else if (step === "mfa_enroll") handleMfaEnroll(); else handleCategories(); }}
               className="ml-2 underline">Tentar novamente</button>
           )}
         </div>

@@ -5,7 +5,6 @@
  * Regenerate: npx supabase gen types typescript --project-id hmwdfcsxtmbzlslxgqus > src/types/database.ts
  */
 
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 
 export type Json =
   | string

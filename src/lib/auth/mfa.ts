@@ -11,7 +11,6 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnySupabaseClient = SupabaseClient<any, any, any>;
 
 export type MfaStatus = "not_enrolled" | "enrolled_unverified" | "enrolled_verified";
