@@ -45,6 +45,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **3. Dashboard + Orçamento** | Balanço patrimonial, solvência, gráficos, orçamento | **CONCLUÍDA** |
 | **4. Contas a Pagar + Patrimônio** | Recorrências, bens, depreciação, alertas | **CONCLUÍDA** |
 | **5. Centros Avançados** | Rateio, P&L por centro, exportação CSV/JSON | **CONCLUÍDA** |
+| **6. Workflows** | Tarefas periódicas, auto-criação, checklist | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -52,17 +53,17 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 22 (19 anteriores + 3 RPCs center advanced) |
+| Functions | 25 (22 anteriores + 3 RPCs workflow) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001-006 (schema v1.0 + modelo contábil + transaction engine + dashboard/budget + recurrence/asset + center advanced) |
+| Migrations aplicadas | 001-007 (schema v1.0 + contábil + transaction + dashboard + recurrence + center + workflow) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
 | User stories total | 90 |
-| Stories concluídas | 55 (52 fases 1-4 + 3 fase 5: CEN-03-05) |
+| Stories concluídas | 59 (55 fases 1-5 + 4 fase 6: WKF-01-04) |
 
-### 3.3 Código Fonte (61 arquivos em src/)
+### 3.3 Código Fonte (63 arquivos em src/)
 
 ```
 src/
@@ -198,8 +199,8 @@ Fixes aplicados nesta sessão:
 | **3. Dashboard + Orçamento** | **Balanço patrimonial, solvência, orçamento** | **CONCLUÍDA** | **DASH-01-12, CTB-05, ORC-01-06** |
 | **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **CONCLUÍDA** | **CAP-01-06, PAT-01-07** |
 | **5. Centros Avançados** | **Rateio, P&L por centro, export** | **CONCLUÍDA** | **CEN-03-05** |
-| **6. Workflows** | **Automações, tarefas, OCR** | **PRÓXIMO** | **WKF-01-04** |
-| 7. Fiscal Integrado | tax_treatment, IRRF tracking | Após Fase 2 | FIS-01-06 |
+| **6. Workflows** | **Automações, tarefas, checklist** | **CONCLUÍDA** | **WKF-01-04** |
+| **7. Fiscal Integrado** | **tax_treatment, IRRF tracking** | **PRÓXIMO** | **FIS-01-06** |
 | 8. Índices Econômicos | BCB/SIDRA, projeções indexadas | Após Fase 3 | A definir |
 | 9. Integração Bancária | Open Finance via agregador | Após Fase 2 | BANK-01-06 |
 | 10. Polish + App Store | PWA, Capacitor, submissão | Todas | - |
@@ -271,16 +272,30 @@ Fixes aplicados nesta sessão:
 
 **Total: 4 arquivos, 451 linhas adicionadas, 3 stories concluídas.**
 
-### 7.4 Próximo: Fase 6 (Workflows)
+### 7.4 Concluído: Fase 6 (Workflows) - 08/03/2026
+
+**Migration 007** (aplicada via Supabase MCP):
+- 3 RPCs: auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task
+
+**Hook (319 linhas):**
+- use-workflows.ts: 5 queries + 5 mutations (CRUD + gerar + completar)
+- use-accounts.ts: integração WKF-01 (auto-cria workflow ao criar conta)
+
+**UI (447 linhas):**
+- /workflows page com 2 tabs (Pendentes + Workflows)
+- WKF-02: checklist agrupada por workflow
+- WKF-03: stub de upload (completa manualmente; OCR real na Fase 10)
+- WKF-04: campo de saldo inline na tarefa
+
+**Total: 6 arquivos, 813 linhas adicionadas, 4 stories concluídas.**
+
+### 7.5 Próximo: Fase 7 (Fiscal Integrado)
 
 | Story | Escopo |
 |---|---|
-| WKF-01 | Workflows automáticos baseados na estrutura financeira |
-| WKF-02 | Tarefas pendentes como checklist |
-| WKF-03 | Upload de documento com OCR |
-| WKF-04 | Atualização de saldo como alternativa ao upload |
+| FIS-01 a FIS-06 | Relatório fiscal via tax_treatment, validações, IRRF tracking |
 
-Dependências: tabelas workflows e workflow_tasks já existem.
+Dependências: tabelas tax_parameters e chart_of_accounts.tax_treatment já existem.
 
 ---
 
