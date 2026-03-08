@@ -182,6 +182,30 @@ export type Database = {
         Args: { p_user_id: string; p_transaction_id: string }
         Returns: Json
       }
+      get_dashboard_summary: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      get_balance_sheet: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      get_solvency_metrics: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      get_top_categories: {
+        Args: { p_user_id: string; p_year?: number; p_month?: number; p_limit?: number }
+        Returns: Json
+      }
+      get_balance_evolution: {
+        Args: { p_user_id: string; p_months?: number }
+        Returns: Json
+      }
+      get_budget_vs_actual: {
+        Args: { p_user_id: string; p_year?: number; p_month?: number }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
