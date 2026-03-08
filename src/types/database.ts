@@ -161,6 +161,27 @@ export type Database = {
       create_default_categories: { Args: { p_user_id: string }; Returns: undefined }
       create_default_chart_of_accounts: { Args: { p_user_id: string }; Returns: undefined }
       create_default_cost_center: { Args: { p_user_id: string }; Returns: string }
+      create_transaction_with_journal: {
+        Args: {
+          p_user_id: string
+          p_account_id: string
+          p_category_id?: string | null
+          p_type?: Database["public"]["Enums"]["transaction_type"]
+          p_amount?: number
+          p_description?: string | null
+          p_date?: string
+          p_is_paid?: boolean
+          p_source?: Database["public"]["Enums"]["entry_source"]
+          p_notes?: string | null
+          p_tags?: string[] | null
+          p_counterpart_coa_id?: string | null
+        }
+        Returns: Json
+      }
+      reverse_transaction: {
+        Args: { p_user_id: string; p_transaction_id: string }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
