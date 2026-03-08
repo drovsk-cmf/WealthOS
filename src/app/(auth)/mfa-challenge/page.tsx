@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { challengeAndVerify } from "@/lib/auth/mfa";
 import { loadEncryptionKey } from "@/lib/auth/encryption-manager";
 
 export default function MfaChallengePage() {
+  return (
+    <Suspense fallback={<div className="text-center text-sm text-muted-foreground">Carregando...</div>}>
+      <MfaChallengeContent />
+    </Suspense>
+  );
+}
+
+function MfaChallengeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/dashboard";
