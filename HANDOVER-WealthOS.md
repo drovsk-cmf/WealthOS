@@ -47,6 +47,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **5. Centros Avançados** | Rateio, P&L por centro, exportação CSV/JSON | **CONCLUÍDA** |
 | **6. Workflows** | Tarefas periódicas, auto-criação, checklist | **CONCLUÍDA** |
 | **7. Fiscal Integrado** | Relatório fiscal, provisionamento IR, parâmetros vigentes | **CONCLUÍDA** |
+| **8. Índices Econômicos** | BCB SGS, IPCA, Selic, gráficos, coleta manual | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -54,18 +55,19 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 27 (25 anteriores + 2 RPCs fiscal) |
+| Functions | 29 (27 anteriores + 2 RPCs economic indices) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001-008 (schema + contábil + transaction + dashboard + recurrence + center + workflow + fiscal) |
+| Migrations aplicadas | 001-009 (schema + contábil + transaction + dashboard + recurrence + center + workflow + fiscal + indices) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
 | Parâmetros fiscais | 7 (IRPF mensal/anual 2025+2026, INSS, salário mínimo, ganho capital) |
+| Índices econômicos | 24 registros reais (IPCA + Selic, mar/2025 a mar/2026) |
 | User stories total | 90 |
-| Stories concluídas | 65 (59 fases 1-6 + 6 fase 7: FIS-01-06) |
+| Stories concluídas | 65 (fases 1-7) + Fase 8 extra-stories |
 
-### 3.3 Código Fonte (65 arquivos em src/)
+### 3.3 Código Fonte (68 arquivos em src/)
 
 ```
 src/
@@ -203,7 +205,7 @@ Fixes aplicados nesta sessão:
 | **5. Centros Avançados** | **Rateio, P&L por centro, export** | **CONCLUÍDA** | **CEN-03-05** |
 | **6. Workflows** | **Automações, tarefas, checklist** | **CONCLUÍDA** | **WKF-01-04** |
 | **7. Fiscal Integrado** | **tax_treatment, provisionamento IR** | **CONCLUÍDA** | **FIS-01-06** |
-| **8. Índices Econômicos** | **BCB/SIDRA, projeções indexadas** | **PRÓXIMO** | **A definir** |
+| **8. Índices Econômicos** | **BCB/SIDRA, gráficos, coleta** | **CONCLUÍDA** | **Extra-stories** |
 | 9. Integração Bancária | Open Finance via agregador | Após Fase 2 | BANK-01-06 |
 | 10. Polish + App Store | PWA, Capacitor, submissão | Todas | - |
 
@@ -314,10 +316,29 @@ Fixes aplicados nesta sessão:
 
 **Total: 4 arquivos, 568 linhas adicionadas, 6 stories concluídas.**
 
-### 7.6 Próximo: Fase 8 (Índices Econômicos)
+### 7.6 Concluído: Fase 8 (Índices Econômicos) - 08/03/2026
 
-Dependências: tabelas economic_indices e economic_indices_sources já existem (com 15 fontes semeadas).
-Escopo: Edge Function para coleta BCB/SIDRA, projeções indexadas, alertas de reajuste.
+**Migration 009** (aplicada via Supabase MCP):
+- Seed: 24 registros reais (IPCA mar/25-jan/26 + Selic mar/25-mar/26)
+- IPCA com acumulado ano (2,75% em 2025) e 12 meses (3,09% em jan/26) calculados
+- 2 RPCs: get_economic_indices (filtros), get_index_latest (último valor por tipo)
+
+**API Route (177 linhas):**
+- POST /api/indices/fetch: coleta BCB SGS, parseia DD/MM/YYYY → ISO, séries diárias → snapshot mensal, upsert
+
+**Hook (139 linhas):**
+- useLatestIndices, useIndexHistory, useFetchIndices
+
+**UI (285 linhas):**
+- Cards por índice com seleção visual, gráfico Recharts, tabela com acumulados, botão de atualização manual
+
+**Total: 6 arquivos, 627 linhas adicionadas.**
+
+### 7.7 Próximo: Fases 9 e 10
+
+Fase 9 (Integração Bancária): requer agregador externo (Pluggy/Belvo), sandbox, certificação. Não implementável sem conta ativa no agregador.
+
+Fase 10 (Polish + App Store): testes finais, PWA icons, build Capacitor iOS, submissão App Store, upgrade Next.js.
 
 ---
 
