@@ -230,6 +230,18 @@ export type Database = {
         Args: { p_user_id: string; p_center_id: string }
         Returns: Json
       }
+      auto_create_workflow_for_account: {
+        Args: { p_user_id: string; p_account_id: string; p_account_type: string; p_account_name: string }
+        Returns: Json
+      }
+      generate_tasks_for_period: {
+        Args: { p_user_id: string; p_year?: number; p_month?: number }
+        Returns: Json
+      }
+      complete_workflow_task: {
+        Args: { p_user_id: string; p_task_id: string; p_status?: string; p_result_data?: string }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"

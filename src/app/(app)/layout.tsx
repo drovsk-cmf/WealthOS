@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: "/budgets", label: "Orçamento", icon: "PieChart" },
   { href: "/bills", label: "Contas a Pagar", icon: "Calendar" },
   { href: "/assets", label: "Patrimônio", icon: "Building" },
+  { href: "/workflows", label: "Tarefas", icon: "CheckSquare" },
   { href: "/tax", label: "Fiscal", icon: "FileText" },
   { href: "/settings", label: "Configurações", icon: "Settings" },
 ];

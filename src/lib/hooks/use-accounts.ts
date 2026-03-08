@@ -135,10 +135,24 @@ export function useCreateAccount() {
         .single();
 
       if (error) throw error;
+
+      // WKF-01: Auto-create workflow for this account
+      try {
+        await supabase.rpc("auto_create_workflow_for_account", {
+          p_user_id: user.id,
+          p_account_id: data.id,
+          p_account_type: input.type,
+          p_account_name: input.name,
+        });
+      } catch {
+        console.warn("[WealthOS] Auto-create workflow failed for account", data.id);
+      }
+
       return data as Account;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
