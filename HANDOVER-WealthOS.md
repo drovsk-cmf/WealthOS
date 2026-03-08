@@ -46,6 +46,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **4. Contas a Pagar + Patrimônio** | Recorrências, bens, depreciação, alertas | **CONCLUÍDA** |
 | **5. Centros Avançados** | Rateio, P&L por centro, exportação CSV/JSON | **CONCLUÍDA** |
 | **6. Workflows** | Tarefas periódicas, auto-criação, checklist | **CONCLUÍDA** |
+| **7. Fiscal Integrado** | Relatório fiscal, provisionamento IR, parâmetros vigentes | **CONCLUÍDA** |
 
 ### 3.2 Banco de Dados
 
@@ -53,17 +54,18 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 23 |
 | Políticas RLS | 76 |
-| Functions | 25 (22 anteriores + 3 RPCs workflow) |
+| Functions | 27 (25 anteriores + 2 RPCs fiscal) |
 | Triggers | 16 |
 | ENUMs | 21 |
-| Migrations aplicadas | 001-007 (schema v1.0 + contábil + transaction + dashboard + recurrence + center + workflow) |
+| Migrations aplicadas | 001-008 (schema + contábil + transaction + dashboard + recurrence + center + workflow + fiscal) |
 | Contas no plano-semente (user Claudio) | 140 |
 | Centros de custo | 1 ("Pessoal", neutral, default) |
 | Categorias | 16 (10 despesa + 6 receita, todas system) |
+| Parâmetros fiscais | 7 (IRPF mensal/anual 2025+2026, INSS, salário mínimo, ganho capital) |
 | User stories total | 90 |
-| Stories concluídas | 59 (55 fases 1-5 + 4 fase 6: WKF-01-04) |
+| Stories concluídas | 65 (59 fases 1-6 + 6 fase 7: FIS-01-06) |
 
-### 3.3 Código Fonte (63 arquivos em src/)
+### 3.3 Código Fonte (65 arquivos em src/)
 
 ```
 src/
@@ -200,8 +202,8 @@ Fixes aplicados nesta sessão:
 | **4. Contas a Pagar + Patrimônio** | **Recorrências, bens, depreciação** | **CONCLUÍDA** | **CAP-01-06, PAT-01-07** |
 | **5. Centros Avançados** | **Rateio, P&L por centro, export** | **CONCLUÍDA** | **CEN-03-05** |
 | **6. Workflows** | **Automações, tarefas, checklist** | **CONCLUÍDA** | **WKF-01-04** |
-| **7. Fiscal Integrado** | **tax_treatment, IRRF tracking** | **PRÓXIMO** | **FIS-01-06** |
-| 8. Índices Econômicos | BCB/SIDRA, projeções indexadas | Após Fase 3 | A definir |
+| **7. Fiscal Integrado** | **tax_treatment, provisionamento IR** | **CONCLUÍDA** | **FIS-01-06** |
+| **8. Índices Econômicos** | **BCB/SIDRA, projeções indexadas** | **PRÓXIMO** | **A definir** |
 | 9. Integração Bancária | Open Finance via agregador | Após Fase 2 | BANK-01-06 |
 | 10. Polish + App Store | PWA, Capacitor, submissão | Todas | - |
 
@@ -289,13 +291,33 @@ Fixes aplicados nesta sessão:
 
 **Total: 6 arquivos, 813 linhas adicionadas, 4 stories concluídas.**
 
-### 7.5 Próximo: Fase 7 (Fiscal Integrado)
+### 7.5 Concluído: Fase 7 (Fiscal Integrado) - 08/03/2026
 
-| Story | Escopo |
-|---|---|
-| FIS-01 a FIS-06 | Relatório fiscal via tax_treatment, validações, IRRF tracking |
+**Migration 008** (aplicada via Supabase MCP):
+- Seed: 7 registros em tax_parameters (IRPF mensal/anual 2025+2026 com Lei 15.270/2025, INSS, salário mínimo, ganho de capital)
+- 2 RPCs: get_fiscal_report (consolidação por tax_treatment), get_fiscal_projection (inteligência de provisionamento)
 
-Dependências: tabelas tax_parameters e chart_of_accounts.tax_treatment já existem.
+**Inteligência de Provisionamento IR:**
+- Cenário-chave: múltiplas fontes CLT sem retenção individual (ex: 2× R$5.000)
+- RPC calcula: renda tributável acumulada → projeta anual → tabela progressiva → redução Lei 15.270 → compara com IRRF retido → mostra gap mensal a provisionar
+- Nível 1 implementado (view computada). Motor CLT completo (Nível 2) permanece no backlog como evolução #1
+
+**Hook (157 linhas):**
+- useFiscalReport, useFiscalProjection, useTaxParameters
+
+**UI (379 linhas):**
+- Painel de provisionamento com destaque visual (border laranja/verde)
+- 4 KPIs: renda projetada, IRPF estimado, IRRF retido, provisão mensal
+- Explicação contextual do cenário de múltiplas fontes
+- Relatório por tax_treatment com totais
+- Tabelas de parâmetros fiscais vigentes com fontes oficiais
+
+**Total: 4 arquivos, 568 linhas adicionadas, 6 stories concluídas.**
+
+### 7.6 Próximo: Fase 8 (Índices Econômicos)
+
+Dependências: tabelas economic_indices e economic_indices_sources já existem (com 15 fontes semeadas).
+Escopo: Edge Function para coleta BCB/SIDRA, projeções indexadas, alertas de reajuste.
 
 ---
 
