@@ -242,6 +242,14 @@ export type Database = {
         Args: { p_user_id: string; p_task_id: string; p_status?: string; p_result_data?: string }
         Returns: Json
       }
+      get_fiscal_report: {
+        Args: { p_user_id: string; p_year?: number }
+        Returns: Json
+      }
+      get_fiscal_projection: {
+        Args: { p_user_id: string; p_year?: number }
+        Returns: Json
+      }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
