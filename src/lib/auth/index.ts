@@ -23,3 +23,4 @@ export {
   getActiveDEK,
   clearEncryptionKey,
 } from "./encryption-manager";
+export { useAppLifecycle } from "./use-app-lifecycle";

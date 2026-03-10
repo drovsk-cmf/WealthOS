@@ -4,6 +4,14 @@
  * Parses OFX/QFX files (Open Financial Exchange) client-side.
  * OFX is an XML-like format used by banks for statement export.
  * Handles both SGML (OFX 1.x) and XML (OFX 2.x) variants.
+ *
+ * Deduplicação:
+ * - Cada transação recebe um external_id baseado no FITID original
+ * - Quando FITID ausente, gera hash SHA-256 de (data + valor + descrição)
+ * - Dedup in-file: transações com external_id duplicado são descartadas
+ * - Dedup cross-import: external_id tem UNIQUE constraint parcial no banco
+ *
+ * Ref: Auditoria de segurança - Achado 4
  */
 
 export interface OFXTransaction {
@@ -22,7 +30,39 @@ export interface OFXParseResult {
   startDate?: string;
   endDate?: string;
   transactions: OFXTransaction[];
+  duplicatesSkipped: number;
   errors: string[];
+}
+
+/**
+ * Gera hash SHA-256 hex de uma string.
+ * Usa Web Crypto API (disponível em browsers e Edge Runtime).
+ */
+async function sha256(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Gera external_id determinístico para uma transação OFX.
+ * Se FITID disponível: sha256("ofx:{bankId}:{acctId}:{fitid}")
+ * Se FITID ausente: sha256("ofx:{bankId}:{acctId}:{date}:{amount}:{desc}")
+ */
+async function generateExternalId(
+  fitid: string,
+  bankId: string,
+  accountId: string,
+  date: string,
+  amount: string,
+  description: string
+): Promise<string> {
+  if (fitid) {
+    return sha256(`ofx:${bankId}:${accountId}:${fitid}`);
+  }
+  // Fallback: hash composto (menos robusto, mas cobre casos sem FITID)
+  return sha256(`ofx:${bankId}:${accountId}:${date}:${amount}:${description}`);
 }
 
 function parseOFXDate(raw: string): string {
@@ -63,9 +103,10 @@ function extractBlocks(content: string, tag: string): string[] {
   return blocks;
 }
 
-export function parseOFX(content: string): OFXParseResult {
+export async function parseOFX(content: string): Promise<OFXParseResult> {
   const result: OFXParseResult = {
     transactions: [],
+    duplicatesSkipped: 0,
     errors: [],
   };
 
@@ -86,6 +127,9 @@ export function parseOFX(content: string): OFXParseResult {
 
     // Extract transactions
     const txBlocks = extractBlocks(body, "STMTTRN");
+
+    // In-file dedup: track seen external_ids
+    const seenIds = new Set<string>();
 
     for (const block of txBlocks) {
       const fitid = extractTag(block, "FITID");
@@ -111,11 +155,30 @@ export function parseOFX(content: string): OFXParseResult {
         continue;
       }
 
+      const description = name || memo || "Sem descrição";
+
+      // Generate deterministic external_id via SHA-256
+      const externalId = await generateExternalId(
+        fitid,
+        result.bankId ?? "",
+        result.accountId ?? "",
+        date,
+        trnAmt,
+        description
+      );
+
+      // In-file dedup
+      if (seenIds.has(externalId)) {
+        result.duplicatesSkipped++;
+        continue;
+      }
+      seenIds.add(externalId);
+
       result.transactions.push({
-        externalId: fitid || `ofx_${date}_${Math.abs(amount).toFixed(2)}`,
+        externalId,
         date,
         amount,
-        description: name || memo || "Sem descrição",
+        description,
         type: amount >= 0 ? "income" : "expense",
         memo: memo || undefined,
       });
