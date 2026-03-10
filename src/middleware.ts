@@ -4,6 +4,7 @@ import {
   checkRateLimit,
   extractRouteKey,
   rateLimitHeaders,
+  type RateLimitResult,
 } from "@/lib/auth/rate-limiter";
 
 /**
@@ -52,6 +53,8 @@ export async function middleware(request: NextRequest) {
 
   // ── Rate Limiting (auth routes only) ──
   const routeKey = extractRouteKey(pathname);
+  let rlResultForHeaders: RateLimitResult | null = null;
+
   if (routeKey) {
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -59,6 +62,7 @@ export async function middleware(request: NextRequest) {
       "unknown";
 
     const rlResult = checkRateLimit(routeKey, ip);
+    rlResultForHeaders = rlResult;
 
     if (!rlResult.allowed) {
       const headers = rateLimitHeaders(rlResult);
@@ -161,14 +165,9 @@ export async function middleware(request: NextRequest) {
     `middleware;dur=${elapsedMs};desc="Auth middleware"`
   );
 
-  // Rate limit headers on auth routes (even when allowed)
-  if (routeKey) {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-      request.headers.get("x-real-ip") ??
-      "unknown";
-    const rlResult = checkRateLimit(routeKey, ip);
-    const headers = rateLimitHeaders(rlResult);
+  // Rate limit headers on auth routes (reuse result from first check)
+  if (rlResultForHeaders) {
+    const headers = rateLimitHeaders(rlResultForHeaders);
     Object.entries(headers).forEach(([k, v]) => {
       supabaseResponse.headers.set(k, v);
     });

@@ -95,14 +95,20 @@ function ImportWizard() {
     const ext = file.name.toLowerCase().split(".").pop();
     const reader = new FileReader();
 
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       const content = ev.target?.result as string;
 
       if (ext === "ofx" || ext === "qfx") {
         setFileType("ofx");
-        const result = parseOFX(content);
+        const result = await parseOFX(content);
         setTransactions(result.transactions);
         setParseErrors(result.errors);
+        if (result.duplicatesSkipped > 0) {
+          setParseErrors((prev) => [
+            ...prev,
+            `${result.duplicatesSkipped} transação(ões) duplicada(s) ignorada(s).`,
+          ]);
+        }
         setSelected(new Set(result.transactions.map((_, i) => i)));
         setStep("preview");
       } else {
