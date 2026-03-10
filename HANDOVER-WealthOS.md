@@ -274,7 +274,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~Redirect raiz~~ | CORRIGIDO anteriormente |
 | ~~RLS initplan~~ | FEITO: 77 policies reescritas com `(select auth.uid())`. Migration 018 |
 | ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
-| Leaked password protection | Claudio: habilitar no Dashboard Supabase: Auth > Settings > HaveIBeenPwned |
+| Leaked password protection | Requer Supabase Pro. Claudio acionará quando assinar a plataforma |
 
 ---
 
@@ -356,7 +356,7 @@ Disponíveis como arquivos do projeto:
 
 | Item | Ação |
 |---|---|
-| Leaked password protection | Auth > Settings > habilitar HaveIBeenPwned |
+| Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
 
 **Requer Mac + Xcode:**
 
