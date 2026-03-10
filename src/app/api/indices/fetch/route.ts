@@ -7,7 +7,7 @@
  * parses the response, and upserts into economic_indices table.
  *
  * Called manually from the UI or by a cron job (future).
- * Uses service_role key for writes (bypasses RLS).
+ * Uses admin client for writes (bypasses RLS on public tables).
  */
 
 import { NextResponse } from "next/server";
