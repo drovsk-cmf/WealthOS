@@ -53,8 +53,8 @@ export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
 ];
 
 const PRESET_COLORS = [
-  "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6",
-  "#EC4899", "#06B6D4", "#84CC16", "#F97316", "#6366F1",
+  "#56688F", "#2F7A68", "#A97824", "#A64A45", "#6F6678",
+  "#A7794E", "#7E9487", "#241E29", "#4A7A6E", "#8B6B4A",
 ];
 
 export { PRESET_COLORS };

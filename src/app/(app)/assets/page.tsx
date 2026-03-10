@@ -52,7 +52,7 @@ function ValueHistory({ assetId }: { assetId: string }) {
         <div key={h.id} className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <span className={`h-1.5 w-1.5 rounded-full ${
-              h.change_source === "depreciation" ? "bg-orange-500" : "bg-blue-500"
+              h.change_source === "depreciation" ? "bg-burnished/100" : "bg-info-slate/100"
             }`} />
             <span className="text-muted-foreground">
               {formatDate(h.created_at)}
@@ -146,11 +146,11 @@ export default function AssetsPage() {
 
       {/* PAT-06: Insurance alerts */}
       {expiringInsurance.length > 0 && (
-        <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
-          <p className="text-sm font-semibold text-orange-800">Seguros vencendo nos próximos 30 dias</p>
+        <div className="rounded-lg border border-burnished/20 bg-burnished/10 p-4">
+          <p className="text-sm font-semibold text-burnished">Seguros vencendo nos próximos 30 dias</p>
           <div className="mt-2 space-y-1">
             {expiringInsurance.map((ins) => (
-              <p key={ins.id} className="text-xs text-orange-700">
+              <p key={ins.id} className="text-xs text-burnished">
                 <strong>{ins.name}</strong> - vence em {formatDate(ins.insurance_expiry)}
                 ({ins.days_until_expiry <= 0 ? "VENCIDO" : `${ins.days_until_expiry} dias`})
               </p>
@@ -161,7 +161,7 @@ export default function AssetsPage() {
 
       {/* Depreciation result toast */}
       {depreciationResult && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+        <div className="rounded-lg border border-info-slate/20 bg-info-slate/10 px-4 py-3 text-sm text-info-slate">
           {depreciationResult}
         </div>
       )}
@@ -179,7 +179,7 @@ export default function AssetsPage() {
           </div>
           <div className="rounded-lg border bg-card p-4 text-center">
             <p className="text-xs text-muted-foreground">Depreciação Acumulada</p>
-            <p className="mt-1 text-xl font-bold tabular-nums text-orange-600">
+            <p className="mt-1 text-xl font-bold tabular-nums text-burnished">
               {formatCurrency(summary.total_depreciation)}
             </p>
           </div>
@@ -245,7 +245,7 @@ export default function AssetsPage() {
                     <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                       <span>Aquisição: {formatDate(asset.acquisition_date)}</span>
                       {Number(asset.depreciation_rate) > 0 && (
-                        <span className="text-orange-600">Depr: {Number(asset.depreciation_rate)} %/ano</span>
+                        <span className="text-burnished">Depr: {Number(asset.depreciation_rate)} %/ano</span>
                       )}
                       {asset.insurance_expiry && (
                         <span>Seguro: {formatDate(asset.insurance_expiry)}</span>
@@ -257,7 +257,7 @@ export default function AssetsPage() {
                   <div className="text-right">
                     <p className="text-lg font-bold tabular-nums">{formatCurrency(Number(asset.current_value))}</p>
                     {depPct > 0 && (
-                      <p className="text-xs text-orange-600 tabular-nums">
+                      <p className="text-xs text-burnished tabular-nums">
                         -{depPct.toFixed(1)} % desde aquisição
                       </p>
                     )}
@@ -275,7 +275,7 @@ export default function AssetsPage() {
                   {/* PAT-05: Depreciate */}
                   {Number(asset.depreciation_rate) > 0 && (
                     <button onClick={() => handleDepreciate(asset.id)} disabled={depreciateAsset.isPending}
-                      className="rounded-md px-2 py-1 text-xs text-orange-600 transition-colors hover:bg-orange-50">
+                      className="rounded-md px-2 py-1 text-xs text-burnished transition-colors hover:bg-burnished/10">
                       Depreciar
                     </button>
                   )}

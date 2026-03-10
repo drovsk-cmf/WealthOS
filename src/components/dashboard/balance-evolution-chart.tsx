@@ -162,14 +162,14 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
               <Bar
                 dataKey="receitas"
                 name="Receitas"
-                fill="#10B981"
+                fill="#2F7A68"
                 radius={[3, 3, 0, 0]}
                 barSize={20}
               />
               <Bar
                 dataKey="despesas"
                 name="Despesas"
-                fill="#EF4444"
+                fill="#A64A45"
                 radius={[3, 3, 0, 0]}
                 barSize={20}
               />
@@ -177,9 +177,9 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
                 dataKey="saldo"
                 name="Saldo"
                 type="monotone"
-                stroke="#3B82F6"
+                stroke="#56688F"
                 strokeWidth={2}
-                dot={{ r: 3, fill: "#3B82F6" }}
+                dot={{ r: 3, fill: "#56688F" }}
                 activeDot={{ r: 5 }}
               />
             </ComposedChart>

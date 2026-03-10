@@ -51,7 +51,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         </p>
         <p
           className={`mt-1 text-2xl font-bold tabular-nums ${
-            balance >= 0 ? "text-foreground" : "text-red-500"
+            balance >= 0 ? "text-foreground" : "text-terracotta"
           }`}
         >
           {formatCurrency(balance)}
@@ -66,7 +66,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Receitas do Mês
         </p>
-        <p className="mt-1 text-2xl font-bold tabular-nums text-green-600">
+        <p className="mt-1 text-2xl font-bold tabular-nums text-verdant">
           {formatCurrency(income)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -79,7 +79,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Despesas do Mês
         </p>
-        <p className="mt-1 text-2xl font-bold tabular-nums text-red-500">
+        <p className="mt-1 text-2xl font-bold tabular-nums text-terracotta">
           {formatCurrency(expense)}
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -96,7 +96,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         </p>
         <p
           className={`mt-1 text-2xl font-bold tabular-nums ${
-            netMonth >= 0 ? "text-green-600" : "text-red-500"
+            netMonth >= 0 ? "text-verdant" : "text-terracotta"
           }`}
         >
           {netMonth >= 0 ? "+" : ""}

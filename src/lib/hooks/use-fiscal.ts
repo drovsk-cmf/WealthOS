@@ -85,14 +85,14 @@ export const TAX_TREATMENT_LABELS: Record<string, string> = {
 };
 
 export const TAX_TREATMENT_COLORS: Record<string, string> = {
-  tributavel: "#EF4444",
-  isento: "#10B981",
-  exclusivo_fonte: "#F59E0B",
-  ganho_capital: "#8B5CF6",
-  dedutivel_integral: "#3B82F6",
-  dedutivel_limitado: "#06B6D4",
-  nao_dedutivel: "#6B7280",
-  variavel: "#EC4899",
+  tributavel: "#A64A45",
+  isento: "#2F7A68",
+  exclusivo_fonte: "#A97824",
+  ganho_capital: "#6F6678",
+  dedutivel_integral: "#56688F",
+  dedutivel_limitado: "#56688F",
+  nao_dedutivel: "#7E9487",
+  variavel: "#A64A45",
 };
 
 // ─── Queries ────────────────────────────────────────────────────

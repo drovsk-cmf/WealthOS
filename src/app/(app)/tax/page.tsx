@@ -33,10 +33,10 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 const CURRENT_YEAR = new Date().getFullYear();
 
 function provisionStatus(monthly: number): { label: string; color: string; bg: string } {
-  if (monthly <= 0) return { label: "Sem imposto a provisionar", color: "text-green-700", bg: "bg-green-50" };
+  if (monthly <= 0) return { label: "Sem imposto a provisionar", color: "text-verdant", bg: "bg-verdant/10" };
   if (monthly < 500) return { label: "Baixo", color: "text-yellow-700", bg: "bg-yellow-50" };
-  if (monthly < 2000) return { label: "Moderado", color: "text-orange-700", bg: "bg-orange-50" };
-  return { label: "Alto", color: "text-red-700", bg: "bg-red-50" };
+  if (monthly < 2000) return { label: "Moderado", color: "text-burnished", bg: "bg-burnished/10" };
+  return { label: "Alto", color: "text-terracotta", bg: "bg-terracotta/10" };
 }
 
 export default function FiscalPage() {
@@ -91,7 +91,7 @@ export default function FiscalPage() {
       {/* ═══ PAINEL DE PROVISIONAMENTO (Inteligência principal) ═══ */}
       {prov && !prov.status && (
         <div className={`rounded-lg border-2 p-6 shadow-sm ${
-          prov.monthly_provision > 0 ? "border-orange-300 bg-orange-50/50" : "border-green-300 bg-green-50/50"
+          prov.monthly_provision > 0 ? "border-burnished/30 bg-burnished/10/50" : "border-verdant/30 bg-verdant/10/50"
         }`}>
           <div className="flex items-center justify-between">
             <div>
@@ -125,11 +125,11 @@ export default function FiscalPage() {
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 IRPF Estimado Anual
               </p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-red-600">
+              <p className="mt-1 text-xl font-bold tabular-nums text-terracotta">
                 {formatCurrency(prov.estimated_annual_tax)}
               </p>
               {prov.annual_reduction_applied > 0 && (
-                <p className="text-[11px] text-green-600">
+                <p className="text-[11px] text-verdant">
                   Redução aplicada: {formatCurrency(prov.annual_reduction_applied)}
                 </p>
               )}
@@ -139,7 +139,7 @@ export default function FiscalPage() {
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 IRRF Retido (fontes)
               </p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-green-600">
+              <p className="mt-1 text-xl font-bold tabular-nums text-verdant">
                 {formatCurrency(prov.ytd_irrf_withheld)}
               </p>
               <p className="text-[11px] text-muted-foreground">
@@ -148,13 +148,13 @@ export default function FiscalPage() {
             </div>
 
             <div className={`rounded-lg p-3 ${
-              prov.monthly_provision > 0 ? "bg-red-100/80" : "bg-green-100/80"
+              prov.monthly_provision > 0 ? "bg-terracotta/15/80" : "bg-verdant/15/80"
             }`}>
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 Provisionar por Mês
               </p>
               <p className={`mt-1 text-xl font-bold tabular-nums ${
-                prov.monthly_provision > 0 ? "text-red-700" : "text-green-700"
+                prov.monthly_provision > 0 ? "text-terracotta" : "text-verdant"
               }`}>
                 {prov.monthly_provision > 0
                   ? formatCurrency(prov.monthly_provision)
@@ -171,10 +171,10 @@ export default function FiscalPage() {
           {/* Explanation */}
           {prov.monthly_provision > 0 && (
             <div className="mt-4 rounded-lg bg-white/60 p-4">
-              <p className="text-sm font-semibold text-orange-800">
+              <p className="text-sm font-semibold text-burnished">
                 Por que provisionar?
               </p>
-              <p className="mt-1 text-xs text-orange-700 leading-relaxed">
+              <p className="mt-1 text-xs text-burnished leading-relaxed">
                 Se você tem mais de uma fonte de renda, cada empregador calcula o IR
                 isoladamente. É possível que nenhum retenha imposto, mas a declaração
                 anual consolida toda a renda e cobra a diferença de uma vez. Provisionando{" "}
@@ -206,19 +206,19 @@ export default function FiscalPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Rendimentos Tributáveis</p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-red-500">
+              <p className="mt-1 text-xl font-bold tabular-nums text-terracotta">
                 {formatCurrency(totals.total_tributavel_revenue)}
               </p>
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Rendimentos Isentos</p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-green-600">
+              <p className="mt-1 text-xl font-bold tabular-nums text-verdant">
                 {formatCurrency(totals.total_isento_revenue)}
               </p>
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Despesas Dedutíveis</p>
-              <p className="mt-1 text-xl font-bold tabular-nums text-blue-600">
+              <p className="mt-1 text-xl font-bold tabular-nums text-info-slate">
                 {formatCurrency(totals.total_dedutivel_expense)}
               </p>
             </div>
@@ -229,7 +229,7 @@ export default function FiscalPage() {
         {report?.by_treatment && report.by_treatment.length > 0 ? (
           <div className="space-y-3">
             {report.by_treatment.map((group, idx) => {
-              const color = TAX_TREATMENT_COLORS[group.tax_treatment] || "#6B7280";
+              const color = TAX_TREATMENT_COLORS[group.tax_treatment] || "#7E9487";
               const label = TAX_TREATMENT_LABELS[group.tax_treatment] || group.tax_treatment;
               const isRevenue = group.group_type === "revenue";
               const total = isRevenue ? group.total_revenue : group.total_expense;

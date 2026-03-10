@@ -356,7 +356,7 @@ export default function OnboardingPage() {
             </button>
           </form>
 
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 text-xs text-orange-800">
+          <div className="rounded-lg border border-burnished/20 bg-burnished/10 p-3 text-xs text-burnished">
             <strong>Importante:</strong> salve a chave do autenticador em local seguro.
             Se perder acesso ao app autenticador, você precisará dos códigos de recuperação
             para entrar na sua conta.
@@ -378,8 +378,8 @@ export default function OnboardingPage() {
       {/* ─── Done ────────────────────────────────────── */}
       {step === "done" && (
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-verdant/15">
+            <svg className="h-8 w-8 text-verdant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>

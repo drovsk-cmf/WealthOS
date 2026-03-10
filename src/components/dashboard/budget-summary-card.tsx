@@ -18,9 +18,9 @@ interface Props {
 }
 
 const STATUS_STYLES = {
-  ok: { bar: "bg-green-500", badge: "" },
+  ok: { bar: "bg-verdant", badge: "" },
   warning: { bar: "bg-yellow-500", badge: "text-yellow-700 bg-yellow-100" },
-  exceeded: { bar: "bg-red-500", badge: "text-red-700 bg-red-100" },
+  exceeded: { bar: "bg-terracotta", badge: "text-terracotta bg-terracotta/15" },
 };
 
 export function BudgetSummaryCard({ data, isLoading }: Props) {
@@ -88,10 +88,10 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   pctUsed >= 100
-                    ? "bg-red-500"
+                    ? "bg-terracotta"
                     : pctUsed >= 80
                       ? "bg-yellow-500"
-                      : "bg-green-500"
+                      : "bg-verdant"
                 }`}
                 style={{ width: `${Math.min(pctUsed, 100)}%` }}
               />
@@ -109,7 +109,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
                       <span
                         className="h-2 w-2 rounded-full"
                         style={{
-                          backgroundColor: item.category_color || "#6B7280",
+                          backgroundColor: item.category_color || "#7E9487",
                         }}
                       />
                       <span className="truncate">{item.category_name}</span>

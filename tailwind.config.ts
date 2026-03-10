@@ -50,7 +50,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // WealthOS custom colors
+        // Oniefy custom colors
         income: {
           DEFAULT: "hsl(var(--income))",
           foreground: "hsl(var(--income-foreground))",
@@ -59,6 +59,31 @@ const config = {
           DEFAULT: "hsl(var(--expense))",
           foreground: "hsl(var(--expense-foreground))",
         },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        // Plum Ledger brand
+        plum: "hsl(var(--plum) / <alpha-value>)",
+        graphite: "hsl(var(--graphite) / <alpha-value>)",
+        bone: "hsl(var(--bone) / <alpha-value>)",
+        stone: "hsl(var(--stone) / <alpha-value>)",
+        sage: "hsl(var(--sage) / <alpha-value>)",
+        brass: "hsl(var(--brass) / <alpha-value>)",
+        // Semantic (direct access)
+        verdant: "hsl(var(--verdant) / <alpha-value>)",
+        terracotta: "hsl(var(--terracotta) / <alpha-value>)",
+        burnished: "hsl(var(--burnished) / <alpha-value>)",
+        "info-slate": "hsl(var(--slate) / <alpha-value>)",
+        // Tiers
+        "tier-1": "hsl(var(--tier-1) / <alpha-value>)",
+        "tier-2": "hsl(var(--tier-2) / <alpha-value>)",
+        "tier-3": "hsl(var(--tier-3) / <alpha-value>)",
+        "tier-4": "hsl(var(--tier-4) / <alpha-value>)",
       },
       borderRadius: {
         lg: "var(--radius)",

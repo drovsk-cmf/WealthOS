@@ -53,11 +53,11 @@ export default function DashboardPage() {
 
       {/* Error banner */}
       {hasError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-          <p className="text-sm font-medium text-red-800">
+        <div className="rounded-lg border border-terracotta/20 bg-terracotta/10 p-4">
+          <p className="text-sm font-medium text-terracotta">
             Erro ao carregar dados do dashboard
           </p>
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-terracotta">
             {(summary.error || balanceSheet.error || solvency.error)?.message}
           </p>
           <button
@@ -66,7 +66,7 @@ export default function DashboardPage() {
               balanceSheet.refetch();
               solvency.refetch();
             }}
-            className="mt-2 rounded bg-red-100 px-3 py-1 text-xs font-medium text-red-800 hover:bg-red-200"
+            className="mt-2 rounded bg-terracotta/15 px-3 py-1 text-xs font-medium text-terracotta hover:bg-terracotta/20"
           >
             Tentar novamente
           </button>

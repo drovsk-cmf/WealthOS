@@ -95,7 +95,7 @@ export default function SecuritySettingsPage() {
       {message && (
         <div className={`rounded-md border p-3 text-sm ${
           message.type === "success"
-            ? "border-green-200 bg-green-50 text-green-800"
+            ? "border-verdant/20 bg-verdant/10 text-verdant"
             : "border-destructive/50 bg-destructive/10 text-destructive"
         }`}>
           {message.text}
@@ -112,7 +112,7 @@ export default function SecuritySettingsPage() {
             </p>
           </div>
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            mfaEnrolled ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+            mfaEnrolled ? "bg-verdant/15 text-verdant" : "bg-terracotta/15 text-terracotta"
           }`}>
             {mfaEnrolled ? "Ativo" : "Inativo"}
           </span>

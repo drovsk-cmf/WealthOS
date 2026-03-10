@@ -21,9 +21,9 @@ const TYPE_CONFIG: Record<
   TransactionType,
   { label: string; color: string; bgColor: string }
 > = {
-  expense: { label: "Despesa", color: "text-red-700", bgColor: "border-red-500 bg-red-50" },
-  income: { label: "Receita", color: "text-green-700", bgColor: "border-green-500 bg-green-50" },
-  transfer: { label: "Transferência", color: "text-blue-700", bgColor: "border-blue-500 bg-blue-50" },
+  expense: { label: "Despesa", color: "text-terracotta", bgColor: "border-terracotta bg-terracotta/10" },
+  income: { label: "Receita", color: "text-verdant", bgColor: "border-verdant bg-verdant/10" },
+  transfer: { label: "Transferência", color: "text-info-slate", bgColor: "border-info-slate bg-info-slate/10" },
 };
 
 export function TransactionForm({ open, onClose, defaultType = "expense" }: TransactionFormProps) {
@@ -303,8 +303,8 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
                 onClick={() => setIsPaid(!isPaid)}
                 className={`flex h-10 w-full items-center justify-center gap-2 rounded-md border text-sm font-medium transition-colors ${
                   isPaid
-                    ? "border-green-300 bg-green-50 text-green-700"
-                    : "border-orange-300 bg-orange-50 text-orange-700"
+                    ? "border-verdant/30 bg-verdant/10 text-verdant"
+                    : "border-burnished/30 bg-burnished/10 text-burnished"
                 }`}
               >
                 {isPaid ? (
@@ -357,10 +357,10 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               disabled={loading}
               className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium text-white transition-colors disabled:opacity-50 ${
                 type === "income"
-                  ? "bg-green-600 hover:bg-green-700"
+                  ? "bg-verdant hover:bg-verdant/80"
                   : type === "transfer"
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-red-600 hover:bg-red-700"
+                    ? "bg-info-slate hover:bg-info-slate/80"
+                    : "bg-terracotta hover:bg-terracotta/80"
               }`}
             >
               {loading ? "Salvando..." : `Lançar ${TYPE_CONFIG[type].label.toLowerCase()}`}

@@ -85,7 +85,7 @@ export default function AccountsPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Saldo atual</p>
-            <p className="mt-1 text-xl font-semibold text-green-600">
+            <p className="mt-1 text-xl font-semibold text-verdant">
               {formatCurrency(totals.current)}
             </p>
           </div>
@@ -100,7 +100,7 @@ export default function AccountsPage() {
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Dívida (cartões)</p>
-            <p className="mt-1 text-xl font-semibold text-red-500">
+            <p className="mt-1 text-xl font-semibold text-terracotta">
               {formatCurrency(totals.debt)}
             </p>
           </div>
@@ -138,7 +138,7 @@ export default function AccountsPage() {
               {/* Color dot */}
               <div
                 className="h-10 w-10 flex-shrink-0 rounded-full"
-                style={{ backgroundColor: account.color || "#6366F1" }}
+                style={{ backgroundColor: account.color || "#241E29" }}
               />
 
               {/* Info */}
@@ -155,11 +155,11 @@ export default function AccountsPage() {
                   className={`font-semibold ${
                     account.type === "credit_card"
                       ? account.current_balance > 0
-                        ? "text-red-500"
+                        ? "text-terracotta"
                         : ""
                       : account.current_balance >= 0
-                        ? "text-green-600"
-                        : "text-red-500"
+                        ? "text-verdant"
+                        : "text-terracotta"
                   }`}
                 >
                   {formatCurrency(account.current_balance)}

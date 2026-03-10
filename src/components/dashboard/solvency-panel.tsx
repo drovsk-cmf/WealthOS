@@ -21,17 +21,17 @@ interface Props {
 }
 
 function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
-  if (lcr >= 2) return { label: "Excelente", color: "text-green-700", bg: "bg-green-100" };
-  if (lcr >= 1) return { label: "Saudável", color: "text-green-600", bg: "bg-green-50" };
+  if (lcr >= 2) return { label: "Excelente", color: "text-verdant", bg: "bg-verdant/15" };
+  if (lcr >= 1) return { label: "Saudável", color: "text-verdant", bg: "bg-verdant/10" };
   if (lcr >= 0.5) return { label: "Atenção", color: "text-yellow-700", bg: "bg-yellow-100" };
-  return { label: "Risco", color: "text-red-700", bg: "bg-red-100" };
+  return { label: "Risco", color: "text-terracotta", bg: "bg-terracotta/15" };
 }
 
 function runwayStatus(months: number): { label: string; color: string } {
-  if (months >= 12) return { label: "Sólido", color: "text-green-600" };
-  if (months >= 6) return { label: "OK", color: "text-green-500" };
+  if (months >= 12) return { label: "Sólido", color: "text-verdant" };
+  if (months >= 6) return { label: "OK", color: "text-verdant" };
   if (months >= 3) return { label: "Atenção", color: "text-yellow-600" };
-  return { label: "Urgente", color: "text-red-600" };
+  return { label: "Urgente", color: "text-terracotta" };
 }
 
 function KpiSkeleton() {
@@ -44,10 +44,10 @@ function KpiSkeleton() {
 }
 
 const TIER_COLORS = [
-  { key: "tier1_total", label: "T1 Imediato", color: "#10B981", desc: "Conta corrente, poupança, carteira digital" },
-  { key: "tier2_total", label: "T2 Líquido", color: "#3B82F6", desc: "Investimentos com liquidez (CDB, fundos)" },
-  { key: "tier3_total", label: "T3 Ilíquido", color: "#F59E0B", desc: "Imóveis, veículos, bens" },
-  { key: "tier4_total", label: "T4 Restrito", color: "#8B5CF6", desc: "FGTS, previdência com carência" },
+  { key: "tier1_total", label: "T1 Imediato", color: "#2F7A68", desc: "Conta corrente, poupança, carteira digital" },
+  { key: "tier2_total", label: "T2 Líquido", color: "#56688F", desc: "Investimentos com liquidez (CDB, fundos)" },
+  { key: "tier3_total", label: "T3 Ilíquido", color: "#A97824", desc: "Imóveis, veículos, bens" },
+  { key: "tier4_total", label: "T4 Restrito", color: "#6F6678", desc: "FGTS, previdência com carência" },
 ] as const;
 
 export function SolvencyPanel({ data, isLoading }: Props) {

@@ -4,60 +4,88 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    /* ── Plum Ledger (brand) ── */
+    --plum:         273 15% 14%;
+    --graphite:     218 15% 11%;
+    --bone:         37 48% 94%;
+    --stone:        33 21% 76%;
+    --sage:         145 9% 54%;
+    --brass:        29 36% 48%;
 
-    /* WealthOS custom */
-    --income: 142.1 76.2% 36.3%;
-    --income-foreground: 355.7 100% 97.3%;
-    --expense: 0 84.2% 60.2%;
-    --expense-foreground: 210 40% 98%;
+    /* ── Semantic (v1.1 calibrado) ── */
+    --verdant:      162 44% 33%;
+    --terracotta:   3 40% 46%;
+    --burnished:    35 66% 40%;
+    --slate:        218 24% 45%;
+
+    /* ── Tiers ── */
+    --tier-1:       162 44% 33%;
+    --tier-2:       218 24% 45%;
+    --tier-3:       35 66% 40%;
+    --tier-4:       268 8% 44%;
+
+    /* ── Light Mode ── */
+    --background:   37 48% 94%;
+    --foreground:   218 15% 11%;
+    --card:         30 60% 98%;
+    --card-foreground: 218 15% 11%;
+    --popover:      30 60% 98%;
+    --popover-foreground: 218 15% 11%;
+    --muted:        33 21% 76%;
+    --muted-foreground: 270 4% 55%;
+    --border:       30 19% 83%;
+    --input:        30 19% 83%;
+    --ring:         273 15% 14%;
+    --primary:      273 15% 14%;
+    --primary-foreground: 37 48% 94%;
+    --secondary:    145 9% 54%;
+    --secondary-foreground: 0 0% 100%;
+    --accent:       29 36% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive:  3 40% 46%;
+    --destructive-foreground: 0 0% 100%;
+
+    --income:       162 44% 33%;
+    --income-foreground: 0 0% 100%;
+    --expense:      3 40% 46%;
+    --expense-foreground: 0 0% 100%;
+    --warning:      35 66% 40%;
+    --warning-foreground: 0 0% 100%;
+    --info:         218 24% 45%;
+    --info-foreground: 0 0% 100%;
+
+    --radius:       0.625rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background:   270 14% 8%;
+    --foreground:   37 48% 94%;
+    --card:         270 10% 11%;
+    --card-foreground: 37 48% 94%;
+    --popover:      270 10% 11%;
+    --popover-foreground: 37 48% 94%;
+    --muted:        270 10% 15%;
+    --muted-foreground: 30 10% 42%;
+    --border:       270 11% 19%;
+    --input:        270 11% 19%;
+    --ring:         145 9% 54%;
+    --primary:      145 9% 54%;
+    --primary-foreground: 218 15% 11%;
+    --secondary:    273 15% 14%;
+    --secondary-foreground: 37 48% 94%;
+    --accent:       29 36% 48%;
+    --accent-foreground: 0 0% 100%;
+    --destructive:  3 38% 50%;
+    --destructive-foreground: 37 48% 94%;
 
-    /* WealthOS custom dark */
-    --income: 142.1 70.6% 45.3%;
-    --income-foreground: 144.9 80.4% 10%;
-    --expense: 0 72.2% 50.6%;
-    --expense-foreground: 210 40% 98%;
+    --income:       162 44% 38%;
+    --income-foreground: 0 0% 100%;
+    --expense:      3 38% 50%;
+    --expense-foreground: 0 0% 100%;
+    --warning:      35 66% 45%;
+    --warning-foreground: 0 0% 100%;
+    --info:         218 24% 52%;
+    --info-foreground: 0 0% 100%;
   }
 }
 

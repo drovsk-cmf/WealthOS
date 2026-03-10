@@ -18,11 +18,11 @@ interface Props {
 }
 
 const FALLBACK_COLORS = [
-  "#3B82F6",
-  "#10B981",
-  "#F59E0B",
-  "#EF4444",
-  "#8B5CF6",
+  "#56688F",
+  "#2F7A68",
+  "#A97824",
+  "#A64A45",
+  "#6F6678",
 ];
 
 export function TopCategoriesCard({ data, isLoading }: Props) {

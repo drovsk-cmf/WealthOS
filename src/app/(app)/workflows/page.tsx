@@ -55,7 +55,7 @@ function TaskAction({
       return (
         <div className="flex gap-1">
           <button onClick={() => setShowInput(true)}
-            className="rounded-md bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-200">
+            className="rounded-md bg-info-slate/15 px-2.5 py-1 text-xs font-medium text-info-slate hover:bg-info-slate/20">
             Atualizar saldo
           </button>
           <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
@@ -80,7 +80,7 @@ function TaskAction({
             }
           }}
           disabled={isPending}
-          className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white hover:bg-green-700">
+          className="rounded-md bg-verdant px-2 py-1 text-xs font-medium text-white hover:bg-verdant/80">
           OK
         </button>
         <button onClick={() => setShowInput(false)}
@@ -98,7 +98,7 @@ function TaskAction({
         <button
           onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente" })}
           disabled={isPending}
-          className="rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 hover:bg-green-200">
+          className="rounded-md bg-verdant/15 px-2.5 py-1 text-xs font-medium text-verdant hover:bg-verdant/20">
           Concluir
         </button>
         <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
@@ -115,7 +115,7 @@ function TaskAction({
       <button
         onClick={() => onComplete(task.id, "completed")}
         disabled={isPending}
-        className="rounded-md bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700 hover:bg-green-200">
+        className="rounded-md bg-verdant/15 px-2.5 py-1 text-xs font-medium text-verdant hover:bg-verdant/20">
         Concluir
       </button>
       <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
@@ -229,7 +229,7 @@ export default function WorkflowsPage() {
 
       {/* Generation result toast */}
       {generateTasks.data && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        <div className="rounded-lg border border-verdant/20 bg-verdant/10 px-4 py-3 text-sm text-verdant">
           {generateTasks.data.tasks_created} tarefa(s) criada(s)
           {generateTasks.data.workflows_skipped > 0 &&
             `, ${generateTasks.data.workflows_skipped} workflow(s) já tinham tarefas`}
@@ -425,7 +425,7 @@ export default function WorkflowsPage() {
               </div>
 
               {wfError && (
-                <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{wfError}</p>
+                <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{wfError}</p>
               )}
 
               <div className="flex justify-end gap-3 pt-2">

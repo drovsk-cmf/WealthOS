@@ -12,9 +12,9 @@ import type { Database } from "@/types/database";
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 
 const TYPE_BADGES: Record<TransactionType, { label: string; class: string }> = {
-  income: { label: "Receita", class: "bg-green-100 text-green-700" },
-  expense: { label: "Despesa", class: "bg-red-100 text-red-700" },
-  transfer: { label: "Transf.", class: "bg-blue-100 text-blue-700" },
+  income: { label: "Receita", class: "bg-verdant/15 text-verdant" },
+  expense: { label: "Despesa", class: "bg-terracotta/15 text-terracotta" },
+  transfer: { label: "Transf.", class: "bg-info-slate/15 text-info-slate" },
 };
 
 export default function TransactionsPage() {
@@ -46,9 +46,9 @@ export default function TransactionsPage() {
   }
 
   function getAmountDisplay(tx: TransactionWithRelations) {
-    if (tx.type === "income") return { text: `+ ${formatCurrency(tx.amount)}`, class: "text-green-600" };
-    if (tx.type === "expense") return { text: `- ${formatCurrency(tx.amount)}`, class: "text-red-500" };
-    return { text: formatCurrency(tx.amount), class: "text-blue-600" };
+    if (tx.type === "income") return { text: `+ ${formatCurrency(tx.amount)}`, class: "text-verdant" };
+    if (tx.type === "expense") return { text: `- ${formatCurrency(tx.amount)}`, class: "text-terracotta" };
+    return { text: formatCurrency(tx.amount), class: "text-info-slate" };
   }
 
   // ─── Loading ──────────────────────────────────────────────
@@ -205,7 +205,7 @@ export default function TransactionsPage() {
                   className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
                   style={{
                     backgroundColor:
-                      tx.category_color || tx.account_color || "#6B7280",
+                      tx.category_color || tx.account_color || "#7E9487",
                   }}
                 >
                   {(tx.category_icon || tx.type.charAt(0)).slice(0, 2).toUpperCase()}
@@ -230,7 +230,7 @@ export default function TransactionsPage() {
                     </span>
                     {tx.category_name && <span>{tx.category_name}</span>}
                     {!tx.is_paid && (
-                      <span className="rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-medium text-orange-700">
+                      <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished">
                         Pendente
                       </span>
                     )}

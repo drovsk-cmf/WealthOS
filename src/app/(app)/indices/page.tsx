@@ -80,7 +80,7 @@ export default function IndicesPage() {
     }));
 
   const selectedLabel = INDEX_TYPE_LABELS[selectedIndex] || selectedIndex;
-  const selectedColor = INDEX_TYPE_COLORS[selectedIndex] || "#3B82F6";
+  const selectedColor = INDEX_TYPE_COLORS[selectedIndex] || "#56688F";
   const _selectedUnit = INDEX_UNIT[selectedIndex] || "%";
 
   if (loadingLatest) {
@@ -117,10 +117,10 @@ export default function IndicesPage() {
 
       {/* Fetch result */}
       {fetchIndices.data && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        <div className="rounded-lg border border-verdant/20 bg-verdant/10 px-4 py-3 text-sm text-verdant">
           {fetchIndices.data.total_inserted} registro(s) atualizado(s)
           {fetchIndices.data.results.some((r) => r.errors.length > 0) && (
-            <span className="ml-2 text-orange-700">
+            <span className="ml-2 text-burnished">
               (Erros: {fetchIndices.data.results.filter((r) => r.errors.length > 0).map((r) => `${r.index_type}: ${r.errors.join(", ")}`).join("; ")})
             </span>
           )}
@@ -130,7 +130,7 @@ export default function IndicesPage() {
       {/* Latest values cards */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {mainIndices.map((idx) => {
-          const color = INDEX_TYPE_COLORS[idx.index_type] || "#6B7280";
+          const color = INDEX_TYPE_COLORS[idx.index_type] || "#7E9487";
           const unit = INDEX_UNIT[idx.index_type] || "%";
           const isSelected = selectedIndex === idx.index_type;
 

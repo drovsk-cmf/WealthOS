@@ -234,7 +234,7 @@ function ImportWizard() {
             className="mt-4 text-sm file:mr-3 file:rounded-md file:border file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground disabled:opacity-50"
           />
           {!accountId && (
-            <p className="mt-2 text-xs text-red-500">Selecione uma conta primeiro.</p>
+            <p className="mt-2 text-xs text-terracotta">Selecione uma conta primeiro.</p>
           )}
         </div>
       </div>
@@ -285,7 +285,7 @@ function ImportWizard() {
                 <tr className="border-b">
                   {csvHeaders.map((h, i) => (
                     <th key={i} className={`px-2 py-1 text-left font-medium ${
-                      i === mapping?.date ? "text-blue-600" : i === mapping?.amount ? "text-green-600" : i === mapping?.description ? "text-orange-600" : ""
+                      i === mapping?.date ? "text-info-slate" : i === mapping?.amount ? "text-verdant" : i === mapping?.description ? "text-burnished" : ""
                     }`}>{h || `Col ${i + 1}`}</th>
                   ))}
                 </tr>
@@ -327,13 +327,13 @@ function ImportWizard() {
         </div>
 
         {parseErrors.length > 0 && (
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
-            <p className="text-xs font-semibold text-orange-700">{parseErrors.length} aviso(s):</p>
+          <div className="rounded-lg border border-burnished/20 bg-burnished/10 p-3">
+            <p className="text-xs font-semibold text-burnished">{parseErrors.length} aviso(s):</p>
             {parseErrors.slice(0, 5).map((e, i) => (
-              <p key={i} className="text-xs text-orange-600">{e}</p>
+              <p key={i} className="text-xs text-burnished">{e}</p>
             ))}
             {parseErrors.length > 5 && (
-              <p className="text-xs text-orange-600">...e mais {parseErrors.length - 5}</p>
+              <p className="text-xs text-burnished">...e mais {parseErrors.length - 5}</p>
             )}
           </div>
         )}
@@ -358,7 +358,7 @@ function ImportWizard() {
               </span>
               <span className="min-w-0 flex-1 truncate">{tx.description}</span>
               <span className={`w-28 flex-shrink-0 text-right tabular-nums font-medium ${
-                tx.type === "income" ? "text-green-600" : "text-red-500"
+                tx.type === "income" ? "text-verdant" : "text-terracotta"
               }`}>
                 {tx.type === "income" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
               </span>
@@ -369,11 +369,11 @@ function ImportWizard() {
         {/* Summary */}
         <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-3 text-sm">
           <div>
-            <span className="text-green-600 tabular-nums">
+            <span className="text-verdant tabular-nums">
               +{formatCurrency(transactions.filter((_, i) => selected.has(i) && transactions[i].type === "income").reduce((s, tx) => s + Math.abs(tx.amount), 0))}
             </span>
             {" / "}
-            <span className="text-red-500 tabular-nums">
+            <span className="text-terracotta tabular-nums">
               -{formatCurrency(transactions.filter((_, i) => selected.has(i) && transactions[i].type === "expense").reduce((s, tx) => s + Math.abs(tx.amount), 0))}
             </span>
           </div>
@@ -397,11 +397,11 @@ function ImportWizard() {
       <h2 className="mt-3 text-xl font-bold">Importação concluída</h2>
       {importBatch.data && (
         <div className="mt-4 space-y-1 text-sm">
-          <p className="text-green-600 font-medium">{importBatch.data.imported} transações importadas</p>
+          <p className="text-verdant font-medium">{importBatch.data.imported} transações importadas</p>
           {importBatch.data.skipped > 0 && (
-            <p className="text-orange-600">{importBatch.data.skipped} duplicadas (ignoradas)</p>
+            <p className="text-burnished">{importBatch.data.skipped} duplicadas (ignoradas)</p>
           )}
-          <p className="text-blue-600">{importBatch.data.categorized} auto-categorizadas</p>
+          <p className="text-info-slate">{importBatch.data.categorized} auto-categorizadas</p>
         </div>
       )}
       <button onClick={() => { setStep("upload"); setTransactions([]); }}

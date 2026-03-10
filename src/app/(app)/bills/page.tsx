@@ -48,10 +48,10 @@ function daysUntil(dateStr: string): number {
 }
 
 function urgencyBadge(days: number): { text: string; classes: string } {
-  if (days < 0) return { text: `${Math.abs(days)}d atrasado`, classes: "bg-red-100 text-red-700" };
-  if (days === 0) return { text: "Hoje", classes: "bg-red-100 text-red-700" };
-  if (days === 1) return { text: "Amanhã", classes: "bg-orange-100 text-orange-700" };
-  if (days <= 3) return { text: `${days}d`, classes: "bg-orange-100 text-orange-700" };
+  if (days < 0) return { text: `${Math.abs(days)}d atrasado`, classes: "bg-terracotta/15 text-terracotta" };
+  if (days === 0) return { text: "Hoje", classes: "bg-terracotta/15 text-terracotta" };
+  if (days === 1) return { text: "Amanhã", classes: "bg-burnished/15 text-burnished" };
+  if (days <= 3) return { text: `${days}d`, classes: "bg-burnished/15 text-burnished" };
   if (days <= 7) return { text: `${days}d`, classes: "bg-yellow-100 text-yellow-700" };
   return { text: `${days}d`, classes: "bg-muted text-muted-foreground" };
 }
@@ -152,7 +152,7 @@ export default function BillsPage() {
           {(pendingBills?.length ?? 0) > 0 && (
             <div className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
               <span className="text-sm text-muted-foreground">Total pendente</span>
-              <span className="text-lg font-bold tabular-nums text-red-500">
+              <span className="text-lg font-bold tabular-nums text-terracotta">
                 {formatCurrency(totalPending)}
               </span>
             </div>
@@ -175,7 +175,7 @@ export default function BillsPage() {
                   <div key={bill.id} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:bg-accent/30">
                     {/* Color indicator */}
                     <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
-                      style={{ backgroundColor: bill.category_color || bill.account_color || "#6B7280" }}>
+                      style={{ backgroundColor: bill.category_color || bill.account_color || "#7E9487" }}>
                       {(bill.category_icon || bill.type.charAt(0)).slice(0, 2).toUpperCase()}
                     </div>
 
@@ -193,7 +193,7 @@ export default function BillsPage() {
                     </div>
 
                     {/* Amount */}
-                    <span className="flex-shrink-0 font-semibold tabular-nums text-red-500">
+                    <span className="flex-shrink-0 font-semibold tabular-nums text-terracotta">
                       {formatCurrency(bill.amount)}
                     </span>
 
@@ -201,7 +201,7 @@ export default function BillsPage() {
                     {confirmPay === bill.id ? (
                       <div className="flex items-center gap-1">
                         <button onClick={() => handlePay(bill.id)} disabled={payBill.isPending}
-                          className="rounded-md bg-green-600 px-2 py-1 text-xs font-medium text-white">
+                          className="rounded-md bg-verdant px-2 py-1 text-xs font-medium text-white">
                           Confirmar
                         </button>
                         <button onClick={() => setConfirmPay(null)}
@@ -211,7 +211,7 @@ export default function BillsPage() {
                       </div>
                     ) : (
                       <button onClick={() => setConfirmPay(bill.id)}
-                        className="rounded-md bg-green-100 px-3 py-1.5 text-xs font-medium text-green-700 transition-colors hover:bg-green-200"
+                        className="rounded-md bg-verdant/15 px-3 py-1.5 text-xs font-medium text-verdant transition-colors hover:bg-verdant/20"
                         title="Marcar como paga">
                         Pagar
                       </button>
@@ -255,7 +255,7 @@ export default function BillsPage() {
                           <span>Próx: {formatDate(rec.next_due_date)}</span>
                           {rec.end_date && <span>Até: {formatDate(rec.end_date)}</span>}
                           {rec.adjustment_index && rec.adjustment_index !== "none" && (
-                            <span className="rounded bg-blue-100 px-1.5 py-0.5 text-blue-700">
+                            <span className="rounded bg-info-slate/15 px-1.5 py-0.5 text-info-slate">
                               {rec.adjustment_index === "manual"
                                 ? `+${Number(rec.adjustment_rate)}%`
                                 : rec.adjustment_index.toUpperCase()}
@@ -266,7 +266,7 @@ export default function BillsPage() {
 
                       <div className="flex items-center gap-2">
                         <span className={`text-lg font-bold tabular-nums ${
-                          (tmpl.type as string) === "expense" ? "text-red-500" : "text-green-600"
+                          (tmpl.type as string) === "expense" ? "text-terracotta" : "text-verdant"
                         }`}>
                           {formatCurrency(Number(tmpl.amount))}
                         </span>

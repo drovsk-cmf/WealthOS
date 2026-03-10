@@ -39,15 +39,15 @@ interface EditData {
 }
 
 const STATUS_COLORS = {
-  ok: "bg-green-500",
+  ok: "bg-verdant",
   warning: "bg-yellow-500",
-  exceeded: "bg-red-500",
+  exceeded: "bg-terracotta",
 };
 
 const STATUS_BADGES = {
   ok: "",
   warning: "bg-yellow-100 text-yellow-700",
-  exceeded: "bg-red-100 text-red-700",
+  exceeded: "bg-terracotta/15 text-terracotta",
 };
 
 export default function BudgetsPage() {
@@ -204,10 +204,10 @@ export default function BudgetsPage() {
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               (bva.pct_used ?? 0) >= 100
-                ? "bg-red-500"
+                ? "bg-terracotta"
                 : (bva.pct_used ?? 0) >= 80
                   ? "bg-yellow-500"
-                  : "bg-green-500"
+                  : "bg-verdant"
             }`}
             style={{ width: `${Math.min(bva.pct_used ?? 0, 100)}%` }}
           />
@@ -280,7 +280,7 @@ export default function BudgetsPage() {
                     <span
                       className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-sm font-bold text-white"
                       style={{
-                        backgroundColor: b.categories.color || "#6B7280",
+                        backgroundColor: b.categories.color || "#7E9487",
                       }}
                     >
                       {(b.categories.icon || b.categories.name.charAt(0))
@@ -387,7 +387,7 @@ export default function BudgetsPage() {
               <p
                 className={`text-lg font-bold tabular-nums ${
                   bva.total_actual > bva.total_planned
-                    ? "text-red-500"
+                    ? "text-terracotta"
                     : "text-foreground"
                 }`}
               >
@@ -399,8 +399,8 @@ export default function BudgetsPage() {
               <p
                 className={`text-lg font-bold tabular-nums ${
                   bva.total_remaining < 0
-                    ? "text-red-500"
-                    : "text-green-600"
+                    ? "text-terracotta"
+                    : "text-verdant"
                 }`}
               >
                 {formatCurrency(bva.total_remaining)}
@@ -426,7 +426,7 @@ export default function BudgetsPage() {
             </p>
 
             {copyError && (
-              <p className="mt-3 rounded bg-red-50 px-3 py-2 text-sm text-red-700">
+              <p className="mt-3 rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">
                 {copyError}
               </p>
             )}

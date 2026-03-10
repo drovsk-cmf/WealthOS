@@ -108,7 +108,7 @@ export default function CategoriesPage() {
               {/* Color dot */}
               <div
                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-white text-xs font-bold"
-                style={{ backgroundColor: cat.color || "#6B7280" }}
+                style={{ backgroundColor: cat.color || "#7E9487" }}
               >
                 {(cat.icon || "?").slice(0, 2).toUpperCase()}
               </div>

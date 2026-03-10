@@ -64,11 +64,11 @@ export const ASSET_CATEGORY_OPTIONS: { value: AssetCategory; label: string; desc
 ];
 
 const ASSET_CATEGORY_COLORS: Record<AssetCategory, string> = {
-  real_estate: "#3B82F6",
-  vehicle: "#10B981",
-  electronics: "#F59E0B",
-  other: "#8B5CF6",
-  restricted: "#6B7280",
+  real_estate: "#56688F",
+  vehicle: "#2F7A68",
+  electronics: "#A97824",
+  other: "#6F6678",
+  restricted: "#7E9487",
 };
 
 export { ASSET_CATEGORY_COLORS };

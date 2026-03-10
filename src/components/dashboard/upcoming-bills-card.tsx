@@ -68,8 +68,8 @@ function daysUntil(dateStr: string): number {
 }
 
 function urgencyColor(days: number): string {
-  if (days <= 0) return "text-red-600 bg-red-50";
-  if (days <= 3) return "text-orange-600 bg-orange-50";
+  if (days <= 0) return "text-terracotta bg-terracotta/10";
+  if (days <= 3) return "text-burnished bg-burnished/10";
   if (days <= 7) return "text-yellow-600 bg-yellow-50";
   return "text-muted-foreground bg-muted";
 }
@@ -138,7 +138,7 @@ export function UpcomingBillsCard() {
                     {formatDate(bill.date)} · {bill.account_name}
                   </p>
                 </div>
-                <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-red-500">
+                <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-terracotta">
                   {formatCurrency(bill.amount)}
                 </span>
               </div>

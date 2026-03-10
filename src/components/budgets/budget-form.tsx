@@ -207,7 +207,7 @@ export function BudgetForm({ open, onClose, month, editData }: BudgetFormProps) 
 
           {/* Error */}
           {error && (
-            <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">
               {error}
             </p>
           )}

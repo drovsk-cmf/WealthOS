@@ -124,8 +124,8 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
                     className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                       type === t
                         ? t === "income"
-                          ? "border-green-500 bg-green-50 text-green-700"
-                          : "border-red-500 bg-red-50 text-red-700"
+                          ? "border-verdant bg-verdant/10 text-verdant"
+                          : "border-terracotta bg-terracotta/10 text-terracotta"
                         : "border-input hover:bg-accent"
                     }`}
                   >

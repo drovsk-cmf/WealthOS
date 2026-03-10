@@ -190,10 +190,10 @@ export default function FamilyPage() {
                     <span>Nasc: {new Date(m.birth_date + "T12:00:00").toLocaleDateString("pt-BR")}</span>
                   )}
                   {m.is_tax_dependent && (
-                    <span className="text-blue-600 font-medium">Dependente IRPF</span>
+                    <span className="text-info-slate font-medium">Dependente IRPF</span>
                   )}
                   {(m.relationship === "self" || m.relationship === "spouse") && (
-                    <span className="text-green-600 font-medium">Centro de lucro</span>
+                    <span className="text-verdant font-medium">Centro de lucro</span>
                   )}
                 </div>
               </div>
@@ -296,7 +296,7 @@ export default function FamilyPage() {
                   ))}
                 </select>
                 {(relationship === "self" || relationship === "spouse") && (
-                  <p className="text-xs text-green-600">
+                  <p className="text-xs text-verdant">
                     Será criado como centro de lucro (gera receita).
                   </p>
                 )}

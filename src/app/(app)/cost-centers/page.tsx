@@ -32,8 +32,8 @@ type CostCenter = Database["public"]["Tables"]["cost_centers"]["Row"];
 type CenterType = Database["public"]["Enums"]["center_type"];
 
 const PRESET_COLORS = [
-  "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6",
-  "#EC4899", "#06B6D4", "#84CC16", "#F97316", "#6366F1",
+  "#56688F", "#2F7A68", "#A97824", "#A64A45", "#6F6678",
+  "#A7794E", "#7E9487", "#241E29", "#4A7A6E", "#8B6B4A",
 ];
 
 // ─── P&L Panel Component (CEN-04) ──────────────────────────────
@@ -100,17 +100,17 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
 
       {/* KPI row */}
       <div className="grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-lg bg-green-50 px-3 py-2">
-          <p className="text-[10px] font-medium text-green-700">Receitas</p>
-          <p className="text-sm font-bold tabular-nums text-green-600">{formatCurrency(income)}</p>
+        <div className="rounded-lg bg-verdant/10 px-3 py-2">
+          <p className="text-[10px] font-medium text-verdant">Receitas</p>
+          <p className="text-sm font-bold tabular-nums text-verdant">{formatCurrency(income)}</p>
         </div>
-        <div className="rounded-lg bg-red-50 px-3 py-2">
-          <p className="text-[10px] font-medium text-red-700">Despesas</p>
-          <p className="text-sm font-bold tabular-nums text-red-500">{formatCurrency(expense)}</p>
+        <div className="rounded-lg bg-terracotta/10 px-3 py-2">
+          <p className="text-[10px] font-medium text-terracotta">Despesas</p>
+          <p className="text-sm font-bold tabular-nums text-terracotta">{formatCurrency(expense)}</p>
         </div>
-        <div className={`rounded-lg px-3 py-2 ${net >= 0 ? "bg-blue-50" : "bg-orange-50"}`}>
-          <p className={`text-[10px] font-medium ${net >= 0 ? "text-blue-700" : "text-orange-700"}`}>Resultado</p>
-          <p className={`text-sm font-bold tabular-nums ${net >= 0 ? "text-blue-600" : "text-orange-600"}`}>
+        <div className={`rounded-lg px-3 py-2 ${net >= 0 ? "bg-info-slate/10" : "bg-burnished/10"}`}>
+          <p className={`text-[10px] font-medium ${net >= 0 ? "text-info-slate" : "text-burnished"}`}>Resultado</p>
+          <p className={`text-sm font-bold tabular-nums ${net >= 0 ? "text-info-slate" : "text-burnished"}`}>
             {net >= 0 ? "+" : ""}{formatCurrency(net)}
           </p>
         </div>
@@ -127,9 +127,9 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
                 <div key={m.month} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{formatDate(m.month, "MMM yyyy")}</span>
                   <div className="flex items-center gap-3 tabular-nums">
-                    <span className="text-green-600">+{formatCurrency(Number(m.income))}</span>
-                    <span className="text-red-500">-{formatCurrency(Number(m.expense))}</span>
-                    <span className={`font-medium ${mNet >= 0 ? "text-blue-600" : "text-orange-600"}`}>
+                    <span className="text-verdant">+{formatCurrency(Number(m.income))}</span>
+                    <span className="text-terracotta">-{formatCurrency(Number(m.expense))}</span>
+                    <span className={`font-medium ${mNet >= 0 ? "text-info-slate" : "text-burnished"}`}>
                       = {formatCurrency(mNet)}
                     </span>
                   </div>
@@ -279,7 +279,7 @@ export default function CostCentersPage() {
                   onClick={() => setExpandedCenter(isExpanded ? null : center.id)}
                 >
                   <div className="h-9 w-9 flex-shrink-0 rounded-lg"
-                    style={{ backgroundColor: center.color || "#6366F1" }} />
+                    style={{ backgroundColor: center.color || "#241E29" }} />
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

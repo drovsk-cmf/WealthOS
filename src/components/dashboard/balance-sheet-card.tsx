@@ -45,8 +45,8 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
             netWorth >= 0
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-verdant/15 text-verdant"
+              : "bg-terracotta/15 text-terracotta"
           }`}
         >
           PL {netWorth >= 0 ? "+" : ""}
@@ -55,9 +55,9 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
       </div>
 
       {/* Proportion bar */}
-      <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-red-200">
+      <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-terracotta/20">
         <div
-          className="h-full rounded-full bg-green-500 transition-all duration-500"
+          className="h-full rounded-full bg-verdant transition-all duration-500"
           style={{ width: `${Math.max(assetPct, 2)}%` }}
         />
       </div>
@@ -70,7 +70,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
       <div className="mt-4 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
+            <span className="h-2 w-2 rounded-full bg-verdant" />
             <span className="text-sm text-muted-foreground">
               Ativos líquidos
             </span>
@@ -92,10 +92,10 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-red-500" />
+            <span className="h-2 w-2 rounded-full bg-terracotta" />
             <span className="text-sm text-muted-foreground">Passivos</span>
           </div>
-          <span className="text-sm font-medium tabular-nums text-red-500">
+          <span className="text-sm font-medium tabular-nums text-terracotta">
             {formatCurrency(liabilities)}
           </span>
         </div>
@@ -107,7 +107,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
           <span className="text-sm font-semibold">Patrimônio Líquido</span>
           <span
             className={`text-lg font-bold tabular-nums ${
-              netWorth >= 0 ? "text-green-600" : "text-red-500"
+              netWorth >= 0 ? "text-verdant" : "text-terracotta"
             }`}
           >
             {formatCurrency(netWorth)}

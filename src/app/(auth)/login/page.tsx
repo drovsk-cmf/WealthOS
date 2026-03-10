@@ -112,7 +112,7 @@ function LoginContent() {
 
       {/* Session timeout / callback error messages */}
       {reason && TIMEOUT_MESSAGES[reason] && (
-        <div className="rounded-md border border-orange-300 bg-orange-50 p-3 text-sm text-orange-800">
+        <div className="rounded-md border border-burnished/30 bg-burnished/10 p-3 text-sm text-burnished">
           {TIMEOUT_MESSAGES[reason]}
         </div>
       )}

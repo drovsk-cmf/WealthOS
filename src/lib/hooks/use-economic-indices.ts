@@ -55,14 +55,14 @@ export const INDEX_TYPE_LABELS: Record<string, string> = {
 };
 
 export const INDEX_TYPE_COLORS: Record<string, string> = {
-  ipca: "#EF4444",
-  inpc: "#F97316",
-  igpm: "#F59E0B",
-  selic: "#3B82F6",
-  cdi: "#06B6D4",
-  tr: "#8B5CF6",
-  usd_brl: "#10B981",
-  minimum_wage: "#EC4899",
+  ipca: "#A64A45",
+  inpc: "#A7794E",
+  igpm: "#A97824",
+  selic: "#56688F",
+  cdi: "#56688F",
+  tr: "#6F6678",
+  usd_brl: "#2F7A68",
+  minimum_wage: "#A64A45",
 };
 
 export const INDEX_UNIT: Record<string, string> = {

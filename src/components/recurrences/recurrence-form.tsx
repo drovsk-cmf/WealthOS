@@ -166,8 +166,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
                   type === t
                     ? t === "expense"
-                      ? "bg-red-100 text-red-700"
-                      : "bg-green-100 text-green-700"
+                      ? "bg-terracotta/15 text-terracotta"
+                      : "bg-verdant/15 text-verdant"
                     : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -281,7 +281,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           </div>
 
           {error && (
-            <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+            <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>
           )}
 
           <div className="flex justify-end gap-3 pt-2">

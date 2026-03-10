@@ -198,7 +198,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
             </div>
           </div>
 
-          {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+          {error && <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} disabled={isPending}
