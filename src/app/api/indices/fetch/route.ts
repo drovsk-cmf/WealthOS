@@ -12,6 +12,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import type { Database } from "@/types/database";
 
 interface BcbDataPoint {
   data: string; // DD/MM/YYYY
@@ -127,7 +128,7 @@ export async function POST() {
             .from("economic_indices")
             .upsert(
               {
-                index_type: source.index_type,
+                index_type: source.index_type as Database["public"]["Enums"]["index_type"],
                 reference_date: refDate,
                 value,
                 source_primary: `BCB SGS ${source.series_code}`,
@@ -141,7 +142,7 @@ export async function POST() {
             const { error: insertErr } = await supabase
               .from("economic_indices")
               .insert({
-                index_type: source.index_type,
+                index_type: source.index_type as Database["public"]["Enums"]["index_type"],
                 reference_date: refDate,
                 value,
                 source_primary: `BCB SGS ${source.series_code}`,

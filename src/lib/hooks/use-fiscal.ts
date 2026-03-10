@@ -151,7 +151,7 @@ export function useTaxParameters() {
         .order("parameter_type")
         .order("valid_from", { ascending: false });
       if (error) throw error;
-      return data as TaxParameter[];
+      return data as unknown as TaxParameter[];
     },
   });
 }

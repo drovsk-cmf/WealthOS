@@ -50,13 +50,13 @@ function cleanupExpiredEntries(): void {
   lastCleanup = now;
 
   const maxWindow = Math.max(...Object.values(ROUTE_CONFIGS).map((c) => c.windowMs));
-  for (const [key, entry] of store) {
+  store.forEach((entry, key) => {
     // Remove entries cujo timestamp mais recente é mais velho que a maior janela
     const latest = entry.timestamps[entry.timestamps.length - 1] ?? 0;
     if (now - latest > maxWindow) {
       store.delete(key);
     }
-  }
+  });
 }
 
 export interface RateLimitResult {

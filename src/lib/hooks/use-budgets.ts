@@ -103,7 +103,7 @@ export function useBudgets(month?: string) {
         .order("planned_amount", { ascending: false });
 
       if (error) throw error;
-      return data as (Budget & {
+      return data as unknown as (Budget & {
         categories: {
           name: string;
           icon: string | null;
@@ -150,7 +150,7 @@ export function useBudgetMonths() {
       if (error) throw error;
 
       // Deduplicate months
-      const uniqueMonths = [...new Set(data.map((b) => b.month))];
+      const uniqueMonths = Array.from(new Set(data.map((b) => b.month)));
       return uniqueMonths;
     },
   });

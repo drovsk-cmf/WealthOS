@@ -35,7 +35,7 @@ interface CapacitorApp {
 async function getCapacitorApp(): Promise<CapacitorApp | null> {
   try {
     const mod = await import("@capacitor/app");
-    return mod.App ?? null;
+    return (mod.App as unknown as CapacitorApp) ?? null;
   } catch {
     // Expected on web / when Capacitor plugin not installed
     return null;

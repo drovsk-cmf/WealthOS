@@ -168,7 +168,7 @@ export default function WorkflowsPage() {
   }
 
   async function handleGenerateTasks() {
-    await generateTasks.mutateAsync();
+    await generateTasks.mutateAsync({});
   }
 
   async function handleCreateWorkflow(e: React.FormEvent) {
