@@ -81,7 +81,7 @@ export default function IndicesPage() {
 
   const selectedLabel = INDEX_TYPE_LABELS[selectedIndex] || selectedIndex;
   const selectedColor = INDEX_TYPE_COLORS[selectedIndex] || "#3B82F6";
-  const selectedUnit = INDEX_UNIT[selectedIndex] || "%";
+  const _selectedUnit = INDEX_UNIT[selectedIndex] || "%";
 
   if (loadingLatest) {
     return (
@@ -178,7 +178,7 @@ export default function IndicesPage() {
           <p className="text-3xl">📊</p>
           <h2 className="mt-2 text-lg font-semibold">Sem dados de índices</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Clique em "Atualizar índices" para buscar os dados mais recentes do BCB.
+            Clique em &ldquo;Atualizar índices&rdquo; para buscar os dados mais recentes do BCB.
           </p>
         </div>
       )}

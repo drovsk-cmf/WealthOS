@@ -14,7 +14,6 @@ import {
   useUpdateAsset,
   ASSET_CATEGORY_OPTIONS,
 } from "@/lib/hooks/use-assets";
-import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];

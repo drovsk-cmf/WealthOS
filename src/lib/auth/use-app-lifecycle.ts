@@ -83,6 +83,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           clearEncryptionKey();
           dekWasPurgedRef.current = true;
           options?.onDEKPurged?.();
+          // eslint-disable-next-line no-console
           console.info("[WealthOS] DEK purged from memory (app backgrounded)");
         }
         return;
@@ -108,6 +109,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           const supabase = createClient();
           await loadEncryptionKey(supabase);
           options?.onDEKRestored?.();
+          // eslint-disable-next-line no-console
           console.info("[WealthOS] DEK restored after biometric unlock");
         } catch (err) {
           console.error("[WealthOS] Failed to restore DEK on foreground:", err);

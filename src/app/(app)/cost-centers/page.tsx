@@ -349,7 +349,7 @@ export default function CostCentersPage() {
         <h3 className="text-sm font-semibold">Rateio entre centros</h3>
         <p className="mt-1 text-xs text-muted-foreground">
           Para dividir uma transação entre centros, abra a transação na lista de
-          Transações e use a opção "Dividir entre centros". Os percentuais devem somar 100 %.
+          Transações e use a opção &ldquo;Dividir entre centros&rdquo;. Os percentuais devem somar 100 %.
           O resultado aparece no P&L de cada centro acima.
         </p>
       </div>

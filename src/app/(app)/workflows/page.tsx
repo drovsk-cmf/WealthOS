@@ -27,7 +27,7 @@ import {
   PERIODICITY_OPTIONS,
 } from "@/lib/hooks/use-workflows";
 import { useAccounts } from "@/lib/hooks/use-accounts";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import type { TaskWithWorkflow } from "@/lib/hooks/use-workflows";
 
@@ -262,7 +262,7 @@ export default function WorkflowsPage() {
               <p className="text-3xl">✅</p>
               <h2 className="mt-2 text-lg font-semibold">Tudo em dia</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Nenhuma tarefa pendente. Clique em "Gerar tarefas do mês" para criar as tarefas dos seus workflows ativos.
+                Nenhuma tarefa pendente. Clique em &ldquo;Gerar tarefas do mês&rdquo; para criar as tarefas dos seus workflows ativos.
               </p>
             </div>
           ) : (

@@ -61,7 +61,7 @@ export default function BudgetsPage() {
 
   // ─── Queries ───────────────────────────────────────────────
   const { data: budgets, isLoading } = useBudgets(currentMonth);
-  const { data: budgetMonths } = useBudgetMonths();
+  const { data: _budgetMonths } = useBudgetMonths();
   const deleteBudget = useDeleteBudget();
   const copyBudgets = useCopyBudgets();
 

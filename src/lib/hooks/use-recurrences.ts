@@ -233,7 +233,7 @@ export function useUpdateRecurrence() {
   return useMutation({
     mutationFn: async ({ id, template, ...updates }: UpdateRecurrenceInput) => {
       // If template fields are being updated, merge with existing
-      let payload: Record<string, unknown> = { ...updates };
+      const payload: Record<string, unknown> = { ...updates };
 
       if (template) {
         const { data: existing } = await supabase

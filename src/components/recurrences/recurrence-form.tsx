@@ -17,7 +17,6 @@ import {
   FREQUENCY_OPTIONS,
 } from "@/lib/hooks/use-recurrences";
 import { ADJUSTMENT_INDEX_OPTIONS } from "@/lib/hooks/use-budgets";
-import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
