@@ -227,6 +227,29 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger). Total: 26 tabelas, 82 RLS, 22 ENUMs, 31 RPCs, 1 validation trigger.
 
+### Auditoria de Código (ChatGPT, 2026-03-10)
+
+Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 são deficiências materiais. 2 bugs corrigidos imediatamente (rate limiter dupla contagem, parseOFX sem await). Restam 8 itens para micro-lote de saneamento.
+
+**Backlog de saneamento estrutural (pré-requisito para produção):**
+
+| # | Item | Gravidade | Esforço |
+|---|------|-----------|---------|
+| S1 | Redesenhar KEK: derivar de material estável, não JWT efêmero | Crítica | Meio dia |
+| S2 | Exportar SQL real das migrations 003-010 do Supabase para o Git | Alta | Meio dia |
+| S3 | RPC atômica `create_transfer_with_journal()` | Alta | 2-3h |
+| S4 | Import: normalizar sinal (abs) do amount nos parsers | Média | 1h |
+| S5 | Import: substituir CSV parser manual por PapaParse real | Média | 1h |
+| S6 | Import: eliminar UUID sentinela `00000000-...` | Média | 30min |
+| S7 | Rota de índices: corrigir admin client + restringir acesso | Média | 1h |
+| S8 | Adicionar Content-Security-Policy ao next.config.js | Média | 1h |
+
+**Itens conhecidos (não urgentes, já planejados):**
+- Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
+- Biometria stub retorna true: isolado, Fase 10
+- Rebranding WealthOS → Oniefy: Fase 10
+- Cobertura de testes: expandir na Fase 10
+
 ---
 
 ## 7. Items de Polish (Fase 10 backlog)
