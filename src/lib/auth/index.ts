@@ -19,7 +19,6 @@ export type { MfaStatus, MfaEnrollResult } from "./mfa";
 export {
   initializeEncryption,
   loadEncryptionKey,
-  rotateEncryptionKey,
   getActiveDEK,
   clearEncryptionKey,
 } from "./encryption-manager";

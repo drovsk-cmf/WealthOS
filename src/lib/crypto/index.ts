@@ -1,9 +1,10 @@
 /**
  * WealthOS E2E Encryption Module
  *
- * Strategy: Random DEK (Data Encryption Key) protected by session-derived KEK.
+ * Strategy: Random DEK (Data Encryption Key) protected by stable KEK.
  * - DEK: AES-256-GCM key, generated once per user, stored encrypted in users_profile
- * - KEK: derived from JWT session via HKDF (Web Crypto API)
+ * - KEK: derived from stable kek_material (random 256 bits) via HKDF (Web Crypto API)
+ * - kek_material: generated once during onboarding, stored in users_profile
  * - Fields encrypted: cpf_encrypted, notes_encrypted, details_encrypted
  *
  * Implementation: Web Crypto API (native, no external deps)
@@ -29,17 +30,24 @@ export async function generateDEK(): Promise<CryptoKey> {
 }
 
 /**
- * Derive a Key Encryption Key (KEK) from the user's JWT session.
+ * Derive a Key Encryption Key (KEK) from stable user-specific material.
  * Uses HKDF with SHA-256.
+ *
+ * O material de entrada é um valor aleatório de 256 bits (base64) gerado
+ * uma vez no onboarding e armazenado em users_profile.kek_material.
+ * Diferente do design anterior (JWT efêmero), este material nunca rotaciona,
+ * eliminando o risco de perda da DEK em token refresh.
  */
 export async function deriveKEK(
-  sessionToken: string,
+  kekMaterial: string,
   salt: Uint8Array
 ): Promise<CryptoKey> {
-  const encoder = new TextEncoder();
+  // Decode base64 kekMaterial to raw bytes
+  const rawBytes = Uint8Array.from(atob(kekMaterial), (c) => c.charCodeAt(0));
+
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(sessionToken),
+    rawBytes,
     "HKDF",
     false,
     ["deriveKey"]
@@ -50,7 +58,7 @@ export async function deriveKEK(
       name: "HKDF",
       hash: "SHA-256",
       salt,
-      info: encoder.encode("wealthos-e2e-kek"),
+      info: new TextEncoder().encode("wealthos-e2e-kek-v2"),
     } as HkdfParams,
     keyMaterial,
     { name: ALGORITHM, length: KEY_LENGTH } as AesKeyGenParams,

@@ -90,23 +90,8 @@ export default function AppLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Listen for token refresh to rotate encryption key
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event) => {
-        if (event === "TOKEN_REFRESHED") {
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session?.access_token) {
-            const { rotateEncryptionKey } = await import("@/lib/auth/encryption-manager");
-            await rotateEncryptionKey(supabase, session.access_token);
-          }
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Auth state change listener (token refresh no longer requires encryption rotation)
+  // KEK is derived from stable kek_material, not JWT - no re-wrap needed.
 
   async function handleLogout() {
     clearEncryptionKey();

@@ -144,9 +144,9 @@ export type Database = {
         Relationships: []
       }
       users_profile: {
-        Row: { cpf_encrypted: string | null; created_at: string; default_currency: string; deletion_requested_at: string | null; encryption_key_encrypted: string | null; encryption_key_iv: string | null; full_name: string | null; id: string; onboarding_completed: boolean; updated_at: string }
-        Insert: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id: string; onboarding_completed?: boolean; updated_at?: string }
-        Update: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id?: string; onboarding_completed?: boolean; updated_at?: string }
+        Row: { cpf_encrypted: string | null; created_at: string; default_currency: string; deletion_requested_at: string | null; encryption_key_encrypted: string | null; encryption_key_iv: string | null; full_name: string | null; id: string; kek_material: string | null; onboarding_completed: boolean; updated_at: string }
+        Insert: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
+        Update: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id?: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
         Relationships: []
       }
       workflow_tasks: {
