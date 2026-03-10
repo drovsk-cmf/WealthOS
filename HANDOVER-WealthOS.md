@@ -225,7 +225,7 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
 
-**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material) + 014 (transfer RPC) + 015 (nullable bank_connection in import). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs, 1 validation trigger.
+**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation) + 013 (stable KEK) + 014 (transfer RPC) + 015 (nullable import) + 016 (pg_cron + jobs) + 017 (search_path fix). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs + 3 cron functions, 1 validation trigger, 3 pg_cron jobs.
 
 ### Auditoria de Código (ChatGPT, 2026-03-10)
 
@@ -259,12 +259,17 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~PWA icon 404~~ | FEITO: icon-192, icon-512, favicon.ico, apple-touch-icon |
 | ~~Euro sem símbolo~~ | FEITO: "Euro" → "Euro (€)" no onboarding |
 | ~~Rebranding~~ | FEITO: WealthOS → Oniefy (UI, config, logs, TOTP). Crypto strings preservadas |
-| Next.js upgrade | 14.2.14 → 15+ (security fix, breaking change) |
-| OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js |
-| Capacitor build | Build iOS, teste em dispositivo, submissão App Store |
+| ~~Next.js upgrade~~ | FEITO: 14.2.14 → 15.5.12, React 18 → 19. Zero breaking changes no nosso código |
+| OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac) |
+| Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
+| Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
 | Testes | Jest + React Testing Library, cobertura mínima |
-| Edge Functions | pg_cron para generate-recurring-transactions, fetch-economic-indices, etc. |
-| ~~Redirect raiz~~ | CORRIGIDO anteriormente (middleware + callback normalizam `/` → `/dashboard`) |
+| ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
+| ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
+| ~~Redirect raiz~~ | CORRIGIDO anteriormente |
+| RLS initplan | Performance: ~50 policies com `auth.uid()` → `(select auth.uid())`. Baixa urgência (single-user). |
+| Unindexed FKs | Performance: 14 FKs sem index. Baixa urgência (pouco dado). |
+| Leaked password protection | Habilitar no Dashboard Supabase: Auth > Settings > HaveIBeenPwned |
 
 ---
 
