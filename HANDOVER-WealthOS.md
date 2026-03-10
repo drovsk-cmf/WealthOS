@@ -381,6 +381,16 @@ Disponíveis como arquivos do projeto:
 - Campo "Membro" (opcional) no formulário de transação: aparece quando há membros cadastrados
 - Evolução futura (backlog): orçamento delegado por membro, multi-user com auth, rateio automático de overhead
 
+**Design System Plum Ledger v1.1 aplicado:**
+- `globals.css` totalmente reescrito: variáveis CSS shadcn substituídas por tokens Plum Ledger (Midnight Plum, Bone, Graphite Ink, Mineral Sage, Oxide Brass, Warm Stone)
+- Semânticas calibradas: Verdant (#2F7A68), Terracotta (#A64A45), Burnished (#A97824), Slate (#56688F)
+- Dark mode com subtom plum em todas as superfícies
+- `tailwind.config.ts`: cores de marca + semânticas + tiers adicionadas com suporte a opacidade (`bg-verdant/10`)
+- 144 referências hardcoded substituídas em 39 arquivos (text-green-600 → text-verdant, etc.)
+- Constantes JS (PRESET_COLORS, CATEGORY_COLORS, INDEX_TYPE_COLORS, tier colors) atualizadas
+- Cores das categorias no banco atualizadas para Plum Ledger
+- Novos tokens: --warning, --info, --plum, --bone, --sage, --brass, --stone, --tier-1 a --tier-4
+
 ---
 
 ## 12. Próximos Passos
