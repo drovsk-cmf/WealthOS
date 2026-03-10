@@ -265,7 +265,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~Euro sem símbolo~~ | FEITO: "Euro" → "Euro (€)" no onboarding |
 | ~~Rebranding~~ | FEITO: WealthOS → Oniefy (UI, config, logs, TOTP). Crypto strings preservadas |
 | ~~Next.js upgrade~~ | FEITO: 14.2.14 → 15.5.12, React 18 → 19. Zero breaking changes no nosso código |
-| OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac) |
+| OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
 | Testes | Jest + React Testing Library, cobertura mínima |
@@ -285,7 +285,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | wealthos-especificacao-v1.docx | Stack, segurança, modelo de dados original, módulos, fases |
 | wealthos-funcional-v1.docx | 62 user stories MVP com critérios de aceite |
 | wealthos-adendo-v1.1.docx | Decisões (2 saldos, carência 7d, E2E, APNs) |
-| wealthos-adendo-v1.2.docx | Apple App Store, importação, OCR, offline, a11y |
+| wealthos-adendo-v1.2.docx | Apple App Store, importação, OCR, offline, a11y. **Errata:** §2.1 classifica PDF como "Anexo" sem OCR, mas WKF-03 prevê OCR em PDF. Decisão: PDF é formato OCR (além de anexo). |
 | wealthos-adendo-v1.3.docx | **Integração bancária Open Finance** (Pluggy/Belvo, BANK-01-06, pendências) |
 | wealthos-adendo-v1.4.docx | Solvência (LCR, runway), evoluções futuras (9 items) |
 | wealthos-estudo-contabil-v1.5-final.docx | Modelo contábil partida dobrada, 133 contas, centros, workflows |
@@ -363,7 +363,7 @@ Disponíveis como arquivos do projeto:
 | Item | Esforço |
 |---|---|
 | Biometria real (Capacitor BiometricAuth) | 4-6h |
-| OCR real (WKF-03, Apple Vision + Tesseract.js) | 4-6h |
+| OCR real (WKF-03, Apple Vision + Tesseract.js, **+PDF**) | 4-6h |
 | Capacitor iOS build + teste + submissão App Store | 4h |
 
 ---
