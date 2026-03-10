@@ -236,7 +236,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | # | Item | Gravidade | Esforço |
 |---|------|-----------|---------|
 | S1 | ~~Redesenhar KEK: derivar de material estável, não JWT efêmero~~ | ~~Crítica~~ | FEITO (migration 013, commit c453c47) |
-| S2 | Exportar SQL real das migrations 003-010 do Supabase para o Git | Alta | Meio dia |
+| S2 | ~~Exportar SQL real das migrations 003-010 do Supabase para o Git~~ | ~~Alta~~ | FEITO (2.236 linhas reais, commit a60489f) |
 | S3 | RPC atômica `create_transfer_with_journal()` | Alta | 2-3h |
 | S4 | Import: normalizar sinal (abs) do amount nos parsers | Média | 1h |
 | S5 | Import: substituir CSV parser manual por PapaParse real | Média | 1h |
