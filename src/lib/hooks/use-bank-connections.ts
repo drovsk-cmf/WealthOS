@@ -20,10 +20,10 @@ export const SYNC_STATUS_LABELS: Record<string, string> = {
 };
 
 export const SYNC_STATUS_COLORS: Record<string, string> = {
-  active: "text-green-600 bg-green-100",
-  syncing: "text-blue-600 bg-blue-100",
-  error: "text-red-600 bg-red-100",
-  expired: "text-orange-600 bg-orange-100",
+  active: "text-verdant bg-verdant/15",
+  syncing: "text-info-slate bg-info-slate/15",
+  error: "text-terracotta bg-terracotta/15",
+  expired: "text-burnished bg-burnished/15",
   manual: "text-gray-600 bg-gray-100",
 };
 

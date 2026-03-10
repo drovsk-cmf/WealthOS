@@ -105,8 +105,8 @@ export const STRENGTH_CONFIG: Record<
   PasswordStrength,
   { label: string; color: string; width: string }
 > = {
-  weak: { label: "Fraca", color: "bg-red-500", width: "w-1/4" },
-  fair: { label: "Razoável", color: "bg-orange-500", width: "w-2/4" },
-  good: { label: "Boa", color: "bg-yellow-500", width: "w-3/4" },
-  strong: { label: "Forte", color: "bg-green-500", width: "w-full" },
+  weak: { label: "Fraca", color: "bg-terracotta", width: "w-1/4" },
+  fair: { label: "Razoável", color: "bg-burnished", width: "w-2/4" },
+  good: { label: "Boa", color: "bg-burnished", width: "w-3/4" },
+  strong: { label: "Forte", color: "bg-verdant", width: "w-full" },
 };

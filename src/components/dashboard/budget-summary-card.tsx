@@ -19,7 +19,7 @@ interface Props {
 
 const STATUS_STYLES = {
   ok: { bar: "bg-verdant", badge: "" },
-  warning: { bar: "bg-yellow-500", badge: "text-yellow-700 bg-yellow-100" },
+  warning: { bar: "bg-burnished", badge: "text-burnished bg-burnished/15" },
   exceeded: { bar: "bg-terracotta", badge: "text-terracotta bg-terracotta/15" },
 };
 
@@ -90,7 +90,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
                   pctUsed >= 100
                     ? "bg-terracotta"
                     : pctUsed >= 80
-                      ? "bg-yellow-500"
+                      ? "bg-burnished"
                       : "bg-verdant"
                 }`}
                 style={{ width: `${Math.min(pctUsed, 100)}%` }}

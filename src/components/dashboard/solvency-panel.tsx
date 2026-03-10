@@ -23,14 +23,14 @@ interface Props {
 function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
   if (lcr >= 2) return { label: "Excelente", color: "text-verdant", bg: "bg-verdant/15" };
   if (lcr >= 1) return { label: "Saudável", color: "text-verdant", bg: "bg-verdant/10" };
-  if (lcr >= 0.5) return { label: "Atenção", color: "text-yellow-700", bg: "bg-yellow-100" };
+  if (lcr >= 0.5) return { label: "Atenção", color: "text-burnished", bg: "bg-burnished/15" };
   return { label: "Risco", color: "text-terracotta", bg: "bg-terracotta/15" };
 }
 
 function runwayStatus(months: number): { label: string; color: string } {
   if (months >= 12) return { label: "Sólido", color: "text-verdant" };
   if (months >= 6) return { label: "OK", color: "text-verdant" };
-  if (months >= 3) return { label: "Atenção", color: "text-yellow-600" };
+  if (months >= 3) return { label: "Atenção", color: "text-burnished" };
   return { label: "Urgente", color: "text-terracotta" };
 }
 
@@ -85,7 +85,7 @@ export function SolvencyPanel({ data, isLoading }: Props) {
           Cockpit de Solvência
         </h3>
         {data?.months_analyzed !== undefined && data.months_analyzed < 3 && (
-          <span className="rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-700">
+          <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished">
             {data.months_analyzed} mês(es) de dados
           </span>
         )}

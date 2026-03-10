@@ -34,7 +34,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 function provisionStatus(monthly: number): { label: string; color: string; bg: string } {
   if (monthly <= 0) return { label: "Sem imposto a provisionar", color: "text-verdant", bg: "bg-verdant/10" };
-  if (monthly < 500) return { label: "Baixo", color: "text-yellow-700", bg: "bg-yellow-50" };
+  if (monthly < 500) return { label: "Baixo", color: "text-burnished", bg: "bg-burnished/10" };
   if (monthly < 2000) return { label: "Moderado", color: "text-burnished", bg: "bg-burnished/10" };
   return { label: "Alto", color: "text-terracotta", bg: "bg-terracotta/10" };
 }

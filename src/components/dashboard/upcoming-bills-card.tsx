@@ -70,7 +70,7 @@ function daysUntil(dateStr: string): number {
 function urgencyColor(days: number): string {
   if (days <= 0) return "text-terracotta bg-terracotta/10";
   if (days <= 3) return "text-burnished bg-burnished/10";
-  if (days <= 7) return "text-yellow-600 bg-yellow-50";
+  if (days <= 7) return "text-burnished bg-burnished/10";
   return "text-muted-foreground bg-muted";
 }
 

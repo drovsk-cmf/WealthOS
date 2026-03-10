@@ -52,7 +52,7 @@ function urgencyBadge(days: number): { text: string; classes: string } {
   if (days === 0) return { text: "Hoje", classes: "bg-terracotta/15 text-terracotta" };
   if (days === 1) return { text: "Amanhã", classes: "bg-burnished/15 text-burnished" };
   if (days <= 3) return { text: `${days}d`, classes: "bg-burnished/15 text-burnished" };
-  if (days <= 7) return { text: `${days}d`, classes: "bg-yellow-100 text-yellow-700" };
+  if (days <= 7) return { text: `${days}d`, classes: "bg-burnished/15 text-burnished" };
   return { text: `${days}d`, classes: "bg-muted text-muted-foreground" };
 }
 

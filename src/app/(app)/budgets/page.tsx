@@ -40,13 +40,13 @@ interface EditData {
 
 const STATUS_COLORS = {
   ok: "bg-verdant",
-  warning: "bg-yellow-500",
+  warning: "bg-burnished",
   exceeded: "bg-terracotta",
 };
 
 const STATUS_BADGES = {
   ok: "",
-  warning: "bg-yellow-100 text-yellow-700",
+  warning: "bg-burnished/15 text-burnished",
   exceeded: "bg-terracotta/15 text-terracotta",
 };
 
@@ -206,7 +206,7 @@ export default function BudgetsPage() {
               (bva.pct_used ?? 0) >= 100
                 ? "bg-terracotta"
                 : (bva.pct_used ?? 0) >= 80
-                  ? "bg-yellow-500"
+                  ? "bg-burnished"
                   : "bg-verdant"
             }`}
             style={{ width: `${Math.min(bva.pct_used ?? 0, 100)}%` }}

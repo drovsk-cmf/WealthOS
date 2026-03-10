@@ -13,11 +13,11 @@ type COA = Database["public"]["Tables"]["chart_of_accounts"]["Row"];
 type GroupType = Database["public"]["Enums"]["group_type"];
 
 export const GROUP_LABELS: Record<GroupType, { label: string; color: string }> = {
-  asset: { label: "Ativo", color: "text-blue-600" },
-  liability: { label: "Passivo", color: "text-red-600" },
-  equity: { label: "Patrimônio Líquido", color: "text-purple-600" },
-  revenue: { label: "Receitas", color: "text-green-600" },
-  expense: { label: "Despesas", color: "text-orange-600" },
+  asset: { label: "Ativo", color: "text-info-slate" },
+  liability: { label: "Passivo", color: "text-terracotta" },
+  equity: { label: "Patrimônio Líquido", color: "text-tier-4" },
+  revenue: { label: "Receitas", color: "text-verdant" },
+  expense: { label: "Despesas", color: "text-burnished" },
 };
 
 export interface COATreeNode extends COA {
