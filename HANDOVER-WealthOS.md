@@ -225,7 +225,7 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
 
-**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation) + 013 (stable KEK) + 014 (transfer RPC) + 015 (nullable import) + 016 (pg_cron + jobs) + 017 (search_path fix). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs + 3 cron functions, 1 validation trigger, 3 pg_cron jobs.
+**Migrations aplicadas:** 011-019. 013=stable KEK, 014=transfer RPC, 015=nullable import, 016=pg_cron, 017=search_path, 018=RLS initplan (77 policies), 019=FK indexes (14). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs + 3 cron functions, 1 validation trigger, 3 pg_cron jobs.
 
 ### Auditoria de Código (ChatGPT, 2026-03-10)
 
@@ -267,9 +267,9 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
 | ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
 | ~~Redirect raiz~~ | CORRIGIDO anteriormente |
-| RLS initplan | Performance: ~50 policies com `auth.uid()` → `(select auth.uid())`. Baixa urgência (single-user). |
-| Unindexed FKs | Performance: 14 FKs sem index. Baixa urgência (pouco dado). |
-| Leaked password protection | Habilitar no Dashboard Supabase: Auth > Settings > HaveIBeenPwned |
+| ~~RLS initplan~~ | FEITO: 77 policies reescritas com `(select auth.uid())`. Migration 018 |
+| ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
+| Leaked password protection | Claudio: habilitar no Dashboard Supabase: Auth > Settings > HaveIBeenPwned |
 
 ---
 
