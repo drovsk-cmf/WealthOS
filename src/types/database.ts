@@ -282,7 +282,7 @@ export type Database = {
         Returns: string | null
       }
       import_transactions_batch: {
-        Args: { p_user_id: string; p_account_id: string; p_bank_connection_id: string; p_batch_id: string; p_transactions: string }
+        Args: { p_user_id: string; p_account_id: string; p_bank_connection_id?: string | null; p_batch_id?: string | null; p_transactions: string }
         Returns: Json
       }
     }
