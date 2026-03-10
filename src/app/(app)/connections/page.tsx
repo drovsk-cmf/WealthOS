@@ -23,6 +23,7 @@ import {
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { parseCSVRaw, suggestMapping, mapToTransactions } from "@/lib/parsers/csv-parser";
 import { parseOFX } from "@/lib/parsers/ofx-parser";
+import { parseXLSX } from "@/lib/parsers/xlsx-parser";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { CSVColumnMapping, CSVTransaction } from "@/lib/parsers/csv-parser";
 import type { OFXTransaction } from "@/lib/parsers/ofx-parser";
@@ -39,7 +40,7 @@ export default function ConnectionsPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Conexões & Importação</h1>
         <p className="text-sm text-muted-foreground">
-          Importe extratos bancários (CSV/OFX) ou gerencie conexões
+          Importe extratos bancários (CSV/OFX/XLSX) ou gerencie conexões
         </p>
       </div>
 
@@ -70,7 +71,7 @@ export default function ConnectionsPage() {
 
 function ImportWizard() {
   const [step, setStep] = useState<ImportStep>("upload");
-  const [fileType, setFileType] = useState<"csv" | "ofx">("csv");
+  const [fileType, setFileType] = useState<"csv" | "ofx" | "xlsx">("csv");
   const [accountId, setAccountId] = useState("");
   const [connectionId, setConnectionId] = useState<string | null>(null);
 
@@ -93,37 +94,54 @@ function ImportWizard() {
     if (!file) return;
 
     const ext = file.name.toLowerCase().split(".").pop();
-    const reader = new FileReader();
 
-    reader.onload = async (ev) => {
-      const content = ev.target?.result as string;
+    if (ext === "xlsx" || ext === "xls") {
+      // Excel: read as ArrayBuffer
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const buffer = ev.target?.result as ArrayBuffer;
+        const result = parseXLSX(buffer);
+        setFileType("xlsx");
+        setCsvHeaders(result.headers);
+        setCsvRows(result.rows);
 
-      if (ext === "ofx" || ext === "qfx") {
-        setFileType("ofx");
-        const result = await parseOFX(content);
-        setTransactions(result.transactions);
-        setParseErrors(result.errors);
-        if (result.duplicatesSkipped > 0) {
-          setParseErrors((prev) => [
-            ...prev,
-            `${result.duplicatesSkipped} transação(ões) duplicada(s) ignorada(s).`,
-          ]);
-        }
-        setSelected(new Set(result.transactions.map((_, i) => i)));
-        setStep("preview");
-      } else {
-        setFileType("csv");
-        const { headers, rows } = parseCSVRaw(content);
-        setCsvHeaders(headers);
-        setCsvRows(rows);
-
-        const suggested = suggestMapping(headers, rows[0] || []);
+        const suggested = suggestMapping(result.headers, result.rows[0] || []);
         setMapping(suggested);
         setStep("mapping");
-      }
-    };
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // CSV/TSV/OFX/QFX: read as text
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const content = ev.target?.result as string;
 
-    reader.readAsText(file, "utf-8");
+        if (ext === "ofx" || ext === "qfx") {
+          setFileType("ofx");
+          const result = await parseOFX(content);
+          setTransactions(result.transactions);
+          setParseErrors(result.errors);
+          if (result.duplicatesSkipped > 0) {
+            setParseErrors((prev) => [
+              ...prev,
+              `${result.duplicatesSkipped} transação(ões) duplicada(s) ignorada(s).`,
+            ]);
+          }
+          setSelected(new Set(result.transactions.map((_, i) => i)));
+          setStep("preview");
+        } else {
+          setFileType("csv");
+          const { headers, rows } = parseCSVRaw(content);
+          setCsvHeaders(headers);
+          setCsvRows(rows);
+
+          const suggested = suggestMapping(headers, rows[0] || []);
+          setMapping(suggested);
+          setStep("mapping");
+        }
+      };
+      reader.readAsText(file, "utf-8");
+    }
   }, []);
 
   const handleApplyMapping = useCallback(() => {
@@ -207,10 +225,10 @@ function ImportWizard() {
         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card p-12">
           <p className="text-3xl">📥</p>
           <p className="mt-3 text-sm font-semibold">Arraste um arquivo ou clique para selecionar</p>
-          <p className="mt-1 text-xs text-muted-foreground">Formatos: CSV, TSV, OFX, QFX</p>
+          <p className="mt-1 text-xs text-muted-foreground">Formatos: CSV, TSV, OFX, QFX, XLSX, XLS</p>
           <input
             type="file"
-            accept=".csv,.tsv,.ofx,.qfx,.txt"
+            accept=".csv,.tsv,.ofx,.qfx,.xlsx,.xls,.txt"
             onChange={handleFileUpload}
             disabled={!accountId}
             className="mt-4 text-sm file:mr-3 file:rounded-md file:border file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground disabled:opacity-50"
@@ -302,7 +320,7 @@ function ImportWizard() {
           <h2 className="text-lg font-semibold">
             Preview ({selected.size}/{transactions.length} selecionadas)
           </h2>
-          <button onClick={() => setStep(fileType === "csv" ? "mapping" : "upload")}
+          <button onClick={() => setStep(fileType === "ofx" ? "upload" : "mapping")}
             className="text-sm text-muted-foreground hover:text-foreground">
             Voltar
           </button>
@@ -441,7 +459,7 @@ function ConnectionsManager() {
           <p className="text-3xl">🏦</p>
           <h2 className="mt-2 text-lg font-semibold">Nenhuma conexão bancária</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Crie uma conexão para organizar suas importações. Você pode importar arquivos CSV/OFX
+            Crie uma conexão para organizar suas importações. Você pode importar arquivos CSV/OFX/XLSX
             sem conexão, mas com uma conexão o sistema rastreia duplicatas e sincronização.
           </p>
         </div>
@@ -526,7 +544,7 @@ function ConnectionsManager() {
       {/* Info about future aggregator */}
       <div className="rounded-lg border bg-muted/50 p-4">
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Atualmente as importações são feitas via arquivo (CSV, OFX).
+          Atualmente as importações são feitas via arquivo (CSV, OFX, XLSX).
           Integração automática via Open Finance (agregador certificado) será
           disponibilizada em versão futura.
         </p>
