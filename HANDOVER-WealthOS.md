@@ -1,6 +1,6 @@
 # WealthOS - Handover de Sessão
 
-**Data:** 08 de março de 2026
+**Data:** 10 de março de 2026
 **Projeto:** WealthOS - Sistema Integrado de Gestão Financeira e Patrimonial
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
@@ -225,7 +225,7 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
 
-**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger). Total: 26 tabelas, 82 RLS, 22 ENUMs, 31 RPCs, 1 validation trigger.
+**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material). Total: 26 tabelas, 82 RLS, 22 ENUMs, 31 RPCs, 1 validation trigger.
 
 ### Auditoria de Código (ChatGPT, 2026-03-10)
 
@@ -235,7 +235,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 
 | # | Item | Gravidade | Esforço |
 |---|------|-----------|---------|
-| S1 | Redesenhar KEK: derivar de material estável, não JWT efêmero | Crítica | Meio dia |
+| S1 | ~~Redesenhar KEK: derivar de material estável, não JWT efêmero~~ | ~~Crítica~~ | FEITO (migration 013, commit c453c47) |
 | S2 | Exportar SQL real das migrations 003-010 do Supabase para o Git | Alta | Meio dia |
 | S3 | RPC atômica `create_transfer_with_journal()` | Alta | 2-3h |
 | S4 | Import: normalizar sinal (abs) do amount nos parsers | Média | 1h |
