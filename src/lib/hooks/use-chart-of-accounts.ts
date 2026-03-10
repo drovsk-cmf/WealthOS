@@ -1,5 +1,5 @@
 /**
- * WealthOS - Chart of Accounts Hooks (CTB-03, CTB-04)
+ * Oniefy - Chart of Accounts Hooks (CTB-03, CTB-04)
  *
  * Queries chart_of_accounts with tree structure.
  * Toggle is_active for leaf accounts (depth 2).

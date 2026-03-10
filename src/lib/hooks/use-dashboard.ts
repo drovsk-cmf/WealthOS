@@ -1,5 +1,5 @@
 /**
- * WealthOS - Dashboard Hooks (Phase 3)
+ * Oniefy - Dashboard Hooks (Phase 3)
  *
  * React Query hooks for dashboard RPCs.
  * Stories: DASH-01 to DASH-12, CTB-05

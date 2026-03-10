@@ -121,7 +121,7 @@ export default function RegisterPage() {
     <>
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight">Criar Conta</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Configure seu WealthOS em poucos passos</p>
+        <p className="mt-2 text-sm text-muted-foreground">Configure seu Oniefy em poucos passos</p>
       </div>
 
       {serverError && (

@@ -1,5 +1,5 @@
 /**
- * WealthOS - Categories Hooks (FIN-06, FIN-07)
+ * Oniefy - Categories Hooks (FIN-06, FIN-07)
  *
  * React Query hooks for CRUD on categories table.
  * System categories (is_system=true) can't be deleted.

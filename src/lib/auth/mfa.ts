@@ -1,5 +1,5 @@
 /**
- * WealthOS - MFA Helpers
+ * Oniefy - MFA Helpers
  *
  * Encapsula a Supabase MFA API (TOTP) para uso nos componentes.
  * Ref: AUTH-04 (MFA obrigatório), Spec v1.0 seção 3.1.1
@@ -78,7 +78,7 @@ export async function getAssuranceLevel(
  */
 export async function enrollTotp(
   supabase: AnySupabaseClient,
-  friendlyName: string = "WealthOS"
+  friendlyName: string = "Oniefy"
 ): Promise<MfaEnrollResult> {
   const { data, error } = await supabase.auth.mfa.enroll({
     factorType: "totp",

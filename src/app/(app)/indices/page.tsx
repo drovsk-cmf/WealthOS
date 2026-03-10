@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Índices Econômicos (Phase 8)
+ * Oniefy - Índices Econômicos (Phase 8)
  *
  * Dashboard of economic indicators from BCB SGS / IBGE SIDRA.
  * - Latest values per index (cards)

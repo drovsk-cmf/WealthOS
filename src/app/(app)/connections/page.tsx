@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Conexões Bancárias (Phase 9B - Standalone)
+ * Oniefy - Conexões Bancárias (Phase 9B - Standalone)
  *
  * BANK-01: Gerenciar conexões (manual, futuro: agregador)
  * BANK-02: Import CSV/OFX com preview e mapeamento

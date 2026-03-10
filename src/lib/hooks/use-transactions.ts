@@ -1,5 +1,5 @@
 /**
- * WealthOS - Transaction Hooks (FIN-08, FIN-09, FIN-10)
+ * Oniefy - Transaction Hooks (FIN-08, FIN-09, FIN-10)
  *
  * React Query hooks for querying transactions.
  * Mutations are in transaction-engine.ts (Lote 2.3).

@@ -1,5 +1,5 @@
 /**
- * WealthOS - Transaction Engine (CTB-01, CTB-02)
+ * Oniefy - Transaction Engine (CTB-01, CTB-02)
  *
  * Client-side service that calls the Postgres function
  * create_transaction_with_journal() for atomic creation of

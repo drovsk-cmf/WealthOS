@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.wealthos.app",
-  appName: "WealthOS",
+  appId: "com.oniefy.app",
+  appName: "Oniefy",
   webDir: "out",
   server: {
     // In production, use the deployed URL for live updates
@@ -21,7 +21,7 @@ const config: CapacitorConfig = {
   ios: {
     // Enable Keychain for secure token storage
     // Certificate pinning configured in native project
-    scheme: "WealthOS",
+    scheme: "Oniefy",
   },
 };
 

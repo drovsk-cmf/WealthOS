@@ -1,5 +1,5 @@
 /**
- * WealthOS - Cost Centers Hooks (CEN-01, CEN-02)
+ * Oniefy - Cost Centers Hooks (CEN-01, CEN-02)
  *
  * Basic CRUD. Default center ("Pessoal") can't be deleted.
  * Rateio (CEN-03) deferred to Fase 5.

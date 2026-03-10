@@ -1,5 +1,5 @@
 /**
- * WealthOS - Rate Limiter (Edge-compatible)
+ * Oniefy - Rate Limiter (Edge-compatible)
  *
  * Rate limiter in-memory para rotas de autenticação.
  * Protege contra brute-force em login, register e reset-password.

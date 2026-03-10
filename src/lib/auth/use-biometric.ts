@@ -1,5 +1,5 @@
 /**
- * WealthOS - Biometric Auth Stub (AUTH-06)
+ * Oniefy - Biometric Auth Stub (AUTH-06)
  *
  * Stub para desbloqueio biométrico no iOS.
  * Implementação real na Fase 10 (Capacitor build).
@@ -70,18 +70,18 @@ export function useBiometricAuth(): BiometricState & {
   const authenticate = async (): Promise<boolean> => {
     if (!state.available) return false;
     // Stub: real implementation will use Capacitor BiometricAuth plugin
-    console.warn("[WealthOS] Biometric auth: stub - awaiting Capacitor build (Fase 10)");
+    console.warn("[Oniefy] Biometric auth: stub - awaiting Capacitor build (Fase 10)");
     return false;
   };
 
   const enable = async (): Promise<void> => {
     if (!state.available) return;
-    console.warn("[WealthOS] Biometric enable: stub - awaiting Capacitor build (Fase 10)");
+    console.warn("[Oniefy] Biometric enable: stub - awaiting Capacitor build (Fase 10)");
     setState((prev) => ({ ...prev, enrolled: true }));
   };
 
   const disable = async (): Promise<void> => {
-    console.warn("[WealthOS] Biometric disable: stub - awaiting Capacitor build (Fase 10)");
+    console.warn("[Oniefy] Biometric disable: stub - awaiting Capacitor build (Fase 10)");
     setState((prev) => ({ ...prev, enrolled: false }));
   };
 

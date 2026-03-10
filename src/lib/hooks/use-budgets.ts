@@ -1,5 +1,5 @@
 /**
- * WealthOS - Budget Hooks (Phase 3)
+ * Oniefy - Budget Hooks (Phase 3)
  *
  * React Query hooks for budget CRUD operations.
  * Stories: ORC-01 (criar), ORC-02 (copiar mês anterior),

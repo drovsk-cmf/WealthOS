@@ -1,5 +1,5 @@
 /**
- * WealthOS - Fiscal Hooks (Phase 7)
+ * Oniefy - Fiscal Hooks (Phase 7)
  *
  * React Query hooks for fiscal module.
  * Stories: FIS-01 (rendimentos), FIS-02 (deduções), FIS-03 (bens/dívidas),

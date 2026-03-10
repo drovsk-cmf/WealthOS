@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Orçamento (Phase 3)
+ * Oniefy - Orçamento (Phase 3)
  *
  * ORC-01: Criar orçamento mensal por categoria
  * ORC-02: Copiar orçamento do mês anterior

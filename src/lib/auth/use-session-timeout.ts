@@ -1,5 +1,5 @@
 /**
- * WealthOS - Session Timeout Hook
+ * Oniefy - Session Timeout Hook
  *
  * Spec v1.0 seção 3.1.2: Timeout de sessão após 30 minutos de inatividade.
  * Monitora eventos de interação (mouse, teclado, toque) e faz logout

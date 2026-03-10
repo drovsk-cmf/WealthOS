@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Tarefas / Workflows (Phase 6)
+ * Oniefy - Tarefas / Workflows (Phase 6)
  *
  * WKF-01: Auto-create workflows (integrated into account creation hook)
  * WKF-02: Pending tasks as checklist, grouped by workflow

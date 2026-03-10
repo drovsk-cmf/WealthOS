@@ -1,5 +1,5 @@
 /**
- * WealthOS - Accounts Hooks (FIN-01, FIN-02, FIN-04, FIN-05)
+ * Oniefy - Accounts Hooks (FIN-01, FIN-02, FIN-04, FIN-05)
  *
  * React Query hooks for CRUD operations on accounts table.
  * Auto-links accounts with chart_of_accounts based on type.
@@ -145,7 +145,7 @@ export function useCreateAccount() {
           p_account_name: input.name,
         });
       } catch {
-        console.warn("[WealthOS] Auto-create workflow failed for account", data.id);
+        console.warn("[Oniefy] Auto-create workflow failed for account", data.id);
       }
 
       return data as Account;

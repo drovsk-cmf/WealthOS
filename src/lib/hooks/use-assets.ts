@@ -1,5 +1,5 @@
 /**
- * WealthOS - Assets Hooks (Phase 4)
+ * Oniefy - Assets Hooks (Phase 4)
  *
  * React Query hooks for asset (Patrimônio) operations.
  * Stories: PAT-01 (cadastrar), PAT-02 (editar), PAT-03 (excluir),

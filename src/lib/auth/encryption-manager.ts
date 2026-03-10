@@ -1,5 +1,5 @@
 /**
- * WealthOS - Encryption Manager
+ * Oniefy - Encryption Manager
  *
  * Gerencia o ciclo de vida da DEK (Data Encryption Key):
  * - Onboarding: gera kek_material + DEK, deriva KEK, armazena tudo no profile
@@ -103,14 +103,14 @@ export async function loadEncryptionKey(
 
   // Caso 1: kek_material ausente → re-inicializar (migração de JWT → material estável)
   if (!profile?.kek_material) {
-    console.warn("[WealthOS] kek_material ausente. Re-inicializando criptografia.");
+    console.warn("[Oniefy] kek_material ausente. Re-inicializando criptografia.");
     await initializeEncryption(supabase);
     return;
   }
 
   // Caso 2: DEK não inicializada ainda (não deveria acontecer após onboarding)
   if (!profile.encryption_key_encrypted || !profile.encryption_key_iv) {
-    console.warn("[WealthOS] DEK ausente. Re-inicializando criptografia.");
+    console.warn("[Oniefy] DEK ausente. Re-inicializando criptografia.");
     await initializeEncryption(supabase);
     return;
   }

@@ -1,5 +1,5 @@
 /**
- * WealthOS - Recurrences Hooks (Phase 4)
+ * Oniefy - Recurrences Hooks (Phase 4)
  *
  * React Query hooks for recurrence (Contas a Pagar) operations.
  * Stories: CAP-01 (criar), CAP-02 (editar), CAP-03 (encerrar),

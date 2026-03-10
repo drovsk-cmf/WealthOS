@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Fiscal / IRPF (Phase 7)
+ * Oniefy - Fiscal / IRPF (Phase 7)
  *
  * FIS-01: Rendimentos tributáveis (via tax_treatment automático)
  * FIS-02: Deduções (dedutivel_integral / dedutivel_limitado)

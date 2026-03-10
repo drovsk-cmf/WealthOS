@@ -1,5 +1,5 @@
 /**
- * WealthOS - API Route: Fetch Economic Indices
+ * Oniefy - API Route: Fetch Economic Indices
  *
  * POST /api/indices/fetch
  *

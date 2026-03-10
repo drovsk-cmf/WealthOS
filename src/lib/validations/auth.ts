@@ -1,5 +1,5 @@
 /**
- * WealthOS - Auth Validation Schemas (Zod)
+ * Oniefy - Auth Validation Schemas (Zod)
  *
  * Centraliza validações de todos os formulários de autenticação.
  * Ref: AUTH-01 (12+ chars, blocklist), AUTH-08 (reset password)

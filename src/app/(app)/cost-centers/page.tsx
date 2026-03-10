@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Centros de Custo (Phase 2 CRUD + Phase 5 Advanced)
+ * Oniefy - Centros de Custo (Phase 2 CRUD + Phase 5 Advanced)
  *
  * CEN-01: Criar centros (from Phase 2, maintained)
  * CEN-02: Atribuir lançamentos (from Phase 2, via transaction form)

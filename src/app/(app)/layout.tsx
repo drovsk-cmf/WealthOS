@@ -65,7 +65,7 @@ export default function AppLayout({
         try {
           await loadEncryptionKey(supabase);
         } catch {
-          console.warn("[WealthOS] DEK load failed - E2E fields unavailable");
+          console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
         }
 
         // Get user name for sidebar
@@ -125,7 +125,7 @@ export default function AppLayout({
         }`}
       >
         <div className="flex h-16 items-center border-b px-6">
-          <h1 className="text-lg font-bold">WealthOS</h1>
+          <h1 className="text-lg font-bold">Oniefy</h1>
         </div>
 
         <nav className="space-y-1 p-4">
@@ -175,7 +175,7 @@ export default function AppLayout({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="ml-3 text-lg font-bold">WealthOS</span>
+          <span className="ml-3 text-lg font-bold">Oniefy</span>
         </header>
 
         <div className="p-6">{children}</div>

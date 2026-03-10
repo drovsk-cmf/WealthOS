@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Dashboard (Phase 3)
+ * Oniefy - Dashboard (Phase 3)
  *
  * Layout conforme adendo v1.4, seção 2.4:
  * - Seção A: Visão Operacional (DASH-01 to DASH-05)

@@ -49,7 +49,7 @@ function MfaChallengeContent() {
         await loadEncryptionKey(supabase);
       } catch {
         // DEK load failure is non-blocking (E2E fields won't decrypt)
-        console.warn("[WealthOS] Failed to load DEK after MFA");
+        console.warn("[Oniefy] Failed to load DEK after MFA");
       }
 
       router.push(redirectTo);

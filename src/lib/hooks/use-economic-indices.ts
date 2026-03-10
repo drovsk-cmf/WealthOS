@@ -1,5 +1,5 @@
 /**
- * WealthOS - Economic Indices Hooks (Phase 8)
+ * Oniefy - Economic Indices Hooks (Phase 8)
  *
  * React Query hooks for economic indices.
  * Data comes from BCB SGS / IBGE SIDRA via API route + stored in Supabase.

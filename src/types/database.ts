@@ -1,5 +1,5 @@
 /**
- * WealthOS Database Types
+ * Oniefy Database Types
  * Auto-generated from Supabase schema (2026-03-08)
  * 23 tabelas | 21 ENUMs | 3 Functions
  * Regenerate: npx supabase gen types typescript --project-id hmwdfcsxtmbzlslxgqus > src/types/database.ts

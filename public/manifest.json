@@ -1,6 +1,6 @@
 {
-  "name": "WealthOS",
-  "short_name": "WealthOS",
+  "name": "Oniefy",
+  "short_name": "Oniefy",
   "description": "Sistema Integrado de Gestão Financeira e Patrimonial",
   "start_url": "/dashboard",
   "display": "standalone",

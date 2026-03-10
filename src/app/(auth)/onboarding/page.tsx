@@ -14,7 +14,7 @@ const STEPS: Step[] = ["welcome", "currency", "security", "mfa_enroll", "mfa_ver
 const CURRENCIES = [
   { code: "BRL", label: "Real brasileiro (R$)" },
   { code: "USD", label: "Dólar americano (US$)" },
-  { code: "EUR", label: "Euro" },
+  { code: "EUR", label: "Euro (€)" },
 ];
 
 export default function OnboardingPage() {
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
     setError(null);
 
     try {
-      const data = await enrollTotp(supabase, "WealthOS");
+      const data = await enrollTotp(supabase, "Oniefy");
       setMfaData(data);
       setStep("mfa_verify");
     } catch (err) {
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
         p_user_id: user.id,
       });
       if (catError) {
-        console.warn("[WealthOS] Category seed:", catError.message);
+        console.warn("[Oniefy] Category seed:", catError.message);
       }
 
       // 2. Create default chart of accounts (111 contas contábeis)
@@ -147,7 +147,7 @@ export default function OnboardingPage() {
         p_user_id: user.id,
       });
       if (coaError) {
-        console.warn("[WealthOS] Chart of accounts seed:", coaError.message);
+        console.warn("[Oniefy] Chart of accounts seed:", coaError.message);
       }
 
       // 3. Create default cost center ("Pessoal")
@@ -155,7 +155,7 @@ export default function OnboardingPage() {
         p_user_id: user.id,
       });
       if (ccError) {
-        console.warn("[WealthOS] Cost center seed:", ccError.message);
+        console.warn("[Oniefy] Cost center seed:", ccError.message);
       }
 
       // Mark onboarding as completed
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
       {step === "welcome" && (
         <>
           <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao WealthOS</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao Oniefy</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               Vamos configurar sua conta em 4 passos rápidos para garantir segurança e personalização.
             </p>

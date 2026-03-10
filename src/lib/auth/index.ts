@@ -1,5 +1,5 @@
 /**
- * WealthOS - Auth Module
+ * Oniefy - Auth Module
  *
  * Central exports for all auth-related utilities.
  */

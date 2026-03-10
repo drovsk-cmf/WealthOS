@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Patrimônio (Phase 4)
+ * Oniefy - Patrimônio (Phase 4)
  *
  * PAT-01: Cadastrar bem patrimonial
  * PAT-02: Editar bem patrimonial

@@ -1,5 +1,5 @@
 /**
- * WealthOS - CSV Parser
+ * Oniefy - CSV Parser
  *
  * Parses CSV/TSV bank statements with column mapping.
  * Uses PapaParse for robust CSV parsing (handles quoted fields,

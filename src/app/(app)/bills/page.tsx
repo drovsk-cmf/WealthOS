@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * WealthOS - Contas a Pagar (Phase 4)
+ * Oniefy - Contas a Pagar (Phase 4)
  *
  * CAP-01: Criar transação recorrente
  * CAP-02: Editar recorrência

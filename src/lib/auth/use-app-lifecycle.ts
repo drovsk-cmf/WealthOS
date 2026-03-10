@@ -1,5 +1,5 @@
 /**
- * WealthOS - App Lifecycle Hook
+ * Oniefy - App Lifecycle Hook
  *
  * Gerencia o ciclo de vida da DEK no contexto mobile (Capacitor).
  * Quando o app vai para background:
@@ -84,7 +84,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           dekWasPurgedRef.current = true;
           options?.onDEKPurged?.();
           // eslint-disable-next-line no-console
-          console.info("[WealthOS] DEK purged from memory (app backgrounded)");
+          console.info("[Oniefy] DEK purged from memory (app backgrounded)");
         }
         return;
       }
@@ -101,7 +101,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
 
           if (!biometricOk) {
             options?.onBiometricFailed?.();
-            console.warn("[WealthOS] Biometric unlock failed on foreground return");
+            console.warn("[Oniefy] Biometric unlock failed on foreground return");
             return;
           }
 
@@ -110,9 +110,9 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           await loadEncryptionKey(supabase);
           options?.onDEKRestored?.();
           // eslint-disable-next-line no-console
-          console.info("[WealthOS] DEK restored after biometric unlock");
+          console.info("[Oniefy] DEK restored after biometric unlock");
         } catch (err) {
-          console.error("[WealthOS] Failed to restore DEK on foreground:", err);
+          console.error("[Oniefy] Failed to restore DEK on foreground:", err);
           options?.onBiometricFailed?.();
         }
       }
@@ -160,7 +160,7 @@ async function attemptBiometricUnlock(): Promise<boolean> {
     // });
     // return result.verified;
 
-    console.warn("[WealthOS] Biometric unlock: stub (Fase 10)");
+    console.warn("[Oniefy] Biometric unlock: stub (Fase 10)");
     return true; // Stub: permite acesso até plugin real estar disponível
   } catch {
     return false;

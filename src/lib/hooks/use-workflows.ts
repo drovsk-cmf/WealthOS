@@ -1,5 +1,5 @@
 /**
- * WealthOS - Workflows Hooks (Phase 6)
+ * Oniefy - Workflows Hooks (Phase 6)
  *
  * React Query hooks for workflow and task operations.
  * Stories: WKF-01 (auto-create), WKF-02 (task checklist),

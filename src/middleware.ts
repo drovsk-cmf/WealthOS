@@ -8,7 +8,7 @@ import {
 } from "@/lib/auth/rate-limiter";
 
 /**
- * WealthOS Middleware
+ * Oniefy Middleware
  *
  * Responsibilities:
  * 1. Rate-limit auth routes (login, register, forgot/reset-password)

@@ -1,5 +1,5 @@
 /**
- * WealthOS - Password Blocklist
+ * Oniefy - Password Blocklist
  * Common weak passwords that should be rejected regardless of length.
  * Source: Compiled from NIST SP 800-63B recommendations + common breach lists.
  *

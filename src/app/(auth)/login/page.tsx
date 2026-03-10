@@ -104,7 +104,7 @@ function LoginContent() {
   return (
     <>
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">WealthOS</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Gestão financeira e patrimonial inteligente
         </p>

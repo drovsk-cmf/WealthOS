@@ -1,4 +1,4 @@
-# WealthOS
+# Oniefy (formerly WealthOS)
 
 Sistema integrado de gestao financeira e patrimonial para uso pessoal.
 

@@ -1,5 +1,5 @@
 /**
- * WealthOS - OFX Parser
+ * Oniefy - OFX Parser
  *
  * Parses OFX/QFX files (Open Financial Exchange) client-side.
  * OFX is an XML-like format used by banks for statement export.

@@ -1,5 +1,5 @@
 /**
- * WealthOS - Bank Connections Hook (Phase 9B)
+ * Oniefy - Bank Connections Hook (Phase 9B)
  *
  * CRUD for bank_connections + import orchestration.
  * Stories: BANK-01 (connect), BANK-04 (reconcile), BANK-05 (update), BANK-06 (disconnect)

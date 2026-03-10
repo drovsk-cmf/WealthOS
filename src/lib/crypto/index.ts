@@ -1,5 +1,5 @@
 /**
- * WealthOS E2E Encryption Module
+ * Oniefy E2E Encryption Module
  *
  * Strategy: Random DEK (Data Encryption Key) protected by stable KEK.
  * - DEK: AES-256-GCM key, generated once per user, stored encrypted in users_profile
