@@ -1,7 +1,7 @@
-# WealthOS - Handover de Sessão
+# Oniefy (formerly WealthOS) - Handover de Sessão
 
 **Data:** 10 de março de 2026
-**Projeto:** WealthOS - Sistema Integrado de Gestão Financeira e Patrimonial
+**Projeto:** Oniefy - Sistema Integrado de Gestão Financeira e Patrimonial
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
@@ -22,7 +22,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | Next.js 14 (App Router) + TypeScript |
+| Frontend | Next.js 15.5.12 (App Router) + React 19.2.4 + TypeScript |
 | UI | shadcn/ui + Tailwind CSS |
 | Backend/BaaS | Supabase (PostgreSQL + Auth + RLS + Storage + Edge Functions) |
 | Mobile iOS | Capacitor 6 (empacotamento PWA para App Store) |
@@ -57,12 +57,13 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 24 (23 + bank_connections, todas com RLS) |
-| Políticas RLS | 80 (76 + 4 bank_connections) |
-| Functions | 31 (29 + auto_categorize_transaction + import_transactions_batch) |
-| Triggers | 17 (16 + bank_connections updated_at) |
-| ENUMs | 22 (21 + sync_status) |
-| Migrations aplicadas | 19 partes em 10 versões (001 a 010) |
+| Tabelas | 26 (todas com RLS) |
+| Políticas RLS | 82 (77 otimizadas com initplan na migration 018) |
+| Functions/RPCs | 32 + 3 cron wrappers |
+| Triggers | 18 (17 + validate_journal_balance) |
+| ENUMs | 22 |
+| Migrations aplicadas | 28 partes em 19 versões (001 a 019) |
+| pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 2 |
 | Categorias | 32 |
@@ -71,13 +72,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
 | Stories concluídas | 71 (65 + 6 fase 9: BANK-01-06) |
+| Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
+| Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (29 no banco)
+### 3.3 Functions (32 RPCs + 3 cron + 1 validation trigger)
 
 | Grupo | Functions |
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, handle_new_user |
-| Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable |
+| Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
@@ -85,6 +88,8 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
 | Fiscal | get_fiscal_report, get_fiscal_projection |
 | Índices | get_economic_indices, get_index_latest |
+| Import | import_transactions_batch, auto_categorize_transaction |
+| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h) |
 
 ### 3.4 Código Fonte (72 arquivos em src/)
 
@@ -311,7 +316,59 @@ Disponíveis como arquivos do projeto:
 
 ---
 
-## 11. Conexões
+## 11. Sessão 10/03/2026 - Resumo
+
+**Saneamento S1-S8 (backlog completo, 8/8 feitos):**
+- S1: KEK estável (random 256 bits em vez de JWT efêmero). Migration 013
+- S2: 8 migrations reais exportadas do Supabase para o Git (2.236 linhas)
+- S3: Transfer RPC atômica `create_transfer_with_journal()`. Migration 014
+- S4: Normalização de sinal nos parsers OFX/CSV (amount sempre positivo)
+- S5: PapaParse real substituiu parser CSV manual
+- S6: UUID sentinela eliminado. Migration 015
+- S7: Rota de índices corrigida com admin client
+- S8: Content-Security-Policy adicionada ao next.config.js
+
+**Fase 10 quick wins (todos feitos):**
+- PWA icons: icon-192, icon-512, favicon.ico, apple-touch-icon
+- Euro: "Euro" → "Euro (€)" no onboarding
+- Rebranding: WealthOS → Oniefy (53 arquivos, crypto strings preservadas)
+- Next.js upgrade: 14.2.14 → 15.5.12, React 18 → 19
+- pg_cron: 3 jobs agendados (workflow tasks, depreciação, balance check)
+- Search path fix: 11 functions corrigidas (migration 017)
+- RLS initplan: 77 policies otimizadas (migration 018)
+- FK indexes: 14 indexes criados (migration 019)
+
+**Commits da sessão:** c453c47, a60489f, 08efb33, a821069, ee06199, 4ea3524, 06c4025, 38d489e, 1320c62, 2bc8cb7
+
+**CI:** todos os commits passaram Lint + Type Check + Security Check + Build
+
+---
+
+## 12. Próximos Passos
+
+**Fazível remotamente (próxima sessão Claude):**
+
+| Item | Esforço |
+|---|---|
+| Testes Jest + React Testing Library (cobertura mínima) | 1-2 dias |
+
+**Ação do Claudio (Dashboard Supabase):**
+
+| Item | Ação |
+|---|---|
+| Leaked password protection | Auth > Settings > habilitar HaveIBeenPwned |
+
+**Requer Mac + Xcode:**
+
+| Item | Esforço |
+|---|---|
+| Biometria real (Capacitor BiometricAuth) | 4-6h |
+| OCR real (WKF-03, Apple Vision + Tesseract.js) | 4-6h |
+| Capacitor iOS build + teste + submissão App Store | 4h |
+
+---
+
+## 13. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
