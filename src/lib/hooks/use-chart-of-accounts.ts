@@ -85,3 +85,38 @@ export function useToggleAccountActive() {
     },
   });
 }
+
+export function useCreateCOA() {
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      parentId,
+      displayName,
+      accountName,
+    }: {
+      parentId: string;
+      displayName: string;
+      accountName?: string;
+    }) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("create_coa_child", {
+        p_user_id: user.id,
+        p_parent_id: parentId,
+        p_display_name: displayName,
+        p_account_name: accountName || displayName,
+      });
+
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+    },
+  });
+}

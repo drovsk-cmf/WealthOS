@@ -5,6 +5,7 @@ import {
   useCreateAccount,
   useUpdateAccount,
   ACCOUNT_TYPE_OPTIONS,
+  FINANCING_SUBTYPES,
   PRESET_COLORS,
 } from "@/lib/hooks/use-accounts";
 import { formatCurrency } from "@/lib/utils";
@@ -24,6 +25,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
 
   const [name, setName] = useState("");
   const [type, setType] = useState<AccountType>("checking");
+  const [financingSubtype, setFinancingSubtype] = useState(FINANCING_SUBTYPES[0].value);
   const [initialBalance, setInitialBalance] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +44,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
     } else {
       setName("");
       setType("checking");
+      setFinancingSubtype(FINANCING_SUBTYPES[0].value);
       setInitialBalance("");
       setColor(PRESET_COLORS[0]);
     }
@@ -66,7 +69,6 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           name: name.trim(),
           type,
           color,
-          // initial_balance doesn't change on edit
         });
       } else {
         await createAccount.mutateAsync({
@@ -74,6 +76,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           type,
           initial_balance: balance,
           color,
+          ...(type === "financing" && { coaParentCode: financingSubtype }),
         });
       }
       onClose();
@@ -97,7 +100,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
         <p className="mt-1 text-sm text-muted-foreground">
           {isEdit
             ? "Atualize os dados da conta."
-            : "Cadastre uma conta bancária, cartão ou carteira."}
+            : "Cadastre uma conta, cartão, empréstimo ou financiamento."}
         </p>
 
         {error && (
@@ -148,11 +151,34 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             )}
           </div>
 
+          {/* Financing sub-type */}
+          {!isEdit && type === "financing" && (
+            <div className="space-y-1.5">
+              <label htmlFor="acc-financing-subtype" className="text-sm font-medium">
+                Tipo de financiamento
+              </label>
+              <select
+                id="acc-financing-subtype"
+                value={financingSubtype}
+                onChange={(e) => setFinancingSubtype(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {FINANCING_SUBTYPES.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Initial Balance */}
           {!isEdit && (
             <div className="space-y-1.5">
               <label htmlFor="acc-balance" className="text-sm font-medium">
-                Saldo inicial (R$)
+                {type === "credit_card" || type === "loan" || type === "financing"
+                  ? "Saldo devedor atual (R$)"
+                  : "Saldo inicial (R$)"}
               </label>
               <input
                 id="acc-balance"
@@ -165,8 +191,12 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               />
               <p className="text-xs text-muted-foreground">
                 {type === "credit_card"
-                  ? "Para cartão de crédito, informe a fatura atual (valor positivo = dívida)."
-                  : "Saldo atual da conta no momento do cadastro."}
+                  ? "Fatura atual (valor positivo = dívida)."
+                  : type === "loan"
+                    ? "Saldo devedor total do empréstimo."
+                    : type === "financing"
+                      ? "Saldo devedor total do financiamento."
+                      : "Saldo atual da conta no momento do cadastro."}
               </p>
             </div>
           )}

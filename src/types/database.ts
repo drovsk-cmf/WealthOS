@@ -167,6 +167,17 @@ export type Database = {
       create_default_categories: { Args: { p_user_id: string }; Returns: undefined }
       create_default_chart_of_accounts: { Args: { p_user_id: string }; Returns: undefined }
       create_default_cost_center: { Args: { p_user_id: string }; Returns: string }
+      create_coa_child: {
+        Args: {
+          p_user_id: string
+          p_parent_id?: string | null
+          p_parent_code?: string | null
+          p_display_name: string
+          p_account_name?: string | null
+          p_tax_treatment?: Database["public"]["Enums"]["tax_treatment_type"] | null
+        }
+        Returns: string
+      }
       create_transaction_with_journal: {
         Args: {
           p_user_id: string
@@ -287,7 +298,7 @@ export type Database = {
       }
     }
     Enums: {
-      account_type: "checking" | "savings" | "credit_card" | "cash" | "investment"
+      account_type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "loan" | "financing"
       adjustment_index_type: "ipca" | "igpm" | "inpc" | "selic" | "manual" | "none"
       asset_category: "real_estate" | "vehicle" | "electronics" | "other" | "restricted"
       category_type: "income" | "expense"

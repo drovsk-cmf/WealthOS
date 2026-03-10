@@ -14,14 +14,22 @@ type AccountInsert = Database["public"]["Tables"]["accounts"]["Insert"];
 type AccountUpdate = Database["public"]["Tables"]["accounts"]["Update"];
 type AccountType = Database["public"]["Enums"]["account_type"];
 
-// Map account_type → chart_of_accounts internal_code
-const COA_MAP: Record<AccountType, { code: string; tier: string }> = {
-  checking: { code: "1.1.01", tier: "T1" },
-  savings: { code: "1.1.02", tier: "T1" },
-  cash: { code: "1.1.03", tier: "T1" },
-  investment: { code: "1.2.01", tier: "T2" },
-  credit_card: { code: "2.1.01", tier: "T1" },
+// Map account_type → parent COA code for auto-creation of individual COA entries
+const COA_PARENT_MAP: Record<AccountType, { parentCode: string; tier: string }> = {
+  checking: { parentCode: "1.1.01", tier: "T1" },
+  savings: { parentCode: "1.1.02", tier: "T1" },
+  cash: { parentCode: "1.1.03", tier: "T1" },
+  investment: { parentCode: "1.2.01", tier: "T2" },
+  credit_card: { parentCode: "2.1.01", tier: "T1" },
+  loan: { parentCode: "2.2.03", tier: "T3" },
+  financing: { parentCode: "2.2.01", tier: "T3" },
 };
+
+// Financing sub-types: user can pick which parent COA
+export const FINANCING_SUBTYPES = [
+  { value: "2.2.01", label: "Financiamento Imobiliário" },
+  { value: "2.2.02", label: "Financiamento de Veículo" },
+];
 
 // Labels for UI
 export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
@@ -30,6 +38,8 @@ export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
   cash: "Carteira Digital",
   investment: "Investimento",
   credit_card: "Cartão de Crédito",
+  loan: "Empréstimo",
+  financing: "Financiamento",
 };
 
 export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
@@ -38,6 +48,8 @@ export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
   { value: "cash", label: "Carteira Digital" },
   { value: "credit_card", label: "Cartão de Crédito" },
   { value: "investment", label: "Investimento" },
+  { value: "loan", label: "Empréstimo" },
+  { value: "financing", label: "Financiamento" },
 ];
 
 const PRESET_COLORS = [
@@ -88,48 +100,53 @@ export function useAccount(id: string | null) {
 
 // ─── Mutations ──────────────────────────────────────────────
 
-async function resolveCOA(
-  supabase: ReturnType<typeof createClient>,
-  accountType: AccountType
-): Promise<string | null> {
-  const mapping = COA_MAP[accountType];
-  if (!mapping) return null;
-
-  const { data } = await supabase
-    .from("chart_of_accounts")
-    .select("id")
-    .eq("internal_code", mapping.code)
-    .single();
-
-  return data?.id ?? null;
-}
-
 export function useCreateAccount() {
   const supabase = createClient();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (
-      input: Omit<AccountInsert, "user_id" | "coa_id" | "liquidity_tier">
+      input: Omit<AccountInsert, "user_id" | "coa_id" | "liquidity_tier"> & {
+        coaParentCode?: string; // override parent (e.g. financing sub-type)
+      }
     ) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // Auto-link COA
-      const coaId = await resolveCOA(supabase, input.type);
-      const tier = COA_MAP[input.type]?.tier ?? "T1";
+      const { coaParentCode, ...accountInput } = input;
+      const mapping = COA_PARENT_MAP[accountInput.type];
+      const parentCode = coaParentCode || mapping?.parentCode;
+      const tier = mapping?.tier ?? "T1";
+
+      // Auto-create individual COA entry under the parent
+      let coaId: string | null = null;
+      if (parentCode) {
+        const { data: coaResult, error: coaError } = await supabase.rpc(
+          "create_coa_child",
+          {
+            p_user_id: user.id,
+            p_parent_code: parentCode,
+            p_display_name: accountInput.name,
+          }
+        );
+        if (coaError) {
+          console.warn("[Oniefy] Auto-create COA failed:", coaError.message);
+        } else {
+          coaId = coaResult;
+        }
+      }
 
       const { data, error } = await supabase
         .from("accounts")
         .insert({
-          ...input,
+          ...accountInput,
           user_id: user.id,
           coa_id: coaId,
           liquidity_tier: tier,
-          current_balance: input.initial_balance ?? 0,
-          projected_balance: input.initial_balance ?? 0,
+          current_balance: accountInput.initial_balance ?? 0,
+          projected_balance: accountInput.initial_balance ?? 0,
         })
         .select()
         .single();
@@ -141,8 +158,8 @@ export function useCreateAccount() {
         await supabase.rpc("auto_create_workflow_for_account", {
           p_user_id: user.id,
           p_account_id: data.id,
-          p_account_type: input.type,
-          p_account_name: input.name,
+          p_account_type: accountInput.type,
+          p_account_name: accountInput.name,
         });
       } catch {
         console.warn("[Oniefy] Auto-create workflow failed for account", data.id);
@@ -153,6 +170,7 @@ export function useCreateAccount() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
     },
   });
 }
@@ -162,23 +180,17 @@ export function useUpdateAccount() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      ...updates
-    }: AccountUpdate & { id: string }) => {
-      // If type changed, re-link COA
-      let coaId: string | null | undefined;
+    mutationFn: async ({ id, ...updates }: AccountUpdate & { id: string }) => {
+      // If type changed, update tier (type change is disabled in UI, but belt + suspenders)
       let tier: string | undefined;
       if (updates.type) {
-        coaId = await resolveCOA(supabase, updates.type);
-        tier = COA_MAP[updates.type]?.tier ?? "T1";
+        tier = COA_PARENT_MAP[updates.type]?.tier ?? "T1";
       }
 
       const { data, error } = await supabase
         .from("accounts")
         .update({
           ...updates,
-          ...(coaId !== undefined && { coa_id: coaId }),
           ...(tier !== undefined && { liquidity_tier: tier }),
         })
         .eq("id", id)

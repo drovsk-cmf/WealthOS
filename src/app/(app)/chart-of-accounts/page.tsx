@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   useChartOfAccounts,
   useToggleAccountActive,
+  useCreateCOA,
   GROUP_LABELS,
 } from "@/lib/hooks/use-chart-of-accounts";
 import type { COATreeNode } from "@/lib/hooks/use-chart-of-accounts";
@@ -24,7 +25,7 @@ function TreeNode({
 }) {
   const [expanded, setExpanded] = useState(node.depth < 2);
   const hasChildren = node.children.length > 0;
-  const isLeaf = node.depth === 2;
+  const isLeaf = !hasChildren;
 
   const visibleChildren = showInactive
     ? node.children
@@ -147,14 +148,48 @@ function TreeNode({
 export default function ChartOfAccountsPage() {
   const { data, isLoading } = useChartOfAccounts();
   const toggleActive = useToggleAccountActive();
+  const createCOA = useCreateCOA();
   const [showInactive, setShowInactive] = useState(false);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newParentId, setNewParentId] = useState("");
+  const [newDisplayName, setNewDisplayName] = useState("");
+  const [newAccountName, setNewAccountName] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
 
   function handleToggle(id: string, active: boolean) {
     toggleActive.mutate({ id, is_active: active });
   }
 
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateError(null);
+    if (!newParentId || !newDisplayName.trim()) {
+      setCreateError("Selecione o grupo pai e informe o nome.");
+      return;
+    }
+    try {
+      await createCOA.mutateAsync({
+        parentId: newParentId,
+        displayName: newDisplayName.trim(),
+        accountName: newAccountName.trim() || undefined,
+      });
+      setShowCreate(false);
+      setNewParentId("");
+      setNewDisplayName("");
+      setNewAccountName("");
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Erro ao criar conta.");
+    }
+  }
+
   const activeCount = data?.flat.filter((a) => a.is_active).length ?? 0;
   const totalCount = data?.flat.length ?? 0;
+
+  // Parent options: all non-leaf nodes (nodes that are groups, subgroups, or categories)
+  const parentOptions = data?.flat
+    .filter((a) => a.depth <= 2)
+    .sort((a, b) => a.internal_code.localeCompare(b.internal_code))
+    ?? [];
 
   if (isLoading) {
     return (
@@ -181,19 +216,27 @@ export default function ChartOfAccountsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Plano de Contas</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {activeCount} ativas de {totalCount} contas. Contas ativam automaticamente ao serem usadas.
+            {activeCount} ativas de {totalCount} contas. Contas individuais são criadas automaticamente ao cadastrar contas bancárias.
           </p>
         </div>
-        <button
-          onClick={() => setShowInactive(!showInactive)}
-          className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
-            showInactive
-              ? "border-primary bg-primary/5 text-primary"
-              : "border-input hover:bg-accent"
-          }`}
-        >
-          {showInactive ? "Ocultar inativas" : "Mostrar inativas"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowCreate(true)}
+            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            + Nova conta
+          </button>
+          <button
+            onClick={() => setShowInactive(!showInactive)}
+            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+              showInactive
+                ? "border-primary bg-primary/5 text-primary"
+                : "border-input hover:bg-accent"
+            }`}
+          >
+            {showInactive ? "Ocultar inativas" : "Mostrar inativas"}
+          </button>
+        </div>
       </div>
 
       {/* Legend */}
@@ -228,12 +271,98 @@ export default function ChartOfAccountsPage() {
       <div className="rounded-lg border bg-muted/50 p-4 text-xs text-muted-foreground">
         <p className="font-medium text-foreground">Como funciona</p>
         <p className="mt-1">
-          O plano de contas é a espinha dorsal do sistema contábil. Cada transação gera
-          automaticamente lançamentos de débito e crédito nas contas corretas. Contas
-          folha (nível 3) são ativadas sob demanda quando usadas pela primeira vez.
-          Grupos e subgrupos (níveis 0-1) estão sempre ativos e não podem ser desativados.
+          Ao cadastrar uma conta bancária, cartão, empréstimo ou financiamento, o sistema
+          cria automaticamente uma conta individual no plano de contas (ex: &quot;Nubank Corrente&quot;
+          sob 1.1.01). Use &quot;+ Nova conta&quot; apenas para contas contábeis especiais que não
+          se encaixam nos tipos padrão.
         </p>
       </div>
+
+      {/* Create dialog */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowCreate(false)} />
+          <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+            <h2 className="text-lg font-semibold">Nova conta contábil</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Cria uma subconta sob o grupo selecionado. Para contas bancárias e cartões, use a tela &quot;Contas&quot; (criação automática).
+            </p>
+
+            {createError && (
+              <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
+                {createError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreate} className="mt-4 space-y-4">
+              {/* Parent selector */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Grupo pai</label>
+                <select
+                  value={newParentId}
+                  onChange={(e) => setNewParentId(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">Selecione...</option>
+                  {parentOptions.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {"  ".repeat(a.depth)}{a.internal_code} - {a.display_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Display name */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Nome para o usuário</label>
+                <input
+                  type="text"
+                  value={newDisplayName}
+                  onChange={(e) => setNewDisplayName(e.target.value)}
+                  placeholder="Ex: Empréstimo pessoal João"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  autoFocus
+                />
+              </div>
+
+              {/* Account name (technical) */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">
+                  Nome contábil <span className="font-normal text-muted-foreground">(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newAccountName}
+                  onChange={(e) => setNewAccountName(e.target.value)}
+                  placeholder="Ex: Empréstimos Concedidos - PF"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Se vazio, usa o nome do usuário.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={createCOA.isPending}
+                  className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {createCOA.isPending ? "Criando..." : "Criar conta"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

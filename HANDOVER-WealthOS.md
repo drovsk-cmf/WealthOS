@@ -58,11 +58,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Métrica | Valor |
 |---|---|
 | Tabelas | 26 (todas com RLS) |
-| Políticas RLS | 82 (77 otimizadas com initplan na migration 018) |
-| Functions/RPCs | 32 + 3 cron wrappers |
+| Políticas RLS | 82 (77 otimizadas com initplan na migration 018, coa_update corrigida na 020) |
+| Functions/RPCs | 33 + 3 cron wrappers |
 | Triggers | 18 (17 + validate_journal_balance) |
-| ENUMs | 22 |
-| Migrations aplicadas | 28 partes em 19 versões (001 a 019) |
+| ENUMs | 22 (account_type expandido: +loan, +financing) |
+| Migrations aplicadas | 33 partes em 21 versões (001 a 021b) |
 | pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 2 |
@@ -79,7 +79,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Grupo | Functions |
 |---|---|
-| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, handle_new_user |
+| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, handle_new_user |
 | Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
@@ -342,6 +342,31 @@ Disponíveis como arquivos do projeto:
 **Commits da sessão:** c453c47, a60489f, 08efb33, a821069, ee06199, 4ea3524, 06c4025, 38d489e, 1320c62, 2bc8cb7
 
 **CI:** todos os commits passaram Lint + Type Check + Security Check + Build
+
+---
+
+## 11b. Sessão 10/03/2026 (continuação) - COA individual + XLSX + bug fixes
+
+**Bug fixes:**
+- Toggle do Plano de Contas não funcionava: RLS policy `coa_update` bloqueava UPDATE em contas `is_system=true` (todas as 107 folhas do seed). Migration 020: policy corrigida para permitir UPDATE em todas as contas do usuário (is_system protege apenas DELETE)
+- Categorias duplicadas (16 pares): seed `create_default_categories` rodou 2x. Dados limpos. Migration 020b: UNIQUE(user_id, name, type) + function idempotente com ON CONFLICT DO NOTHING
+
+**XLSX import:**
+- Parser `xlsx-parser.ts` (55 linhas): SheetJS, auto-detect header row, converte para formato headers+rows reutilizando suggestMapping + mapToTransactions
+- Dependência `xlsx ^0.18.5` adicionada
+- Formatos agora suportados: CSV, TSV, OFX, QFX, XLSX, XLS
+
+**Auto-criação de contas contábeis individuais (COA child):**
+- Novos account_types: `loan` (Empréstimo) e `financing` (Financiamento) no ENUM. Migration 021a
+- Nova RPC `create_coa_child(p_user_id, p_parent_id/p_parent_code, p_display_name, p_account_name, p_tax_treatment)`: cria subconta sob qualquer nó do plano, código sequencial automático (X.X.XX.NNN), herda group_type e tax_treatment do pai. Migration 021b
+- `useCreateAccount` agora chama `create_coa_child` em vez de vincular à COA genérica. Cada conta bancária/cartão/empréstimo/financiamento ganha sua própria conta contábil individual
+- `isLeaf` no TreeNode mudou de `depth === 2` para `!hasChildren` (suporte dinâmico a depth 3+)
+- UI manual: botão "+ Nova conta" no Plano de Contas com dialog (seletor de pai + nome)
+- Financiamentos: formulário de conta exibe sub-seletor (Imobiliário vs Veículo) quando tipo = financing
+- RPCs atualizadas: `get_balance_sheet`, `get_dashboard_summary`, `get_solvency_metrics` agora tratam loan/financing como passivo
+
+**Errata registrada:**
+- Adendo v1.2 §2.1: PDF classificado como "Anexo" sem OCR, mas WKF-03 prevê OCR em PDF. Decisão: PDF é formato OCR (além de anexo)
 
 ---
 
