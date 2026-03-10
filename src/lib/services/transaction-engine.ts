@@ -32,6 +32,7 @@ export interface CreateTransactionInput {
   notes?: string | null;
   tags?: string[] | null;
   counterpart_coa_id?: string | null;  // explicit COA override
+  family_member_id?: string | null;
 }
 
 export interface TransferInput {
@@ -92,6 +93,15 @@ export async function createTransaction(
 
   // RPC returns JSON
   const result = data as unknown as TransactionResult;
+
+  // Set family_member_id if provided (not part of the RPC, set after)
+  if (input.family_member_id && result.transaction_id) {
+    await supabase
+      .from("transactions")
+      .update({ family_member_id: input.family_member_id })
+      .eq("id", result.transaction_id);
+  }
+
   return result;
 }
 

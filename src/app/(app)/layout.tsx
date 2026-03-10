@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: "/categories", label: "Categorias", icon: "Tag" },
   { href: "/chart-of-accounts", label: "Plano de Contas", icon: "BookOpen" },
   { href: "/cost-centers", label: "Centros de Custo", icon: "Target" },
+  { href: "/family", label: "Estrutura Familiar", icon: "Users" },
   { href: "/budgets", label: "Orçamento", icon: "PieChart" },
   { href: "/bills", label: "Contas a Pagar", icon: "Calendar" },
   { href: "/assets", label: "Patrimônio", icon: "Building" },

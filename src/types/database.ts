@@ -66,10 +66,16 @@ export type Database = {
         Relationships: []
       }
       cost_centers: {
-        Row: { color: string | null; created_at: string; icon: string | null; id: string; is_active: boolean; is_default: boolean; name: string; parent_id: string | null; type: Database["public"]["Enums"]["center_type"]; updated_at: string; user_id: string }
-        Insert: { color?: string | null; created_at?: string; icon?: string | null; id?: string; is_active?: boolean; is_default?: boolean; name: string; parent_id?: string | null; type?: Database["public"]["Enums"]["center_type"]; updated_at?: string; user_id: string }
-        Update: { color?: string | null; created_at?: string; icon?: string | null; id?: string; is_active?: boolean; is_default?: boolean; name?: string; parent_id?: string | null; type?: Database["public"]["Enums"]["center_type"]; updated_at?: string; user_id?: string }
+        Row: { color: string | null; created_at: string; icon: string | null; id: string; is_active: boolean; is_default: boolean; is_overhead: boolean; name: string; parent_id: string | null; type: Database["public"]["Enums"]["center_type"]; updated_at: string; user_id: string }
+        Insert: { color?: string | null; created_at?: string; icon?: string | null; id?: string; is_active?: boolean; is_default?: boolean; is_overhead?: boolean; name: string; parent_id?: string | null; type?: Database["public"]["Enums"]["center_type"]; updated_at?: string; user_id: string }
+        Update: { color?: string | null; created_at?: string; icon?: string | null; id?: string; is_active?: boolean; is_default?: boolean; is_overhead?: boolean; name?: string; parent_id?: string | null; type?: Database["public"]["Enums"]["center_type"]; updated_at?: string; user_id?: string }
         Relationships: []
+      }
+      family_members: {
+        Row: { avatar_emoji: string | null; birth_date: string | null; cost_center_id: string | null; cpf_encrypted: string | null; created_at: string; id: string; is_active: boolean; is_tax_dependent: boolean; name: string; relationship: Database["public"]["Enums"]["family_relationship"]; role: Database["public"]["Enums"]["family_role"]; updated_at: string; user_id: string }
+        Insert: { avatar_emoji?: string | null; birth_date?: string | null; cost_center_id?: string | null; cpf_encrypted?: string | null; created_at?: string; id?: string; is_active?: boolean; is_tax_dependent?: boolean; name: string; relationship?: Database["public"]["Enums"]["family_relationship"]; role?: Database["public"]["Enums"]["family_role"]; updated_at?: string; user_id: string }
+        Update: { avatar_emoji?: string | null; birth_date?: string | null; cost_center_id?: string | null; cpf_encrypted?: string | null; created_at?: string; id?: string; is_active?: boolean; is_tax_dependent?: boolean; name?: string; relationship?: Database["public"]["Enums"]["family_relationship"]; role?: Database["public"]["Enums"]["family_role"]; updated_at?: string; user_id?: string }
+        Relationships: [{ foreignKeyName: "family_members_cost_center_id_fkey"; columns: ["cost_center_id"]; isOneToOne: false; referencedRelation: "cost_centers"; referencedColumns: ["id"] }]
       }
       documents: {
         Row: { created_at: string; file_name: string; file_path: string; id: string; mime_type: string; related_id: string; related_table: string; size_bytes: number; thumbnail_path: string | null; updated_at: string; user_id: string }
@@ -138,9 +144,9 @@ export type Database = {
         Relationships: []
       }
       transactions: {
-        Row: { account_id: string; amount: number; category_id: string | null; created_at: string; date: string; description: string | null; id: string; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; notes: string | null; occurred_at: string | null; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
-        Insert: { account_id: string; amount: number; category_id?: string | null; created_at?: string; date: string; description?: string | null; id?: string; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
-        Update: { account_id?: string; amount?: number; category_id?: string | null; created_at?: string; date?: string; description?: string | null; id?: string; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
+        Row: { account_id: string; amount: number; bank_connection_id: string | null; category_id: string | null; created_at: string; date: string; description: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; notes: string | null; occurred_at: string | null; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
+        Insert: { account_id: string; amount: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date: string; description?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
+        Update: { account_id?: string; amount?: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date?: string; description?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
         Relationships: []
       }
       users_profile: {
@@ -167,6 +173,18 @@ export type Database = {
       create_default_categories: { Args: { p_user_id: string }; Returns: undefined }
       create_default_chart_of_accounts: { Args: { p_user_id: string }; Returns: undefined }
       create_default_cost_center: { Args: { p_user_id: string }; Returns: string }
+      create_family_member: {
+        Args: {
+          p_user_id: string
+          p_name: string
+          p_relationship?: Database["public"]["Enums"]["family_relationship"]
+          p_role?: Database["public"]["Enums"]["family_role"]
+          p_birth_date?: string | null
+          p_is_tax_dependent?: boolean
+          p_avatar_emoji?: string
+        }
+        Returns: string
+      }
       create_coa_child: {
         Args: {
           p_user_id: string
@@ -304,6 +322,8 @@ export type Database = {
       category_type: "income" | "expense"
       center_type: "cost_center" | "profit_center" | "neutral"
       entry_source: "bank_feed" | "card_feed" | "manual" | "csv_import" | "ofx_import" | "ocr" | "system"
+      family_relationship: "self" | "spouse" | "child" | "parent" | "sibling" | "pet" | "other"
+      family_role: "owner" | "member"
       group_type: "asset" | "liability" | "equity" | "revenue" | "expense"
       index_type: "ipca" | "inpc" | "igpm" | "selic" | "cdi" | "tr" | "usd_brl" | "minimum_wage" | "ipca_food" | "ipca_housing" | "ipca_transport" | "ipca_health" | "ipca_education"
       notification_status: "sent" | "failed" | "skipped"

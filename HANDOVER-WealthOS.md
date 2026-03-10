@@ -57,12 +57,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 26 (todas com RLS) |
-| Políticas RLS | 82 (77 otimizadas com initplan na migration 018, coa_update corrigida na 020) |
-| Functions/RPCs | 33 + 3 cron wrappers |
-| Triggers | 18 (17 + validate_journal_balance) |
-| ENUMs | 22 (account_type expandido: +loan, +financing) |
-| Migrations aplicadas | 33 partes em 21 versões (001 a 021b) |
+| Tabelas | 27 (todas com RLS) |
+| Políticas RLS | 86 (82 + 4 family_members) |
+| Functions/RPCs | 34 + 3 cron wrappers |
+| Triggers | 19 (18 + family_members_updated_at) |
+| ENUMs | 24 (account_type +loan/financing, +family_relationship, +family_role) |
+| Migrations aplicadas | 37 partes em 23 versões (001 a 023) |
 | pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 2 |
@@ -79,7 +79,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Grupo | Functions |
 |---|---|
-| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, handle_new_user |
+| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member, handle_new_user |
 | Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
@@ -367,6 +367,16 @@ Disponíveis como arquivos do projeto:
 
 **Errata registrada:**
 - Adendo v1.2 §2.1: PDF classificado como "Anexo" sem OCR, mas WKF-03 prevê OCR em PDF. Decisão: PDF é formato OCR (além de anexo)
+
+**Estrutura Familiar (family_members):**
+- Tabela `family_members`: name, relationship (7 tipos), role (owner/member), birth_date, is_tax_dependent, cpf_encrypted, avatar_emoji, cost_center_id (FK). Migration 023
+- ENUMs: `family_relationship` (self, spouse, child, parent, sibling, pet, other), `family_role` (owner, member)
+- RPC `create_family_member()`: auto-cria centro de custo/lucro vinculado. Titular/cônjuge = profit_center, demais = cost_center
+- Centro default "Pessoal" renomeado → "Família (Geral)" com flag `is_overhead = true`
+- `transactions.family_member_id` (FK nullable): atalho para atribuir gasto a um membro
+- Aba "Estrutura Familiar" na sidebar com CRUD completo
+- Campo "Membro" (opcional) no formulário de transação: aparece quando há membros cadastrados
+- Evolução futura (backlog): orçamento delegado por membro, multi-user com auth, rateio automático de overhead
 
 ---
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
+import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useCreateTransaction, useCreateTransfer } from "@/lib/services/transaction-engine";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -28,6 +29,7 @@ const TYPE_CONFIG: Record<
 export function TransactionForm({ open, onClose, defaultType = "expense" }: TransactionFormProps) {
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
+  const { data: familyMembers } = useFamilyMembers();
 
   const createTransaction = useCreateTransaction();
   const createTransfer = useCreateTransfer();
@@ -38,6 +40,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
   const [accountId, setAccountId] = useState("");
   const [toAccountId, setToAccountId] = useState(""); // transfer destination
   const [categoryId, setCategoryId] = useState("");
+  const [familyMemberId, setFamilyMemberId] = useState("");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -52,6 +55,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
       setAccountId(accounts?.[0]?.id ?? "");
       setToAccountId("");
       setCategoryId("");
+      setFamilyMemberId("");
       setAmount("");
       setDescription("");
       setDate(new Date().toISOString().split("T")[0]);
@@ -110,6 +114,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
           date,
           is_paid: isPaid,
           notes: notes || null,
+          family_member_id: familyMemberId || null,
         });
       }
       onClose();
@@ -253,6 +258,28 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </div>
+
+          {/* Family member (optional) */}
+          {type !== "transfer" && familyMembers && familyMembers.length > 0 && (
+            <div className="space-y-1.5">
+              <label htmlFor="tx-member" className="text-sm font-medium">
+                Membro <span className="font-normal text-muted-foreground">(opcional)</span>
+              </label>
+              <select
+                id="tx-member"
+                value={familyMemberId}
+                onChange={(e) => setFamilyMemberId(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Família (Geral)</option>
+                {familyMembers.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.avatar_emoji} {m.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Date + Paid toggle row */}
           <div className="grid grid-cols-2 gap-4">
