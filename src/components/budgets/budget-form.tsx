@@ -140,7 +140,7 @@ export function BudgetForm({ open, onClose, month, editData }: BudgetFormProps) 
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 required
               >
-                <option value="">Selecione...</option>
+                <option value="">Selecione</option>
                 {expenseCategories.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -227,7 +227,7 @@ export function BudgetForm({ open, onClose, month, editData }: BudgetFormProps) 
               disabled={isPending}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {isPending ? "Salvando..." : isEditing ? "Salvar" : "Criar"}
+              {isPending ? "Salvando" : isEditing ? "Salvar" : "Criar"}
             </button>
           </div>
         </form>

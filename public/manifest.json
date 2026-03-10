@@ -1,7 +1,7 @@
 {
   "name": "Oniefy",
   "short_name": "Oniefy",
-  "description": "Sistema Integrado de Gestão Financeira e Patrimonial",
+  "description": "Patrimônio em campo de visão.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#F5F0E8",

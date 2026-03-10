@@ -14,7 +14,7 @@ const TIMEOUT_MESSAGES: Record<string, string> = {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="text-center text-sm text-muted-foreground">Carregando...</div>}>
+    <Suspense fallback={<div className="text-center text-sm text-muted-foreground">Carregando</div>}>
       <LoginContent />
     </Suspense>
   );
@@ -106,7 +106,7 @@ function LoginContent() {
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Gestão financeira e patrimonial inteligente
+          Patrimônio em campo de visão.
         </p>
       </div>
 
@@ -178,7 +178,7 @@ function LoginContent() {
 
         <button type="submit" disabled={loading}
           className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-          {loading ? "Entrando..." : "Entrar"}
+          {loading ? "Entrando" : "Entrar"}
         </button>
       </form>
 

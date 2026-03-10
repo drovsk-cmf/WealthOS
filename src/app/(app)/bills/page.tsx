@@ -160,10 +160,10 @@ export default function BillsPage() {
 
           {(!pendingBills || pendingBills.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              <p className="text-3xl">✓</p>
+              
               <h2 className="mt-2 text-lg font-semibold">Nenhuma conta pendente</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Todas as contas estão em dia. Crie uma recorrência para começar.
+                Sem contas a vencer no período.
               </p>
             </div>
           ) : (
@@ -229,10 +229,10 @@ export default function BillsPage() {
         <>
           {(!recurrences || recurrences.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              <p className="text-3xl">🔄</p>
+              
               <h2 className="mt-2 text-lg font-semibold">Nenhuma recorrência cadastrada</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Crie recorrências para despesas fixas como aluguel, internet, streaming.
+                Sem recorrências cadastradas.
               </p>
               <button onClick={handleNew}
                 className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">

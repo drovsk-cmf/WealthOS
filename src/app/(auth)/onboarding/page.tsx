@@ -220,21 +220,21 @@ export default function OnboardingPage() {
       {step === "welcome" && (
         <>
           <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao Oniefy</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
             <p className="mt-3 text-sm text-muted-foreground">
-              Vamos configurar sua conta em 4 passos rápidos para garantir segurança e personalização.
+              Configuração inicial em 4 etapas.
             </p>
           </div>
 
           <div className="space-y-3">
             {[
-              { icon: "💰", title: "Moeda padrão", desc: "Escolha sua moeda principal" },
-              { icon: "🔐", title: "Criptografia", desc: "Sua chave de segurança será gerada automaticamente" },
-              { icon: "📱", title: "Autenticação 2FA", desc: "Configure seu app autenticador (obrigatório)" },
-              { icon: "📂", title: "Dados iniciais", desc: "Categorias, plano de contas e centro de custo serão criados" },
+              { num: "1", title: "Moeda padrão", desc: "Moeda principal dos registros financeiros" },
+              { num: "2", title: "Criptografia", desc: "Chave de segurança gerada automaticamente" },
+              { num: "3", title: "Autenticação 2FA", desc: "Configuração do app autenticador (obrigatório)" },
+              { num: "4", title: "Dados iniciais", desc: "Categorias, plano de contas e centro de custo padrão" },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-3 rounded-lg border bg-card p-3">
-                <span className="text-xl">{item.icon}</span>
+                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{item.num}</span>
                 <div>
                   <p className="text-sm font-medium">{item.title}</p>
                   <p className="text-xs text-muted-foreground">{item.desc}</p>
@@ -245,7 +245,7 @@ export default function OnboardingPage() {
 
           <button onClick={() => setStep("currency")}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-            Começar configuração
+            Iniciar
           </button>
         </>
       )}
@@ -256,8 +256,7 @@ export default function OnboardingPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight">Moeda padrão</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Escolha a moeda principal para seus registros financeiros.
-              Pode ser alterada depois nas configurações.
+              Moeda principal dos registros financeiros. Pode ser alterada nas configurações.
             </p>
           </div>
 
@@ -279,7 +278,7 @@ export default function OnboardingPage() {
 
           <button onClick={handleCurrency} disabled={loading}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-            {loading ? "Salvando..." : "Continuar"}
+            {loading ? "Salvando" : "Continuar"}
           </button>
         </>
       )}
@@ -290,7 +289,7 @@ export default function OnboardingPage() {
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
           <h1 className="text-2xl font-bold tracking-tight">Configurando segurança</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Gerando sua chave de criptografia pessoal...
+            Gerando sua chave de criptografia pessoal.
           </p>
         </div>
       )}
@@ -301,7 +300,7 @@ export default function OnboardingPage() {
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
           <h1 className="text-2xl font-bold tracking-tight">Preparando autenticação</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Gerando QR code para seu autenticador...
+            Gerando QR code para seu autenticador.
           </p>
         </div>
       )}
@@ -352,12 +351,12 @@ export default function OnboardingPage() {
             </div>
             <button type="submit" disabled={loading || mfaCode.length !== 6}
               className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-              {loading ? "Verificando..." : "Verificar e continuar"}
+              {loading ? "Verificando" : "Verificar e continuar"}
             </button>
           </form>
 
           <div className="rounded-lg border border-burnished/20 bg-burnished/10 p-3 text-xs text-burnished">
-            <strong>Importante:</strong> salve a chave do autenticador em local seguro.
+            Salve a chave do autenticador em local seguro.
             Se perder acesso ao app autenticador, você precisará dos códigos de recuperação
             para entrar na sua conta.
           </div>
@@ -370,7 +369,7 @@ export default function OnboardingPage() {
           <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
           <h1 className="text-2xl font-bold tracking-tight">Preparando sua conta</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Criando categorias, plano de contas e centro de custo padrão...
+            Criando categorias, plano de contas e centro de custo padrão.
           </p>
         </div>
       )}
@@ -383,9 +382,9 @@ export default function OnboardingPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Tudo pronto!</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Configuração concluída</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sua conta está configurada e segura. Redirecionando...
+            Seu painel está pronto. Redirecionando.
           </p>
         </div>
       )}

@@ -203,14 +203,14 @@ export default function AssetsPage() {
       {/* Empty state */}
       {(!assets || assets.length === 0) && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <p className="text-3xl">🏠</p>
+          
           <h2 className="mt-2 text-lg font-semibold">Nenhum bem cadastrado</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Registre seus bens para ter visão consolidada do patrimônio e acompanhar a depreciação.
+            Nenhum bem cadastrado. Bens registrados aparecem com visão consolidada e depreciação.
           </p>
           <button onClick={handleNew}
             className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-            Cadastrar primeiro bem
+            Cadastrar bem
           </button>
         </div>
       )}

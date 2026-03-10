@@ -111,7 +111,7 @@ export default function IndicesPage() {
           disabled={fetchIndices.isPending}
           className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
         >
-          {fetchIndices.isPending ? "Atualizando..." : "Atualizar índices"}
+          {fetchIndices.isPending ? "Atualizando" : "Atualizar índices"}
         </button>
       </div>
 
@@ -175,7 +175,7 @@ export default function IndicesPage() {
       {/* No data state */}
       {mainIndices.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-          <p className="text-3xl">📊</p>
+          
           <h2 className="mt-2 text-lg font-semibold">Sem dados de índices</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Clique em &ldquo;Atualizar índices&rdquo; para buscar os dados mais recentes do BCB.

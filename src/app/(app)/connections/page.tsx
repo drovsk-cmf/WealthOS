@@ -200,7 +200,7 @@ function ImportWizard() {
           <label className="text-sm font-medium">Conta de destino</label>
           <select value={accountId} onChange={(e) => setAccountId(e.target.value)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-            <option value="">Selecione a conta...</option>
+            <option value="">Selecione a conta</option>
             {accounts?.filter((a) => a.is_active).map((a) => (
               <option key={a.id} value={a.id}>{a.name}</option>
             ))}
@@ -223,7 +223,7 @@ function ImportWizard() {
 
         {/* File upload */}
         <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card p-12">
-          <p className="text-3xl">📥</p>
+          
           <p className="mt-3 text-sm font-semibold">Arraste um arquivo ou clique para selecionar</p>
           <p className="mt-1 text-xs text-muted-foreground">Formatos: CSV, TSV, OFX, QFX, XLSX, XLS</p>
           <input
@@ -333,7 +333,7 @@ function ImportWizard() {
               <p key={i} className="text-xs text-burnished">{e}</p>
             ))}
             {parseErrors.length > 5 && (
-              <p className="text-xs text-burnished">...e mais {parseErrors.length - 5}</p>
+              <p className="text-xs text-burnished">e mais {parseErrors.length - 5}</p>
             )}
           </div>
         )}
@@ -383,7 +383,7 @@ function ImportWizard() {
         <button onClick={handleImport}
           disabled={selected.size === 0 || importBatch.isPending}
           className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-          {importBatch.isPending ? "Importando..." : `Importar ${selected.size} transações`}
+          {importBatch.isPending ? "Importando" : `Importar ${selected.size} transações`}
         </button>
       </div>
     );
@@ -393,7 +393,7 @@ function ImportWizard() {
 
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-      <p className="text-3xl">✅</p>
+      
       <h2 className="mt-3 text-xl font-bold">Importação concluída</h2>
       {importBatch.data && (
         <div className="mt-4 space-y-1 text-sm">
@@ -456,11 +456,10 @@ function ConnectionsManager() {
 
       {(!connections || connections.length === 0) ? (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <p className="text-3xl">🏦</p>
+          
           <h2 className="mt-2 text-lg font-semibold">Nenhuma conexão bancária</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Crie uma conexão para organizar suas importações. Você pode importar arquivos CSV/OFX/XLSX
-            sem conexão, mas com uma conexão o sistema rastreia duplicatas e sincronização.
+            Sem conexões cadastradas. Importação de arquivos CSV/OFX/XLSX funciona sem conexão. Conexões permitem rastreamento de duplicatas.
           </p>
         </div>
       ) : (
@@ -515,7 +514,7 @@ function ConnectionsManager() {
           <div className="relative z-50 mx-4 w-full max-w-md rounded-lg border bg-card p-6 shadow-xl">
             <h2 className="text-lg font-semibold">Nova Conexão Manual</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Crie uma conexão para agrupar importações de uma mesma instituição.
+              Agrupa importações de uma mesma instituição financeira.
             </p>
 
             <form onSubmit={handleCreate} className="mt-4 space-y-4">
@@ -533,7 +532,7 @@ function ConnectionsManager() {
                 </button>
                 <button type="submit" disabled={!newName.trim() || createConnection.isPending}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                  {createConnection.isPending ? "Criando..." : "Criar"}
+                  {createConnection.isPending ? "Criando" : "Criar"}
                 </button>
               </div>
             </form>

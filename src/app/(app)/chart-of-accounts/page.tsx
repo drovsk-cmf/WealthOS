@@ -303,7 +303,7 @@ export default function ChartOfAccountsPage() {
                   onChange={(e) => setNewParentId(e.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
-                  <option value="">Selecione...</option>
+                  <option value="">Selecione</option>
                   {parentOptions.map((a) => (
                     <option key={a.id} value={a.id}>
                       {"  ".repeat(a.depth)}{a.internal_code} - {a.display_name}
@@ -338,7 +338,7 @@ export default function ChartOfAccountsPage() {
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Se vazio, usa o nome do usuário.
+                  Deixe em branco para usar o nome do usuário.
                 </p>
               </div>
 
@@ -356,7 +356,7 @@ export default function ChartOfAccountsPage() {
                   disabled={createCOA.isPending}
                   className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {createCOA.isPending ? "Criando..." : "Criar conta"}
+                  {createCOA.isPending ? "Criando" : "Criar conta"}
                 </button>
               </div>
             </form>

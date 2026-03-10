@@ -443,7 +443,7 @@ export default function BudgetsPage() {
                 disabled={copyBudgets.isPending}
                 className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
               >
-                {copyBudgets.isPending ? "Copiando..." : "Copiar"}
+                {copyBudgets.isPending ? "Copiando" : "Copiar"}
               </button>
             </div>
           </div>

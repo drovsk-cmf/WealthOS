@@ -222,7 +222,7 @@ export default function WorkflowsPage() {
         <div className="flex gap-2">
           <button onClick={handleGenerateTasks} disabled={generateTasks.isPending}
             className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50">
-            {generateTasks.isPending ? "Gerando..." : "Gerar tarefas do mês"}
+            {generateTasks.isPending ? "Gerando" : "Gerar tarefas do mês"}
           </button>
         </div>
       </div>
@@ -259,10 +259,10 @@ export default function WorkflowsPage() {
         <>
           {pendingCount === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              <p className="text-3xl">✅</p>
-              <h2 className="mt-2 text-lg font-semibold">Tudo em dia</h2>
+              
+              <h2 className="mt-2 text-lg font-semibold">Nenhuma tarefa pendente</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                Nenhuma tarefa pendente. Clique em &ldquo;Gerar tarefas do mês&rdquo; para criar as tarefas dos seus workflows ativos.
+                Use &ldquo;Gerar tarefas do mês&rdquo; para criar tarefas dos workflows ativos.
               </p>
             </div>
           ) : (
@@ -323,7 +323,7 @@ export default function WorkflowsPage() {
 
           {(!workflows || workflows.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              <p className="text-3xl">🔄</p>
+              
               <h2 className="mt-2 text-lg font-semibold">Nenhum workflow ativo</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 Workflows são criados automaticamente ao cadastrar contas bancárias, cartões e investimentos.
@@ -435,7 +435,7 @@ export default function WorkflowsPage() {
                 </button>
                 <button type="submit" disabled={createWorkflow.isPending}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-                  {createWorkflow.isPending ? "Criando..." : "Criar"}
+                  {createWorkflow.isPending ? "Criando" : "Criar"}
                 </button>
               </div>
             </form>

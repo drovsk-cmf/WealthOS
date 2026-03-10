@@ -150,11 +150,11 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
       <div className="flex gap-2 pt-2">
         <button onClick={handleExportCsv} disabled={centerExport.isPending}
           className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
-          {centerExport.isPending ? "..." : "Exportar CSV"}
+          {centerExport.isPending ? "Exportando" : "Exportar CSV"}
         </button>
         <button onClick={handleExportJson} disabled={centerExport.isPending}
           className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
-          {centerExport.isPending ? "..." : "Exportar JSON"}
+          {centerExport.isPending ? "Exportando" : "Exportar JSON"}
         </button>
       </div>
     </div>
@@ -241,7 +241,7 @@ export default function CostCentersPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Centros de Custo</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Organize suas transações por projeto, pessoa ou atividade.
+            Segmentação de transações por projeto, pessoa ou atividade.
             Clique num centro para ver o P&L.
           </p>
         </div>
@@ -254,10 +254,10 @@ export default function CostCentersPage() {
       {/* Empty state */}
       {centers && centers.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-          <p className="text-3xl">🎯</p>
+          
           <h2 className="mt-2 text-lg font-semibold">Nenhum centro de custo</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Crie centros para rastrear gastos por pessoa, projeto ou atividade.
+            Nenhum centro de custo cadastrado.
           </p>
           <button onClick={handleNew}
             className="mt-3 text-sm font-medium text-primary hover:underline">
@@ -415,7 +415,7 @@ export default function CostCentersPage() {
                 </button>
                 <button type="submit" disabled={loading}
                   className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-                  {loading ? "Salvando..." : isEdit ? "Salvar" : "Criar"}
+                  {loading ? "Salvando" : isEdit ? "Salvar" : "Criar"}
                 </button>
               </div>
             </form>

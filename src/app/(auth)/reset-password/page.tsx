@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Senha atualizada</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Redirecionando para o login...</p>
+          <p className="mt-2 text-sm text-muted-foreground">Redirecionando para o login.</p>
         </div>
       </>
     );
@@ -95,7 +95,7 @@ export default function ResetPasswordPage() {
         </div>
         <button type="submit" disabled={loading}
           className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-          {loading ? "Salvando..." : "Salvar nova senha"}
+          {loading ? "Salvando" : "Salvar nova senha"}
         </button>
       </form>
 

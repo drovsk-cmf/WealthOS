@@ -152,7 +152,7 @@ export default function SecuritySettingsPage() {
             disabled={loading === "logout"}
             className="rounded-md border border-destructive/50 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
           >
-            {loading === "logout" ? "Encerrando..." : "Encerrar todas"}
+            {loading === "logout" ? "Encerrando" : "Encerrar todas"}
           </button>
         </div>
       </div>
@@ -192,7 +192,7 @@ export default function SecuritySettingsPage() {
                 disabled={deleteConfirmText !== "EXCLUIR" || loading === "delete"}
                 className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground disabled:opacity-50"
               >
-                {loading === "delete" ? "Processando..." : "Confirmar exclusão"}
+                {loading === "delete" ? "Processando" : "Confirmar exclusão"}
               </button>
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}

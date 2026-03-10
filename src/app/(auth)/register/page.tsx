@@ -98,7 +98,7 @@ export default function RegisterPage() {
             Enviamos um link de confirmação para{" "}
             <strong className="text-foreground">{form.email}</strong>.
             <br />
-            Clique no link para ativar sua conta e começar a configuração.
+            Acesse o link para ativar sua conta e iniciar a configuração.
           </p>
         </div>
         <div className="rounded-lg border bg-card p-4 text-sm text-muted-foreground">
@@ -169,7 +169,7 @@ export default function RegisterPage() {
 
         <button type="submit" disabled={loading}
           className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-          {loading ? "Criando conta..." : "Criar conta"}
+          {loading ? "Criando conta" : "Criar conta"}
         </button>
       </form>
 

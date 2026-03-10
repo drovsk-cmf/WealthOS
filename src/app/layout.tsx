@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Oniefy",
-  description: "Sistema Integrado de Gestão Financeira e Patrimonial",
+  description: "Oniefy: clareza patrimonial com padrão executivo",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",

@@ -191,7 +191,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               onChange={(e) => setAccountId(e.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <option value="">Selecione...</option>
+              <option value="">Selecione</option>
               {accounts?.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name} ({formatCurrency(a.current_balance)})
@@ -212,7 +212,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
                 onChange={(e) => setToAccountId(e.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">Selecione...</option>
+                <option value="">Selecione</option>
                 {transferAccounts.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.name} ({formatCurrency(a.current_balance)})
@@ -337,7 +337,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                placeholder="Observações adicionais..."
+                placeholder="Observações adicionais"
                 className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
@@ -363,7 +363,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
                     : "bg-terracotta hover:bg-terracotta/80"
               }`}
             >
-              {loading ? "Salvando..." : `Lançar ${TYPE_CONFIG[type].label.toLowerCase()}`}
+              {loading ? "Salvando" : `Lançar ${TYPE_CONFIG[type].label.toLowerCase()}`}
             </button>
           </div>
         </form>

@@ -182,7 +182,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
               <label className="text-sm font-medium">Conta</label>
               <select value={accountId} onChange={(e) => setAccountId(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
-                <option value="">Selecione...</option>
+                <option value="">Selecione</option>
                 {accounts?.map((a) => (
                   <option key={a.id} value={a.id}>{a.name}</option>
                 ))}
@@ -291,7 +291,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
             </button>
             <button type="submit" disabled={isPending}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-              {isPending ? "Salvando..." : isEditing ? "Salvar" : "Criar"}
+              {isPending ? "Salvando" : isEditing ? "Salvar" : "Criar"}
             </button>
           </div>
         </form>

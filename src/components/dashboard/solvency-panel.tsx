@@ -21,7 +21,7 @@ interface Props {
 }
 
 function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
-  if (lcr >= 2) return { label: "Excelente", color: "text-verdant", bg: "bg-verdant/15" };
+  if (lcr >= 2) return { label: "Sólida", color: "text-verdant", bg: "bg-verdant/15" };
   if (lcr >= 1) return { label: "Saudável", color: "text-verdant", bg: "bg-verdant/10" };
   if (lcr >= 0.5) return { label: "Atenção", color: "text-burnished", bg: "bg-burnished/15" };
   return { label: "Risco", color: "text-terracotta", bg: "bg-terracotta/15" };
@@ -29,7 +29,7 @@ function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
 
 function runwayStatus(months: number): { label: string; color: string } {
   if (months >= 12) return { label: "Sólido", color: "text-verdant" };
-  if (months >= 6) return { label: "OK", color: "text-verdant" };
+  if (months >= 6) return { label: "Estável", color: "text-verdant" };
   if (months >= 3) return { label: "Atenção", color: "text-burnished" };
   return { label: "Urgente", color: "text-terracotta" };
 }

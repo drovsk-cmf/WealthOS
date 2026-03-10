@@ -110,19 +110,15 @@ export default function AccountsPage() {
       {/* Empty state */}
       {accounts && accounts.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-3xl">
-            🏦
-          </div>
           <h2 className="text-lg font-semibold">Nenhuma conta cadastrada</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Cadastre suas contas bancárias, cartões e carteiras para começar a
-            organizar suas finanças.
+            Contas bancárias, cartões e carteiras são registrados aqui.
           </p>
           <button
             onClick={handleNew}
             className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Cadastrar primeira conta
+            Cadastrar conta
           </button>
         </div>
       )}

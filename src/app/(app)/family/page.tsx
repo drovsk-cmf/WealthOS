@@ -143,10 +143,10 @@ export default function FamilyPage() {
       {/* Empty state */}
       {(!members || members.length === 0) && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <p className="text-3xl">👨‍👩‍👧‍👦</p>
+          
           <h2 className="mt-2 text-lg font-semibold">Nenhum membro cadastrado</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Comece adicionando você e os outros membros da família para rastrear despesas e receitas individuais.
+            Nenhum membro cadastrado. Adicione os membros da família para rastrear despesas e receitas individuais.
           </p>
           <button
             onClick={handleNew}
@@ -345,7 +345,7 @@ export default function FamilyPage() {
                   disabled={loading}
                   className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                 >
-                  {loading ? "Salvando..." : editing ? "Salvar" : "Criar membro"}
+                  {loading ? "Salvando" : editing ? "Salvar" : "Criar membro"}
                 </button>
               </div>
             </form>

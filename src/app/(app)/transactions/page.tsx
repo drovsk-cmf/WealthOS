@@ -83,7 +83,7 @@ export default function TransactionsPage() {
             type="text"
             value={filters.search ?? ""}
             onChange={(e) => updateFilter("search", e.target.value)}
-            placeholder="Buscar por descrição..."
+            placeholder="Buscar por descrição"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -168,13 +168,13 @@ export default function TransactionsPage() {
           </div>
           <h2 className="text-lg font-semibold">
             {Object.keys(filters).length > 0
-              ? "Nenhuma transação encontrada"
-              : "Nenhuma transação registrada"}
+              ? "Nenhuma transação encontrada para os filtros selecionados."
+              : "Nenhuma transação registrada."}
           </h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             {Object.keys(filters).length > 0
-              ? "Tente ajustar os filtros ou limpar a busca."
-              : "Lance sua primeira movimentação para começar a acompanhar suas finanças."}
+              ? "Ajuste os filtros ou limpe a busca."
+              : "Registre uma transação para iniciar."}
           </p>
           {Object.keys(filters).length === 0 && (
             <button

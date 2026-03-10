@@ -207,7 +207,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
             </button>
             <button type="submit" disabled={isPending}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-              {isPending ? "Salvando..." : isEditing ? "Salvar" : "Cadastrar"}
+              {isPending ? "Salvando" : isEditing ? "Salvar" : "Cadastrar"}
             </button>
           </div>
         </form>
