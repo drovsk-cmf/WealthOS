@@ -276,6 +276,9 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~RLS initplan~~ | FEITO: 77 policies reescritas com `(select auth.uid())`. Migration 018 |
 | ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
 | Leaked password protection | Requer Supabase Pro. Claudio acionará quando assinar a plataforma |
+| Ícones Lucide | Substituir emojis (🏠, ✅, 📥, 🏦) por ícones SVG Lucide React em todo o app |
+| Conciliação bancária (3 camadas) | **Camada 1:** Status tracking: ENUM lifecycle (pendente → vencida → paga → cancelada), `due_date` separado de `date`, pg_cron diário marca vencidas. **Camada 2:** Auto-matching na importação: ao importar extrato, cruzar com pendentes (mesma conta, valor ±10%, janela ±7 dias); se match, baixa a pendente em vez de duplicar; registra ajuste se valor difere. **Camada 3:** Tela de reconciliação manual: lado a lado pendentes × importadas sem match, usuário liga pares manualmente. Pré-requisito: Camada 1 antes de 2. |
+| Orçamento delegado por membro | Membro cria proposta orçamentária para seu centro, responsável aprova, consolida no orçamento familiar. Requer role system em family_members (owner/member já existe). |
 
 ---
 
