@@ -207,6 +207,26 @@ A última fase é um conjunto de refinamentos, não stories novas:
 - Next.js upgrade (14 → 15+)
 - OCR real (WKF-03), testes, Edge Functions com pg_cron
 
+### Auditoria de Segurança (Gemini, 2026-03-10)
+
+Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
+
+| # | Achado | Solução | Arquivos |
+|---|--------|---------|----------|
+| 1 | DEK não expurgada no app background | Hook `useAppLifecycle` purga DEK no `appStateChange`, recarrega via biometria | `src/lib/auth/use-app-lifecycle.ts` |
+| 2 | Rate limiting inexistente em rotas auth | Rate limiter in-memory (sliding window) integrado ao middleware | `src/lib/auth/rate-limiter.ts`, `src/middleware.ts` |
+| 3 | Sem monitoramento de latência do middleware | Header `Server-Timing` em todas as respostas do middleware | `src/middleware.ts` |
+| 4 | OFX import sem deduplicação robusta | SHA-256 hash do FITID + UNIQUE partial index `(user_id, account_id, external_id)` | `src/lib/parsers/ofx-parser.ts`, migration 011 |
+| 5 | Sem validação DB de balanço contábil | Statement-level trigger `validate_journal_balance()` (sum D = sum C, min 2 linhas) | migration 012, `supabase/tests/test_financial_mutations.sql` |
+
+**Achado bônus descoberto durante implementação:** não havia trigger DB-level impedindo journal entries desbalanceados. O RPC criava pares corretos, mas inserção direta podia corromper o balanço. Corrigido com migration 012.
+
+**Nota rate limiter:** in-memory, não compartilha estado entre instâncias Vercel. Para produção multi-região: migrar para Upstash Redis ou Vercel KV. WAF (Vercel/Cloudflare) recomendado como camada adicional.
+
+**Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
+
+**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger). Total: 26 tabelas, 82 RLS, 22 ENUMs, 31 RPCs, 1 validation trigger.
+
 ---
 
 ## 7. Items de Polish (Fase 10 backlog)
