@@ -51,7 +51,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | 6. Workflows | Tarefas periódicas, auto-criação, checklist | CONCLUÍDA |
 | 7. Fiscal Integrado | Relatório fiscal, provisionamento IR, parâmetros vigentes | CONCLUÍDA |
 | 8. Índices Econômicos | BCB SGS, IPCA, Selic, gráficos, coleta manual | CONCLUÍDA |
-| 9. Integração Bancária | Import CSV/OFX, auto-categorização, bank_connections | CONCLUÍDA |
+| 9. Integração Bancária | Import CSV/OFX/XLSX, auto-categorização, bank_connections | CONCLUÍDA |
 
 ### 3.2 Banco de Dados (Supabase)
 
@@ -171,7 +171,7 @@ src/
 | 6. Workflows | Automações, tarefas, checklist | CONCLUÍDA | WKF-01-04 |
 | 7. Fiscal Integrado | tax_treatment, provisionamento IR | CONCLUÍDA | FIS-01-06 |
 | 8. Índices Econômicos | BCB/SIDRA, gráficos, coleta | CONCLUÍDA | Extra-stories |
-| **9. Integração Bancária** | **Import CSV/OFX, auto-categorização, bank_connections** | **CONCLUÍDA** | **BANK-01-06** |
+| **9. Integração Bancária** | **Import CSV/OFX/XLSX, auto-categorização, bank_connections** | **CONCLUÍDA** | **BANK-01-06** |
 | 10. Polish + App Store | PWA, Capacitor, submissão | Pendente | - |
 
 ---
@@ -188,9 +188,10 @@ src/
 - RPC auto_categorize_transaction: 25+ patterns (alimentação, transporte, saúde, moradia, lazer, etc.)
 - RPC import_transactions_batch: bulk import com dedup por external_id, auto-categorização, balance recalc
 
-**Parsers (330 linhas):**
+**Parsers (390+ linhas):**
 - OFX parser: SGML (v1.x) e XML (v2.x), extração de FITID/DTPOSTED/TRNAMT/NAME
-- CSV parser: auto-detect separador (;/,/tab), formatos BR (DD/MM/YYYY, 1.234,56), column mapping com sugestão
+- CSV parser: PapaParse, auto-detect separador (;/,/tab), formatos BR (DD/MM/YYYY, 1.234,56), column mapping com sugestão
+- XLSX/XLS parser: SheetJS, auto-detect header row, converte para formato headers+rows do CSV (reusa suggestMapping + mapToTransactions)
 
 **Hook (147 linhas):**
 - useBankConnections, useCreateBankConnection, useDeactivateBankConnection, useImportBatch
