@@ -390,6 +390,8 @@ Disponíveis como arquivos do projeto:
 - Constantes JS (PRESET_COLORS, CATEGORY_COLORS, INDEX_TYPE_COLORS, tier colors) atualizadas
 - Cores das categorias no banco atualizadas para Plum Ledger
 - Novos tokens: --warning, --info, --plum, --bone, --sage, --brass, --stone, --tier-1 a --tier-4
+- Tipografia: Inter → DM Sans (corpo) + JetBrains Mono (dados). Instrument Serif (display/hero) adiado (carregamento seletivo)
+- Theme colors: branco → Bone (#F5F0E8), preto → Plum deep (#141218)
 
 ---
 
