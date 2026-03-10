@@ -12,6 +12,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
 interface BcbDataPoint {
@@ -44,9 +45,8 @@ function formatDateForBcb(date: Date): string {
 
 export async function POST() {
   try {
+    // Auth check with regular client
     const supabase = await createClient();
-
-    // Verify auth
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -54,8 +54,11 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch active sources (only BCB SGS for now)
-    const { data: sources, error: srcErr } = await supabase
+    // Admin client for write operations (bypasses RLS on economic_indices)
+    const adminClient = createAdminClient();
+
+    // Fetch active sources (read via admin - sources have no user-scoped RLS)
+    const { data: sources, error: srcErr } = await adminClient
       .from("economic_indices_sources")
       .select("*")
       .eq("is_active", true)
@@ -124,7 +127,7 @@ export async function POST() {
               ? isoDate.slice(0, 8) + "01"
               : isoDate.slice(0, 8) + "01"; // Always first of month for storage
 
-          const { error: upsertErr } = await supabase
+          const { error: upsertErr } = await adminClient
             .from("economic_indices")
             .upsert(
               {
@@ -139,7 +142,7 @@ export async function POST() {
 
           if (upsertErr) {
             // If upsert fails (no unique constraint), try insert with conflict skip
-            const { error: insertErr } = await supabase
+            const { error: insertErr } = await adminClient
               .from("economic_indices")
               .insert({
                 index_type: source.index_type as Database["public"]["Enums"]["index_type"],

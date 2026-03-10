@@ -225,7 +225,7 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
 
-**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material) + 014 (transfer RPC). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs, 1 validation trigger.
+**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material) + 014 (transfer RPC) + 015 (nullable bank_connection in import). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs, 1 validation trigger.
 
 ### Auditoria de Código (ChatGPT, 2026-03-10)
 
@@ -238,11 +238,11 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | S1 | ~~Redesenhar KEK: derivar de material estável, não JWT efêmero~~ | ~~Crítica~~ | FEITO (migration 013, commit c453c47) |
 | S2 | ~~Exportar SQL real das migrations 003-010 do Supabase para o Git~~ | ~~Alta~~ | FEITO (2.236 linhas reais, commit a60489f) |
 | S3 | ~~RPC atômica `create_transfer_with_journal()`~~ | ~~Alta~~ | FEITO (migration 014 + 2 arquivos frontend) |
-| S4 | Import: normalizar sinal (abs) do amount nos parsers | Média | 1h |
-| S5 | Import: substituir CSV parser manual por PapaParse real | Média | 1h |
-| S6 | Import: eliminar UUID sentinela `00000000-...` | Média | 30min |
-| S7 | Rota de índices: corrigir admin client + restringir acesso | Média | 1h |
-| S8 | Adicionar Content-Security-Policy ao next.config.js | Média | 1h |
+| S4 | ~~Import: normalizar sinal (abs) do amount nos parsers~~ | ~~Média~~ | FEITO (OFX + CSV parsers) |
+| S5 | ~~Import: substituir CSV parser manual por PapaParse real~~ | ~~Média~~ | FEITO (papaparse adicionado) |
+| S6 | ~~Import: eliminar UUID sentinela `00000000-...`~~ | ~~Média~~ | FEITO (migration 015 + hook) |
+| S7 | ~~Rota de índices: corrigir admin client + restringir acesso~~ | ~~Média~~ | FEITO (adminClient para writes) |
+| S8 | ~~Adicionar Content-Security-Policy ao next.config.js~~ | ~~Média~~ | FEITO |
 
 **Itens conhecidos (não urgentes, já planejados):**
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`

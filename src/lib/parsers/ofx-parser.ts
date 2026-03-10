@@ -174,10 +174,11 @@ export async function parseOFX(content: string): Promise<OFXParseResult> {
       }
       seenIds.add(externalId);
 
+      // Normalize: amount always positive, type from original sign
       result.transactions.push({
         externalId,
         date,
-        amount,
+        amount: Math.abs(amount),
         description,
         type: amount >= 0 ? "income" : "expense",
         memo: memo || undefined,

@@ -2,9 +2,11 @@
  * WealthOS - CSV Parser
  *
  * Parses CSV/TSV bank statements with column mapping.
- * Uses Papaparse for robust CSV parsing (already in project deps via Recharts).
- * Detects common bank statement formats and suggests column mappings.
+ * Uses PapaParse for robust CSV parsing (handles quoted fields,
+ * various encodings, auto-detect separator).
  */
+
+import Papa from "papaparse";
 
 export interface CSVColumnMapping {
   date: number; // column index
@@ -118,38 +120,18 @@ function detectDescriptionColumn(headers: string[], dateCol: number, amountCol: 
   return 0;
 }
 
-/** Parse raw CSV text into headers + rows */
+/** Parse raw CSV text into headers + rows using PapaParse */
 export function parseCSVRaw(text: string): { headers: string[]; rows: string[][] } {
-  const lines = text.trim().split(/\r?\n/);
-  if (lines.length < 2) return { headers: [], rows: [] };
+  const result = Papa.parse<string[]>(text.trim(), {
+    header: false,
+    skipEmptyLines: true,
+    dynamicTyping: false,
+  });
 
-  // Detect separator (comma, semicolon, tab)
-  const firstLine = lines[0];
-  let sep = ",";
-  if (firstLine.split(";").length > firstLine.split(",").length) sep = ";";
-  if (firstLine.split("\t").length > firstLine.split(sep).length) sep = "\t";
+  if (result.data.length < 2) return { headers: [], rows: [] };
 
-  const parseRow = (line: string): string[] => {
-    const result: string[] = [];
-    let current = "";
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        inQuotes = !inQuotes;
-      } else if (ch === sep && !inQuotes) {
-        result.push(current.trim());
-        current = "";
-      } else {
-        current += ch;
-      }
-    }
-    result.push(current.trim());
-    return result;
-  };
-
-  const headers = parseRow(lines[0]);
-  const rows = lines.slice(1).filter((l) => l.trim()).map(parseRow);
+  const headers = result.data[0].map((h) => h?.trim() ?? "");
+  const rows = result.data.slice(1).map((row) => row.map((cell) => cell?.trim() ?? ""));
 
   return { headers, rows };
 }
@@ -193,9 +175,10 @@ export function mapToTransactions(
 
     const description = rawDesc || "Sem descrição";
     const type = amount >= 0 ? "income" : "expense";
-    const externalId = `csv_${date}_${Math.abs(amount).toFixed(2)}_${i}`;
+    const absAmount = Math.abs(amount);
+    const externalId = `csv_${date}_${absAmount.toFixed(2)}_${i}`;
 
-    transactions.push({ externalId, date, amount, description, type });
+    transactions.push({ externalId, date, amount: absAmount, description, type });
   }
 
   return { transactions, errors };
