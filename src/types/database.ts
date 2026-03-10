@@ -184,6 +184,19 @@ export type Database = {
         }
         Returns: Json
       }
+      create_transfer_with_journal: {
+        Args: {
+          p_user_id: string
+          p_from_account_id: string
+          p_to_account_id: string
+          p_amount: number
+          p_description?: string | null
+          p_date?: string
+          p_is_paid?: boolean
+          p_source?: Database["public"]["Enums"]["entry_source"]
+        }
+        Returns: Json
+      }
       reverse_transaction: {
         Args: { p_user_id: string; p_transaction_id: string }
         Returns: Json

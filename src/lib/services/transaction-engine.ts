@@ -48,6 +48,13 @@ export interface TransactionResult {
   journal_entry_id: string | null;
 }
 
+export interface TransferResult {
+  from_transaction_id: string;
+  to_transaction_id: string;
+  journal_entry_id: string | null;
+  amount: number;
+}
+
 export interface ReversalResult {
   reversed_transaction_id: string;
   reversal_journal_id: string | null;
@@ -89,73 +96,30 @@ export async function createTransaction(
 }
 
 /**
- * Creates a transfer between two accounts.
- * Generates 2 transactions (expense on source, income on destination)
- * each with their own journal entries.
+ * Creates an atomic transfer between two accounts.
+ * Uses the Postgres RPC for atomicity: single journal entry,
+ * correct double-entry (D destination, C source), linked transfer_pair_id.
  */
 export async function createTransfer(
   input: TransferInput
-): Promise<{ from: TransactionResult; to: TransactionResult }> {
+): Promise<TransferResult> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Sessão expirada.");
 
-  const desc = input.description || "Transferência entre contas";
+  const { data, error } = await supabase.rpc("create_transfer_with_journal", {
+    p_user_id: user.id,
+    p_from_account_id: input.from_account_id,
+    p_to_account_id: input.to_account_id,
+    p_amount: input.amount,
+    p_description: input.description ?? "Transferência entre contas",
+    p_date: input.date,
+    p_is_paid: input.is_paid,
+    p_source: "manual",
+  });
 
-  // 1. Create outgoing transaction (expense on source)
-  const { data: fromData, error: fromError } = await supabase.rpc(
-    "create_transaction_with_journal",
-    {
-      p_user_id: user.id,
-      p_account_id: input.from_account_id,
-      p_category_id: null,
-      p_type: "expense",
-      p_amount: input.amount,
-      p_description: desc,
-      p_date: input.date,
-      p_is_paid: input.is_paid,
-      p_source: "manual",
-      p_notes: null,
-      p_tags: null,
-      p_counterpart_coa_id: null,
-    }
-  );
-  if (fromError) throw new Error(fromError.message);
-  const fromResult = fromData as unknown as TransactionResult;
-
-  // 2. Create incoming transaction (income on destination)
-  const { data: toData, error: toError } = await supabase.rpc(
-    "create_transaction_with_journal",
-    {
-      p_user_id: user.id,
-      p_account_id: input.to_account_id,
-      p_category_id: null,
-      p_type: "income",
-      p_amount: input.amount,
-      p_description: desc,
-      p_date: input.date,
-      p_is_paid: input.is_paid,
-      p_source: "manual",
-      p_notes: null,
-      p_tags: null,
-      p_counterpart_coa_id: null,
-    }
-  );
-  if (toError) throw new Error(toError.message);
-  const toResult = toData as unknown as TransactionResult;
-
-  // 3. Link transfer pair
-  await supabase
-    .from("transactions")
-    .update({ transfer_pair_id: toResult.transaction_id, type: "transfer" as TransactionType })
-    .eq("id", fromResult.transaction_id);
-
-  await supabase
-    .from("transactions")
-    .update({ transfer_pair_id: fromResult.transaction_id, type: "transfer" as TransactionType })
-    .eq("id", toResult.transaction_id);
-
-  return { from: fromResult, to: toResult };
+  if (error) throw new Error(error.message);
+  return data as unknown as TransferResult;
 }
 
 /**

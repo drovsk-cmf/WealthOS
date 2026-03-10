@@ -78,7 +78,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, handle_new_user |
 | Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable |
-| Transaction Engine | create_transaction_with_journal, reverse_transaction |
+| Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
@@ -225,7 +225,7 @@ Auditoria externa feita via Gemini. 5 achados acionáveis implementados:
 
 **Nota OFX parser:** agora é `async` (usa `crypto.subtle.digest` para SHA-256). Chamadas que usam `parseOFX()` precisam de `await`.
 
-**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material). Total: 26 tabelas, 82 RLS, 22 ENUMs, 31 RPCs, 1 validation trigger.
+**Migrations aplicadas:** 011 (dedup index) + 012 (balance validation trigger) + 013 (stable kek_material) + 014 (transfer RPC). Total: 26 tabelas, 82 RLS, 22 ENUMs, 32 RPCs, 1 validation trigger.
 
 ### Auditoria de Código (ChatGPT, 2026-03-10)
 
@@ -237,7 +237,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 |---|------|-----------|---------|
 | S1 | ~~Redesenhar KEK: derivar de material estável, não JWT efêmero~~ | ~~Crítica~~ | FEITO (migration 013, commit c453c47) |
 | S2 | ~~Exportar SQL real das migrations 003-010 do Supabase para o Git~~ | ~~Alta~~ | FEITO (2.236 linhas reais, commit a60489f) |
-| S3 | RPC atômica `create_transfer_with_journal()` | Alta | 2-3h |
+| S3 | ~~RPC atômica `create_transfer_with_journal()`~~ | ~~Alta~~ | FEITO (migration 014 + 2 arquivos frontend) |
 | S4 | Import: normalizar sinal (abs) do amount nos parsers | Média | 1h |
 | S5 | Import: substituir CSV parser manual por PapaParse real | Média | 1h |
 | S6 | Import: eliminar UUID sentinela `00000000-...` | Média | 30min |
