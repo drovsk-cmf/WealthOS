@@ -247,7 +247,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 **Itens conhecidos (não urgentes, já planejados):**
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
 - Biometria stub retorna true: isolado, Fase 10
-- Rebranding WealthOS → Oniefy: Fase 10
+- ~~Rebranding WealthOS → Oniefy: FEITO (commit 4ea3524)~~
 - Cobertura de testes: expandir na Fase 10
 
 ---
@@ -256,14 +256,15 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 
 | Item | Detalhe |
 |---|---|
-| PWA icon 404 | Criar `/public/icons/icon-192.png` e `icon-512.png` |
-| Euro sem símbolo | Tela de Settings, moeda Euro falta "(€)" |
+| ~~PWA icon 404~~ | FEITO: icon-192, icon-512, favicon.ico, apple-touch-icon |
+| ~~Euro sem símbolo~~ | FEITO: "Euro" → "Euro (€)" no onboarding |
+| ~~Rebranding~~ | FEITO: WealthOS → Oniefy (UI, config, logs, TOTP). Crypto strings preservadas |
 | Next.js upgrade | 14.2.14 → 15+ (security fix, breaking change) |
 | OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store |
 | Testes | Jest + React Testing Library, cobertura mínima |
 | Edge Functions | pg_cron para generate-recurring-transactions, fetch-economic-indices, etc. |
-| Redirect raiz | CORRIGIDO na sessão (middleware + callback normalizam `/` → `/dashboard`) |
+| ~~Redirect raiz~~ | CORRIGIDO anteriormente (middleware + callback normalizam `/` → `/dashboard`) |
 
 ---
 
