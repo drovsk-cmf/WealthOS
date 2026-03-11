@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -146,7 +147,24 @@ export default function AppLayout({
       >
         {/* Header: brand + user + logout */}
         <div className="flex-shrink-0 border-b px-6 py-4">
-          <h1 className="text-lg font-bold">Oniefy</h1>
+          <Image
+            src="/brand/lockup-h-plum-transparent.svg"
+            alt="Oniefy"
+            width={1588}
+            height={617}
+            className="h-8 w-auto dark:hidden"
+            priority
+            unoptimized
+          />
+          <Image
+            src="/brand/lockup-h-bone-transparent.svg"
+            alt="Oniefy"
+            width={1588}
+            height={617}
+            className="hidden h-8 w-auto dark:block"
+            priority
+            unoptimized
+          />
           {userName && (
             <div className="mt-2 flex items-center justify-between">
               <p className="truncate text-xs text-muted-foreground">{userName}</p>
@@ -196,7 +214,24 @@ export default function AppLayout({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="ml-3 text-lg font-bold">Oniefy</span>
+          <Image
+            src="/brand/lockup-h-plum-transparent.svg"
+            alt="Oniefy"
+            width={1588}
+            height={617}
+            className="ml-3 h-7 w-auto dark:hidden"
+            priority
+            unoptimized
+          />
+          <Image
+            src="/brand/lockup-h-bone-transparent.svg"
+            alt="Oniefy"
+            width={1588}
+            height={617}
+            className="ml-3 hidden h-7 w-auto dark:block"
+            priority
+            unoptimized
+          />
         </header>
 
         <div className="p-6">{children}</div>

@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { loginSchema } from "@/lib/validations/auth";
 import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
@@ -103,9 +104,28 @@ function LoginContent() {
 
   return (
     <>
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+      <div className="flex flex-col items-center">
+        {/* Light mode */}
+        <Image
+          src="/brand/lockup-v-plum-transparent.svg"
+          alt="Oniefy"
+          width={1104}
+          height={1019}
+          className="h-40 w-auto dark:hidden"
+          priority
+          unoptimized
+        />
+        {/* Dark mode */}
+        <Image
+          src="/brand/lockup-v-bone-transparent.svg"
+          alt="Oniefy"
+          width={1104}
+          height={1019}
+          className="hidden h-40 w-auto dark:block"
+          priority
+          unoptimized
+        />
+        <p className="-mt-2 text-sm text-muted-foreground">
           Patrimônio em campo de visão.
         </p>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import {
   registerSchema,
@@ -119,7 +120,25 @@ export default function RegisterPage() {
   // ─── Registration form ────────────────────────────────────
   return (
     <>
-      <div className="text-center">
+      <div className="flex flex-col items-center">
+        <Image
+          src="/brand/lockup-h-plum-transparent.svg"
+          alt="Oniefy"
+          width={1588}
+          height={617}
+          className="mb-4 h-10 w-auto dark:hidden"
+          priority
+          unoptimized
+        />
+        <Image
+          src="/brand/lockup-h-bone-transparent.svg"
+          alt="Oniefy"
+          width={1588}
+          height={617}
+          className="mb-4 hidden h-10 w-auto dark:block"
+          priority
+          unoptimized
+        />
         <h1 className="text-3xl font-bold tracking-tight">Criar Conta</h1>
         <p className="mt-2 text-sm text-muted-foreground">Configure seu Oniefy em poucos passos</p>
       </div>

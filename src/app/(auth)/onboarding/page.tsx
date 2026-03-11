@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { initializeEncryption } from "@/lib/auth/encryption-manager";
 import { enrollTotp, verifyTotpEnrollment } from "@/lib/auth/mfa";
@@ -219,9 +220,26 @@ export default function OnboardingPage() {
       {/* ─── Welcome ────────────────────────────────── */}
       {step === "welcome" && (
         <>
-          <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
-            <p className="mt-3 text-sm text-muted-foreground">
+          <div className="flex flex-col items-center">
+            <Image
+              src="/brand/lockup-v-plum-transparent.svg"
+              alt="Oniefy"
+              width={1104}
+              height={1019}
+              className="h-40 w-auto dark:hidden"
+              priority
+              unoptimized
+            />
+            <Image
+              src="/brand/lockup-v-bone-transparent.svg"
+              alt="Oniefy"
+              width={1104}
+              height={1019}
+              className="hidden h-40 w-auto dark:block"
+              priority
+              unoptimized
+            />
+            <p className="-mt-2 text-sm text-muted-foreground">
               Configuração inicial em 4 etapas.
             </p>
           </div>
