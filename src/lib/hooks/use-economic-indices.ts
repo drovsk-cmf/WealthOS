@@ -117,6 +117,36 @@ export function useIndexHistory(indexType: string | null, months: number = 12) {
   });
 }
 
+/** Historical data for multiple indices (parallel queries) */
+export function useMultiIndexHistory(indexTypes: string[], months: number = 12) {
+  const supabase = createClient();
+  const dateFrom = new Date();
+  dateFrom.setMonth(dateFrom.getMonth() - months);
+  const dateFromStr = dateFrom.toISOString().slice(0, 10);
+
+  return useQuery({
+    queryKey: ["indices", "history-multi", indexTypes.sort().join(","), months],
+    enabled: indexTypes.length > 0,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async () => {
+      const results: Record<string, IndexDataPoint[]> = {};
+      await Promise.all(
+        indexTypes.map(async (idxType) => {
+          const { data, error } = await supabase.rpc("get_economic_indices", {
+            p_index_type: idxType,
+            p_date_from: dateFromStr,
+            p_limit: months + 2,
+          });
+          if (error) throw error;
+          const parsed = data as unknown as { data: IndexDataPoint[] };
+          results[idxType] = parsed.data ?? [];
+        })
+      );
+      return results;
+    },
+  });
+}
+
 // ─── Mutations ──────────────────────────────────────────────────
 
 /** Trigger fetch from BCB APIs */

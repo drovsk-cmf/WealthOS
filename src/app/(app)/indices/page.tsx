@@ -4,13 +4,13 @@
  * Oniefy - Índices Econômicos (Phase 8)
  *
  * Dashboard of economic indicators from BCB SGS / IBGE SIDRA.
- * - Latest values per index (cards)
- * - Historical chart for selected index
- * - Manual fetch trigger (future: automated via Edge Function/cron)
- * - Reajuste alerts for recurrences linked to indices
+ * - Latest values per index (cards, multi-selectable)
+ * - Historical chart with monthly value + accumulated 12m curves
+ * - Multi-index overlay on same chart
+ * - Daily cron at 03:00 BRT + manual fetch button
  */
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   LineChart,
   Line,
@@ -19,10 +19,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import {
   useLatestIndices,
-  useIndexHistory,
+  useMultiIndexHistory,
   useFetchIndices,
   INDEX_TYPE_LABELS,
   INDEX_TYPE_COLORS,
@@ -39,6 +40,7 @@ interface TooltipPayloadItem {
   value: number;
   name: string;
   color: string;
+  dataKey: string;
 }
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayloadItem[]; label?: string }) {
@@ -47,41 +49,72 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
     <div className="rounded-lg border bg-card p-2 shadow-lg text-xs">
       <p className="font-semibold text-muted-foreground">{label}</p>
       {payload.map((p) => (
-        <p key={p.name} style={{ color: p.color }}>
-          {p.name}: {p.value.toFixed(4)}
+        <p key={p.dataKey} style={{ color: p.color }}>
+          {p.name}: {p.value?.toFixed(4) ?? "-"}
         </p>
       ))}
     </div>
   );
 }
 
-// Main indices to show in cards (others available in history)
 const MAIN_INDICES = ["ipca", "selic", "cdi", "igpm", "inpc", "tr", "usd_brl"];
 
 export default function IndicesPage() {
-  const [selectedIndex, setSelectedIndex] = useState<string>("ipca");
+  const [selectedIndices, setSelectedIndices] = useState<Set<string>>(new Set(["ipca"]));
   const [historyMonths, setHistoryMonths] = useState(12);
+  const [showAccumulated, setShowAccumulated] = useState(true);
 
   const { data: latestIndices, isLoading: loadingLatest } = useLatestIndices();
-  const { data: history, isLoading: loadingHistory } = useIndexHistory(selectedIndex, historyMonths);
+  const { data: multiHistory, isLoading: loadingHistory } = useMultiIndexHistory(
+    Array.from(selectedIndices),
+    historyMonths
+  );
   const fetchIndices = useFetchIndices();
+
+  const toggleIndex = useCallback((indexType: string) => {
+    setSelectedIndices((prev) => {
+      const next = new Set(prev);
+      if (next.has(indexType)) {
+        next.delete(indexType);
+        if (next.size === 0) next.add(indexType);
+      } else {
+        next.add(indexType);
+      }
+      return next;
+    });
+  }, []);
 
   const mainIndices = (latestIndices ?? []).filter((i) =>
     MAIN_INDICES.includes(i.index_type)
   );
 
-  // Chart data (reverse to chronological order)
-  const chartData = [...(history ?? [])]
-    .reverse()
-    .map((p) => ({
-      month: formatMonth(p.reference_date),
-      value: Number(p.value),
-      acc12m: p.accumulated_12m ? Number(p.accumulated_12m) : null,
-    }));
+  // Build unified chart data: merge all selected indices into rows keyed by month
+  const chartData = useMemo(() => {
+    if (!multiHistory) return [];
 
-  const selectedLabel = INDEX_TYPE_LABELS[selectedIndex] || selectedIndex;
-  const selectedColor = INDEX_TYPE_COLORS[selectedIndex] || "#56688F";
-  const _selectedUnit = INDEX_UNIT[selectedIndex] || "%";
+    const monthMap = new Map<string, Record<string, number | string | null>>();
+
+    for (const idxType of Array.from(selectedIndices)) {
+      const points = multiHistory[idxType] ?? [];
+      for (const p of points) {
+        const sortKey = p.reference_date;
+        if (!monthMap.has(sortKey)) {
+          monthMap.set(sortKey, { month: formatMonth(p.reference_date) });
+        }
+        const row = monthMap.get(sortKey)!;
+        row[`${idxType}_value`] = Number(p.value);
+        row[`${idxType}_acc12m`] = p.accumulated_12m ? Number(p.accumulated_12m) : null;
+      }
+    }
+
+    return Array.from(monthMap.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, row]) => row);
+  }, [multiHistory, selectedIndices]);
+
+  // Table data for primary index (single-selection only)
+  const primaryIndex = Array.from(selectedIndices)[0];
+  const primaryHistory = multiHistory?.[primaryIndex] ?? [];
 
   if (loadingLatest) {
     return (
@@ -127,55 +160,60 @@ export default function IndicesPage() {
         </div>
       )}
 
-      {/* Latest values cards */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {mainIndices.map((idx) => {
-          const color = INDEX_TYPE_COLORS[idx.index_type] || "#7E9487";
-          const unit = INDEX_UNIT[idx.index_type] || "%";
-          const isSelected = selectedIndex === idx.index_type;
+      {/* Latest values cards (multi-selectable) */}
+      <div>
+        <p className="mb-2 text-xs text-muted-foreground">
+          Clique para selecionar. Vários índices podem ser comparados no gráfico.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {mainIndices.map((idx) => {
+            const color = INDEX_TYPE_COLORS[idx.index_type] || "#7E9487";
+            const unit = INDEX_UNIT[idx.index_type] || "%";
+            const isSelected = selectedIndices.has(idx.index_type);
 
-          return (
-            <button
-              key={idx.index_type}
-              onClick={() => setSelectedIndex(idx.index_type)}
-              className={`rounded-lg border p-4 text-left transition-all ${
-                isSelected
-                  ? "border-2 shadow-md"
-                  : "hover:bg-accent/50"
-              }`}
-              style={isSelected ? { borderColor: color } : undefined}
-            >
-              <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-                <span className="text-xs font-semibold text-muted-foreground">
-                  {INDEX_TYPE_LABELS[idx.index_type] || idx.index_type}
-                </span>
-              </div>
-              <p className="mt-1.5 text-xl font-bold tabular-nums">
-                {idx.index_type === "usd_brl"
-                  ? formatCurrency(idx.value)
-                  : idx.index_type === "minimum_wage"
+            return (
+              <button
+                key={idx.index_type}
+                onClick={() => toggleIndex(idx.index_type)}
+                className={`rounded-lg border p-4 text-left transition-all ${
+                  isSelected ? "border-2 shadow-md" : "hover:bg-accent/50"
+                }`}
+                style={isSelected ? { borderColor: color } : undefined}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
+                  <span className="text-xs font-semibold text-muted-foreground">
+                    {INDEX_TYPE_LABELS[idx.index_type] || idx.index_type}
+                  </span>
+                  {isSelected && (
+                    <span className="ml-auto rounded bg-muted px-1 py-0.5 text-[9px] font-bold text-muted-foreground">
+                      ativo
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1.5 text-xl font-bold tabular-nums">
+                  {idx.index_type === "usd_brl" || idx.index_type === "minimum_wage"
                     ? formatCurrency(idx.value)
                     : `${idx.value.toFixed(2)} %`}
-              </p>
-              <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
-                <span>{unit}</span>
-                <span>{formatDate(idx.reference_date, "MMM/yy")}</span>
-              </div>
-              {idx.accumulated_12m !== null && idx.accumulated_12m !== undefined && (
-                <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
-                  12m: {Number(idx.accumulated_12m).toFixed(2)} %
                 </p>
-              )}
-            </button>
-          );
-        })}
+                <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
+                  <span>{unit}</span>
+                  <span>{formatDate(idx.reference_date, "MMM/yy")}</span>
+                </div>
+                {idx.accumulated_12m !== null && idx.accumulated_12m !== undefined && (
+                  <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
+                    12m: {Number(idx.accumulated_12m).toFixed(2)} %
+                  </p>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* No data state */}
       {mainIndices.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-          
           <h2 className="mt-2 text-lg font-semibold">Sem dados de índices</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Clique em &ldquo;Atualizar índices&rdquo; para buscar os dados mais recentes do BCB.
@@ -184,61 +222,100 @@ export default function IndicesPage() {
       )}
 
       {/* Historical chart */}
-      {selectedIndex && (
+      {selectedIndices.size > 0 && (
         <div className="rounded-lg border bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">
-              {selectedLabel} - Histórico
+              {selectedIndices.size === 1
+                ? `${INDEX_TYPE_LABELS[primaryIndex] || primaryIndex} - Histórico`
+                : `Comparativo (${selectedIndices.size} índices)`}
             </h3>
-            <div className="flex gap-1">
-              {[6, 12, 24].map((m) => (
-                <button
-                  key={m}
-                  onClick={() => setHistoryMonths(m)}
-                  className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
-                    historyMonths === m
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent"
-                  }`}
-                >
-                  {m}m
-                </button>
-              ))}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowAccumulated(!showAccumulated)}
+                className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                  showAccumulated
+                    ? "bg-info-slate/15 text-info-slate"
+                    : "text-muted-foreground hover:bg-accent"
+                }`}
+              >
+                Acum. 12m
+              </button>
+              <div className="flex gap-1">
+                {[6, 12, 24, 36].map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setHistoryMonths(m)}
+                    className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                      historyMonths === m
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {m}m
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {loadingHistory ? (
-            <div className="mt-4 h-56 animate-pulse rounded bg-muted" />
+            <div className="mt-4 h-64 animate-pulse rounded bg-muted" />
           ) : chartData.length === 0 ? (
             <div className="mt-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Sem dados históricos para {selectedLabel}
+                Sem dados históricos para o período selecionado
               </p>
             </div>
           ) : (
-            <div className="mt-4 h-56">
+            <div className="mt-4 h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis dataKey="month" tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Line
-                    dataKey="value"
-                    name={selectedLabel}
-                    type="monotone"
-                    stroke={selectedColor}
-                    strokeWidth={2}
-                    dot={{ r: 3, fill: selectedColor }}
-                    activeDot={{ r: 5 }}
-                  />
+                  <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" iconSize={8} />
+                  {Array.from(selectedIndices).flatMap((idxType) => {
+                    const color = INDEX_TYPE_COLORS[idxType] || "#7E9487";
+                    const label = INDEX_TYPE_LABELS[idxType] || idxType;
+                    const lines = [
+                      <Line
+                        key={`${idxType}_value`}
+                        dataKey={`${idxType}_value`}
+                        name={label}
+                        type="monotone"
+                        stroke={color}
+                        strokeWidth={2}
+                        dot={{ r: 2.5, fill: color }}
+                        activeDot={{ r: 4 }}
+                        connectNulls
+                      />,
+                    ];
+                    if (showAccumulated) {
+                      lines.push(
+                        <Line
+                          key={`${idxType}_acc12m`}
+                          dataKey={`${idxType}_acc12m`}
+                          name={`${label} (12m)`}
+                          type="monotone"
+                          stroke={color}
+                          strokeWidth={1.5}
+                          strokeDasharray="5 3"
+                          dot={false}
+                          connectNulls
+                        />
+                      );
+                    }
+                    return lines;
+                  })}
                 </LineChart>
               </ResponsiveContainer>
             </div>
           )}
 
-          {/* Data table */}
-          {chartData.length > 0 && (
+          {/* Data table (single-index only) */}
+          {primaryHistory.length > 0 && selectedIndices.size === 1 && (
             <div className="mt-4 max-h-48 overflow-y-auto">
               <table className="w-full text-xs">
                 <thead>
@@ -250,11 +327,11 @@ export default function IndicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...(history ?? [])].map((p) => (
+                  {[...primaryHistory].map((p) => (
                     <tr key={p.reference_date} className="border-b border-muted/50">
                       <td className="py-1 tabular-nums">{formatDate(p.reference_date, "MMM/yyyy")}</td>
                       <td className="py-1 text-right tabular-nums font-medium">
-                        {Number(p.value).toFixed(selectedIndex === "usd_brl" ? 4 : 2)}
+                        {Number(p.value).toFixed(primaryIndex === "usd_brl" ? 4 : 2)}
                       </td>
                       <td className="py-1 text-right tabular-nums">
                         {p.accumulated_year !== null ? `${Number(p.accumulated_year).toFixed(2)} %` : "-"}
@@ -275,7 +352,8 @@ export default function IndicesPage() {
       <div className="rounded-lg border bg-muted/50 p-4">
         <p className="text-xs text-muted-foreground leading-relaxed">
           Dados obtidos via API pública do Banco Central (SGS) e IBGE (SIDRA).
-          Atualizados manualmente ou por job automático (quando configurado).
+          Atualizados diariamente por workflow automático (03:00 BRT) e
+          disponíveis para atualização manual via botão acima.
           Os índices são utilizados para reajuste automático de recorrências
           e projeções do orçamento.
         </p>
