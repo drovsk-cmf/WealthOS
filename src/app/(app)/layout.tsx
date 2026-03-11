@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Logo } from "@/components/brand/logo";
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -147,7 +146,7 @@ export default function AppLayout({
       >
         {/* Header: brand + user + logout */}
         <div className="flex-shrink-0 border-b px-6 py-4">
-          <Logo variant="lockup" height={24} />
+          <h1 className="text-lg font-bold">Oniefy</h1>
           {userName && (
             <div className="mt-2 flex items-center justify-between">
               <p className="truncate text-xs text-muted-foreground">{userName}</p>
@@ -197,7 +196,7 @@ export default function AppLayout({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <Logo variant="lockup" height={20} className="ml-3" />
+          <span className="ml-3 text-lg font-bold">Oniefy</span>
         </header>
 
         <div className="p-6">{children}</div>

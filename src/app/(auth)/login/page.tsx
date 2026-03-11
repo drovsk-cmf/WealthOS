@@ -3,7 +3,6 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Logo } from "@/components/brand/logo";
 import { createClient } from "@/lib/supabase/client";
 import { loginSchema } from "@/lib/validations/auth";
 import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
@@ -105,10 +104,8 @@ function LoginContent() {
   return (
     <>
       <div className="text-center">
-        <div className="flex justify-center">
-          <Logo variant="lockup" height={36} />
-        </div>
-        <p className="mt-3 text-sm text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight">Oniefy</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           Patrimônio em campo de visão.
         </p>
       </div>
