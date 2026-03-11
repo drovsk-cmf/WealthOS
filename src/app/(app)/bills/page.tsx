@@ -21,6 +21,7 @@ import {
   useDeactivateRecurrence,
   FREQUENCY_LABELS,
 } from "@/lib/hooks/use-recurrences";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { RecurrenceForm } from "@/components/recurrences/recurrence-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -62,6 +63,9 @@ export default function BillsPage() {
   const [editData, setEditData] = useState<EditData | null>(null);
   const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(null);
   const [confirmPay, setConfirmPay] = useState<string | null>(null);
+
+  useAutoReset(confirmDeactivate, setConfirmDeactivate);
+  useAutoReset(confirmPay, setConfirmPay);
 
   const { data: pendingBills, isLoading: loadingBills } = usePendingBills();
   const { data: recurrences, isLoading: loadingRec } = useRecurrences();

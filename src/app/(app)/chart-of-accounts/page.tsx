@@ -7,6 +7,7 @@ import {
   useCreateCOA,
   GROUP_LABELS,
 } from "@/lib/hooks/use-chart-of-accounts";
+import { useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import type { COATreeNode } from "@/lib/hooks/use-chart-of-accounts";
 import type { Database } from "@/types/database";
 
@@ -155,6 +156,8 @@ export default function ChartOfAccountsPage() {
   const [newDisplayName, setNewDisplayName] = useState("");
   const [newAccountName, setNewAccountName] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
+
+  useEscapeClose(showCreate, () => setShowCreate(false));
 
   function handleToggle(id: string, active: boolean) {
     if (!active && !showInactive) {

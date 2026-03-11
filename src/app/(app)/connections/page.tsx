@@ -21,6 +21,7 @@ import {
   SYNC_STATUS_LABELS,
   SYNC_STATUS_COLORS,
 } from "@/lib/hooks/use-bank-connections";
+import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { parseCSVRaw, suggestMapping, mapToTransactions } from "@/lib/parsers/csv-parser";
 import { parseOFX } from "@/lib/parsers/ofx-parser";
@@ -424,6 +425,9 @@ function ConnectionsManager() {
   const [showNew, setShowNew] = useState(false);
   const [newName, setNewName] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
+  useEscapeClose(showNew, () => setShowNew(false));
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();

@@ -6,6 +6,7 @@ import {
   useDeleteCategory,
   CATEGORY_TYPE_LABELS,
 } from "@/lib/hooks/use-categories";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { CategoryForm } from "@/components/categories/category-form";
 import type { Database } from "@/types/database";
 
@@ -20,6 +21,8 @@ export default function CategoriesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
 
   const filtered = categories?.filter((c) => c.type === activeTab) ?? [];
   const expenseCount = categories?.filter((c) => c.type === "expense").length ?? 0;

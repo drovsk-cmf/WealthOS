@@ -23,6 +23,7 @@ import {
   toMonthKey,
   formatMonthLabel,
 } from "@/lib/hooks/use-budgets";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { useBudgetVsActual } from "@/lib/hooks/use-dashboard";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { formatCurrency } from "@/lib/utils";
@@ -59,6 +60,8 @@ export default function BudgetsPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [confirmCopy, setConfirmCopy] = useState(false);
   const [copyError, setCopyError] = useState("");
+
+  useAutoReset(confirmDelete, setConfirmDelete);
 
   // ─── Queries ───────────────────────────────────────────────
   const { data: budgets, isLoading } = useBudgets(currentMonth);

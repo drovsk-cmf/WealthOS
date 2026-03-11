@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { ArrowLeftRight } from "lucide-react";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useReverseTransaction } from "@/lib/services/transaction-engine";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { TransactionFilters, TransactionWithRelations } from "@/lib/hooks/use-transactions";
 import type { Database } from "@/types/database";
+
+const PAGE_SIZE = 50;
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 
@@ -22,15 +26,21 @@ export default function TransactionsPage() {
   const [filters, setFilters] = useState<TransactionFilters>({});
   const [showFilters, setShowFilters] = useState(false);
   const [confirmReverse, setConfirmReverse] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
 
-  const { data: transactions, isLoading } = useTransactions(filters);
+  const paginatedFilters = { ...filters, limit: PAGE_SIZE, offset: page * PAGE_SIZE };
+  const { data: transactions, isLoading } = useTransactions(paginatedFilters);
   const { data: accounts } = useAccounts();
   const reverseTransaction = useReverseTransaction();
 
-  function updateFilter<K extends keyof TransactionFilters>(key: K, value: TransactionFilters[K]) {
+  // UX-04: Auto-reset confirm state after 5 seconds
+  useAutoReset(confirmReverse, setConfirmReverse);
+
+  // Reset page when filters change
+  const updateFilter = useCallback(<K extends keyof TransactionFilters>(key: K, value: TransactionFilters[K]) => {
+    setPage(0);
     setFilters((prev) => {
       const next = { ...prev, [key]: value || undefined };
-      // Clean empty values
       Object.keys(next).forEach((k) => {
         if (next[k as K] === undefined || next[k as K] === "") {
           delete next[k as K];
@@ -38,7 +48,7 @@ export default function TransactionsPage() {
       });
       return next;
     });
-  }
+  }, []);
 
   async function handleReverse(id: string) {
     await reverseTransaction.mutateAsync(id);
@@ -163,8 +173,8 @@ export default function TransactionsPage() {
       {/* Empty state */}
       {transactions && transactions.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-3xl">
-            💸
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <ArrowLeftRight className="h-7 w-7 text-muted-foreground" />
           </div>
           <h2 className="text-lg font-semibold">
             {Object.keys(filters).length > 0
@@ -277,6 +287,27 @@ export default function TransactionsPage() {
               </div>
             );
           })}
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between pt-2">
+            <button
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
+            >
+              Anterior
+            </button>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              Página {page + 1}{transactions.length < PAGE_SIZE ? ` (última)` : ""}
+            </span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={transactions.length < PAGE_SIZE}
+              className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
+            >
+              Próxima
+            </button>
+          </div>
         </div>
       )}
 

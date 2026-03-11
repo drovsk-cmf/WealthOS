@@ -6,6 +6,7 @@ import {
   useDeactivateAccount,
   ACCOUNT_TYPE_LABELS,
 } from "@/lib/hooks/use-accounts";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AccountForm } from "@/components/accounts/account-form";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -19,6 +20,8 @@ export default function AccountsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
 
   // ─── Totals ───────────────────────────────────────────────
   const totals = accounts?.reduce(

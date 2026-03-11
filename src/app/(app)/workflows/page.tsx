@@ -26,6 +26,7 @@ import {
   WORKFLOW_TYPE_OPTIONS,
   PERIODICITY_OPTIONS,
 } from "@/lib/hooks/use-workflows";
+import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -132,6 +133,9 @@ export default function WorkflowsPage() {
   const [tab, setTab] = useState<Tab>("tasks");
   const [showNewWorkflow, setShowNewWorkflow] = useState(false);
   const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(null);
+
+  useAutoReset(confirmDeactivate, setConfirmDeactivate);
+  useEscapeClose(showNewWorkflow, () => setShowNewWorkflow(false));
 
   // New workflow form state
   const [wfName, setWfName] = useState("");

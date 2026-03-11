@@ -25,6 +25,7 @@ import {
   CENTER_TYPE_LABELS,
   CENTER_TYPE_OPTIONS,
 } from "@/lib/hooks/use-cost-centers";
+import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
@@ -173,6 +174,9 @@ export default function CostCentersPage() {
   const [editing, setEditing] = useState<CostCenter | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [expandedCenter, setExpandedCenter] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
+  useEscapeClose(formOpen, () => { setFormOpen(false); setEditing(null); });
 
   // Form state
   const [name, setName] = useState("");

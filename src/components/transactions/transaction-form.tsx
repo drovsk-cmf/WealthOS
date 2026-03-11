@@ -65,6 +65,16 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
     }
   }, [open, defaultType, accounts]);
 
+  // Close on ESC key
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose]);
+
   // Filter categories by transaction type
   const categoryType: CategoryType = type === "income" ? "income" : "expense";
   const filteredCategories = categories?.filter((c) => c.type === categoryType) ?? [];

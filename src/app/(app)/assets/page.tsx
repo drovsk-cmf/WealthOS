@@ -22,6 +22,7 @@ import {
   ASSET_CATEGORY_LABELS,
   ASSET_CATEGORY_COLORS,
 } from "@/lib/hooks/use-assets";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -76,6 +77,8 @@ export default function AssetsPage() {
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [depreciationResult, setDepreciationResult] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
 
   const { data: assets, isLoading } = useAssets();
   const { data: summary } = useAssetsSummary();

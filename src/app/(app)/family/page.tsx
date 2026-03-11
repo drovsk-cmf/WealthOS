@@ -10,6 +10,7 @@ import {
   RELATIONSHIP_LABELS,
   ROLE_LABELS,
 } from "@/lib/hooks/use-family-members";
+import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import type { Database } from "@/types/database";
 
 type FamilyMember = Database["public"]["Tables"]["family_members"]["Row"];
@@ -24,6 +25,9 @@ export default function FamilyPage() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<FamilyMember | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useAutoReset(confirmDelete, setConfirmDelete);
+  useEscapeClose(showForm, () => { setShowForm(false); setEditing(null); });
 
   // Form state
   const [name, setName] = useState("");
