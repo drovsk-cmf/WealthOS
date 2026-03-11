@@ -11,6 +11,7 @@
  */
 
 import { useState, useMemo, useCallback } from "react";
+import { TrendingUp as TrendingUpIcon } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -214,7 +215,10 @@ export default function IndicesPage() {
       {/* No data state */}
       {mainIndices.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-          <h2 className="mt-2 text-lg font-semibold">Sem dados de índices</h2>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <TrendingUpIcon className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold">Sem dados de índices</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Clique em &ldquo;Atualizar índices&rdquo; para buscar os dados mais recentes do BCB.
           </p>

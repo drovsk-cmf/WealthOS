@@ -13,6 +13,7 @@
  */
 
 import { useState } from "react";
+import { Package } from "lucide-react";
 import {
   useAssets,
   useAssetsSummary,
@@ -206,8 +207,10 @@ export default function AssetsPage() {
       {/* Empty state */}
       {(!assets || assets.length === 0) && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          
-          <h2 className="mt-2 text-lg font-semibold">Nenhum bem cadastrado</h2>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <Package className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold">Nenhum bem cadastrado</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Nenhum bem cadastrado. Bens registrados aparecem com visão consolidada e depreciação.
           </p>

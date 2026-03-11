@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Users } from "lucide-react";
 import {
   useFamilyMembers,
   useCreateFamilyMember,
@@ -147,8 +148,10 @@ export default function FamilyPage() {
       {/* Empty state */}
       {(!members || members.length === 0) && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          
-          <h2 className="mt-2 text-lg font-semibold">Nenhum membro cadastrado</h2>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <Users className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold">Nenhum membro cadastrado</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Nenhum membro cadastrado. Adicione os membros da família para rastrear despesas e receitas individuais.
           </p>

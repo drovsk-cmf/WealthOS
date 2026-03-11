@@ -21,6 +21,7 @@
  */
 
 import { useState } from "react";
+import { FileSearch } from "lucide-react";
 import {
   useFiscalReport,
   useFiscalProjection,
@@ -257,8 +258,10 @@ export default function FiscalPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-            
-            <h3 className="mt-2 text-lg font-semibold">Sem dados fiscais em {selectedYear}</h3>
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <FileSearch className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-semibold">Sem dados fiscais em {selectedYear}</h3>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
               Registre transações com contas contábeis classificadas por tratamento fiscal
               para ver o relatório consolidado automaticamente.

@@ -14,6 +14,7 @@
  */
 
 import { useState } from "react";
+import { CalendarClock, Repeat } from "lucide-react";
 import {
   useRecurrences,
   usePendingBills,
@@ -164,8 +165,10 @@ export default function BillsPage() {
 
           {(!pendingBills || pendingBills.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              
-              <h2 className="mt-2 text-lg font-semibold">Nenhuma conta pendente</h2>
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <CalendarClock className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold">Nenhuma conta pendente</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Sem contas a vencer no período.
               </p>
@@ -233,8 +236,10 @@ export default function BillsPage() {
         <>
           {(!recurrences || recurrences.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              
-              <h2 className="mt-2 text-lg font-semibold">Nenhuma recorrência cadastrada</h2>
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <Repeat className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold">Nenhuma recorrência cadastrada</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Sem recorrências cadastradas.
               </p>

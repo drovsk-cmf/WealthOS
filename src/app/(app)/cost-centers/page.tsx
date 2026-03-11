@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { Target as TargetIcon } from "lucide-react";
 import {
   useCostCenters,
   useCreateCostCenter,
@@ -258,8 +259,10 @@ export default function CostCentersPage() {
       {/* Empty state */}
       {centers && centers.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
-          
-          <h2 className="mt-2 text-lg font-semibold">Nenhum centro de custo</h2>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <TargetIcon className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold">Nenhum centro de custo</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Nenhum centro de custo cadastrado.
           </p>

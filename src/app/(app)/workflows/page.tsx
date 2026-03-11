@@ -12,6 +12,7 @@
  */
 
 import { useState } from "react";
+import { ClipboardList, Workflow } from "lucide-react";
 import {
   useWorkflows,
   usePendingTasks,
@@ -263,8 +264,10 @@ export default function WorkflowsPage() {
         <>
           {pendingCount === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              
-              <h2 className="mt-2 text-lg font-semibold">Nenhuma tarefa pendente</h2>
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <ClipboardList className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold">Nenhuma tarefa pendente</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 Use &ldquo;Gerar tarefas do mês&rdquo; para criar tarefas dos workflows ativos.
               </p>
@@ -325,8 +328,10 @@ export default function WorkflowsPage() {
 
           {(!workflows || workflows.length === 0) ? (
             <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-              
-              <h2 className="mt-2 text-lg font-semibold">Nenhum workflow ativo</h2>
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <Workflow className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold">Nenhum workflow ativo</h2>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">
                 Workflows são criados automaticamente ao cadastrar contas bancárias, cartões e investimentos.
                 Você também pode criar manualmente.

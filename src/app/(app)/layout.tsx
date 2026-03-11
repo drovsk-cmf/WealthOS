@@ -3,27 +3,46 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  Wallet,
+  Download,
+  Tag,
+  BookOpen,
+  Target,
+  Users,
+  PieChart,
+  Calendar,
+  Building,
+  CheckSquare,
+  FileText,
+  TrendingUp,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
 import { clearEncryptionKey, loadEncryptionKey } from "@/lib/auth/encryption-manager";
 import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/transactions", label: "Transações", icon: "ArrowLeftRight" },
-  { href: "/accounts", label: "Contas", icon: "Wallet" },
-  { href: "/connections", label: "Importação", icon: "Download" },
-  { href: "/categories", label: "Categorias", icon: "Tag" },
-  { href: "/chart-of-accounts", label: "Plano de Contas", icon: "BookOpen" },
-  { href: "/cost-centers", label: "Centros de Custo", icon: "Target" },
-  { href: "/family", label: "Estrutura Familiar", icon: "Users" },
-  { href: "/budgets", label: "Orçamento", icon: "PieChart" },
-  { href: "/bills", label: "Contas a Pagar", icon: "Calendar" },
-  { href: "/assets", label: "Patrimônio", icon: "Building" },
-  { href: "/workflows", label: "Tarefas", icon: "CheckSquare" },
-  { href: "/tax", label: "Fiscal", icon: "FileText" },
-  { href: "/indices", label: "Índices", icon: "TrendingUp" },
-  { href: "/settings", label: "Configurações", icon: "Settings" },
+const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
+  { href: "/accounts", label: "Contas", icon: Wallet },
+  { href: "/connections", label: "Importação", icon: Download },
+  { href: "/categories", label: "Categorias", icon: Tag },
+  { href: "/chart-of-accounts", label: "Plano de Contas", icon: BookOpen },
+  { href: "/cost-centers", label: "Centros de Custo", icon: Target },
+  { href: "/family", label: "Estrutura Familiar", icon: Users },
+  { href: "/budgets", label: "Orçamento", icon: PieChart },
+  { href: "/bills", label: "Contas a Pagar", icon: Calendar },
+  { href: "/assets", label: "Patrimônio", icon: Building },
+  { href: "/workflows", label: "Tarefas", icon: CheckSquare },
+  { href: "/tax", label: "Fiscal", icon: FileText },
+  { href: "/indices", label: "Índices", icon: TrendingUp },
+  { href: "/settings", label: "Configurações", icon: Settings },
 ];
 
 export default function AppLayout({
@@ -132,6 +151,7 @@ export default function AppLayout({
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
@@ -143,6 +163,7 @@ export default function AppLayout({
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 }`}
               >
+                <Icon className="h-4 w-4 flex-shrink-0" />
                 {item.label}
               </Link>
             );
@@ -159,6 +180,7 @@ export default function AppLayout({
             onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
           >
+            <LogOut className="h-4 w-4 flex-shrink-0" />
             Sair
           </button>
         </div>

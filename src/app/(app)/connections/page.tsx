@@ -12,7 +12,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Landmark } from "lucide-react";
+import { Landmark, CircleCheck } from "lucide-react";
 import {
   useBankConnections,
   useCreateBankConnection,
@@ -395,8 +395,10 @@ function ImportWizard() {
 
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-      
-      <h2 className="mt-3 text-xl font-bold">Importação concluída</h2>
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-verdant/15">
+        <CircleCheck className="h-7 w-7 text-verdant" />
+      </div>
+      <h2 className="text-xl font-bold">Importação concluída</h2>
       {importBatch.data && (
         <div className="mt-4 space-y-1 text-sm">
           <p className="text-verdant font-medium">{importBatch.data.imported} transações importadas</p>
@@ -461,8 +463,10 @@ function ConnectionsManager() {
 
       {(!connections || connections.length === 0) ? (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          
-          <h2 className="mt-2 text-lg font-semibold">Nenhuma conexão bancária</h2>
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <Landmark className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold">Nenhuma conexão bancária</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Sem conexões cadastradas. Importação de arquivos CSV/OFX/XLSX funciona sem conexão. Conexões permitem rastreamento de duplicatas.
           </p>
