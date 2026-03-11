@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 10 de março de 2026
+**Data:** 11 de março de 2026
 **Projeto:** Oniefy - Patrimônio em campo de visão.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
@@ -61,23 +61,23 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 38 (29 RPCs + 6 trigger functions + 3 cron wrappers) |
+| Functions (total) | 39 (29 RPCs + 6 trigger functions + 4 cron wrappers) |
 | Triggers | 19 |
 | ENUMs | 24 |
-| Migrations aplicadas | 36 partes em 23 versões (001 a 023) |
-| pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
+| Migrations aplicadas | 38 partes em 25 versões (001 a 025) |
+| pg_cron jobs | 4 (workflow tasks diário, depreciação mensal, balance check semanal, **índices diário**) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
-| Parâmetros fiscais | 7 (IRPF mensal/anual 2025+2026, INSS, salário mínimo, ganho capital) |
-| Índices econômicos | 24 registros reais (IPCA + Selic, mar/2025 a mar/2026) |
+| Parâmetros fiscais | 9 (IRPF mensal/anual 2025+2026, INSS 2025+2026, salário mínimo 2025+2026, ganho capital) |
+| Índices econômicos | ~60 registros (8 tipos: IPCA, INPC, IGP-M, Selic, CDI, TR, USD/BRL, salário mínimo) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
 | Stories concluídas | 71 (65 + 6 fase 9: BANK-01-06) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (29 RPCs + 6 triggers + 3 cron)
+### 3.3 Functions (29 RPCs + 6 triggers + 4 cron)
 
 | Grupo | Functions |
 |---|---|
@@ -91,9 +91,9 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Fiscal | get_fiscal_report, get_fiscal_projection |
 | Índices | get_economic_indices, get_index_latest |
 | Import | import_transactions_batch, auto_categorize_transaction |
-| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h) |
+| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC / 03h BRT) |
 
-### 3.4 Código Fonte (76 arquivos em src/)
+### 3.4 Código Fonte (77 arquivos em src/)
 
 ```
 src/
@@ -134,9 +134,10 @@ src/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (14 hooks: accounts, assets, bank-connections, budgets, categories,
-│   │          chart-of-accounts, cost-centers, dashboard, economic-indices,
-│   │          family-members, fiscal, recurrences, transactions, workflows)
+│   ├── hooks/ (15 hooks: accounts, assets, bank-connections, budgets, categories,
+│   │          chart-of-accounts, cost-centers, dashboard, dialog-helpers,
+│   │          economic-indices, family-members, fiscal, recurrences, transactions,
+│   │          workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── services/transaction-engine.ts
 │   ├── supabase/ (client.ts, server.ts)
@@ -474,6 +475,71 @@ Assets pendentes: `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`, 
 
 ---
 
+## 11d. Sessão 11/03/2026 - Auditoria UX + Índices automáticos + INSS/SM 2026
+
+**Bug fix: Toggle do Plano de Contas**
+- Ao desativar conta folha, showInactive era false (padrão) e o item desaparecia da árvore
+- Correção: desativar auto-habilita "Mostrar inativas" para feedback visual
+- Commit 1889c02
+
+**Auditoria UX completa (17 achados, 4 críticos corrigidos):**
+
+| # | Problema | Gravidade | Correção |
+|---|---|---|---|
+| UX-01 | Emoji 💸 no empty state Transações | Crítico | Substituído por Lucide ArrowLeftRight |
+| UX-02 | Sem paginação em Transações | Crítico | Botões Anterior/Próxima, 50/página |
+| UX-03 | Dialogs não fechavam com ESC | Crítico | Hook `useEscapeClose` em 7 dialogs |
+| UX-04 | Confirmações destrutivas sem timeout | Crítico | Hook `useAutoReset` (5s) em 10 páginas |
+| UX-05 | Sidebar sem ícones | Alto | 15 ícones Lucide + LogOut no "Sair" |
+| UX-06 | Empty states: containers vazios | Alto | 10 ícones Lucide em 8 páginas |
+
+Novo arquivo: `src/lib/hooks/use-dialog-helpers.ts` (useEscapeClose + useAutoReset)
+
+**Fix: Sidebar cortava "Configurações":**
+- Footer era `absolute bottom-0`, sobrepunha último link da nav
+- Correção: aside flex-col, nav flex-1 overflow-y-auto, footer flex-shrink-0
+- Commit 5ccae8a
+
+**Parâmetros fiscais 2026 (migration 024):**
+- INSS 2026: 4 faixas (7,5% / 9% / 12% / 14%), teto R$8.475,55
+  Fonte: Portaria Interministerial MPS/MF Nº 13 (DOU 12/01/2026)
+- Salário Mínimo 2026: R$1.621,00
+  Fonte: Decreto Presidencial + Portaria MPS/MF 13/2026
+- Nota: parâmetros fiscais dependem de curadoria humana (portarias/leis), não de API. Validação mensal recomendada — governo pode alterar faixas a qualquer momento.
+
+**Coleta diária automática de índices (migration 025):**
+- Extensões `http` + `pg_net` habilitadas
+- Função `cron_fetch_economic_indices()`: consulta BCB SGS para todas as fontes ativas, parse JSON, upsert com ON CONFLICT
+- Séries diárias (Selic, CDI, USD/BRL) agrega último dia do mês
+- pg_cron: diário às 06:00 UTC (03:00 BRT)
+- Primeiro run manual: 153 registros inseridos, 8 índices, 0 erros
+- 4 pg_cron jobs ativos:
+  - generate-workflow-tasks (diário 02h)
+  - cron_fetch_indices (diário 06h UTC) ← NOVO
+  - depreciate-assets (mensal dia 1 03h)
+  - balance-integrity-check (semanal dom 04h)
+
+**Aba Índices reescrita:**
+- Multi-seleção: clique em múltiplos cards para comparar no gráfico
+- Horizonte 36 meses (antes: máx 24m)
+- Curva acumulada 12m (tracejada) junto com curva mensal, toggle "Acum. 12m"
+- Hook `useMultiIndexHistory`: queries paralelas por tipo de índice
+- Nota atualizada: "workflow automático" (não "job"), removido "manualmente"
+
+**Sidebar com ícones Lucide (UX-05):**
+- 15 ícones importados e renderizados (antes: string não utilizada)
+- LogOut no botão "Sair"
+- NAV_ITEMS tipado como `{ href, label, icon: LucideIcon }[]`
+
+**Empty states com ícones (UX-06, 10 ocorrências):**
+- assets: Package, bills: CalendarClock + Repeat, cost-centers: Target
+- connections: Landmark + CircleCheck, family: Users
+- workflows: ClipboardList + Workflow, tax: FileSearch, indices: TrendingUp
+
+**Commits desta sessão:** 1889c02, b2fe361, 5ccae8a, 5dc329f, 3341839
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
@@ -482,6 +548,9 @@ Assets pendentes: `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`, 
 |---|---|
 | Testes Jest + React Testing Library (cobertura mínima) | 1-2 dias |
 | Logo: integrar SVGs definitivos ao projeto (aguardando assets finais do Claudio) | 1-2h |
+| UX médios: drag-and-drop no upload, feedback loading em mutations, ícone desativar conta (lixeira → archive) | 2-3h |
+| Conciliação bancária (3 camadas) | 1-2 dias |
+| Orçamento delegado por membro | 4-6h |
 
 **Ação do Claudio (em paralelo):**
 
@@ -489,6 +558,7 @@ Assets pendentes: `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`, 
 |---|---|
 | Logo definitivo | Em andamento: conceito Penrose Ribbon aprovado, iterando SVGs com ChatGPT. Briefing completo gerado. |
 | Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
+| Validação mensal de parâmetros fiscais | IRPF, INSS, salário mínimo podem mudar por portaria/lei. Verificar periodicamente se há novas publicações no DOU. |
 
 **Requer Mac + Xcode:**
 
