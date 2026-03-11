@@ -294,7 +294,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
 | Testes | Jest + React Testing Library, cobertura mínima |
 | ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
-| Logo + icons | Em andamento: conceito Penrose Ribbon aprovado, SVGs em iteração. Quando pronto: integrar favicon, PWA icons (192/512), app icon (1024), marca em `public/brand/` |
+| Logo + icons | Em andamento: conceito Penrose Ribbon aprovado, SVGs em iteração. Maze Cube tentada e revertida (847549e → 74e837d). Quando pronto: integrar favicon, PWA icons (192/512), app icon (1024), marca em `public/brand/`. Componente logo.tsx precisa ser recriado. |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
 | ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
 | ~~Redirect raiz~~ | CORRIGIDO anteriormente |
@@ -540,6 +540,37 @@ Novo arquivo: `src/lib/hooks/use-dialog-helpers.ts` (useEscapeClose + useAutoRes
 
 ---
 
+## 11e. Sessão 11/03/2026 (continuação) - UX final + Logo Maze Cube (revertida)
+
+**5 correções de UX (commit 605b0b8):**
+
+| # | Problema | Correção |
+|---|---|---|
+| 1 | Toggle Plano de Contas (3a e definitiva correção) | Causa raiz: filtro `showInactive` escondia folhas inativas, e todas as 107 estavam `is_active=false`. Filtro removido por completo. Folhas inativas sempre visíveis (opacity-50) com toggle acessível. Botão "Mostrar/Ocultar inativas" eliminado. 107 folhas restauradas para `is_active=true` no banco |
+| 2 | Sidebar não era sticky | `aside sticky top-0 h-screen` no desktop. Nome+logout reposicionados abaixo de "Oniefy" (não mais footer) |
+| 3 | Hover bronze (Oxide Brass) ilegível | `--accent` mudou de Oxide Brass para warm neutral sutil. Light: hsl(33,20%,91%), Dark: hsl(273,10%,20%). Texto agora legível |
+| 4 | Empty states inconsistentes (accounts, categories) | Ícones Lucide adicionados: Wallet (accounts), Tag (categories). Padronizadas com as 8 páginas já corrigidas |
+| 5 | Curva acumulada (Índices) usava campo fixo do banco | Agora calcula acumulado composto do período selecionado (6/12/24/36m). Aplica apenas a índices percentuais (IPCA, INPC, IGP-M, TR). Selic, CDI, USD/BRL sem curva acumulada (são taxa/preço) |
+
+6 arquivos alterados. Lint limpo.
+
+**Logo Maze Cube + Comfortaa (commit 847549e, REVERTIDA em 74e837d):**
+
+Uma sessão anterior tentou integrar um conceito de logo "Maze Cube" com tipografia Comfortaa. O commit incluía:
+- 10 SVGs em `public/brand/` (logomark, wordmark, lockup-h, appicon, OG, variações plum-bone/bone-plum/transparent)
+- Componente `src/components/brand/logo.tsx` (3 variantes: logomark, wordmark, lockup; SVG inline)
+- Substituição de favicon.ico, apple-touch-icon.png, PWA icons (192/512)
+- Integração em sidebar desktop/mobile, login, register, onboarding
+- Metadata OG image no layout.tsx
+
+**Motivo do revert:** problemas com a edição da logo. O conceito Maze Cube não atendeu aos requisitos visuais. Revert aplicado com commit 74e837d, restaurando o estado anterior (605b0b8).
+
+**Status da logo:** O conceito aprovado continua sendo **Penrose Ribbon**. Os assets Maze Cube foram descartados. A integração será refeita quando o Claudio finalizar os SVGs definitivos do Penrose Ribbon.
+
+**Commits desta sessão:** 605b0b8, 847549e (revertido), 74e837d (revert)
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
@@ -547,7 +578,7 @@ Novo arquivo: `src/lib/hooks/use-dialog-helpers.ts` (useEscapeClose + useAutoRes
 | Item | Esforço |
 |---|---|
 | Testes Jest + React Testing Library (cobertura mínima) | 1-2 dias |
-| Logo: integrar SVGs definitivos ao projeto (aguardando assets finais do Claudio) | 1-2h |
+| Logo: integrar SVGs definitivos ao projeto (aguardando assets finais do Claudio; Maze Cube revertida) | 1-2h |
 | UX médios: drag-and-drop no upload, feedback loading em mutations, ícone desativar conta (lixeira → archive) | 2-3h |
 | Conciliação bancária (3 camadas) | 1-2 dias |
 | Orçamento delegado por membro | 4-6h |
@@ -556,7 +587,7 @@ Novo arquivo: `src/lib/hooks/use-dialog-helpers.ts` (useEscapeClose + useAutoRes
 
 | Item | Ação |
 |---|---|
-| Logo definitivo | Em andamento: conceito Penrose Ribbon aprovado, iterando SVGs com ChatGPT. Briefing completo gerado. |
+| Logo definitivo | Em andamento: conceito Penrose Ribbon aprovado, iterando SVGs com ChatGPT. Tentativa Maze Cube (commit 847549e) revertida. Briefing completo gerado. |
 | Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
 | Validação mensal de parâmetros fiscais | IRPF, INSS, salário mínimo podem mudar por portaria/lei. Verificar periodicamente se há novas publicações no DOU. |
 
