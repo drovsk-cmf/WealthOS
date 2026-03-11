@@ -1,7 +1,7 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
 **Data:** 10 de março de 2026
-**Projeto:** Oniefy - Sistema Integrado de Gestão Financeira e Patrimonial
+**Projeto:** Oniefy - Patrimônio em campo de visão.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
@@ -10,7 +10,7 @@
 
 ## 1. O que é o WealthOS
 
-Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
+Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Tagline: "Patrimônio em campo de visão." Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
 
 **Modelo contábil:** partida dobrada como motor interno (invisível ao usuário), com plano de contas híbrido (CPC simplificado por baixo, linguagem natural na interface). Filosofia Apple: mecânica complexa invisível, resultado simples entregue ao usuário.
 
@@ -23,7 +23,9 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Camada | Tecnologia |
 |---|---|
 | Frontend | Next.js 15.5.12 (App Router) + React 19.2.4 + TypeScript |
-| UI | shadcn/ui + Tailwind CSS |
+| UI | shadcn/ui + Tailwind CSS + Plum Ledger design system |
+| Tipografia | DM Sans (corpo) + JetBrains Mono (dados) + Instrument Serif (display, adiado) |
+| Iconografia | Lucide React (SVG) |
 | Backend/BaaS | Supabase (PostgreSQL + Auth + RLS + Storage + Edge Functions) |
 | Mobile iOS | Capacitor 6 (empacotamento PWA para App Store) |
 | Hospedagem | Vercel |
@@ -58,15 +60,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Métrica | Valor |
 |---|---|
 | Tabelas | 27 (todas com RLS) |
-| Políticas RLS | 86 (82 + 4 family_members) |
+| Políticas RLS | 86 |
 | Functions/RPCs | 34 + 3 cron wrappers |
-| Triggers | 19 (18 + family_members_updated_at) |
-| ENUMs | 24 (account_type +loan/financing, +family_relationship, +family_role) |
+| Triggers | 19 |
+| ENUMs | 24 |
 | Migrations aplicadas | 37 partes em 23 versões (001 a 023) |
 | pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 2 |
-| Categorias | 32 |
+| Categorias | 16 (únicas, cores Plum Ledger) |
 | Parâmetros fiscais | 7 (IRPF mensal/anual 2025+2026, INSS, salário mínimo, ganho capital) |
 | Índices econômicos | 24 registros reais (IPCA + Selic, mar/2025 a mar/2026) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
@@ -96,7 +98,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 ```
 src/
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (13 páginas)
+│   ├── (app)/                    # Rotas autenticadas (14 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
@@ -105,12 +107,13 @@ src/
 │   │   ├── chart-of-accounts/page.tsx
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
+│   │   ├── family/page.tsx
 │   │   ├── indices/page.tsx
 │   │   ├── settings/page.tsx + security/page.tsx
 │   │   ├── tax/page.tsx
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
-│   │   └── layout.tsx            # Sidebar com 14 links
+│   │   └── layout.tsx            # Sidebar com 15 links
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
@@ -130,16 +133,17 @@ src/
 ├── lib/
 │   ├── auth/ (6 arquivos: encryption, mfa, biometric, session, blocklist)
 │   ├── crypto/index.ts
-│   ├── hooks/ (12 hooks: accounts, assets, budgets, categories,
+│   ├── hooks/ (13 hooks: accounts, assets, budgets, categories,
 │   │          chart-of-accounts, cost-centers, dashboard, economic-indices,
-│   │          fiscal, recurrences, transactions, workflows)
+│   │          family-members, fiscal, recurrences, transactions, workflows)
+│   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── services/transaction-engine.ts
 │   ├── supabase/ (client.ts, server.ts)
 │   ├── utils/index.ts
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
 ├── middleware.ts                  # Root redirect, auth check, session refresh
-└── types/database.ts             # 23 tables, 29 functions, 21 enums typed
+└── types/database.ts             # 27 tables, 34+ functions, 24 enums typed
 ```
 
 ---
@@ -270,13 +274,15 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
 | Testes | Jest + React Testing Library, cobertura mínima |
+| ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
+| Logo + icons | Em andamento: conceito Penrose Ribbon aprovado, SVGs em iteração. Quando pronto: integrar favicon, PWA icons (192/512), app icon (1024), marca em `public/brand/` |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
 | ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
 | ~~Redirect raiz~~ | CORRIGIDO anteriormente |
 | ~~RLS initplan~~ | FEITO: 77 policies reescritas com `(select auth.uid())`. Migration 018 |
 | ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
 | Leaked password protection | Requer Supabase Pro. Claudio acionará quando assinar a plataforma |
-| Ícones Lucide | Substituir emojis (🏠, ✅, 📥, 🏦) por ícones SVG Lucide React em todo o app |
+| ~~Ícones Lucide~~ | FEITO: emojis decorativos (📊🏦📈✓📄💰🏷️📋) substituídos por Lucide React SVG icons em 7 arquivos. Emojis de avatar familiar mantidos (dados persistidos em BD) |
 | Conciliação bancária (3 camadas) | **Camada 1:** Status tracking: ENUM lifecycle (pendente → vencida → paga → cancelada), `due_date` separado de `date`, pg_cron diário marca vencidas. **Camada 2:** Auto-matching na importação: ao importar extrato, cruzar com pendentes (mesma conta, valor ±10%, janela ±7 dias); se match, baixa a pendente em vez de duplicar; registra ajuste se valor difere. **Camada 3:** Tela de reconciliação manual: lado a lado pendentes × importadas sem match, usuário liga pares manualmente. Pré-requisito: Camada 1 antes de 2. |
 | Orçamento delegado por membro | Membro cria proposta orçamentária para seu centro, responsável aprova, consolida no orçamento familiar. Requer role system em family_members (owner/member já existe). |
 
@@ -395,6 +401,61 @@ Disponíveis como arquivos do projeto:
 
 ---
 
+## 11c. Sessão 10/03/2026 (noturna) - Design System audit + Microcopy + Lucide icons + Logo
+
+**Auditoria completa do Design System Plum Ledger:**
+
+Divergências encontradas e corrigidas entre o design system e o código real:
+
+| # | Divergência | Correção |
+|---|---|---|
+| 1 | manifest.json: `#ffffff` / `#0a0a0a` | → `#F5F0E8` (Bone) / `#241E29` (Plum) |
+| 2 | auth.ts: password strength bar (red/orange/yellow/green) | → terracotta/burnished/verdant |
+| 3 | bills, budgets, tax, solvency: 9 refs yellow-* | → burnished |
+| 4 | bank connections: status colors (green/blue/red/orange) | → verdant/slate/terracotta/burnished |
+| 5 | chart of accounts: group colors (blue/red/green/orange/purple) | → slate/terracotta/verdant/burnished/tier-4 |
+
+Resultado: zero referências a cores antigas do Tailwind em `src/`. Commit fdd72eb.
+
+**Auditoria de Microcopy (MAN-LNG-CMF-001):**
+
+14 violações do Manual de Linguagem corrigidas em 28 arquivos:
+
+| Regra violada | Qtd | Exemplo |
+|---|---|---|
+| §11.2 Reticências proibidas | 12 | "Carregando..." → "Carregando" |
+| §11.1 Metadiscurso proibido | 1 | "**Importante:** salve..." → "Salve..." |
+| §11.1 Superlativo vazio | 1 | Solvência "Excelente" → "Sólida" |
+| §2.2 Imprecisão | 1 | Solvência "OK" → "Estável" |
+| §4.6 Imperativo direto | 1 | "Se vazio, usa o nome" → "Deixe em branco para usar o nome" |
+| §7.1 Abertura genérica | 1 | manifest → tagline "Patrimônio em campo de visão." |
+| Empty states | ~10 | Tom motivacional → tom descritivo factual |
+
+Commit b751363.
+
+**Ícones Lucide (substituição de emojis decorativos):**
+
+| Emoji | Contexto | Ícone Lucide |
+|---|---|---|
+| 📊 | Orçamento empty state | BarChart3 |
+| 🏦 | Conexão bancária row | Landmark |
+| 📈 | Gráfico empty state | TrendingUp |
+| 📊 | Resumo orçamento empty | PieChart |
+| ✓ | Contas em dia | CircleCheck |
+| 📄💰🏷️📋 | Tipo de tarefa workflow | FileUp, Wallet, Tag, ClipboardCheck |
+
+`TASK_TYPE_ICONS` alterado de `Record<TaskType, string>` (emoji) para `Record<TaskType, LucideIcon>` (componente). Emojis de avatar familiar (👤💑👶👴👫🐾) mantidos (persistidos na coluna `avatar_emoji`). Commit 3da6cb0.
+
+**Logo Oniefy (em andamento, não integrado ao código):**
+
+Conceito aprovado: **Penrose Ribbon** (fita dobrada com cruzamento impossível). 3 camadas hexagonais + micro-hexágono central sólido. Iterações feitas com Gemini (imagem) e ChatGPT (SVG vetorial). SVG de referência funcional gerado. Briefing completo preparado com 13 deliverables (logomark full/simplified, lockups serif/sans, app icons, monocromáticos). Claudio está trabalhando em paralelo para refinar antes de integrar.
+
+Assets pendentes: `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`, app icons, favicon. Não foram commitados ao repositório.
+
+**Commits desta sessão:** fdd72eb, 93ad047 (revertido em 0b03a3f), b751363, 3da6cb0
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
@@ -402,11 +463,13 @@ Disponíveis como arquivos do projeto:
 | Item | Esforço |
 |---|---|
 | Testes Jest + React Testing Library (cobertura mínima) | 1-2 dias |
+| Logo: integrar SVGs definitivos ao projeto (aguardando assets finais do Claudio) | 1-2h |
 
-**Ação do Claudio (Dashboard Supabase):**
+**Ação do Claudio (em paralelo):**
 
 | Item | Ação |
 |---|---|
+| Logo definitivo | Em andamento: conceito Penrose Ribbon aprovado, iterando SVGs com ChatGPT. Briefing completo gerado. |
 | Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
 
 **Requer Mac + Xcode:**
