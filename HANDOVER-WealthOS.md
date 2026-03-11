@@ -1,7 +1,7 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
 **Data:** 11 de março de 2026
-**Projeto:** Oniefy - Patrimônio em campo de visão.
+**Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
@@ -10,7 +10,9 @@
 
 ## 1. O que é o Oniefy
 
-Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Tagline: "Patrimônio em campo de visão." Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
+Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Tagline: "Any asset, one clear view." Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
+
+**Origem do nome:** "Oniefy" combina raízes que atravessam milênios: do Proto-Indo-Europeu *oi-no- (que deu origem a "one", "any" e "unique") ao sufixo latino -fy (facere, "construir"). O nome carrega a ideia de tornar visível e acessível tudo que é seu.
 
 **Modelo contábil:** partida dobrada como motor interno (invisível ao usuário), com plano de contas híbrido (CPC simplificado por baixo, linguagem natural na interface). Filosofia Apple: mecânica complexa invisível, resultado simples entregue ao usuário.
 
@@ -447,7 +449,7 @@ Resultado: zero referências a cores antigas do Tailwind em `src/`. Commit fdd72
 | §11.1 Superlativo vazio | 1 | Solvência "Excelente" → "Sólida" |
 | §2.2 Imprecisão | 1 | Solvência "OK" → "Estável" |
 | §4.6 Imperativo direto | 1 | "Se vazio, usa o nome" → "Deixe em branco para usar o nome" |
-| §7.1 Abertura genérica | 1 | manifest → tagline "Patrimônio em campo de visão." |
+| §7.1 Abertura genérica | 1 | manifest → tagline "Patrimônio em campo de visão." (posteriormente substituída por "Any asset, one clear view.") |
 | Empty states | ~10 | Tom motivacional → tom descritivo factual |
 
 Commit b751363.
