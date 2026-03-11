@@ -157,6 +157,9 @@ export default function ChartOfAccountsPage() {
   const [createError, setCreateError] = useState<string | null>(null);
 
   function handleToggle(id: string, active: boolean) {
+    if (!active && !showInactive) {
+      setShowInactive(true);
+    }
     toggleActive.mutate({ id, is_active: active });
   }
 
