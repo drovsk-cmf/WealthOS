@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Tag as TagIcon } from "lucide-react";
 import {
   useCategories,
   useDeleteCategory,
@@ -88,6 +89,9 @@ export default function CategoriesPage() {
       {/* Empty state */}
       {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <TagIcon className="h-7 w-7 text-muted-foreground" />
+          </div>
           <p className="text-sm text-muted-foreground">
             Nenhuma categoria de {activeTab === "expense" ? "despesa" : "receita"}.
           </p>

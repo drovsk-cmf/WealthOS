@@ -140,12 +140,25 @@ export default function AppLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col border-r bg-card transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col border-r bg-card transition-transform duration-200 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-16 flex-shrink-0 items-center border-b px-6">
+        {/* Header: brand + user + logout */}
+        <div className="flex-shrink-0 border-b px-6 py-4">
           <h1 className="text-lg font-bold">Oniefy</h1>
+          {userName && (
+            <div className="mt-2 flex items-center justify-between">
+              <p className="truncate text-xs text-muted-foreground">{userName}</p>
+              <button
+                onClick={handleLogout}
+                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                title="Sair"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
@@ -169,21 +182,6 @@ export default function AppLayout({
             );
           })}
         </nav>
-
-        <div className="flex-shrink-0 border-t p-4">
-          {userName && (
-            <p className="mb-2 truncate px-3 text-xs text-muted-foreground">
-              {userName}
-            </p>
-          )}
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-          >
-            <LogOut className="h-4 w-4 flex-shrink-0" />
-            Sair
-          </button>
-        </div>
       </aside>
 
       {/* Main content */}

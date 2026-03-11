@@ -5,7 +5,7 @@
  *
  * Dashboard of economic indicators from BCB SGS / IBGE SIDRA.
  * - Latest values per index (cards, multi-selectable)
- * - Historical chart with monthly value + accumulated 12m curves
+ * - Historical chart with monthly value + running accumulated curves
  * - Multi-index overlay on same chart
  * - Daily cron at 03:00 BRT + manual fetch button
  */
@@ -60,6 +60,9 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 
 const MAIN_INDICES = ["ipca", "selic", "cdi", "igpm", "inpc", "tr", "usd_brl"];
 
+// Indices where running accumulation (compound product) makes sense
+const ACCUMULATION_INDICES = new Set(["ipca", "inpc", "igpm", "tr"]);
+
 export default function IndicesPage() {
   const [selectedIndices, setSelectedIndices] = useState<Set<string>>(new Set(["ipca"]));
   const [historyMonths, setHistoryMonths] = useState(12);
@@ -89,22 +92,34 @@ export default function IndicesPage() {
     MAIN_INDICES.includes(i.index_type)
   );
 
-  // Build unified chart data: merge all selected indices into rows keyed by month
+  // Build unified chart data with running accumulated from period start
   const chartData = useMemo(() => {
     if (!multiHistory) return [];
 
     const monthMap = new Map<string, Record<string, number | string | null>>();
 
     for (const idxType of Array.from(selectedIndices)) {
-      const points = multiHistory[idxType] ?? [];
+      const points = [...(multiHistory[idxType] ?? [])].sort(
+        (a, b) => a.reference_date.localeCompare(b.reference_date)
+      );
+
+      // Compute running accumulated for percentage indices
+      let runningAcc = 1;
+      const canAccumulate = ACCUMULATION_INDICES.has(idxType);
+
       for (const p of points) {
         const sortKey = p.reference_date;
         if (!monthMap.has(sortKey)) {
           monthMap.set(sortKey, { month: formatMonth(p.reference_date) });
         }
         const row = monthMap.get(sortKey)!;
-        row[`${idxType}_value`] = Number(p.value);
-        row[`${idxType}_acc12m`] = p.accumulated_12m ? Number(p.accumulated_12m) : null;
+        const val = Number(p.value);
+        row[`${idxType}_value`] = val;
+
+        if (canAccumulate) {
+          runningAcc *= (1 + val / 100);
+          row[`${idxType}_acc`] = Number(((runningAcc - 1) * 100).toFixed(4));
+        }
       }
     }
 
@@ -243,7 +258,7 @@ export default function IndicesPage() {
                     : "text-muted-foreground hover:bg-accent"
                 }`}
               >
-                Acum. 12m
+                Acumulado
               </button>
               <div className="flex gap-1">
                 {[6, 12, 24, 36].map((m) => (
@@ -283,6 +298,7 @@ export default function IndicesPage() {
                   {Array.from(selectedIndices).flatMap((idxType) => {
                     const color = INDEX_TYPE_COLORS[idxType] || "#7E9487";
                     const label = INDEX_TYPE_LABELS[idxType] || idxType;
+                    const canAccumulate = ACCUMULATION_INDICES.has(idxType);
                     const lines = [
                       <Line
                         key={`${idxType}_value`}
@@ -296,12 +312,12 @@ export default function IndicesPage() {
                         connectNulls
                       />,
                     ];
-                    if (showAccumulated) {
+                    if (showAccumulated && canAccumulate) {
                       lines.push(
                         <Line
-                          key={`${idxType}_acc12m`}
-                          dataKey={`${idxType}_acc12m`}
-                          name={`${label} (12m)`}
+                          key={`${idxType}_acc`}
+                          dataKey={`${idxType}_acc`}
+                          name={`${label} (acum. ${historyMonths}m)`}
                           type="monotone"
                           stroke={color}
                           strokeWidth={1.5}

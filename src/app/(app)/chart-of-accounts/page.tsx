@@ -18,21 +18,13 @@ const GROUP_ORDER: GroupType[] = ["asset", "liability", "equity", "revenue", "ex
 function TreeNode({
   node,
   onToggle,
-  showInactive,
 }: {
   node: COATreeNode;
   onToggle: (id: string, active: boolean) => void;
-  showInactive: boolean;
 }) {
   const [expanded, setExpanded] = useState(node.depth < 2);
   const hasChildren = node.children.length > 0;
   const isLeaf = !hasChildren;
-
-  const visibleChildren = showInactive
-    ? node.children
-    : node.children.filter((c) => c.is_active || c.children.length > 0);
-
-  if (!showInactive && !node.is_active && isLeaf) return null;
 
   return (
     <div>
@@ -41,7 +33,7 @@ function TreeNode({
           node.depth === 0
             ? "mt-4 first:mt-0"
             : "hover:bg-accent/50"
-        }`}
+        } ${isLeaf && !node.is_active ? "opacity-50" : ""}`}
         style={{ paddingLeft: `${node.depth * 20 + 8}px` }}
       >
         {/* Expand/collapse */}
@@ -132,12 +124,11 @@ function TreeNode({
       {/* Children */}
       {expanded && hasChildren && (
         <div>
-          {visibleChildren.map((child) => (
+          {node.children.map((child) => (
             <TreeNode
               key={child.id}
               node={child}
               onToggle={onToggle}
-              showInactive={showInactive}
             />
           ))}
         </div>
@@ -150,7 +141,6 @@ export default function ChartOfAccountsPage() {
   const { data, isLoading } = useChartOfAccounts();
   const toggleActive = useToggleAccountActive();
   const createCOA = useCreateCOA();
-  const [showInactive, setShowInactive] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [newParentId, setNewParentId] = useState("");
   const [newDisplayName, setNewDisplayName] = useState("");
@@ -160,9 +150,6 @@ export default function ChartOfAccountsPage() {
   useEscapeClose(showCreate, () => setShowCreate(false));
 
   function handleToggle(id: string, active: boolean) {
-    if (!active && !showInactive) {
-      setShowInactive(true);
-    }
     toggleActive.mutate({ id, is_active: active });
   }
 
@@ -232,16 +219,6 @@ export default function ChartOfAccountsPage() {
           >
             + Nova conta
           </button>
-          <button
-            onClick={() => setShowInactive(!showInactive)}
-            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
-              showInactive
-                ? "border-primary bg-primary/5 text-primary"
-                : "border-input hover:bg-accent"
-            }`}
-          >
-            {showInactive ? "Ocultar inativas" : "Mostrar inativas"}
-          </button>
         </div>
       </div>
 
@@ -253,7 +230,7 @@ export default function ChartOfAccountsPage() {
           </span>
         ))}
         <span className="text-xs text-muted-foreground">
-          | Toggle = ativar/desativar conta folha
+          | Toggle = ativar/desativar · Inativas ficam esmaecidas
         </span>
       </div>
 
@@ -266,7 +243,6 @@ export default function ChartOfAccountsPage() {
                 key={node.id}
                 node={node}
                 onToggle={handleToggle}
-                showInactive={showInactive}
               />
             ))}
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Wallet } from "lucide-react";
 import {
   useAccounts,
   useDeactivateAccount,
@@ -113,6 +114,9 @@ export default function AccountsPage() {
       {/* Empty state */}
       {accounts && accounts.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <Wallet className="h-7 w-7 text-muted-foreground" />
+          </div>
           <h2 className="text-lg font-semibold">Nenhuma conta cadastrada</h2>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Contas bancárias, cartões e carteiras são registrados aqui.
