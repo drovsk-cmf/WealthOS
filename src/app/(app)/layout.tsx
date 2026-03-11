@@ -121,15 +121,15 @@ export default function AppLayout({
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-r bg-card transition-transform duration-200 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col border-r bg-card transition-transform duration-200 lg:static lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-16 items-center border-b px-6">
+        <div className="flex h-16 flex-shrink-0 items-center border-b px-6">
           <h1 className="text-lg font-bold">Oniefy</h1>
         </div>
 
-        <nav className="space-y-1 p-4">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-4">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -149,7 +149,7 @@ export default function AppLayout({
           })}
         </nav>
 
-        <div className="absolute bottom-0 w-full border-t p-4">
+        <div className="flex-shrink-0 border-t p-4">
           {userName && (
             <p className="mb-2 truncate px-3 text-xs text-muted-foreground">
               {userName}
