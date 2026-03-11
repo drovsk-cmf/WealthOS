@@ -125,9 +125,6 @@ function LoginContent() {
           priority
           unoptimized
         />
-        <p className="-mt-2 text-sm text-muted-foreground">
-          Patrimônio em campo de visão.
-        </p>
       </div>
 
       {/* Session timeout / callback error messages */}

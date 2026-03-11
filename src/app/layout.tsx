@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Oniefy",
-  description: "Oniefy: patrimônio em campo de visão.",
+  description: "Oniefy — Any asset, one clear view.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Oniefy",
-    description: "Patrimônio em campo de visão.",
+    description: "Any asset, one clear view.",
     images: [{ url: "/brand/og-plum-bone-1200x630.png", width: 1200, height: 630 }],
   },
 };

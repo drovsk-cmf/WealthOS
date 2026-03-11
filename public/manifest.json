@@ -1,7 +1,7 @@
 {
   "name": "Oniefy",
   "short_name": "Oniefy",
-  "description": "Patrimônio em campo de visão.",
+  "description": "Any asset, one clear view.",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#F5F0E8",
