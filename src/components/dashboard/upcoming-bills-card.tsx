@@ -10,6 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { CircleCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -111,7 +112,7 @@ export function UpcomingBillsCard() {
 
       {(!bills || bills.length === 0) ? (
         <div className="mt-6 text-center">
-          <p className="text-2xl">✓</p>
+          <CircleCheck className="h-6 w-6 text-muted-foreground" />
           <p className="mt-1 text-sm text-muted-foreground">
             Nenhuma conta pendente
           </p>

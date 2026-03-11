@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { TrendingUp } from "lucide-react";
 import {
   ComposedChart,
   Bar,
@@ -124,7 +125,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
 
       {chartData.length === 0 ? (
         <div className="mt-8 text-center">
-          <p className="text-2xl">📈</p>
+          <TrendingUp className="h-6 w-6 text-muted-foreground" />
           <p className="mt-1 text-sm text-muted-foreground">
             Sem dados suficientes para o gráfico
           </p>

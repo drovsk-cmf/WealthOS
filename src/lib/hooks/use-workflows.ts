@@ -10,6 +10,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 
+import { FileUp, Wallet, Tag, ClipboardCheck } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
 type Workflow = Database["public"]["Tables"]["workflows"]["Row"];
 type WorkflowTask = Database["public"]["Tables"]["workflow_tasks"]["Row"];
 type WorkflowType = Database["public"]["Enums"]["workflow_type"];
@@ -47,11 +50,11 @@ export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
   skipped: "Pulada",
 };
 
-export const TASK_TYPE_ICONS: Record<TaskType, string> = {
-  upload_document: "📄",
-  update_balance: "💰",
-  categorize_transactions: "🏷️",
-  review_fiscal: "📋",
+export const TASK_TYPE_ICONS: Record<TaskType, LucideIcon> = {
+  upload_document: FileUp,
+  update_balance: Wallet,
+  categorize_transactions: Tag,
+  review_fiscal: ClipboardCheck,
 };
 
 export const PERIODICITY_OPTIONS: { value: WorkflowPeriodicity; label: string }[] = [

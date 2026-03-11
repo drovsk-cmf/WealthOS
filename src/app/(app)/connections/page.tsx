@@ -12,6 +12,7 @@
  */
 
 import { useState, useCallback } from "react";
+import { Landmark } from "lucide-react";
 import {
   useBankConnections,
   useCreateBankConnection,
@@ -466,8 +467,8 @@ function ConnectionsManager() {
         <div className="space-y-2">
           {connections.map((conn) => (
             <div key={conn.id} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-lg">
-                🏦
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                <Landmark className="h-5 w-5 text-muted-foreground" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">

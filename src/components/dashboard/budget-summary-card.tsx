@@ -9,6 +9,7 @@
  */
 
 import Link from "next/link";
+import { PieChart } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import type { BudgetVsActualResult } from "@/lib/hooks/use-dashboard";
 
@@ -61,7 +62,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
 
       {budgetCount === 0 ? (
         <div className="mt-6 text-center">
-          <p className="text-2xl">📊</p>
+          <PieChart className="h-6 w-6 text-muted-foreground" />
           <p className="mt-1 text-sm text-muted-foreground">
             Nenhum orçamento definido
           </p>

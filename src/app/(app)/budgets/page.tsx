@@ -14,6 +14,7 @@
  */
 
 import { useState, useMemo } from "react";
+import { BarChart3 } from "lucide-react";
 import {
   useBudgets,
   useDeleteBudget,
@@ -217,8 +218,8 @@ export default function BudgetsPage() {
       {/* Empty state */}
       {!hasBudgetsThisMonth && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-3xl">
-            📊
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <BarChart3 className="h-7 w-7 text-muted-foreground" />
           </div>
           <h2 className="text-lg font-semibold">
             Nenhum orçamento para {formatMonthLabel(currentMonth)}

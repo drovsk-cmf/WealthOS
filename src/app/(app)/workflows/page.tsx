@@ -280,9 +280,7 @@ export default function WorkflowsPage() {
                     {tasks.map((task) => (
                       <div key={task.id} className="flex items-center gap-3 px-4 py-3">
                         {/* Task icon */}
-                        <span className="flex-shrink-0 text-lg">
-                          {TASK_TYPE_ICONS[task.task_type]}
-                        </span>
+                        {(() => { const Icon = TASK_TYPE_ICONS[task.task_type]; return <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />; })()}
 
                         {/* Task info */}
                         <div className="min-w-0 flex-1">
