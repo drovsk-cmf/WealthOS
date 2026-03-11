@@ -8,7 +8,7 @@
 
 ---
 
-## 1. O que é o WealthOS
+## 1. O que é o Oniefy
 
 Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "Sistema Operativo de Riqueza" (não um expense tracker). Tagline: "Patrimônio em campo de visão." Público-alvo: profissionais de alta renda com múltiplas fontes de receita e complexidade fiscal ("The Hybrid Earner"). Foco em blindagem patrimonial, eficiência tributária e privacidade.
 
@@ -59,15 +59,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 27 (todas com RLS) |
-| Políticas RLS | 86 |
-| Functions/RPCs | 34 + 3 cron wrappers |
+| Tabelas | 25 (todas com RLS) |
+| Políticas RLS | 84 |
+| Functions (total) | 38 (29 RPCs + 6 trigger functions + 3 cron wrappers) |
 | Triggers | 19 |
 | ENUMs | 24 |
-| Migrations aplicadas | 37 partes em 23 versões (001 a 023) |
+| Migrations aplicadas | 36 partes em 23 versões (001 a 023) |
 | pg_cron jobs | 3 (workflow tasks diário, depreciação mensal, balance check semanal) |
 | Contas no plano-semente | 140 |
-| Centros de custo | 2 |
+| Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
 | Parâmetros fiscais | 7 (IRPF mensal/anual 2025+2026, INSS, salário mínimo, ganho capital) |
 | Índices econômicos | 24 registros reais (IPCA + Selic, mar/2025 a mar/2026) |
@@ -77,7 +77,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (32 RPCs + 3 cron + 1 validation trigger)
+### 3.3 Functions (29 RPCs + 6 triggers + 3 cron)
 
 | Grupo | Functions |
 |---|---|
@@ -93,12 +93,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Import | import_transactions_batch, auto_categorize_transaction |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h) |
 
-### 3.4 Código Fonte (72 arquivos em src/)
+### 3.4 Código Fonte (76 arquivos em src/)
 
 ```
 src/
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (14 páginas)
+│   ├── (app)/                    # Rotas autenticadas (16 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
@@ -122,7 +122,7 @@ src/
 │   │   ├── auth/callback/route.ts
 │   │   └── indices/fetch/route.ts  # Coleta BCB SGS
 │   └── layout.tsx, globals.css
-├── components/                   # 11 componentes
+├── components/                   # 14 componentes (.tsx) + 1 index
 │   ├── accounts/account-form.tsx
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
@@ -131,9 +131,10 @@ src/
 │   ├── recurrences/recurrence-form.tsx
 │   └── transactions/transaction-form.tsx
 ├── lib/
-│   ├── auth/ (6 arquivos: encryption, mfa, biometric, session, blocklist)
+│   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
+│   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (13 hooks: accounts, assets, budgets, categories,
+│   ├── hooks/ (14 hooks: accounts, assets, bank-connections, budgets, categories,
 │   │          chart-of-accounts, cost-centers, dashboard, economic-indices,
 │   │          family-members, fiscal, recurrences, transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
@@ -143,8 +144,25 @@ src/
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
 ├── middleware.ts                  # Root redirect, auth check, session refresh
-└── types/database.ts             # 27 tables, 34+ functions, 24 enums typed
+└── types/database.ts             # 25 tables, 38 functions, 24 enums typed
 ```
+
+### 3.5 Design System "Plum Ledger"
+
+Paleta institucional (`src/app/globals.css` + `tailwind.config.ts`):
+
+| Token | Hex | Tailwind class | Uso |
+|---|---|---|---|
+| Midnight Plum | #241E29 | `plum` | Cor-identidade, fundo dark, app icon |
+| Bone | #F5F0E8 | `bone` | Off-white quente (nunca branco puro) |
+| Graphite Ink | #171A1F | (foreground) | Texto principal |
+| Mineral Sage | #7E9487 | `sage` | Acento frio, variante dark mode |
+| Oxide Brass | #A7794E | `brass` | Acento nobre restrito |
+| Warm Stone | #CEC4B8 | `stone` | Apoio neutro |
+
+Semânticas: Verdant #2F7A68 (receitas/positivo), Terracotta #A64A45 (despesas/negativo), Burnished #A97824 (warning), Info Slate #56688F (informativo). Tiers de solvência: T1 #2F7A68, T2 #56688F, T3 #A97824, T4 #6F6678.
+
+Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Serif (display/hero, adiado). Iconografia: Lucide React SVG (zero emojis decorativos). Microcopy: auditado contra MAN-LNG-CMF-001 v1.0.
 
 ---
 
@@ -155,7 +173,7 @@ src/
 - Provider: Google OAuth
 - MFA: TOTP ativo (fator 664baa78-1060-4b5b-ae78-e4bc2a6e8fe4)
 - onboarding_completed: true
-- Dados seed: 140 contas contábeis, 2 centros, 32 categorias
+- Dados seed: 140 contas contábeis, 1 centro (Família Geral), 16 categorias (únicas)
 - Transações: 0 (nenhum dado financeiro de teste ainda)
 - Contas bancárias: 0
 
