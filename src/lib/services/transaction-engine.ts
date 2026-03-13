@@ -14,6 +14,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { logSchemaError, transactionResultSchema, transferResultSchema } from "@/lib/schemas/rpc";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -92,7 +93,12 @@ export async function createTransaction(
   if (error) throw new Error(error.message);
 
   // RPC returns JSON
-  const result = data as unknown as TransactionResult;
+  const parsed = transactionResultSchema.safeParse(data);
+  if (!parsed.success) {
+    logSchemaError("create_transaction_with_journal", parsed);
+    throw new Error("Resposta inválida ao criar transação.");
+  }
+  const result = parsed.data;
 
   // Set family_member_id if provided (not part of the RPC, set after)
   if (input.family_member_id && result.transaction_id) {
@@ -129,7 +135,12 @@ export async function createTransfer(
   });
 
   if (error) throw new Error(error.message);
-  return data as unknown as TransferResult;
+  const parsed = transferResultSchema.safeParse(data);
+  if (!parsed.success) {
+    logSchemaError("create_transfer_with_journal", parsed);
+    throw new Error("Resposta inválida ao criar transferência.");
+  }
+  return parsed.data;
 }
 
 /**

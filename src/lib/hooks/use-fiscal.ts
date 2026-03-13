@@ -10,6 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { fiscalProjectionSchema, fiscalReportSchema, logSchemaError } from "@/lib/schemas/rpc";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -112,7 +113,23 @@ export function useFiscalReport(year?: number) {
         ...(year !== undefined && { p_year: year }),
       });
       if (error) throw error;
-      return data as unknown as FiscalReport;
+      const parsed = fiscalReportSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_fiscal_report", parsed);
+        return {
+          year: year ?? new Date().getFullYear(),
+          period_start: "",
+          period_end: "",
+          by_treatment: [],
+          totals: {
+            total_tributavel_revenue: 0,
+            total_isento_revenue: 0,
+            total_dedutivel_expense: 0,
+            total_transactions: 0,
+          },
+        };
+      }
+      return parsed.data;
     },
   });
 }
@@ -132,7 +149,29 @@ export function useFiscalProjection(year?: number) {
         ...(year !== undefined && { p_year: year }),
       });
       if (error) throw error;
-      return data as unknown as FiscalProjection;
+      const parsed = fiscalProjectionSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_fiscal_projection", parsed);
+        return {
+          year: year ?? new Date().getFullYear(),
+          months_elapsed: 0,
+          months_remaining: 0,
+          ytd_taxable_income: 0,
+          ytd_deductible_expenses: 0,
+          projected_annual_income: 0,
+          projected_annual_deductible: 0,
+          taxable_base: 0,
+          estimated_annual_tax: 0,
+          annual_reduction_applied: 0,
+          ytd_irrf_withheld: 0,
+          tax_gap: 0,
+          monthly_provision: 0,
+          disclaimer: "Dados indisponíveis no momento.",
+          status: "error",
+          message: "Resposta fiscal inválida.",
+        };
+      }
+      return parsed.data;
     },
   });
 }
