@@ -6,45 +6,12 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { initializeEncryption } from "@/lib/auth/encryption-manager";
 import { enrollTotp, verifyTotpEnrollment } from "@/lib/auth/mfa";
+import { completeOnboardingSeeds } from "@/lib/services/onboarding-seeds";
 import type { MfaEnrollResult } from "@/lib/auth/mfa";
 
 type Step = "welcome" | "currency" | "security" | "mfa_enroll" | "mfa_verify" | "categories" | "done";
 
 const STEPS: Step[] = ["welcome", "currency", "security", "mfa_enroll", "mfa_verify", "categories", "done"];
-
-
-export async function completeOnboardingSeeds(
-  supabase: any,
-  userId: string
-): Promise<void> {
-  const { error: catError } = await supabase.rpc("create_default_categories", {
-    p_user_id: userId,
-  });
-  if (catError) {
-    throw new Error(`Erro ao criar categorias padrão: ${catError.message}`);
-  }
-
-  const { error: coaError } = await supabase.rpc("create_default_chart_of_accounts", {
-    p_user_id: userId,
-  });
-  if (coaError) {
-    throw new Error(`Erro ao criar plano de contas padrão: ${coaError.message}`);
-  }
-
-  const { error: ccError } = await supabase.rpc("create_default_cost_center", {
-    p_user_id: userId,
-  });
-  if (ccError) {
-    throw new Error(`Erro ao criar centro de custo padrão: ${ccError.message}`);
-  }
-
-  const { error: updateError } = await supabase
-    .from("users_profile")
-    .update({ onboarding_completed: true })
-    .eq("id", userId);
-
-  if (updateError) throw new Error(updateError.message);
-}
 
 const CURRENCIES = [
   { code: "BRL", label: "Real brasileiro (R$)" },

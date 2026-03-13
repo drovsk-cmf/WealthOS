@@ -1,4 +1,4 @@
-import { completeOnboardingSeeds } from "@/app/(auth)/onboarding/page";
+import { completeOnboardingSeeds } from "@/lib/services/onboarding-seeds";
 
 describe("onboarding seeds", () => {
   it("não marca onboarding_completed quando seed falha", async () => {
