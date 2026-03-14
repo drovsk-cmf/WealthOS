@@ -91,6 +91,9 @@ export const transferResultSchema = z.object({
   amount: z.number(),
 });
 
+
+export const autoCategorizeTransactionSchema = z.string().uuid().nullable();
+
 export const importBatchResultSchema = z.object({
   status: z.string(),
   imported: z.number(),
