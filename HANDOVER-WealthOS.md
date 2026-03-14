@@ -63,11 +63,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 42 (32 RPCs + 7 trigger functions + 5 cron wrappers) |
+| Functions (total) | 43 (32 RPCs + 7 trigger functions + 6 cron wrappers) |
 | Triggers | 20 |
 | ENUMs | 25 |
-| Migrations aplicadas | 42 partes em 29 versões (001 a 028b) |
-| pg_cron jobs | 5 (workflow tasks diário, depreciação mensal, balance check semanal, índices diário, **overdue diário**) |
+| Migrations aplicadas | 43 partes em 30 versões (001 a 029) |
+| pg_cron jobs | 6 (workflow tasks, depreciação, balance check, índices, overdue, **account deletions**) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -75,7 +75,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices econômicos | ~60 registros (8 tipos: IPCA, INPC, IGP-M, Selic, CDI, TR, USD/BRL, salário mínimo) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
-| Stories concluídas | 71 (65 + 6 fase 9: BANK-01-06) |
+| Stories concluídas | 75 (71 anteriores + 4 CFG: 01/02/03/05) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
@@ -94,7 +94,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices | get_economic_indices, get_index_latest |
 | Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction |
 | **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
-| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), **cron_mark_overdue_transactions (diário 01h UTC)** |
+| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
 ### 3.4 Código Fonte (~90 arquivos em src/)
 
@@ -113,7 +113,7 @@ src/
 │   ├── transaction-hooks.test.tsx
 │   └── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (16 páginas)
+│   ├── (app)/                    # Rotas autenticadas (18 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
@@ -125,7 +125,7 @@ src/
 │   │   ├── dashboard/page.tsx
 │   │   ├── family/page.tsx
 │   │   ├── indices/page.tsx
-│   │   ├── settings/page.tsx + security/page.tsx
+│   │   ├── settings/page.tsx + security/page.tsx + profile/page.tsx + data/page.tsx
 │   │   ├── tax/page.tsx
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
@@ -771,19 +771,63 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ---
 
+## 11i. Sessão 14/03/2026 (continuação) - CFG stories + account deletion cron
+
+**CFG-01, CFG-02, CFG-03 (commit b89e124):**
+- Nova página `/settings/profile`: editar nome (com sync para auth metadata), alterar senha (com validação Zod passwordSchema), moeda padrão (BRL/USD/EUR/GBP)
+- Settings hub reescrita: ícones Lucide (User, Shield, Database, Bell), links para subpáginas, apenas Notificações como "Em breve"
+
+**CFG-05 (commit b89e124):**
+- Nova página `/settings/data`: exportar todos os dados (14 tabelas + perfil)
+- Dois formatos: JSON completo ou CSV (transações) + JSON (restante)
+- Progress bar durante export. Campos criptografados permanecem cifrados (DEK não incluída)
+
+**CFG-06 completado (commit e193f02):**
+- Migration 029: `cron_process_account_deletions` (diário 03:30 UTC)
+- Purge de 20 tabelas respeitando FK constraints (children first)
+- PII removida do `users_profile` (nome → "[excluído]", CPF/keys → NULL)
+- Security page: banner de exclusão pendente com data de processamento, botão "Cancelar exclusão"
+
+**pg_cron jobs (6 ativos):**
+1. `cron_mark_overdue_transactions` (diário 01h UTC)
+2. `cron_generate_workflow_tasks` (diário 02h UTC)
+3. `cron_process_account_deletions` (diário 03:30 UTC)
+4. `cron_fetch_economic_indices` (diário 06h UTC)
+5. `cron_depreciate_assets` (mensal dia 1 03h UTC)
+6. `cron_balance_integrity_check` (semanal dom 04h UTC)
+
+**4 stories concluídas:** CFG-01, CFG-02, CFG-03, CFG-05. **Total: 75/90.**
+
+**Commits:** b89e124 (CFG-01/02/03/05), e193f02 (CFG-06 cron)
+
+---
+
 ## 12. Próximos Passos
 
-**Fazível remotamente (próxima sessão Claude):**
+**Stories restantes (15/90):**
+
+| Story | Descrição | Bloqueio |
+|---|---|---|
+| CFG-04 | Configurar notificações (push) | iOS (APNs) |
+| CFG-07 | Modo offline (Service Worker + IndexedDB) | Remoto |
+| FIN-17 | OCR recibo | Mac |
+| FIN-18 | Câmera comprovante | Mac |
+| ~11 | Critérios de aceite parciais em stories entregues | Revisão |
+
+**Fazível remotamente:**
 
 | Item | Esforço |
 |---|---|
-| Remaining 19 stories do backlog (90 - 71 = 19) | A priorizar |
-| Service Worker (PWA offline) | 2-4h |
+| CFG-07: Service Worker + IndexedDB + offline queue | 2-4h |
+| Revisão de critérios de aceite (fechar gaps) | 1-2h |
+| Expandir testes para CFG (profile, export) | 30 min |
 | Estratégia mobile Capacitor vs SSR (`server.url`) | 1h |
 
-**Feito nesta sessão:**
-- ~~Expandir cobertura de testes (alvo: 80+)~~ → FEITO: 127 testes em 11 suítes (commits 7b5fa1f, 06eedc0)
-- ~~Conciliação bancária (3 camadas)~~ → FEITO: migration 028a+028b, 3 RPCs, 5 pg_cron jobs, UI completa (commits 06eedc0, 7ffccf7)
+**Feito nesta sessão (consolidado):**
+- ~~Expandir testes~~ → 127 testes em 11 suítes
+- ~~Conciliação bancária (3 camadas)~~ → migrations 028a+028b, 3 RPCs, pg_cron overdue, UI completa
+- ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
+- ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
 
 **Ação do Claudio (em paralelo):**
 
