@@ -7,6 +7,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { loginSchema } from "@/lib/validations/auth";
 import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
+import { sanitizeRedirectTo } from "@/lib/utils";
 
 const TIMEOUT_MESSAGES: Record<string, string> = {
   timeout: "Sua sessão expirou por inatividade. Faça login novamente.",
@@ -24,8 +25,8 @@ export default function LoginPage() {
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
-  const reason = searchParams.get("reason");
+  const redirectTo = sanitizeRedirectTo(searchParams.get("redirectTo"));
+  const reason = searchParams.get("reason") || searchParams.get("error");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

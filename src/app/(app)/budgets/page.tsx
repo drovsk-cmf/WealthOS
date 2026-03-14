@@ -134,6 +134,7 @@ export default function BudgetsPage() {
       await copyBudgets.mutateAsync({
         source_month: prevMonthKey,
         target_month: currentMonth,
+        family_member_id: selectedMemberId,
       });
       setConfirmCopy(false);
     } catch (err) {

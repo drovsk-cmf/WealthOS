@@ -50,3 +50,47 @@ export function formatRelativeDate(date: string | Date): string {
   if (diffDays < 30) return `há ${Math.floor(diffDays / 7)} semanas`;
   return formatDate(d);
 }
+
+/**
+ * Sanitize a redirect path to prevent open redirect and XSS.
+ * Only accepts relative paths starting with /. Rejects absolute URLs,
+ * protocol handlers (javascript:, data:, etc.), and double slashes.
+ *
+ * @param url - Raw redirect target (from query string, etc.)
+ * @param fallback - Safe default (default: "/dashboard")
+ * @returns Sanitized path or fallback
+ */
+export function sanitizeRedirectTo(
+  url: string | null | undefined,
+  fallback: string = "/dashboard"
+): string {
+  if (!url) return fallback;
+
+  const trimmed = url.trim();
+
+  // Must start with single /
+  if (!trimmed.startsWith("/")) return fallback;
+
+  // Reject double slash (//evil.com), backslash, protocol schemes
+  if (
+    trimmed.startsWith("//") ||
+    trimmed.includes("\\") ||
+    trimmed.includes(":") ||
+    trimmed.includes("@")
+  ) {
+    return fallback;
+  }
+
+  // Reject control characters and encoded variants
+  const decoded = decodeURIComponent(trimmed);
+  if (
+    decoded.startsWith("//") ||
+    decoded.includes("\\") ||
+    decoded.toLowerCase().includes("javascript") ||
+    decoded.toLowerCase().includes("data:")
+  ) {
+    return fallback;
+  }
+
+  return trimmed;
+}

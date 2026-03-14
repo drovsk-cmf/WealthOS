@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { sanitizeRedirectTo } from "@/lib/utils";
 
 /**
  * Auth callback handler.
@@ -19,8 +20,7 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type");
-  const rawRedirect = searchParams.get("redirectTo") || "/dashboard";
-  const redirectTo = rawRedirect === "/" ? "/dashboard" : rawRedirect;
+  const redirectTo = sanitizeRedirectTo(searchParams.get("redirectTo"));
 
   const supabase = await createClient();
 
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     });
 
     if (error) {
-      return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+      return NextResponse.redirect(`${origin}/login?reason=auth_callback_failed`);
     }
 
     // Password reset flow: redirect to reset-password page
@@ -82,8 +82,6 @@ export async function GET(request: Request) {
         }
 
         // Check MFA enrollment for AAL2 redirect
-        // (client-side login page handles this for email/password,
-        //  but OAuth goes through callback so we check here)
         const { data: mfaData } =
           await supabase.auth.mfa.listFactors();
 
@@ -92,7 +90,6 @@ export async function GET(request: Request) {
         );
 
         if (verifiedFactor) {
-          // MFA enrolled - redirect to challenge
           return NextResponse.redirect(
             `${origin}/mfa-challenge?redirectTo=${encodeURIComponent(redirectTo)}&factorId=${verifiedFactor.id}`
           );
@@ -104,5 +101,5 @@ export async function GET(request: Request) {
   }
 
   // Auth error
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${origin}/login?reason=auth_callback_failed`);
 }

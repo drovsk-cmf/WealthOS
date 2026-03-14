@@ -69,6 +69,10 @@ export default function AppLayout({
 
   async function handleLogout() {
     clearEncryptionKey();
+    // Clear Service Worker cache on logout (prevent stale session data)
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
+    }
     await supabase.auth.signOut();
     router.push("/login");
   }

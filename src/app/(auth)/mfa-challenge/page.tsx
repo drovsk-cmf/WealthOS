@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { challengeAndVerify } from "@/lib/auth/mfa";
 import { loadEncryptionKey } from "@/lib/auth/encryption-manager";
+import { sanitizeRedirectTo } from "@/lib/utils";
 
 export default function MfaChallengePage() {
   return (
@@ -17,7 +18,7 @@ export default function MfaChallengePage() {
 function MfaChallengeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  const redirectTo = sanitizeRedirectTo(searchParams.get("redirectTo"));
   const factorId = searchParams.get("factorId");
 
   const [code, setCode] = useState("");

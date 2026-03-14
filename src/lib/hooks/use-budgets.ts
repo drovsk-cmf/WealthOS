@@ -46,6 +46,7 @@ export interface UpdateBudgetInput {
 export interface CopyBudgetInput {
   source_month: string; // ISO date YYYY-MM-DD
   target_month: string; // ISO date YYYY-MM-DD
+  family_member_id?: string | null;
 }
 
 // ─── Labels ─────────────────────────────────────────────────────
@@ -245,6 +246,8 @@ export function useUpdateBudget() {
         payload.cost_center_id = updates.cost_center_id;
       if (updates.adjustment_index !== undefined)
         payload.adjustment_index = updates.adjustment_index;
+      if (updates.family_member_id !== undefined)
+        payload.family_member_id = updates.family_member_id;
 
       const { data, error } = await supabase
         .from("budgets")
@@ -291,19 +294,27 @@ export function useCopyBudgets() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ source_month, target_month }: CopyBudgetInput) => {
+    mutationFn: async ({ source_month, target_month, family_member_id }: CopyBudgetInput) => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // Check target month has no budgets
-      const { data: existingTarget } = await supabase
+      // Check target month has no budgets for this member scope
+      let existingQuery = supabase
         .from("budgets")
         .select("id")
         .eq("user_id", user.id)
         .eq("month", target_month)
         .limit(1);
+
+      if (family_member_id) {
+        existingQuery = existingQuery.eq("family_member_id", family_member_id);
+      } else {
+        existingQuery = existingQuery.is("family_member_id", null);
+      }
+
+      const { data: existingTarget } = await existingQuery;
 
       if (existingTarget && existingTarget.length > 0) {
         throw new Error(
@@ -311,19 +322,27 @@ export function useCopyBudgets() {
         );
       }
 
-      // Fetch source budgets
-      const { data: sourceBudgets, error: fetchError } = await supabase
+      // Fetch source budgets for this member scope
+      let sourceQuery = supabase
         .from("budgets")
-        .select("category_id, planned_amount, alert_threshold, coa_id, cost_center_id, adjustment_index")
+        .select("category_id, planned_amount, alert_threshold, coa_id, cost_center_id, adjustment_index, family_member_id")
         .eq("user_id", user.id)
         .eq("month", source_month);
+
+      if (family_member_id) {
+        sourceQuery = sourceQuery.eq("family_member_id", family_member_id);
+      } else {
+        sourceQuery = sourceQuery.is("family_member_id", null);
+      }
+
+      const { data: sourceBudgets, error: fetchError } = await sourceQuery;
 
       if (fetchError) throw fetchError;
       if (!sourceBudgets || sourceBudgets.length === 0) {
         throw new Error("Nenhum orçamento encontrado no mês de origem.");
       }
 
-      // Insert copies for target month
+      // Insert copies for target month, preserving family_member_id
       const copies: BudgetInsert[] = sourceBudgets.map((b) => ({
         user_id: user.id,
         category_id: b.category_id,
@@ -333,6 +352,7 @@ export function useCopyBudgets() {
         coa_id: b.coa_id,
         cost_center_id: b.cost_center_id,
         adjustment_index: b.adjustment_index,
+        family_member_id: b.family_member_id,
       }));
 
       const { data, error } = await supabase

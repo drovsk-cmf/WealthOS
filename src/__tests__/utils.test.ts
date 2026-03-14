@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, formatRelativeDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo } from "@/lib/utils";
 
 describe("utils", () => {
   describe("formatCurrency", () => {
@@ -70,6 +70,68 @@ describe("utils", () => {
 
     it("retorna data formatada para mais de 30 dias", () => {
       expect(formatRelativeDate("2026-01-10T10:00:00Z")).toBe("10/01/2026");
+    });
+  });
+
+  describe("sanitizeRedirectTo", () => {
+    it("aceita caminho relativo válido", () => {
+      expect(sanitizeRedirectTo("/dashboard")).toBe("/dashboard");
+    });
+
+    it("aceita caminho com subpath", () => {
+      expect(sanitizeRedirectTo("/settings/profile")).toBe("/settings/profile");
+    });
+
+    it("retorna fallback para null", () => {
+      expect(sanitizeRedirectTo(null)).toBe("/dashboard");
+    });
+
+    it("retorna fallback para undefined", () => {
+      expect(sanitizeRedirectTo(undefined)).toBe("/dashboard");
+    });
+
+    it("retorna fallback para string vazia", () => {
+      expect(sanitizeRedirectTo("")).toBe("/dashboard");
+    });
+
+    it("rejeita URL absoluta", () => {
+      expect(sanitizeRedirectTo("https://evil.com")).toBe("/dashboard");
+    });
+
+    it("rejeita double slash (//evil.com)", () => {
+      expect(sanitizeRedirectTo("//evil.com")).toBe("/dashboard");
+    });
+
+    it("rejeita backslash", () => {
+      expect(sanitizeRedirectTo("/\\evil.com")).toBe("/dashboard");
+    });
+
+    it("rejeita javascript: scheme", () => {
+      expect(sanitizeRedirectTo("javascript:alert(1)")).toBe("/dashboard");
+    });
+
+    it("rejeita data: scheme", () => {
+      expect(sanitizeRedirectTo("data:text/html,<h1>xss</h1>")).toBe("/dashboard");
+    });
+
+    it("rejeita URL com protocolo via colon", () => {
+      expect(sanitizeRedirectTo("/redirect:evil")).toBe("/dashboard");
+    });
+
+    it("rejeita URL com @", () => {
+      expect(sanitizeRedirectTo("/foo@evil.com")).toBe("/dashboard");
+    });
+
+    it("rejeita encoded double slash", () => {
+      expect(sanitizeRedirectTo("/%2F/evil.com")).toBe("/dashboard");
+    });
+
+    it("rejeita encoded javascript", () => {
+      expect(sanitizeRedirectTo("/%6aavascript:alert(1)")).toBe("/dashboard");
+    });
+
+    it("aceita fallback customizado", () => {
+      expect(sanitizeRedirectTo(null, "/home")).toBe("/home");
     });
   });
 });
