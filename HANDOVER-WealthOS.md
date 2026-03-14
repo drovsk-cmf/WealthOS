@@ -75,7 +75,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices econômicos | ~60 registros (8 tipos: IPCA, INPC, IGP-M, Selic, CDI, TR, USD/BRL, salário mínimo) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
-| Stories concluídas | 75 (71 anteriores + 4 CFG: 01/02/03/05) |
+| Stories concluídas | 76 (71 anteriores + CFG-01/02/03/05/07) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
@@ -157,10 +157,10 @@ src/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (17 hooks: accounts, assets, auth-init, bank-connections, budgets,
+│   ├── hooks/ (18 hooks: accounts, assets, auth-init, bank-connections, budgets,
 │   │          categories, chart-of-accounts, cost-centers, dashboard, dialog-helpers,
-│   │          economic-indices, family-members, fiscal, reconciliation, recurrences,
-│   │          transactions, workflows)
+│   │          economic-indices, family-members, fiscal, online-status, reconciliation,
+│   │          recurrences, transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── schemas/rpc.ts            # 27 schemas Zod (todos os RPCs cobertos)
 │   ├── services/
@@ -802,32 +802,50 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ---
 
+## 11j. Sessão 14/03/2026 (continuação) - Testes + CFG-07 (offline)
+
+**Testes dialog helpers (commit 9e3407b):**
+- `dialog-helpers.test.ts`: useEscapeClose (4 tests), useAutoReset (4 tests)
+- Total: 12 suítes, 135 testes
+
+**CFG-07: Modo offline (commit 04498b8):**
+- Service Worker (`public/sw.js`, 142 linhas): cache-first para assets estáticos, network-first para API/Supabase, fallback `/dashboard` para navegação offline, cache versioning `oniefy-v1`
+- Hook `use-online-status.ts`: `useOnlineStatus` (reativo via online/offline events), `useServiceWorker` (registro no mount)
+- Layout: banner offline (burnished warning) acima do conteúdo quando `!isOnline`
+- QueryProvider: `networkMode: 'offlineFirst'`, `staleTime: 5min`, `gcTime: 30min`
+- Nota: IndexedDB persistence (`tanstack-query-persist`) adiada. SW + React Query in-memory é suficiente para uso de leitura offline
+
+**1 story concluída:** CFG-07. **Total: 76/90.**
+
+**Commits:** 9e3407b (testes), 04498b8 (CFG-07)
+
+---
+
 ## 12. Próximos Passos
 
-**Stories restantes (15/90):**
+**Stories restantes (14/90):**
 
 | Story | Descrição | Bloqueio |
 |---|---|---|
 | CFG-04 | Configurar notificações (push) | iOS (APNs) |
-| CFG-07 | Modo offline (Service Worker + IndexedDB) | Remoto |
-| FIN-17 | OCR recibo | Mac |
-| FIN-18 | Câmera comprovante | Mac |
+| FIN-17 | OCR recibo | Mac (Apple Vision + Tesseract.js) |
+| FIN-18 | Câmera comprovante | Mac (Capacitor Camera) |
 | ~11 | Critérios de aceite parciais em stories entregues | Revisão |
 
 **Fazível remotamente:**
 
 | Item | Esforço |
 |---|---|
-| CFG-07: Service Worker + IndexedDB + offline queue | 2-4h |
-| Revisão de critérios de aceite (fechar gaps) | 1-2h |
-| Expandir testes para CFG (profile, export) | 30 min |
+| Revisão de critérios de aceite (fechar gaps das ~11 stories) | 1-2h |
+| Expandir testes para CFG pages (profile, export, security) | 30 min |
 | Estratégia mobile Capacitor vs SSR (`server.url`) | 1h |
 
 **Feito nesta sessão (consolidado):**
-- ~~Expandir testes~~ → 127 testes em 11 suítes
+- ~~Expandir testes~~ → 135 testes em 12 suítes
 - ~~Conciliação bancária (3 camadas)~~ → migrations 028a+028b, 3 RPCs, pg_cron overdue, UI completa
 - ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
 - ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
+- ~~CFG-07~~ → Service Worker + online status + offline banner + React Query offlineFirst
 
 **Ação do Claudio (em paralelo):**
 
