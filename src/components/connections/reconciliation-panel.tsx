@@ -8,7 +8,8 @@
  */
 
 import { useState, useMemo } from "react";
-import { Link, ArrowLeftRight, CircleCheck, AlertTriangle, Filter } from "lucide-react";
+import { Link, ArrowLeftRight, CircleCheck, AlertTriangle, Filter, Clock, XCircle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
   useUnmatchedImports,
   usePendingUnmatched,
@@ -19,13 +20,21 @@ import { useAccounts } from "@/lib/hooks/use-accounts";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 function StatusBadge({ status }: { status: string }) {
-  const config: Record<string, { label: string; classes: string }> = {
-    pending: { label: "Pendente", classes: "bg-burnished/15 text-burnished" },
-    overdue: { label: "Atrasada", classes: "bg-terracotta/15 text-terracotta" },
-    paid: { label: "Paga", classes: "bg-verdant/15 text-verdant" },
+  const config: Record<string, { label: string; classes: string; Icon: LucideIcon }> = {
+    pending: { label: "Pendente", classes: "bg-burnished/15 text-burnished", Icon: Clock },
+    overdue: { label: "Atrasada", classes: "bg-terracotta/15 text-terracotta", Icon: AlertTriangle },
+    paid: { label: "Paga", classes: "bg-verdant/15 text-verdant", Icon: CircleCheck },
+    cancelled: { label: "Cancelada", classes: "bg-muted text-muted-foreground", Icon: XCircle },
   };
-  const c = config[status] ?? { label: status, classes: "bg-muted text-muted-foreground" };
-  return <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${c.classes}`}>{c.label}</span>;
+  const c = config[status] ?? { label: status, classes: "bg-muted text-muted-foreground", Icon: Clock };
+  const BadgeIcon = c.Icon;
+  return (
+    <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold ${c.classes}`}
+      role="status" aria-label={c.label}>
+      <BadgeIcon className="h-2.5 w-2.5" aria-hidden="true" />
+      {c.label}
+    </span>
+  );
 }
 
 function TxRow({

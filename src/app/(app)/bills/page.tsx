@@ -14,7 +14,7 @@
  */
 
 import { useState } from "react";
-import { CalendarClock, Repeat } from "lucide-react";
+import { CalendarClock, Repeat, AlertTriangle, Clock } from "lucide-react";
 import {
   useRecurrences,
   usePendingBills,
@@ -191,7 +191,9 @@ export default function BillsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate font-medium">{bill.description || bill.category_name || "Sem descrição"}</p>
-                        <span className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold ${badge.classes}`}>
+                        <span className={`inline-flex flex-shrink-0 items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold ${badge.classes}`}
+                          role="status" aria-label={badge.text}>
+                          {days <= 0 ? <AlertTriangle className="h-2.5 w-2.5" aria-hidden="true" /> : <Clock className="h-2.5 w-2.5" aria-hidden="true" />}
                           {badge.text}
                         </span>
                       </div>

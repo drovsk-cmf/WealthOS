@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { ArrowLeftRight } from "lucide-react";
+import { ArrowLeftRight, ArrowUpRight, ArrowDownRight, Repeat } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useReverseTransaction } from "@/lib/services/transaction-engine";
@@ -15,10 +16,10 @@ const PAGE_SIZE = 50;
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 
-const TYPE_BADGES: Record<TransactionType, { label: string; class: string }> = {
-  income: { label: "Receita", class: "bg-verdant/15 text-verdant" },
-  expense: { label: "Despesa", class: "bg-terracotta/15 text-terracotta" },
-  transfer: { label: "Transf.", class: "bg-info-slate/15 text-info-slate" },
+const TYPE_BADGES: Record<TransactionType, { label: string; class: string; Icon: LucideIcon }> = {
+  income: { label: "Receita", class: "bg-verdant/15 text-verdant", Icon: ArrowUpRight },
+  expense: { label: "Despesa", class: "bg-terracotta/15 text-terracotta", Icon: ArrowDownRight },
+  transfer: { label: "Transf.", class: "bg-info-slate/15 text-info-slate", Icon: Repeat },
 };
 
 export default function TransactionsPage() {
@@ -235,12 +236,21 @@ export default function TransactionsPage() {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{formatDate(tx.date)}</span>
-                    <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${TYPE_BADGES[tx.type].class}`}>
-                      {TYPE_BADGES[tx.type].label}
-                    </span>
+                    {(() => {
+                      const badge = TYPE_BADGES[tx.type];
+                      const BadgeIcon = badge.Icon;
+                      return (
+                        <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${badge.class}`}
+                          role="status" aria-label={badge.label}>
+                          <BadgeIcon className="h-2.5 w-2.5" aria-hidden="true" />
+                          {badge.label}
+                        </span>
+                      );
+                    })()}
                     {tx.category_name && <span>{tx.category_name}</span>}
                     {!tx.is_paid && (
-                      <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished">
+                      <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished"
+                        role="status" aria-label="Pendente">
                         Pendente
                       </span>
                     )}

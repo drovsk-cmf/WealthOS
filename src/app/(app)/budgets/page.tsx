@@ -14,7 +14,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { BarChart3, Users } from "lucide-react";
+import { BarChart3, Users, AlertTriangle, CircleAlert } from "lucide-react";
 import {
   useBudgets,
   useDeleteBudget,
@@ -336,9 +336,13 @@ export default function BudgetsPage() {
                   <div className="flex items-center gap-2">
                     {status !== "ok" && (
                       <span
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${STATUS_BADGES[status]}`}
+                        className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold ${STATUS_BADGES[status]}`}
+                        role="status"
+                        aria-label={status === "warning" ? "Orçamento em atenção" : "Orçamento excedido"}
                       >
-                        {status === "warning" ? "Atenção" : "Excedido"}
+                        {status === "warning"
+                          ? <><AlertTriangle className="h-2.5 w-2.5" aria-hidden="true" />Atenção</>
+                          : <><CircleAlert className="h-2.5 w-2.5" aria-hidden="true" />Excedido</>}
                       </span>
                     )}
                     <span className="text-sm font-semibold tabular-nums">
