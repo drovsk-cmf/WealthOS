@@ -9,8 +9,13 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 minute
+            staleTime: 5 * 60 * 1000,  // 5 minutes (longer for offline)
+            gcTime: 30 * 60 * 1000,     // 30 minutes cache retention
             retry: 1,
+            networkMode: "offlineFirst", // Use cache when offline, fetch when online
+          },
+          mutations: {
+            networkMode: "offlineFirst", // Queue mutations when offline
           },
         },
       })

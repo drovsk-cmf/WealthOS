@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { useAuthInit } from "@/lib/hooks/use-auth-init";
+import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -60,6 +61,8 @@ export default function AppLayout({
   useSessionTimeout();
 
   const { ready, userName } = useAuthInit(pathname);
+  const isOnline = useOnlineStatus();
+  useServiceWorker();
 
   // Auth state change listener (token refresh no longer requires encryption rotation)
   // KEK is derived from stable kek_material, not JWT - no re-wrap needed.
@@ -184,7 +187,17 @@ export default function AppLayout({
           />
         </header>
 
-        <div className="p-6">{children}</div>
+        <div className="p-6">
+          {!isOnline && (
+            <div className="mb-4 flex items-center gap-2 rounded-lg border border-burnished/30 bg-burnished/10 px-4 py-2.5 text-sm text-burnished">
+              <svg className="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728M5.636 18.364a9 9 0 010-12.728M15.536 8.464a5 5 0 010 7.072M8.464 15.536a5 5 0 010-7.072" />
+              </svg>
+              <span>Sem conexão. Dados em cache disponíveis, alterações serão sincronizadas ao reconectar.</span>
+            </div>
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );
