@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -25,8 +25,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
-import { clearEncryptionKey, loadEncryptionKey } from "@/lib/auth/encryption-manager";
-import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
+import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
+import { useAuthInit } from "@/lib/hooks/use-auth-init";
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -54,62 +54,12 @@ export default function AppLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState<string>("");
-  const [ready, setReady] = useState(false);
-
   const supabase = createClient();
 
   // Session timeout (30min inactivity)
   useSessionTimeout();
 
-  // On mount: verify AAL2 and load encryption key
-  useEffect(() => {
-    async function init() {
-      try {
-        // Check MFA status
-        const { status } = await getMfaStatus(supabase);
-
-        if (status === "enrolled_verified") {
-          const { currentLevel, nextLevel } = await getAssuranceLevel(supabase);
-
-          if (currentLevel === "aal1" && nextLevel === "aal2") {
-            // Need MFA verification - redirect
-            const { factorId } = await getMfaStatus(supabase);
-            router.push(
-              `/mfa-challenge?redirectTo=${encodeURIComponent(pathname)}&factorId=${factorId}`
-            );
-            return;
-          }
-        }
-
-        // Load DEK into memory
-        try {
-          await loadEncryptionKey(supabase);
-        } catch {
-          console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
-        }
-
-        // Get user name for sidebar
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data: profile } = await supabase
-            .from("users_profile")
-            .select("full_name")
-            .eq("id", user.id)
-            .single();
-
-          setUserName(profile?.full_name || user.email || "");
-        }
-
-        setReady(true);
-      } catch {
-        router.push("/login");
-      }
-    }
-
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { ready, userName } = useAuthInit(pathname);
 
   // Auth state change listener (token refresh no longer requires encryption rotation)
   // KEK is derived from stable kek_material, not JWT - no re-wrap needed.

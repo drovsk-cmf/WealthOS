@@ -84,25 +84,36 @@ Requer: Apple Developer Account (US$ 99/ano) e Xcode.
 ```
 src/
   app/
-    (auth)/          # Rotas publicas: login, registro, onboarding
-    (app)/           # Rotas autenticadas: dashboard, transacoes, etc.
-    api/             # API routes (server-side)
+    (auth)/          # Rotas públicas: login, registro, onboarding, MFA
+    (app)/           # Rotas autenticadas: dashboard, transações, fiscal etc.
+    api/             # Route handlers server-side (auth callback, índices)
   components/
-    ui/              # shadcn/ui components
-    layout/          # Layout components (sidebar, header)
-    shared/          # Shared components
+    accounts/        # Formulários e UI de contas
+    assets/          # Formulários e UI de patrimônio
+    budgets/         # Formulários e UI de orçamento
+    categories/      # Formulários e UI de categorias
+    dashboard/       # Cards, gráficos e widgets do dashboard
+    recurrences/     # Formulário de recorrências
+    transactions/    # Formulário de transações
   lib/
-    supabase/        # Clients Supabase (server + browser)
-    crypto/          # Criptografia E2E
-    utils/           # Utilitarios (formatacao, cn, etc.)
-  hooks/             # React hooks customizados
-  types/             # TypeScript types (database, etc.)
-  stores/            # Zustand stores
+    auth/            # MFA, timeout, criptografia e segurança de sessão
+    crypto/          # Primitivas de criptografia (DEK/KEK)
+    hooks/           # Hooks React Query por domínio
+    parsers/         # Parsers CSV/OFX/XLSX
+    schemas/         # Schemas Zod para contratos RPC
+    services/        # Serviços de mutação crítica (transaction engine)
+    supabase/        # Clients Supabase (browser/server/admin)
+    utils/           # Utilitários gerais
+    validations/     # Schemas de validação de formulários
+  types/
+    database.ts      # Tipos gerados do schema Supabase
 supabase/
-  migrations/        # SQL migrations
-  seed/              # Seed data
-  functions/         # Edge Functions (Deno)
+  migrations/        # Migrations SQL (schema, RLS, RPCs e triggers)
+  seed/              # Seed SQL inicial
+  tests/             # Scripts SQL de validação de mutações
 ```
+
+Fonte de verdade para arquitetura, contexto operacional e roadmap: `HANDOVER-WealthOS.md`.
 
 ## Documentacao
 

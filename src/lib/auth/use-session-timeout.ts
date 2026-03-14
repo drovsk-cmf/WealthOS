@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { createClient } from "@/lib/supabase/client";
 
 const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
@@ -26,6 +27,7 @@ export function useSessionTimeout() {
 
   const handleTimeout = useCallback(async () => {
     const supabase = createClient();
+    clearEncryptionKey();
     await supabase.auth.signOut();
     router.push("/login?reason=timeout");
   }, [router]);

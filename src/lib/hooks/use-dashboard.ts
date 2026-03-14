@@ -10,6 +10,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import {
+  balanceSheetSchema,
+  dashboardSummarySchema,
+  logSchemaError,
+  solvencyMetricsSchema,
+} from "@/lib/schemas/rpc";
 
 // ─── Response Types ────────────────────────────────────────────
 
@@ -119,7 +125,20 @@ export function useDashboardSummary() {
         p_user_id: userId,
       });
       if (error) throw error;
-      return data as unknown as DashboardSummary;
+      const parsed = dashboardSummarySchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_dashboard_summary", parsed);
+        return {
+          total_current_balance: 0,
+          total_projected_balance: 0,
+          active_accounts: 0,
+          month_income: 0,
+          month_expense: 0,
+          month_start: "",
+          month_end: "",
+        };
+      }
+      return parsed.data;
     },
   });
 }
@@ -136,7 +155,18 @@ export function useBalanceSheet() {
         p_user_id: userId,
       });
       if (error) throw error;
-      return data as unknown as BalanceSheet;
+      const parsed = balanceSheetSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_balance_sheet", parsed);
+        return {
+          liquid_assets: 0,
+          illiquid_assets: 0,
+          total_assets: 0,
+          total_liabilities: 0,
+          net_worth: 0,
+        };
+      }
+      return parsed.data;
     },
   });
 }
@@ -153,7 +183,22 @@ export function useSolvencyMetrics() {
         p_user_id: userId,
       });
       if (error) throw error;
-      return data as unknown as SolvencyMetrics;
+      const parsed = solvencyMetricsSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_solvency_metrics", parsed);
+        return {
+          tier1_total: 0,
+          tier2_total: 0,
+          tier3_total: 0,
+          tier4_total: 0,
+          total_patrimony: 0,
+          burn_rate: 0,
+          runway_months: 0,
+          lcr: 0,
+          months_analyzed: 0,
+        };
+      }
+      return parsed.data;
     },
   });
 }

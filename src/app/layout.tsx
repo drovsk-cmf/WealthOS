@@ -14,6 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "Oniefy",
   description: "Oniefy — Any asset, one clear view.",
   manifest: "/manifest.json",
