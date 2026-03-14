@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { getMfaStatus } from "@/lib/auth/mfa";
+import { getMfaStatus, unenrollTotp, challengeAndVerify } from "@/lib/auth/mfa";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { useBiometricAuth } from "@/lib/auth/use-biometric";
 
@@ -14,6 +14,9 @@ export default function SecuritySettingsPage() {
   const biometric = useBiometricAuth();
 
   const [mfaEnrolled, setMfaEnrolled] = useState(false);
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [showMfaDisable, setShowMfaDisable] = useState(false);
+  const [mfaDisableCode, setMfaDisableCode] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -22,8 +25,9 @@ export default function SecuritySettingsPage() {
 
   useEffect(() => {
     async function checkStatus() {
-      const { status } = await getMfaStatus(supabase);
+      const { status, factorId } = await getMfaStatus(supabase);
       setMfaEnrolled(status === "enrolled_verified");
+      setMfaFactorId(factorId);
 
       // Check if deletion is pending
       const { data: { user } } = await supabase.auth.getUser();
@@ -119,8 +123,8 @@ export default function SecuritySettingsPage() {
         </div>
       )}
 
-      {/* MFA Status */}
-      <div className="rounded-lg border bg-card p-4">
+      {/* MFA Status + Disable */}
+      <div className="rounded-lg border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">Autenticação de dois fatores (TOTP)</p>
@@ -128,12 +132,78 @@ export default function SecuritySettingsPage() {
               {mfaEnrolled ? "Ativo - protegido por app autenticador" : "Não configurado"}
             </p>
           </div>
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            mfaEnrolled ? "bg-verdant/15 text-verdant" : "bg-terracotta/15 text-terracotta"
-          }`}>
-            {mfaEnrolled ? "Ativo" : "Inativo"}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              mfaEnrolled ? "bg-verdant/15 text-verdant" : "bg-terracotta/15 text-terracotta"
+            }`}>
+              {mfaEnrolled ? "Ativo" : "Inativo"}
+            </span>
+            {mfaEnrolled && !showMfaDisable && (
+              <button
+                onClick={() => setShowMfaDisable(true)}
+                className="rounded-md border border-destructive/50 px-2.5 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
+              >
+                Desativar
+              </button>
+            )}
+          </div>
         </div>
+
+        {showMfaDisable && mfaFactorId && (
+          <div className="space-y-3 rounded-md border border-destructive/20 bg-destructive/5 p-3">
+            <p className="text-xs text-muted-foreground">
+              Ao desativar a autenticação de dois fatores, sua conta ficará protegida apenas por senha.
+              Insira o código do seu app autenticador para confirmar.
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                value={mfaDisableCode}
+                onChange={(e) => setMfaDisableCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                className="flex h-9 w-32 rounded-md border border-input bg-background px-3 py-1 text-sm font-mono tracking-widest text-center"
+                placeholder="000000"
+              />
+              <button
+                onClick={async () => {
+                  if (mfaDisableCode.length !== 6) return;
+                  setLoading("mfa-disable");
+                  setMessage(null);
+                  try {
+                    // Verify the code first (proves user has the device)
+                    await challengeAndVerify(supabase, mfaFactorId, mfaDisableCode);
+                    // Then unenroll
+                    await unenrollTotp(supabase, mfaFactorId);
+                    setMfaEnrolled(false);
+                    setMfaFactorId(null);
+                    setShowMfaDisable(false);
+                    setMfaDisableCode("");
+                    setMessage({ type: "success", text: "Autenticação de dois fatores desativada." });
+                  } catch (err) {
+                    setMessage({
+                      type: "error",
+                      text: err instanceof Error ? err.message : "Erro ao desativar MFA.",
+                    });
+                  } finally {
+                    setLoading(null);
+                  }
+                }}
+                disabled={mfaDisableCode.length !== 6 || loading === "mfa-disable"}
+                className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground disabled:opacity-50"
+              >
+                {loading === "mfa-disable" ? "Verificando..." : "Confirmar"}
+              </button>
+              <button
+                onClick={() => { setShowMfaDisable(false); setMfaDisableCode(""); }}
+                className="rounded-md border px-3 py-1.5 text-xs font-medium"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Biometric Status (stub) */}

@@ -26,6 +26,7 @@ import {
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
@@ -62,9 +63,9 @@ function ValueHistory({ assetId }: { assetId: string }) {
             <span>{h.change_reason || h.change_source}</span>
           </div>
           <div className="flex items-center gap-2 tabular-nums">
-            <span className="text-muted-foreground">{formatCurrency(Number(h.previous_value))}</span>
+            <span className="text-muted-foreground"><Mv>{formatCurrency(Number(h.previous_value))}</Mv></span>
             <span>→</span>
-            <span className="font-medium">{formatCurrency(Number(h.new_value))}</span>
+            <span className="font-medium"><Mv>{formatCurrency(Number(h.new_value))}</Mv></span>
           </div>
         </div>
       ))}
@@ -111,7 +112,7 @@ export default function AssetsPage() {
   async function handleDepreciate(assetId: string) {
     const result = await depreciateAsset.mutateAsync(assetId);
     if (result.status === "depreciated") {
-      setDepreciationResult(`Depreciação aplicada: ${formatCurrency(result.depreciation)} (novo valor: ${formatCurrency(result.new_value)})`);
+      setDepreciationResult(`Depreciação aplicada: $<Mv>{formatCurrency(result.depreciation)}</Mv> (novo valor: $<Mv>{formatCurrency(result.new_value)}</Mv>)`);
       setTimeout(() => setDepreciationResult(null), 4000);
     } else {
       setDepreciationResult("Depreciação ignorada (taxa zero).");
@@ -175,16 +176,16 @@ export default function AssetsPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-lg border bg-card p-4 text-center">
             <p className="text-xs text-muted-foreground">Valor Atual Total</p>
-            <p className="mt-1 text-xl font-bold tabular-nums">{formatCurrency(summary.total_value)}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums"><Mv>{formatCurrency(summary.total_value)}</Mv></p>
           </div>
           <div className="rounded-lg border bg-card p-4 text-center">
             <p className="text-xs text-muted-foreground">Valor de Aquisição</p>
-            <p className="mt-1 text-xl font-bold tabular-nums">{formatCurrency(summary.total_acquisition)}</p>
+            <p className="mt-1 text-xl font-bold tabular-nums"><Mv>{formatCurrency(summary.total_acquisition)}</Mv></p>
           </div>
           <div className="rounded-lg border bg-card p-4 text-center">
             <p className="text-xs text-muted-foreground">Depreciação Acumulada</p>
             <p className="mt-1 text-xl font-bold tabular-nums text-burnished">
-              {formatCurrency(summary.total_depreciation)}
+              <Mv>{formatCurrency(summary.total_depreciation)}</Mv>
             </p>
           </div>
         </div>
@@ -198,7 +199,7 @@ export default function AssetsPage() {
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: ASSET_CATEGORY_COLORS[cat.category as AssetCategory] }} />
               <span className="font-medium">{ASSET_CATEGORY_LABELS[cat.category as AssetCategory]}</span>
               <span className="text-muted-foreground">({cat.count})</span>
-              <span className="tabular-nums">{formatCurrency(cat.total_value)}</span>
+              <span className="tabular-nums"><Mv>{formatCurrency(cat.total_value)}</Mv></span>
             </div>
           ))}
         </div>
@@ -261,7 +262,7 @@ export default function AssetsPage() {
 
                   {/* Values */}
                   <div className="text-right">
-                    <p className="text-lg font-bold tabular-nums">{formatCurrency(Number(asset.current_value))}</p>
+                    <p className="text-lg font-bold tabular-nums"><Mv>{formatCurrency(Number(asset.current_value))}</Mv></p>
                     {depPct > 0 && (
                       <p className="text-xs text-burnished tabular-nums">
                         -{depPct.toFixed(1)} % desde aquisição

@@ -8,6 +8,7 @@
  */
 
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { DashboardSummary } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -54,10 +55,10 @@ export function SummaryCards({ data, isLoading }: Props) {
             balance >= 0 ? "text-foreground" : "text-terracotta"
           }`}
         >
-          {formatCurrency(balance)}
+          <Mv>{formatCurrency(balance)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Previsto: {formatCurrency(projected)}
+          Previsto: <Mv>{formatCurrency(projected)}</Mv>
         </p>
       </div>
 
@@ -67,7 +68,7 @@ export function SummaryCards({ data, isLoading }: Props) {
           Receitas do Mês
         </p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-verdant">
-          {formatCurrency(income)}
+          <Mv>{formatCurrency(income)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {data?.active_accounts ?? 0} contas ativas
@@ -80,7 +81,7 @@ export function SummaryCards({ data, isLoading }: Props) {
           Despesas do Mês
         </p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-terracotta">
-          {formatCurrency(expense)}
+          <Mv>{formatCurrency(expense)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {income > 0
@@ -99,8 +100,7 @@ export function SummaryCards({ data, isLoading }: Props) {
             netMonth >= 0 ? "text-verdant" : "text-terracotta"
           }`}
         >
-          {netMonth >= 0 ? "+" : ""}
-          {formatCurrency(netMonth)}
+          <Mv>{netMonth >= 0 ? "+" : ""}{formatCurrency(netMonth)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           Receitas - Despesas

@@ -28,6 +28,7 @@ import {
 } from "@/lib/hooks/use-cost-centers";
 import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type CostCenter = Database["public"]["Tables"]["cost_centers"]["Row"];
@@ -104,16 +105,16 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
       <div className="grid grid-cols-3 gap-3 text-center">
         <div className="rounded-lg bg-verdant/10 px-3 py-2">
           <p className="text-[10px] font-medium text-verdant">Receitas</p>
-          <p className="text-sm font-bold tabular-nums text-verdant">{formatCurrency(income)}</p>
+          <p className="text-sm font-bold tabular-nums text-verdant"><Mv>{formatCurrency(income)}</Mv></p>
         </div>
         <div className="rounded-lg bg-terracotta/10 px-3 py-2">
           <p className="text-[10px] font-medium text-terracotta">Despesas</p>
-          <p className="text-sm font-bold tabular-nums text-terracotta">{formatCurrency(expense)}</p>
+          <p className="text-sm font-bold tabular-nums text-terracotta"><Mv>{formatCurrency(expense)}</Mv></p>
         </div>
         <div className={`rounded-lg px-3 py-2 ${net >= 0 ? "bg-info-slate/10" : "bg-burnished/10"}`}>
           <p className={`text-[10px] font-medium ${net >= 0 ? "text-info-slate" : "text-burnished"}`}>Resultado</p>
           <p className={`text-sm font-bold tabular-nums ${net >= 0 ? "text-info-slate" : "text-burnished"}`}>
-            {net >= 0 ? "+" : ""}{formatCurrency(net)}
+            {net >= 0 ? "+" : ""}<Mv>{formatCurrency(net)}</Mv>
           </p>
         </div>
       </div>
@@ -129,10 +130,10 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
                 <div key={m.month} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{formatDate(m.month, "MMM yyyy")}</span>
                   <div className="flex items-center gap-3 tabular-nums">
-                    <span className="text-verdant">+{formatCurrency(Number(m.income))}</span>
-                    <span className="text-terracotta">-{formatCurrency(Number(m.expense))}</span>
+                    <span className="text-verdant">+<Mv>{formatCurrency(Number(m.income))}</Mv></span>
+                    <span className="text-terracotta">-<Mv>{formatCurrency(Number(m.expense))}</Mv></span>
                     <span className={`font-medium ${mNet >= 0 ? "text-info-slate" : "text-burnished"}`}>
-                      = {formatCurrency(mNet)}
+                      = <Mv>{formatCurrency(mNet)}</Mv>
                     </span>
                   </div>
                 </div>

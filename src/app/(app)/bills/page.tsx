@@ -25,6 +25,7 @@ import {
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { RecurrenceForm } from "@/components/recurrences/recurrence-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
@@ -159,7 +160,7 @@ export default function BillsPage() {
             <div className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
               <span className="text-sm text-muted-foreground">Total pendente</span>
               <span className="text-lg font-bold tabular-nums text-terracotta">
-                {formatCurrency(totalPending)}
+                <Mv>{formatCurrency(totalPending)}</Mv>
               </span>
             </div>
           )}
@@ -204,7 +205,7 @@ export default function BillsPage() {
 
                     {/* Amount */}
                     <span className="flex-shrink-0 font-semibold tabular-nums text-terracotta">
-                      {formatCurrency(bill.amount)}
+                      <Mv>{formatCurrency(bill.amount)}</Mv>
                     </span>
 
                     {/* Pay button (CAP-05) */}

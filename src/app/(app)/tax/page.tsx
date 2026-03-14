@@ -30,6 +30,7 @@ import {
   TAX_TREATMENT_COLORS,
 } from "@/lib/hooks/use-fiscal";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -115,10 +116,10 @@ export default function FiscalPage() {
                 Renda Tributável Projetada
               </p>
               <p className="mt-1 text-xl font-bold tabular-nums">
-                {formatCurrency(prov.projected_annual_income)}
+                <Mv>{formatCurrency(prov.projected_annual_income)}</Mv>
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Acumulado: {formatCurrency(prov.ytd_taxable_income)} ({prov.months_elapsed} meses)
+                Acumulado: <Mv>{formatCurrency(prov.ytd_taxable_income)}</Mv> ({prov.months_elapsed} meses)
               </p>
             </div>
 
@@ -127,11 +128,11 @@ export default function FiscalPage() {
                 IRPF Estimado Anual
               </p>
               <p className="mt-1 text-xl font-bold tabular-nums text-terracotta">
-                {formatCurrency(prov.estimated_annual_tax)}
+                <Mv>{formatCurrency(prov.estimated_annual_tax)}</Mv>
               </p>
               {prov.annual_reduction_applied > 0 && (
                 <p className="text-[11px] text-verdant">
-                  Redução aplicada: {formatCurrency(prov.annual_reduction_applied)}
+                  Redução aplicada: <Mv>{formatCurrency(prov.annual_reduction_applied)}</Mv>
                 </p>
               )}
             </div>
@@ -141,10 +142,10 @@ export default function FiscalPage() {
                 IRRF Retido (fontes)
               </p>
               <p className="mt-1 text-xl font-bold tabular-nums text-verdant">
-                {formatCurrency(prov.ytd_irrf_withheld)}
+                <Mv>{formatCurrency(prov.ytd_irrf_withheld)}</Mv>
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Gap: {formatCurrency(prov.tax_gap)}
+                Gap: <Mv>{formatCurrency(prov.tax_gap)}</Mv>
               </p>
             </div>
 
@@ -179,7 +180,7 @@ export default function FiscalPage() {
                 Se você tem mais de uma fonte de renda, cada empregador calcula o IR
                 isoladamente. É possível que nenhum retenha imposto, mas a declaração
                 anual consolida toda a renda e cobra a diferença de uma vez. Provisionando{" "}
-                {formatCurrency(prov.monthly_provision)} por mês, você evita essa surpresa.
+                <Mv>{formatCurrency(prov.monthly_provision)}</Mv> por mês, você evita essa surpresa.
               </p>
             </div>
           )}
@@ -208,19 +209,19 @@ export default function FiscalPage() {
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Rendimentos Tributáveis</p>
               <p className="mt-1 text-xl font-bold tabular-nums text-terracotta">
-                {formatCurrency(totals.total_tributavel_revenue)}
+                <Mv>{formatCurrency(totals.total_tributavel_revenue)}</Mv>
               </p>
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Rendimentos Isentos</p>
               <p className="mt-1 text-xl font-bold tabular-nums text-verdant">
-                {formatCurrency(totals.total_isento_revenue)}
+                <Mv>{formatCurrency(totals.total_isento_revenue)}</Mv>
               </p>
             </div>
             <div className="rounded-lg border bg-card p-4">
               <p className="text-xs font-medium text-muted-foreground">Despesas Dedutíveis</p>
               <p className="mt-1 text-xl font-bold tabular-nums text-info-slate">
-                {formatCurrency(totals.total_dedutivel_expense)}
+                <Mv>{formatCurrency(totals.total_dedutivel_expense)}</Mv>
               </p>
             </div>
           </div>
@@ -248,7 +249,7 @@ export default function FiscalPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold tabular-nums">{formatCurrency(total)}</p>
+                      <p className="text-lg font-bold tabular-nums"><Mv>{formatCurrency(total)}</Mv></p>
                       <p className="text-[11px] text-muted-foreground">{group.entry_count} lançamentos</p>
                     </div>
                   </div>
@@ -332,14 +333,14 @@ export default function FiscalPage() {
                           {(param.brackets as Record<string, unknown>[]).map((b, i) => (
                             <tr key={i} className="border-b border-muted/50">
                               <td className="py-1 tabular-nums">
-                                {formatCurrency(Number(b.min))} a {Number(b.max) > 9999999 ? "..." : formatCurrency(Number(b.max))}
+                                <Mv>{formatCurrency(Number(b.min))}</Mv> a {Number(b.max) > 9999999 ? "..." : formatCurrency(Number(b.max))}
                               </td>
                               <td className="py-1 text-right tabular-nums font-medium">
                                 {Number(b.rate)} %
                               </td>
                               {b.deduction !== undefined && (
                                 <td className="py-1 text-right tabular-nums">
-                                  {formatCurrency(Number(b.deduction))}
+                                  <Mv>{formatCurrency(Number(b.deduction))}</Mv>
                                 </td>
                               )}
                             </tr>

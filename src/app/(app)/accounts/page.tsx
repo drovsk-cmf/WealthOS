@@ -10,6 +10,7 @@ import {
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AccountForm } from "@/components/accounts/account-form";
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
@@ -90,13 +91,13 @@ export default function AccountsPage() {
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Saldo atual</p>
             <p className="mt-1 text-xl font-semibold text-verdant">
-              {formatCurrency(totals.current)}
+              <Mv>{formatCurrency(totals.current)}</Mv>
             </p>
           </div>
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Saldo previsto</p>
             <p className="mt-1 text-xl font-semibold">
-              {formatCurrency(totals.projected)}
+              <Mv>{formatCurrency(totals.projected)}</Mv>
             </p>
             <p className="text-xs text-muted-foreground">
               inclui pendentes
@@ -105,7 +106,7 @@ export default function AccountsPage() {
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Dívida (cartões)</p>
             <p className="mt-1 text-xl font-semibold text-terracotta">
-              {formatCurrency(totals.debt)}
+              <Mv>{formatCurrency(totals.debt)}</Mv>
             </p>
           </div>
         </div>
@@ -165,11 +166,11 @@ export default function AccountsPage() {
                         : "text-terracotta"
                   }`}
                 >
-                  {formatCurrency(account.current_balance)}
+                  <Mv>{formatCurrency(account.current_balance)}</Mv>
                 </p>
                 {account.current_balance !== account.projected_balance && (
                   <p className="text-xs text-muted-foreground">
-                    Previsto: {formatCurrency(account.projected_balance)}
+                    Previsto: <Mv>{formatCurrency(account.projected_balance)}</Mv>
                   </p>
                 )}
               </div>

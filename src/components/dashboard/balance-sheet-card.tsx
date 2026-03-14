@@ -9,6 +9,7 @@
  */
 
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { BalanceSheet } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -50,7 +51,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
           }`}
         >
           PL {netWorth >= 0 ? "+" : ""}
-          {formatCurrency(netWorth)}
+          <Mv>{formatCurrency(netWorth)}</Mv>
         </span>
       </div>
 
@@ -76,7 +77,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
             </span>
           </div>
           <span className="text-sm font-medium tabular-nums">
-            {formatCurrency(data?.liquid_assets ?? 0)}
+            <Mv>{formatCurrency(data?.liquid_assets ?? 0)}</Mv>
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -87,7 +88,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
             </span>
           </div>
           <span className="text-sm font-medium tabular-nums">
-            {formatCurrency(data?.illiquid_assets ?? 0)}
+            <Mv>{formatCurrency(data?.illiquid_assets ?? 0)}</Mv>
           </span>
         </div>
         <div className="flex items-center justify-between">
@@ -96,7 +97,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
             <span className="text-sm text-muted-foreground">Passivos</span>
           </div>
           <span className="text-sm font-medium tabular-nums text-terracotta">
-            {formatCurrency(liabilities)}
+            <Mv>{formatCurrency(liabilities)}</Mv>
           </span>
         </div>
       </div>
@@ -110,7 +111,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
               netWorth >= 0 ? "text-verdant" : "text-terracotta"
             }`}
           >
-            {formatCurrency(netWorth)}
+            <Mv>{formatCurrency(netWorth)}</Mv>
           </span>
         </div>
         <p className="mt-1 text-[11px] text-muted-foreground">

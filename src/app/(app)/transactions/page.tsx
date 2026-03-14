@@ -9,6 +9,7 @@ import { useReverseTransaction } from "@/lib/services/transaction-engine";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { TransactionFilters, TransactionWithRelations } from "@/lib/hooks/use-transactions";
 import type { Database } from "@/types/database";
 
@@ -57,8 +58,8 @@ export default function TransactionsPage() {
   }
 
   function getAmountDisplay(tx: TransactionWithRelations) {
-    if (tx.type === "income") return { text: `+ ${formatCurrency(tx.amount)}`, class: "text-verdant" };
-    if (tx.type === "expense") return { text: `- ${formatCurrency(tx.amount)}`, class: "text-terracotta" };
+    if (tx.type === "income") return { text: `+ $<Mv>{formatCurrency(tx.amount)}</Mv>`, class: "text-verdant" };
+    if (tx.type === "expense") return { text: `- $<Mv>{formatCurrency(tx.amount)}</Mv>`, class: "text-terracotta" };
     return { text: formatCurrency(tx.amount), class: "text-info-slate" };
   }
 

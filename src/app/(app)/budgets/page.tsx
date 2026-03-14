@@ -27,6 +27,7 @@ import { useBudgetVsActual } from "@/lib/hooks/use-dashboard";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
@@ -220,7 +221,7 @@ export default function BudgetsPage() {
           </p>
           {bva && bva.budget_count > 0 && (
             <p className="text-xs text-muted-foreground tabular-nums">
-              {bva.pct_used.toFixed(0)} % utilizado · {formatCurrency(bva.total_actual)} / {formatCurrency(bva.total_planned)}
+              {bva.pct_used.toFixed(0)} % utilizado · <Mv>{formatCurrency(bva.total_actual)}</Mv> / <Mv>{formatCurrency(bva.total_planned)}</Mv>
             </p>
           )}
         </div>
@@ -327,7 +328,7 @@ export default function BudgetsPage() {
                     <div>
                       <p className="font-medium">{b.categories.name}</p>
                       <p className="text-xs text-muted-foreground tabular-nums">
-                        {formatCurrency(actual)} de {formatCurrency(b.planned_amount)}
+                        <Mv>{formatCurrency(actual)}</Mv> de <Mv>{formatCurrency(b.planned_amount)}</Mv>
                       </p>
                     </div>
                   </div>
@@ -402,7 +403,7 @@ export default function BudgetsPage() {
                 {/* Remaining */}
                 <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
                   <span>
-                    Restante: {formatCurrency(b.planned_amount - actual)}
+                    Restante: <Mv>{formatCurrency(b.planned_amount - actual)}</Mv>
                   </span>
                   <span>Alerta: {b.alert_threshold} %</span>
                 </div>
@@ -420,7 +421,7 @@ export default function BudgetsPage() {
             <div>
               <p className="text-xs text-muted-foreground">Orçado</p>
               <p className="text-lg font-bold tabular-nums">
-                {formatCurrency(bva.total_planned)}
+                <Mv>{formatCurrency(bva.total_planned)}</Mv>
               </p>
             </div>
             <div>
@@ -432,7 +433,7 @@ export default function BudgetsPage() {
                     : "text-foreground"
                 }`}
               >
-                {formatCurrency(bva.total_actual)}
+                <Mv>{formatCurrency(bva.total_actual)}</Mv>
               </p>
             </div>
             <div>
@@ -444,7 +445,7 @@ export default function BudgetsPage() {
                     : "text-verdant"
                 }`}
               >
-                {formatCurrency(bva.total_remaining)}
+                <Mv>{formatCurrency(bva.total_remaining)}</Mv>
               </p>
             </div>
           </div>

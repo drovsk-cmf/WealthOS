@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { TopCategoriesResult } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -47,7 +48,7 @@ export function TopCategoriesCard({ data, isLoading }: Props) {
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Top Categorias</h3>
         <span className="text-xs text-muted-foreground">
-          {formatCurrency(totalExpense)} total
+          <Mv>{formatCurrency(totalExpense)}</Mv> total
         </span>
       </div>
 
@@ -82,7 +83,7 @@ export function TopCategoriesCard({ data, isLoading }: Props) {
                       {cat.percentage} %
                     </span>
                     <span className="font-medium">
-                      {formatCurrency(cat.total)}
+                      <Mv>{formatCurrency(cat.total)}</Mv>
                     </span>
                   </div>
                 </div>

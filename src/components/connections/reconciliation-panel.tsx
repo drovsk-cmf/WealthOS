@@ -18,6 +18,7 @@ import {
 } from "@/lib/hooks/use-reconciliation";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 
 function StatusBadge({ status }: { status: string }) {
   const config: Record<string, { label: string; classes: string; Icon: LucideIcon }> = {
@@ -76,7 +77,7 @@ function TxRow({
           <span className={`text-sm font-semibold tabular-nums ${
             tx.type === "expense" ? "text-terracotta" : "text-verdant"
           }`}>
-            {formatCurrency(tx.amount)}
+            <Mv>{formatCurrency(tx.amount)}</Mv>
           </span>
           <StatusBadge status={tx.payment_status} />
         </div>
@@ -253,14 +254,14 @@ export function ReconciliationPanel() {
             <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
             {selectedPendingTx && selectedImportedTx ? (
               <div className="flex items-center gap-2">
-                <span className="font-medium">{formatCurrency(selectedPendingTx.amount)}</span>
+                <span className="font-medium"><Mv>{formatCurrency(selectedPendingTx.amount)}</Mv></span>
                 <span className="text-muted-foreground">↔</span>
-                <span className="font-medium">{formatCurrency(selectedImportedTx.amount)}</span>
+                <span className="font-medium"><Mv>{formatCurrency(selectedImportedTx.amount)}</Mv></span>
                 {amountDiff !== 0 && (
                   <span className="flex items-center gap-1 text-xs">
                     <AlertTriangle className="h-3 w-3 text-burnished" />
                     <span className="text-burnished">
-                      Ajuste: {amountDiff > 0 ? "+" : ""}{formatCurrency(amountDiff)}
+                      Ajuste: {amountDiff > 0 ? "+" : ""}<Mv>{formatCurrency(amountDiff)}</Mv>
                     </span>
                   </span>
                 )}

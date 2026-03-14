@@ -13,6 +13,7 @@
  */
 
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { SolvencyMetrics } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -142,7 +143,7 @@ export function SolvencyPanel({ data, isLoading }: Props) {
             Burn Rate
           </p>
           <span className="mt-1 block text-2xl font-bold tabular-nums">
-            {formatCurrency(burnRate)}
+            <Mv>{formatCurrency(burnRate)}</Mv>
           </span>
           <p className="mt-1 text-[11px] text-muted-foreground">
             Custo mensal médio (6 meses)
@@ -155,7 +156,7 @@ export function SolvencyPanel({ data, isLoading }: Props) {
             Patrimônio Total
           </p>
           <span className="mt-1 block text-2xl font-bold tabular-nums">
-            {formatCurrency(totalPatrimony)}
+            <Mv>{formatCurrency(totalPatrimony)}</Mv>
           </span>
           <p className="mt-1 text-[11px] text-muted-foreground">
             T1 + T2 + T3 + T4
@@ -180,7 +181,7 @@ export function SolvencyPanel({ data, isLoading }: Props) {
                       width: `${(tier.value / tierTotal) * 100}%`,
                       backgroundColor: tier.color,
                     }}
-                    title={`${tier.label}: ${formatCurrency(tier.value)}`}
+                    title={`${tier.label}: $<Mv>{formatCurrency(tier.value)}</Mv>`}
                   />
                 )
             )}
@@ -204,7 +205,7 @@ export function SolvencyPanel({ data, isLoading }: Props) {
                     )}
                   </div>
                   <span className="text-xs tabular-nums text-muted-foreground">
-                    {formatCurrency(tier.value)}
+                    <Mv>{formatCurrency(tier.value)}</Mv>
                   </span>
                 </div>
               </div>

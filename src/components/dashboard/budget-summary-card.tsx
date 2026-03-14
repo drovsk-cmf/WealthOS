@@ -11,6 +11,7 @@
 import Link from "next/link";
 import { PieChart } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 import type { BudgetVsActualResult } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -82,7 +83,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
                 {pctUsed.toFixed(0)} %
               </span>
               <span className="text-xs text-muted-foreground tabular-nums">
-                {formatCurrency(totalActual)} / {formatCurrency(totalPlanned)}
+                <Mv>{formatCurrency(totalActual)}</Mv> / <Mv>{formatCurrency(totalPlanned)}</Mv>
               </span>
             </div>
             <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-muted">

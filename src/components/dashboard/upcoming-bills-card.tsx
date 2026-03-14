@@ -13,6 +13,7 @@ import Link from "next/link";
 import { CircleCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { Mv } from "@/components/ui/masked-value";
 
 interface UpcomingBill {
   id: string;
@@ -140,7 +141,7 @@ export function UpcomingBillsCard() {
                   </p>
                 </div>
                 <span className="flex-shrink-0 text-sm font-semibold tabular-nums text-terracotta">
-                  {formatCurrency(bill.amount)}
+                  <Mv>{formatCurrency(bill.amount)}</Mv>
                 </span>
               </div>
             );

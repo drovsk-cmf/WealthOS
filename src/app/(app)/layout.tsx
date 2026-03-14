@@ -21,6 +21,8 @@ import {
   TrendingUp,
   Settings,
   LogOut,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -28,6 +30,7 @@ import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
+import { usePrivacyStore } from "@/lib/stores/privacy";
 
 const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -63,6 +66,7 @@ export default function AppLayout({
   const { ready, userName } = useAuthInit(pathname);
   const isOnline = useOnlineStatus();
   useServiceWorker();
+  const { valuesHidden, toggleValues } = usePrivacyStore();
 
   // Auth state change listener (token refresh no longer requires encryption rotation)
   // KEK is derived from stable kek_material, not JWT - no re-wrap needed.
@@ -125,13 +129,23 @@ export default function AppLayout({
           {userName && (
             <div className="mt-2 flex items-center justify-between">
               <p className="truncate text-xs text-muted-foreground">{userName}</p>
-              <button
-                onClick={handleLogout}
-                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                title="Sair"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-              </button>
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={toggleValues}
+                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  title={valuesHidden ? "Exibir valores" : "Ocultar valores"}
+                  aria-label={valuesHidden ? "Exibir valores financeiros" : "Ocultar valores financeiros"}
+                >
+                  {valuesHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  title="Sair"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
             </div>
           )}
         </div>
