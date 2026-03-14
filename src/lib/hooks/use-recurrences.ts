@@ -112,7 +112,7 @@ export function useRecurrence(id: string | null) {
 
 /**
  * CAP-04: Pending transactions from recurrences.
- * These are transactions with is_paid=false linked to a recurrence.
+ * These are transactions with payment_status in ('pending','overdue') linked to a recurrence.
  */
 export function usePendingBills() {
   const supabase = createClient();
@@ -123,12 +123,12 @@ export function usePendingBills() {
       const { data, error } = await supabase
         .from("transactions")
         .select(`
-          id, description, amount, date, type, is_paid,
+          id, description, amount, date, due_date, type, is_paid, payment_status,
           recurrence_id,
           accounts!inner(name, color),
           categories(name, icon, color)
         `)
-        .eq("is_paid", false)
+        .in("payment_status", ["pending", "overdue"])
         .eq("is_deleted", false)
         .not("recurrence_id", "is", null)
         .order("date", { ascending: true });
@@ -140,8 +140,10 @@ export function usePendingBills() {
         description: row.description as string | null,
         amount: row.amount as number,
         date: row.date as string,
+        due_date: row.due_date as string | null,
         type: row.type as string,
         is_paid: row.is_paid as boolean,
+        payment_status: row.payment_status as string,
         recurrence_id: row.recurrence_id as string,
         account_name: (row.accounts as Record<string, unknown>)?.name as string ?? "",
         account_color: (row.accounts as Record<string, unknown>)?.color as string | null ?? null,

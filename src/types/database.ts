@@ -410,9 +410,9 @@ export type Database = {
         Relationships: []
       }
       transactions: {
-        Row: { account_id: string; amount: number; bank_connection_id: string | null; category_id: string | null; created_at: string; date: string; description: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; notes: string | null; occurred_at: string | null; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
-        Insert: { account_id: string; amount: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date: string; description?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
-        Update: { account_id?: string; amount?: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date?: string; description?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; notes?: string | null; occurred_at?: string | null; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
+        Row: { account_id: string; amount: number; amount_adjustment: number; bank_connection_id: string | null; category_id: string | null; created_at: string; date: string; description: string | null; due_date: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; matched_transaction_id: string | null; notes: string | null; occurred_at: string | null; payment_status: Database["public"]["Enums"]["payment_status"]; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
+        Insert: { account_id: string; amount: number; amount_adjustment?: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
+        Update: { account_id?: string; amount?: number; amount_adjustment?: number; bank_connection_id?: string | null; category_id?: string | null; created_at?: string; date?: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
         Relationships: [
           { foreignKeyName: "fk_transactions_recurrence"; columns: ["recurrence_id"]; isOneToOne: false; referencedRelation: "recurrences"; referencedColumns: ["id"] },
           { foreignKeyName: "transactions_account_id_fkey"; columns: ["account_id"]; isOneToOne: false; referencedRelation: "accounts"; referencedColumns: ["id"] },
@@ -420,6 +420,7 @@ export type Database = {
           { foreignKeyName: "transactions_category_id_fkey"; columns: ["category_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] },
           { foreignKeyName: "transactions_family_member_id_fkey"; columns: ["family_member_id"]; isOneToOne: false; referencedRelation: "family_members"; referencedColumns: ["id"] },
           { foreignKeyName: "transactions_journal_entry_id_fkey"; columns: ["journal_entry_id"]; isOneToOne: false; referencedRelation: "journal_entries"; referencedColumns: ["id"] },
+          { foreignKeyName: "transactions_matched_transaction_id_fkey"; columns: ["matched_transaction_id"]; isOneToOne: false; referencedRelation: "transactions"; referencedColumns: ["id"] },
         ]
       }
       users_profile: {
@@ -466,7 +467,9 @@ export type Database = {
       cron_depreciate_assets: { Args: Record<string, never>; Returns: undefined }
       cron_fetch_economic_indices: { Args: Record<string, never>; Returns: Json }
       cron_generate_workflow_tasks: { Args: Record<string, never>; Returns: undefined }
+      cron_mark_overdue_transactions: { Args: Record<string, never>; Returns: undefined }
       depreciate_asset: { Args: { p_asset_id: string; p_user_id: string }; Returns: Json }
+      find_reconciliation_candidates: { Args: { p_account_id: string; p_amount: number; p_date: string; p_tolerance_days?: number; p_tolerance_pct?: number; p_user_id: string }; Returns: Json }
       generate_next_recurrence: { Args: { p_recurrence_id: string; p_user_id: string }; Returns: Json }
       generate_tasks_for_period: { Args: { p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
       get_assets_summary: { Args: { p_user_id: string }; Returns: Json }
@@ -482,7 +485,8 @@ export type Database = {
       get_index_latest: { Args: Record<string, never>; Returns: Json }
       get_solvency_metrics: { Args: { p_user_id: string }; Returns: Json }
       get_top_categories: { Args: { p_limit?: number; p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
-      import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id?: string; p_transactions?: Json; p_user_id: string }; Returns: Json }
+      import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id: string; p_transactions: Json; p_user_id: string }; Returns: Json }
+      match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }
     }
     Enums: {
@@ -499,6 +503,7 @@ export type Database = {
       notification_status: "sent" | "failed" | "skipped"
       notification_type: "bill_due" | "budget_alert" | "insurance_expiry" | "account_deletion"
       parameter_type: "irpf_monthly" | "irpf_annual" | "irpf_reduction" | "irpf_min_high_income" | "inss_employee" | "inss_ceiling" | "minimum_wage" | "capital_gains" | "crypto_exemption" | "stock_exemption"
+      payment_status: "pending" | "overdue" | "paid" | "cancelled"
       periodicity_type: "daily" | "monthly" | "annual"
       recurrence_frequency: "daily" | "weekly" | "monthly" | "yearly"
       sync_status: "active" | "syncing" | "error" | "expired" | "manual"

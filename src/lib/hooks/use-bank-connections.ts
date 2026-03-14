@@ -139,6 +139,7 @@ export function useImportBatch() {
           imported: 0,
           skipped: transactions.length,
           categorized: 0,
+          matched: 0,
           batch_id: batchId,
         };
       }

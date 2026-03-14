@@ -15,6 +15,9 @@ import {
   topCategoriesResultSchema,
   balanceEvolutionResultSchema,
   budgetVsActualResultSchema,
+  reconciliationCandidateSchema,
+  matchTransactionsResultSchema,
+  importBatchResultSchema,
   logSchemaError,
 } from "@/lib/schemas/rpc";
 
@@ -385,6 +388,86 @@ describe("RPC schemas (extended)", () => {
         expect.stringContaining("[Oniefy] RPC schema mismatch (get_assets_summary)")
       );
       spy.mockRestore();
+    });
+  });
+
+  // ─── Reconciliation ────────────────────────────────────
+  describe("reconciliation schemas", () => {
+    it("valida reconciliationCandidate", () => {
+      expect(
+        reconciliationCandidateSchema.safeParse({
+          id: UUID,
+          description: "Aluguel",
+          amount: 2500,
+          date: "2026-03-10",
+          due_date: "2026-03-10",
+          type: "expense",
+          payment_status: "pending",
+          category_id: UUID,
+          recurrence_id: UUID,
+          amount_diff: 50,
+          days_diff: 2,
+          match_score: 12.5,
+        }).success
+      ).toBe(true);
+    });
+
+    it("valida reconciliationCandidate com nulls", () => {
+      expect(
+        reconciliationCandidateSchema.safeParse({
+          id: UUID,
+          description: null,
+          amount: 100,
+          date: "2026-03-01",
+          due_date: null,
+          type: "expense",
+          payment_status: "overdue",
+          category_id: null,
+          recurrence_id: null,
+          amount_diff: 0,
+          days_diff: 0,
+          match_score: 0,
+        }).success
+      ).toBe(true);
+    });
+
+    it("valida matchTransactionsResult", () => {
+      expect(
+        matchTransactionsResultSchema.safeParse({
+          status: "matched",
+          pending_id: UUID,
+          imported_id: "22222222-2222-4222-8222-222222222222",
+          adjustment: -15.50,
+          final_amount: 2484.50,
+        }).success
+      ).toBe(true);
+    });
+
+    it("valida importBatchResult com matched (v2)", () => {
+      expect(
+        importBatchResultSchema.safeParse({
+          status: "ok",
+          imported: 10,
+          skipped: 2,
+          categorized: 8,
+          matched: 3,
+          batch_id: UUID,
+        }).success
+      ).toBe(true);
+    });
+
+    it("valida importBatchResult sem matched (backward compat)", () => {
+      const result = importBatchResultSchema.safeParse({
+        status: "ok",
+        imported: 5,
+        skipped: 1,
+        categorized: 3,
+        batch_id: UUID,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.matched).toBe(0);
+      }
     });
   });
 });

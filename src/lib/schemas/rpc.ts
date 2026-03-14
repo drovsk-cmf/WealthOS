@@ -98,7 +98,33 @@ export const importBatchResultSchema = z.object({
   imported: z.number(),
   skipped: z.number(),
   categorized: z.number(),
+  matched: z.number().optional().default(0),
   batch_id: z.string().uuid(),
+});
+
+// ─── Reconciliation ──────────────────────────────────────────
+
+export const reconciliationCandidateSchema = z.object({
+  id: z.string().uuid(),
+  description: z.string().nullable(),
+  amount: z.number(),
+  date: z.string(),
+  due_date: z.string().nullable(),
+  type: z.string(),
+  payment_status: z.string(),
+  category_id: z.string().uuid().nullable(),
+  recurrence_id: z.string().uuid().nullable(),
+  amount_diff: z.number(),
+  days_diff: z.number(),
+  match_score: z.number(),
+});
+
+export const matchTransactionsResultSchema = z.object({
+  status: z.string(),
+  pending_id: z.string().uuid(),
+  imported_id: z.string().uuid(),
+  adjustment: z.number(),
+  final_amount: z.number(),
 });
 
 // ─── Assets ──────────────────────────────────────────────────

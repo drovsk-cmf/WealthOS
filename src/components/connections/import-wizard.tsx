@@ -172,6 +172,7 @@ export function ImportWizard() {
       imported={importBatch.data?.imported}
       skipped={importBatch.data?.skipped}
       categorized={importBatch.data?.categorized}
+      matched={importBatch.data?.matched}
       onReset={() => {
         setStep("upload");
         setTransactions([]);

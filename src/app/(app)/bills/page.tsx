@@ -49,7 +49,8 @@ function daysUntil(dateStr: string): number {
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-function urgencyBadge(days: number): { text: string; classes: string } {
+function urgencyBadge(days: number, status?: string): { text: string; classes: string } {
+  if (status === "overdue") return { text: `${Math.abs(days)}d atrasado`, classes: "bg-terracotta/15 text-terracotta" };
   if (days < 0) return { text: `${Math.abs(days)}d atrasado`, classes: "bg-terracotta/15 text-terracotta" };
   if (days === 0) return { text: "Hoje", classes: "bg-terracotta/15 text-terracotta" };
   if (days === 1) return { text: "Amanhã", classes: "bg-burnished/15 text-burnished" };
@@ -176,8 +177,8 @@ export default function BillsPage() {
           ) : (
             <div className="space-y-2">
               {pendingBills.map((bill) => {
-                const days = daysUntil(bill.date);
-                const badge = urgencyBadge(days);
+                const days = daysUntil(bill.due_date || bill.date);
+                const badge = urgencyBadge(days, bill.payment_status);
                 return (
                   <div key={bill.id} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 transition-colors hover:bg-accent/30">
                     {/* Color indicator */}
