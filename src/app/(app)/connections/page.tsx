@@ -23,8 +23,9 @@ import {
 import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatDate } from "@/lib/utils";
 import { ImportWizard } from "@/components/connections/import-wizard";
+import { ReconciliationPanel } from "@/components/connections/reconciliation-panel";
 
-type Tab = "connections" | "import";
+type Tab = "connections" | "import" | "reconciliation";
 
 export default function ConnectionsPage() {
   const [tab, setTab] = useState<Tab>("import");
@@ -41,6 +42,7 @@ export default function ConnectionsPage() {
       <div className="flex gap-1 rounded-lg border bg-muted p-1">
         {([
           { key: "import" as const, label: "Importar extrato" },
+          { key: "reconciliation" as const, label: "Conciliação" },
           { key: "connections" as const, label: "Conexões" },
         ]).map((t) => (
           <button
@@ -56,6 +58,7 @@ export default function ConnectionsPage() {
       </div>
 
       {tab === "import" && <ImportWizard />}
+      {tab === "reconciliation" && <ReconciliationPanel />}
       {tab === "connections" && <ConnectionsManager />}
     </div>
   );
