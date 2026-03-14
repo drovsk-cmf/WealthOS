@@ -1,3 +1,5 @@
+import { useState, useCallback, useRef } from "react";
+import { Upload } from "lucide-react";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
@@ -13,6 +15,8 @@ interface Props {
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const ACCEPTED_EXTENSIONS = [".csv", ".tsv", ".ofx", ".qfx", ".xlsx", ".xls", ".txt"];
+
 export function ImportStepUpload({
   accountId,
   setAccountId,
@@ -22,6 +26,43 @@ export function ImportStepUpload({
   connections,
   onFileUpload,
 }: Props) {
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (accountId) setDragging(true);
+  }, [accountId]);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+
+    if (!accountId) return;
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    const ext = "." + file.name.split(".").pop()?.toLowerCase();
+    if (!ACCEPTED_EXTENSIONS.includes(ext)) return;
+
+    // Simulate a file input change event for the existing handler
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    if (inputRef.current) {
+      inputRef.current.files = dt.files;
+      inputRef.current.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }, [accountId]);
+
   return (
     <div className="space-y-6">
       <div className="space-y-1.5">
@@ -58,15 +99,31 @@ export function ImportStepUpload({
         </div>
       )}
 
-      <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card p-12">
-        <p className="mt-3 text-sm font-semibold">Arraste um arquivo ou clique para selecionar</p>
-        <p className="mt-1 text-xs text-muted-foreground">Formatos: CSV, TSV, OFX, QFX, XLSX, XLS</p>
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => accountId && inputRef.current?.click()}
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
+          !accountId
+            ? "bg-muted/30 opacity-50"
+            : dragging
+              ? "border-primary bg-primary/5"
+              : "bg-card hover:border-primary/50 hover:bg-accent/30"
+        }`}
+      >
+        <Upload className={`h-8 w-8 ${dragging ? "text-primary" : "text-muted-foreground"}`} />
+        <p className="mt-3 text-sm font-semibold">
+          {dragging ? "Solte o arquivo aqui" : "Arraste um arquivo ou clique para selecionar"}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">CSV, TSV, OFX, QFX, XLSX, XLS</p>
         <input
+          ref={inputRef}
           type="file"
           accept=".csv,.tsv,.ofx,.qfx,.xlsx,.xls,.txt"
           onChange={onFileUpload}
           disabled={!accountId}
-          className="mt-4 text-sm file:mr-3 file:rounded-md file:border file:bg-primary file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-foreground disabled:opacity-50"
+          className="hidden"
         />
         {!accountId && <p className="mt-2 text-xs text-terracotta">Selecione uma conta primeiro.</p>}
       </div>
