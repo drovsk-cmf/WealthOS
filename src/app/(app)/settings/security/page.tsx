@@ -18,13 +18,27 @@ export default function SecuritySettingsPage() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletionPending, setDeletionPending] = useState<string | null>(null);
 
   useEffect(() => {
-    async function checkMfa() {
+    async function checkStatus() {
       const { status } = await getMfaStatus(supabase);
       setMfaEnrolled(status === "enrolled_verified");
+
+      // Check if deletion is pending
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("users_profile")
+          .select("deletion_requested_at")
+          .eq("id", user.id)
+          .single();
+        if (data?.deletion_requested_at) {
+          setDeletionPending(data.deletion_requested_at);
+        }
+      }
     }
-    checkMfa();
+    checkStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -161,7 +175,34 @@ export default function SecuritySettingsPage() {
       <div className="space-y-3 rounded-lg border border-destructive/30 p-4">
         <p className="text-sm font-medium text-destructive">Zona de perigo</p>
 
-        {!showDeleteConfirm ? (
+        {deletionPending ? (
+          <div className="space-y-3">
+            <div className="rounded-md border border-burnished/30 bg-burnished/10 p-3 text-sm text-burnished">
+              Exclusão solicitada em {new Date(deletionPending).toLocaleDateString("pt-BR")}.
+              Seus dados serão removidos permanentemente em{" "}
+              {new Date(new Date(deletionPending).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")}.
+            </div>
+            <button
+              onClick={async () => {
+                setLoading("cancel-delete");
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                  await supabase
+                    .from("users_profile")
+                    .update({ deletion_requested_at: null })
+                    .eq("id", user.id);
+                  setDeletionPending(null);
+                  setMessage({ type: "success", text: "Exclusão cancelada." });
+                }
+                setLoading(null);
+              }}
+              disabled={loading === "cancel-delete"}
+              className="rounded-md border border-verdant px-3 py-1.5 text-xs font-medium text-verdant transition-colors hover:bg-verdant/10 disabled:opacity-50"
+            >
+              {loading === "cancel-delete" ? "Cancelando..." : "Cancelar exclusão"}
+            </button>
+          </div>
+        ) : !showDeleteConfirm ? (
           <button
             onClick={() => setShowDeleteConfirm(true)}
             className="rounded-md border border-destructive/50 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
@@ -192,7 +233,7 @@ export default function SecuritySettingsPage() {
                 disabled={deleteConfirmText !== "EXCLUIR" || loading === "delete"}
                 className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground disabled:opacity-50"
               >
-                {loading === "delete" ? "Processando" : "Confirmar exclusão"}
+                {loading === "delete" ? "Processando..." : "Confirmar exclusão"}
               </button>
               <button
                 onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
