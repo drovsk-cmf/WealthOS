@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users } from "lucide-react";
+import { Users, Archive } from "lucide-react";
 import {
   useFamilyMembers,
   useCreateFamilyMember,
@@ -238,9 +238,7 @@ export default function FamilyPage() {
                     className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     title="Desativar"
                   >
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <Archive className="h-4 w-4" />
                   </button>
                 )}
               </div>
