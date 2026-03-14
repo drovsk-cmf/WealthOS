@@ -192,16 +192,16 @@ export function useCreateRecurrence() {
         {
           p_user_id: user.id,
           p_account_id: input.template.account_id,
-          p_category_id: input.template.category_id ?? null,
+          p_category_id: input.template.category_id ?? undefined,
           p_type: input.template.type,
           p_amount: input.template.amount,
-          p_description: input.template.description ?? null,
+          p_description: input.template.description ?? undefined,
           p_date: input.start_date,
           p_is_paid: false,
           p_source: "system",
-          p_notes: null,
-          p_tags: null,
-          p_counterpart_coa_id: null,
+          p_notes: undefined,
+          p_tags: undefined,
+          p_counterpart_coa_id: undefined,
         }
       );
 

@@ -78,16 +78,16 @@ export async function createTransaction(
   const { data, error } = await supabase.rpc("create_transaction_with_journal", {
     p_user_id: user.id,
     p_account_id: input.account_id,
-    p_category_id: input.category_id ?? null,
+    p_category_id: input.category_id ?? undefined,
     p_type: input.type,
     p_amount: input.amount,
-    p_description: input.description ?? null,
+    p_description: input.description ?? undefined,
     p_date: input.date,
     p_is_paid: input.is_paid,
     p_source: input.source ?? "manual",
-    p_notes: input.notes ?? null,
-    p_tags: input.tags ?? null,
-    p_counterpart_coa_id: input.counterpart_coa_id ?? null,
+    p_notes: input.notes ?? undefined,
+    p_tags: input.tags ?? undefined,
+    p_counterpart_coa_id: input.counterpart_coa_id ?? undefined,
   });
 
   if (error) throw new Error(error.message);

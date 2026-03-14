@@ -1,18 +1,21 @@
 -- ============================================
--- WealthOS - Testes de Mutação Financeira (WEA-009)
+-- Oniefy - Testes de Mutação Financeira (WEA-009)
 -- ============================================
--- Objetivo: script reproduzível sem UUID hardcoded e sem intervenção manual.
--- Cobertura mínima:
+-- Script reproduzível sem UUID hardcoded e sem intervenção manual.
+-- Cobertura:
 --  1) criação de transação via RPC
 --  2) transferência ativo -> ativo
---  3) transferência ativo -> passivo
+--  3) transferência ativo -> passivo (WEA-010)
 --  4) journal balance inválido (trigger rejeita)
 --
 -- Estratégia:
 --  - Detecta automaticamente um usuário existente em auth.users
---  - Cria dados de teste temporários com sufixo __test__
+--  - Usa COAs folha (sem filhos) para evitar conflito de hierarquia
+--  - Cria dados de teste temporários com prefixo __test__
 --  - Executa cenários e valida resultados
 --  - Faz teardown ao final
+--
+-- Última execução validada: 14/03/2026 (4/4 cenários OK)
 -- ============================================
 
 DO $$
@@ -46,45 +49,52 @@ BEGIN
   LIMIT 1;
 
   IF v_user IS NULL THEN
-    RAISE EXCEPTION 'Nenhum usuário encontrado em auth.users para executar testes';
+    RAISE EXCEPTION 'Nenhum usuário encontrado em auth.users';
   END IF;
 
-  -- 1) Resolve COAs base (2 ativos + 1 passivo)
-  SELECT id INTO v_coa_asset_1
-  FROM chart_of_accounts
-  WHERE user_id = v_user AND account_nature = 'asset'
-  ORDER BY internal_code
+  -- 1) Resolve COAs folha (2 ativos + 1 passivo)
+  -- Coluna correta: group_type (não account_nature)
+  SELECT c.id INTO v_coa_asset_1
+  FROM chart_of_accounts c
+  WHERE c.user_id = v_user
+    AND c.group_type = 'asset'
+    AND NOT EXISTS (SELECT 1 FROM chart_of_accounts ch WHERE ch.parent_id = c.id)
+  ORDER BY c.internal_code
   LIMIT 1;
 
-  SELECT id INTO v_coa_asset_2
-  FROM chart_of_accounts
-  WHERE user_id = v_user AND account_nature = 'asset' AND id <> v_coa_asset_1
-  ORDER BY internal_code
+  SELECT c.id INTO v_coa_asset_2
+  FROM chart_of_accounts c
+  WHERE c.user_id = v_user
+    AND c.group_type = 'asset'
+    AND c.id <> v_coa_asset_1
+    AND NOT EXISTS (SELECT 1 FROM chart_of_accounts ch WHERE ch.parent_id = c.id)
+  ORDER BY c.internal_code
   LIMIT 1;
 
-  SELECT id INTO v_coa_liability
-  FROM chart_of_accounts
-  WHERE user_id = v_user AND account_nature = 'liability'
-  ORDER BY internal_code
+  SELECT c.id INTO v_coa_liability
+  FROM chart_of_accounts c
+  WHERE c.user_id = v_user
+    AND c.group_type = 'liability'
+    AND NOT EXISTS (SELECT 1 FROM chart_of_accounts ch WHERE ch.parent_id = c.id)
+  ORDER BY c.internal_code
   LIMIT 1;
 
   IF v_coa_asset_1 IS NULL OR v_coa_asset_2 IS NULL OR v_coa_liability IS NULL THEN
-    RAISE EXCEPTION 'COAs insuficientes para teste (necessário: 2 ativos + 1 passivo)';
+    RAISE EXCEPTION 'COAs insuficientes (necessário: 2 folhas ativo + 1 folha passivo)';
   END IF;
 
-  -- 2) Setup: contas temporárias
+  RAISE NOTICE 'Setup: user=%, coa_a1=%, coa_a2=%, coa_l=%', v_user, v_coa_asset_1, v_coa_asset_2, v_coa_liability;
+
+  -- 2) Contas temporárias
   INSERT INTO accounts (user_id, name, type, coa_id, liquidity_tier, initial_balance, current_balance, projected_balance, is_active)
   VALUES
     (v_user, '__test__checking', 'checking', v_coa_asset_1, 'T1', 1000, 1000, 1000, TRUE),
     (v_user, '__test__savings', 'savings', v_coa_asset_2, 'T1', 500, 500, 500, TRUE),
-    (v_user, '__test__credit', 'credit_card', v_coa_liability, 'T1', 0, 0, 0, TRUE)
-  RETURNING id INTO v_acc_checking;
+    (v_user, '__test__credit', 'credit_card', v_coa_liability, 'T1', 0, 0, 0, TRUE);
 
-  -- Como INSERT múltiplo só retorna uma linha no RETURNING ... INTO,
-  -- buscamos IDs por nome para garantir os 3 valores.
-  SELECT id INTO v_acc_checking FROM accounts WHERE user_id = v_user AND name = '__test__checking' ORDER BY created_at DESC LIMIT 1;
-  SELECT id INTO v_acc_savings FROM accounts WHERE user_id = v_user AND name = '__test__savings' ORDER BY created_at DESC LIMIT 1;
-  SELECT id INTO v_acc_credit FROM accounts WHERE user_id = v_user AND name = '__test__credit' ORDER BY created_at DESC LIMIT 1;
+  SELECT id INTO v_acc_checking FROM accounts WHERE user_id = v_user AND name = '__test__checking' LIMIT 1;
+  SELECT id INTO v_acc_savings FROM accounts WHERE user_id = v_user AND name = '__test__savings' LIMIT 1;
+  SELECT id INTO v_acc_credit FROM accounts WHERE user_id = v_user AND name = '__test__credit' LIMIT 1;
 
   -- 3) Cenário 1: criação de transação via RPC
   SELECT create_transaction_with_journal(
@@ -99,10 +109,9 @@ BEGIN
   ) INTO v_tx_json;
 
   IF (v_tx_json->>'transaction_id') IS NULL THEN
-    RAISE EXCEPTION 'Cenário 1 falhou: transaction_id não retornado';
+    RAISE EXCEPTION 'Cenário 1 FALHOU: transaction_id ausente';
   END IF;
-
-  RAISE NOTICE '✓ Cenário 1: criação de transação via RPC ok';
+  RAISE NOTICE '✓ Cenário 1: criação de transação OK';
 
   -- 4) Cenário 2: transferência ativo -> ativo
   SELECT create_transfer_with_journal(
@@ -120,17 +129,16 @@ BEGIN
   v_to_tx := (v_transfer_aa->>'to_transaction_id')::UUID;
 
   IF v_from_tx IS NULL OR v_to_tx IS NULL THEN
-    RAISE EXCEPTION 'Cenário 2 falhou: IDs de transferência ativo->ativo ausentes';
+    RAISE EXCEPTION 'Cenário 2 FALHOU: IDs ausentes';
   END IF;
 
   SELECT journal_entry_id INTO v_from_je FROM transactions WHERE id = v_from_tx;
   SELECT journal_entry_id INTO v_to_je FROM transactions WHERE id = v_to_tx;
 
   IF v_from_je IS NULL OR v_to_je IS NULL OR v_from_je <> v_to_je THEN
-    RAISE EXCEPTION 'Cenário 2 falhou: journal_entry_id inconsistente';
+    RAISE EXCEPTION 'Cenário 2 FALHOU: journal_entry_id inconsistente';
   END IF;
-
-  RAISE NOTICE '✓ Cenário 2: transferência ativo->ativo ok';
+  RAISE NOTICE '✓ Cenário 2: transferência ativo->ativo OK';
 
   -- 5) Cenário 3: transferência ativo -> passivo (WEA-010)
   SELECT create_transfer_with_journal(
@@ -148,7 +156,7 @@ BEGIN
   SELECT journal_entry_id INTO v_journal_id FROM transactions WHERE id = v_from_tx;
 
   IF v_journal_id IS NULL THEN
-    RAISE EXCEPTION 'Cenário 3 falhou: journal_entry_id não gerado';
+    RAISE EXCEPTION 'Cenário 3 FALHOU: journal_entry_id ausente';
   END IF;
 
   SELECT account_id INTO v_debit_account
@@ -161,14 +169,13 @@ BEGIN
   WHERE journal_entry_id = v_journal_id AND amount_credit > 0
   LIMIT 1;
 
-  -- Regra WEA-010: ao envolver passivo, orientação invertida (D origem, C destino)
+  -- WEA-010: passivo inverte orientação (D origem ativo, C destino passivo)
   IF v_debit_account <> v_coa_asset_1 OR v_credit_account <> v_coa_liability THEN
-    RAISE EXCEPTION 'Cenário 3 falhou: orientação passivo inesperada (D %, C %)', v_debit_account, v_credit_account;
+    RAISE EXCEPTION 'Cenário 3 FALHOU: orientação inesperada D=% C=%', v_debit_account, v_credit_account;
   END IF;
+  RAISE NOTICE '✓ Cenário 3: transferência ativo->passivo OK';
 
-  RAISE NOTICE '✓ Cenário 3: transferência ativo->passivo com orientação esperada ok';
-
-  -- 6) Cenário 4: journal balance inválido deve ser rejeitado
+  -- 6) Cenário 4: journal balance inválido rejeitado pelo trigger
   BEGIN
     INSERT INTO journal_entries (user_id, entry_date, source, description)
     VALUES (v_user, CURRENT_DATE, 'system', '__test__invalid_balance')
@@ -179,11 +186,11 @@ BEGIN
       (v_journal_id, v_coa_asset_1, 200, 0),
       (v_journal_id, v_coa_asset_2, 0, 100);
 
-    RAISE EXCEPTION 'Cenário 4 falhou: lançamento desbalanceado foi aceito';
+    RAISE EXCEPTION 'Cenário 4 FALHOU: desbalanceado foi aceito';
   EXCEPTION
     WHEN OTHERS THEN
       IF SQLERRM LIKE '%desbalanceado%' OR SQLERRM LIKE '%balance%' THEN
-        RAISE NOTICE '✓ Cenário 4: trigger rejeitou lançamento desbalanceado';
+        RAISE NOTICE '✓ Cenário 4: trigger rejeitou desbalanceado OK';
       ELSE
         RAISE;
       END IF;
@@ -194,5 +201,5 @@ BEGIN
   DELETE FROM journal_entries WHERE user_id = v_user AND description LIKE '__test__%';
   DELETE FROM accounts WHERE user_id = v_user AND name LIKE '__test__%';
 
-  RAISE NOTICE '✓ Teardown concluído';
+  RAISE NOTICE '✓ Teardown concluído. Todos os 4 cenários passaram.';
 END $$;

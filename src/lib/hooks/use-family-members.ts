@@ -85,7 +85,7 @@ export function useCreateFamilyMember() {
         p_name: input.name,
         p_relationship: input.relationship,
         p_role: input.role || (input.relationship === "self" ? "owner" : "member"),
-        p_birth_date: input.birth_date || null,
+        p_birth_date: input.birth_date || undefined,
         p_is_tax_dependent: input.is_tax_dependent || false,
         p_avatar_emoji: emoji,
       });
