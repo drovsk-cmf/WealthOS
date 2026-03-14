@@ -468,6 +468,7 @@ export type Database = {
       cron_fetch_economic_indices: { Args: Record<string, never>; Returns: Json }
       cron_generate_workflow_tasks: { Args: Record<string, never>; Returns: undefined }
       cron_mark_overdue_transactions: { Args: Record<string, never>; Returns: undefined }
+      cron_process_account_deletions: { Args: Record<string, never>; Returns: undefined }
       depreciate_asset: { Args: { p_asset_id: string; p_user_id: string }; Returns: Json }
       find_reconciliation_candidates: { Args: { p_account_id: string; p_amount: number; p_date: string; p_tolerance_days?: number; p_tolerance_pct?: number; p_user_id: string }; Returns: Json }
       generate_next_recurrence: { Args: { p_recurrence_id: string; p_user_id: string }; Returns: Json }
