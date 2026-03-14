@@ -99,14 +99,18 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 ```
 src/
-├── __tests__/                    # 7 suítes de teste (Jest + RTL)
+├── __tests__/                    # 11 suítes de teste (Jest + RTL), 122 testes
+│   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
 │   ├── onboarding-seeds.test.ts
 │   ├── parsers.test.ts
+│   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
 │   ├── read-hooks.test.tsx
 │   ├── rpc-auto-categorize-schema.test.ts
 │   ├── rpc-schemas.test.ts
-│   └── transaction-hooks.test.tsx
+│   ├── rpc-schemas-extended.test.ts   # 17 schemas restantes (assets, centers, indices, workflows, dashboard)
+│   ├── transaction-hooks.test.tsx
+│   └── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate
 ├── app/
 │   ├── (app)/                    # Rotas autenticadas (16 páginas)
 │   │   ├── accounts/page.tsx
@@ -297,7 +301,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
 - Biometria stub retorna true: isolado, Fase 10
 - ~~Rebranding WealthOS → Oniefy: FEITO (commit 4ea3524)~~
-- ~~Cobertura de testes: FEITO (7 suítes, 46 testes, Jest + RTL)~~
+- ~~Cobertura de testes: FEITO (11 suítes, 122 testes, Jest + RTL)~~
 
 ---
 
@@ -312,7 +316,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
-| ~~Testes~~ | FEITO: Jest + RTL configurados. 7 suítes, 46 testes (schemas Zod, parsers, hooks leitura/mutação, auth validation, onboarding seeds). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
+| ~~Testes~~ | FEITO: Jest + RTL configurados. 11 suítes, 122 testes (schemas Zod 25/25, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils, onboarding seeds). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
 | ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
 | ~~Logo + icons~~ | FEITO: Penrose Ribbon integrado. 6 SVGs transparentes (lockup-h/v, logomark, plum/bone) + OG PNG. Favicon, apple-touch-icon, PWA icons substituídos. next/image com unoptimized. Dark mode via dark:hidden/dark:block. Login: lockup-v. Sidebar/mobile: lockup-h. |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
@@ -664,7 +668,7 @@ Itens não autorizados e motivos:
 - Pacote 3: `database.ts` regenerado via `Supabase:generate_typescript_types`. 26 tabelas, 34 functions, 24 enums. 12 erros `null` vs `undefined` corrigidos em 4 arquivos
 
 **Estado final dos testes:**
-- 7 suítes, 46 testes, todos passando
+- 11 suítes, 122 testes, todos passando
 - Testes SQL: 4 cenários executados no Supabase
 - CI: 3/3 jobs verdes (Security, Lint & TypeCheck, Build)
 
@@ -706,6 +710,25 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ---
 
+## 11g. Sessão 14/03/2026 (continuação) - Expansão de testes
+
+**Cobertura de testes expandida de 46 → 122 (commit 7b5fa1f):**
+
+4 novas suítes adicionadas:
+
+| Suíte | Testes | Cobertura |
+|---|---|---|
+| `utils.test.ts` | 14 | formatCurrency (5), formatDate (4), formatRelativeDate (5) |
+| `rate-limiter.test.ts` | 15 | checkRateLimit (7), extractRouteKey (6), rateLimitHeaders (2) |
+| `auth-schemas-extended.test.ts` | 25 | mfaCodeSchema (5), forgotPasswordSchema (3), resetPasswordSchema (3), passwordSchema deep (6), getPasswordStrength (4), isPasswordBlocked (4) |
+| `rpc-schemas-extended.test.ts` | 22 | assetsSummary (2), depreciateAsset (1), centerPnl (1), centerExport (1), allocateToCenters (1), indexLatest (1), economicIndices (1), workflowCreate (1), generateTasks (1), completeTask (1), reversal (2), taxParameter (1), budgetWithCategory (2), topCategories (1), balanceEvolution (2), budgetVsActual (2), logSchemaError (1) |
+
+**Estado final:** 11 suítes, 122 testes, todos passando. CI 3/3 verde. 25/25 schemas Zod cobertos.
+
+**Commits desta sessão:** 7b5fa1f
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
@@ -713,7 +736,9 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 | Item | Esforço |
 |---|---|
 | Conciliação bancária (3 camadas: status lifecycle, auto-matching, tela manual) | 1-2 dias |
-| Expandir cobertura de testes (alvo: 80+ test cases) | 1 dia |
+
+**Feito nesta sessão:**
+- ~~Expandir cobertura de testes (alvo: 80+)~~ → FEITO: 122 testes em 11 suítes (commit 7b5fa1f)
 
 **Ação do Claudio (em paralelo):**
 
