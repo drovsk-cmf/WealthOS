@@ -10,7 +10,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
-import { fiscalProjectionSchema, fiscalReportSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { fiscalProjectionSchema, fiscalReportSchema, taxParameterSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { z } from "zod";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -190,7 +191,12 @@ export function useTaxParameters() {
         .order("parameter_type")
         .order("valid_from", { ascending: false });
       if (error) throw error;
-      return data as unknown as TaxParameter[];
+      const parsed = z.array(taxParameterSchema).safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("tax_parameters", parsed);
+        return [];
+      }
+      return parsed.data;
     },
   });
 }

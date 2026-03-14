@@ -12,6 +12,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 
 type Recurrence = Database["public"]["Tables"]["recurrences"]["Row"];
@@ -206,7 +207,12 @@ export function useCreateRecurrence() {
       );
 
       if (txErr) throw txErr;
-      const txResult = txData as unknown as { transaction_id: string };
+      const txParsed = transactionResultSchema.safeParse(txData);
+      if (!txParsed.success) {
+        logSchemaError("create_transaction_with_journal", txParsed);
+        throw new Error("Resposta inválida ao criar transação da recorrência.");
+      }
+      const txResult = txParsed.data;
 
       // 3. Link transaction to recurrence
       await supabase

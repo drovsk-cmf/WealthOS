@@ -11,6 +11,8 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { budgetWithCategorySchema, logSchemaError } from "@/lib/schemas/rpc";
+import { z } from "zod";
 import type { Database } from "@/types/database";
 
 type Budget = Database["public"]["Tables"]["budgets"]["Row"];
@@ -103,14 +105,12 @@ export function useBudgets(month?: string) {
         .order("planned_amount", { ascending: false });
 
       if (error) throw error;
-      return data as unknown as (Budget & {
-        categories: {
-          name: string;
-          icon: string | null;
-          color: string | null;
-          type: string;
-        };
-      })[];
+      const parsed = z.array(budgetWithCategorySchema).safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("budgets_with_categories", parsed);
+        return [];
+      }
+      return parsed.data;
     },
   });
 }

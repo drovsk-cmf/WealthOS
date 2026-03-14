@@ -12,6 +12,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { assetsSummarySchema, depreciateAssetResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 
 type Asset = Database["public"]["Tables"]["assets"]["Row"];
@@ -145,7 +146,12 @@ export function useAssetsSummary() {
         p_user_id: user.id,
       });
       if (error) throw error;
-      return data as unknown as AssetsSummary;
+      const parsed = assetsSummarySchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_assets_summary", parsed);
+        return { total_value: 0, total_acquisition: 0, asset_count: 0, by_category: [], expiring_insurance: [], total_depreciation: 0 };
+      }
+      return parsed.data;
     },
   });
 }
@@ -326,12 +332,12 @@ export function useDepreciateAsset() {
         p_asset_id: assetId,
       });
       if (error) throw error;
-      return data as unknown as {
-        status: string;
-        previous_value: number;
-        depreciation: number;
-        new_value: number;
-      };
+      const parsed = depreciateAssetResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("depreciate_asset", parsed);
+        throw new Error("Resposta inválida ao depreciar ativo.");
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["assets"] });

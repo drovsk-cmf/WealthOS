@@ -14,7 +14,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
-import { logSchemaError, transactionResultSchema, transferResultSchema } from "@/lib/schemas/rpc";
+import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema } from "@/lib/schemas/rpc";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -160,7 +160,12 @@ export async function reverseTransaction(
   });
 
   if (error) throw new Error(error.message);
-  return data as unknown as ReversalResult;
+  const parsed = reversalResultSchema.safeParse(data);
+  if (!parsed.success) {
+    logSchemaError("reverse_transaction", parsed);
+    throw new Error("Resposta inválida ao estornar transação.");
+  }
+  return parsed.data;
 }
 
 // ─── React Query Hooks ──────────────────────────────────────

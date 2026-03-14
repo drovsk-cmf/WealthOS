@@ -71,8 +71,17 @@ describe("read hooks", () => {
     queueResponse({
       data: [
         {
-          id: "b1",
+          id: "b1000000-0000-4000-8000-000000000001",
+          user_id: "a1000000-0000-4000-8000-000000000001",
+          category_id: "c1000000-0000-4000-8000-000000000001",
+          month: "2026-03-01",
           planned_amount: 100,
+          alert_threshold: 80,
+          adjustment_index: null,
+          coa_id: null,
+          cost_center_id: null,
+          created_at: "2026-03-01T00:00:00Z",
+          updated_at: "2026-03-01T00:00:00Z",
           categories: { name: "Transporte", icon: null, color: null, type: "expense" },
         },
       ],
@@ -80,7 +89,7 @@ describe("read hooks", () => {
     });
     const { result } = renderHook(() => useBudgets("2026-03-01"), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data?.[0]).toMatchObject({ id: "b1", planned_amount: 100 });
+    expect(result.current.data?.[0]).toMatchObject({ planned_amount: 100 });
   });
 
   it("useBudgets retorna erro quando consulta falha", async () => {

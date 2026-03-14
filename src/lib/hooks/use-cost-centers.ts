@@ -7,6 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { centerPnlSchema, centerExportSchema, allocateToCentersResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 
 type CostCenter = Database["public"]["Tables"]["cost_centers"]["Row"];
@@ -180,7 +181,12 @@ export function useCenterPnl(
         ...(dateTo && { p_date_to: dateTo }),
       });
       if (error) throw error;
-      return data as unknown as CenterPnl;
+      const parsed = centerPnlSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_center_pnl", parsed);
+        return { center_id: centerId!, center_name: "", center_type: "", period_from: "", period_to: "", total_income: 0, total_expense: 0, net_result: 0, monthly: [] };
+      }
+      return parsed.data;
     },
   });
 }
@@ -201,7 +207,12 @@ export function useCenterExport() {
         p_center_id: centerId,
       });
       if (error) throw error;
-      return data as unknown as CenterExport;
+      const parsed = centerExportSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_center_export", parsed);
+        throw new Error("Resposta inválida ao exportar centro.");
+      }
+      return parsed.data;
     },
   });
 }
@@ -231,15 +242,12 @@ export function useAllocateToCenters() {
         p_allocations: JSON.stringify(allocations),
       });
       if (error) throw error;
-      return data as unknown as {
-        status: string;
-        transaction_id: string;
-        allocations: {
-          cost_center_id: string;
-          percentage: number;
-          amount: number;
-        }[];
-      };
+      const parsed = allocateToCentersResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("allocate_to_centers", parsed);
+        throw new Error("Resposta inválida ao alocar centros.");
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cost_centers"] });

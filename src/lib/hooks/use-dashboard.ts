@@ -12,9 +12,12 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import {
   balanceSheetSchema,
+  balanceEvolutionResultSchema,
+  budgetVsActualResultSchema,
   dashboardSummarySchema,
   logSchemaError,
   solvencyMetricsSchema,
+  topCategoriesResultSchema,
 } from "@/lib/schemas/rpc";
 
 // ─── Response Types ────────────────────────────────────────────
@@ -222,7 +225,12 @@ export function useTopCategories(
         p_limit: limit,
       });
       if (error) throw error;
-      return data as unknown as TopCategoriesResult;
+      const parsed = topCategoriesResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_top_categories", parsed);
+        return { categories: [], total_expense: 0, month: "" };
+      }
+      return parsed.data;
     },
   });
 }
@@ -240,7 +248,12 @@ export function useBalanceEvolution(months: number = 6) {
         p_months: months,
       });
       if (error) throw error;
-      return data as unknown as BalanceEvolutionResult;
+      const parsed = balanceEvolutionResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_balance_evolution", parsed);
+        return { data: [], source: "calculated" as const, months_requested: months };
+      }
+      return parsed.data;
     },
   });
 }
@@ -259,7 +272,12 @@ export function useBudgetVsActual(year?: number, month?: number) {
         ...(month !== undefined && { p_month: month }),
       });
       if (error) throw error;
-      return data as unknown as BudgetVsActualResult;
+      const parsed = budgetVsActualResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_budget_vs_actual", parsed);
+        return { items: [], total_planned: 0, total_actual: 0, total_remaining: 0, pct_used: 0, month: "", budget_count: 0 };
+      }
+      return parsed.data;
     },
   });
 }

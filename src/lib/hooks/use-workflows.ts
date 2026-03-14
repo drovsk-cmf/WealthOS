@@ -8,6 +8,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { workflowCreateResultSchema, generateTasksResultSchema, completeTaskResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 
 import { FileUp, Wallet, Tag, ClipboardCheck } from "lucide-react";
@@ -197,7 +198,12 @@ export function useAutoCreateWorkflow() {
         p_account_name: accountName,
       });
       if (error) throw error;
-      return data as unknown as { status: string; workflow_id?: string; name?: string };
+      const parsed = workflowCreateResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("auto_create_workflow_for_account", parsed);
+        throw new Error("Resposta inválida ao criar workflow.");
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workflows"] });
@@ -221,7 +227,12 @@ export function useGenerateTasks() {
         ...(params?.month && { p_month: params.month }),
       });
       if (error) throw error;
-      return data as unknown as { status: string; tasks_created: number; workflows_skipped: number };
+      const parsed = generateTasksResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("generate_tasks_for_period", parsed);
+        throw new Error("Resposta inválida ao gerar tarefas.");
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
@@ -254,7 +265,12 @@ export function useCompleteTask() {
         ...(resultData && { p_result_data: JSON.stringify(resultData) }),
       });
       if (error) throw error;
-      return data as unknown as { status: string; all_period_tasks_done: boolean };
+      const parsed = completeTaskResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("complete_workflow_task", parsed);
+        throw new Error("Resposta inválida ao completar tarefa.");
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });

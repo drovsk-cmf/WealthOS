@@ -101,6 +101,217 @@ export const importBatchResultSchema = z.object({
   batch_id: z.string().uuid(),
 });
 
+// ─── Assets ──────────────────────────────────────────────────
+
+export const assetsSummarySchema = z.object({
+  total_value: z.number(),
+  total_acquisition: z.number(),
+  asset_count: z.number(),
+  by_category: z.array(z.object({
+    category: z.enum(["real_estate", "vehicle", "electronics", "other", "restricted"]),
+    count: z.number(),
+    total_value: z.number(),
+  })),
+  expiring_insurance: z.array(z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    insurance_expiry: z.string(),
+    days_until_expiry: z.number(),
+  })),
+  total_depreciation: z.number(),
+});
+
+export const depreciateAssetResultSchema = z.object({
+  status: z.string(),
+  previous_value: z.number(),
+  depreciation: z.number(),
+  new_value: z.number(),
+});
+
+// ─── Cost Centers ────────────────────────────────────────────
+
+export const centerPnlSchema = z.object({
+  center_id: z.string().uuid(),
+  center_name: z.string(),
+  center_type: z.string(),
+  period_from: z.string(),
+  period_to: z.string(),
+  total_income: z.number(),
+  total_expense: z.number(),
+  net_result: z.number(),
+  monthly: z.array(z.object({
+    month: z.string(),
+    income: z.number(),
+    expense: z.number(),
+  })),
+});
+
+export const centerExportSchema = z.object({
+  center: z.object({
+    id: z.string().uuid(),
+    name: z.string(),
+    type: z.string(),
+    color: z.string().nullable(),
+    created_at: z.string(),
+  }),
+  transactions: z.array(z.object({
+    id: z.string().uuid(),
+    date: z.string(),
+    type: z.string(),
+    amount: z.number(),
+    description: z.string().nullable(),
+    is_paid: z.boolean(),
+    center_percentage: z.number(),
+    center_amount: z.number(),
+    coa_name: z.string(),
+    group_type: z.string(),
+  })),
+  totals: z.object({
+    income: z.number(),
+    expense: z.number(),
+    net: z.number(),
+  }),
+  exported_at: z.string(),
+});
+
+export const allocateToCentersResultSchema = z.object({
+  status: z.string(),
+  transaction_id: z.string().uuid(),
+  allocations: z.array(z.object({
+    cost_center_id: z.string().uuid(),
+    percentage: z.number(),
+    amount: z.number(),
+  })),
+});
+
+// ─── Economic Indices ────────────────────────────────────────
+
+const indexDataPointSchema = z.object({
+  index_type: z.string(),
+  reference_date: z.string(),
+  value: z.number(),
+  accumulated_12m: z.number().nullable(),
+  accumulated_year: z.number().nullable(),
+  source_primary: z.string(),
+  fetched_at: z.string(),
+});
+
+export const indexLatestResultSchema = z.object({
+  indices: z.array(indexDataPointSchema),
+});
+
+export const economicIndicesResultSchema = z.object({
+  data: z.array(indexDataPointSchema),
+});
+
+// ─── Workflows ───────────────────────────────────────────────
+
+export const workflowCreateResultSchema = z.object({
+  status: z.string(),
+  workflow_id: z.string().uuid().optional(),
+  name: z.string().optional(),
+});
+
+export const generateTasksResultSchema = z.object({
+  status: z.string(),
+  tasks_created: z.number(),
+  workflows_skipped: z.number(),
+});
+
+export const completeTaskResultSchema = z.object({
+  status: z.string(),
+  all_period_tasks_done: z.boolean(),
+});
+
+// ─── Transaction reversal ────────────────────────────────────
+
+export const reversalResultSchema = z.object({
+  reversed_transaction_id: z.string().uuid(),
+  reversal_journal_id: z.string().uuid().nullable(),
+});
+
+// ─── Table query schemas ─────────────────────────────────────
+
+export const taxParameterSchema = z.object({
+  id: z.string().uuid(),
+  parameter_type: z.string(),
+  valid_from: z.string(),
+  valid_until: z.string().nullable(),
+  brackets: z.array(z.record(z.unknown())),
+  limits: z.record(z.unknown()).nullable(),
+  source_references: z.array(z.object({ source: z.string(), url: z.string(), date: z.string() })),
+  created_at: z.string(),
+  updated_at: z.string(),
+  updated_by: z.string().nullable(),
+});
+
+export const budgetWithCategorySchema = z.object({
+  id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  category_id: z.string().uuid(),
+  month: z.string(),
+  planned_amount: z.number(),
+  alert_threshold: z.number(),
+  adjustment_index: z.enum(["ipca", "igpm", "inpc", "selic", "manual", "none"]).nullable(),
+  coa_id: z.string().uuid().nullable(),
+  cost_center_id: z.string().uuid().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  categories: z.object({
+    name: z.string(),
+    icon: z.string().nullable(),
+    color: z.string().nullable(),
+    type: z.string(),
+  }),
+});
+
+// ─── Dashboard (additional) ──────────────────────────────────
+
+export const topCategoriesResultSchema = z.object({
+  categories: z.array(z.object({
+    category_name: z.string(),
+    icon: z.string().nullable(),
+    color: z.string().nullable(),
+    total: z.number(),
+    percentage: z.number(),
+  })),
+  total_expense: z.number(),
+  month: z.string(),
+});
+
+export const balanceEvolutionResultSchema = z.object({
+  data: z.array(z.object({
+    month: z.string(),
+    balance: z.number(),
+    projected: z.number(),
+    income: z.number(),
+    expense: z.number(),
+  })),
+  source: z.enum(["snapshots", "calculated"]),
+  months_requested: z.number(),
+});
+
+export const budgetVsActualResultSchema = z.object({
+  items: z.array(z.object({
+    category_name: z.string(),
+    category_icon: z.string().nullable(),
+    category_color: z.string().nullable(),
+    budget_id: z.string().uuid(),
+    planned: z.number(),
+    alert_threshold: z.number(),
+    actual: z.number(),
+    remaining: z.number(),
+    pct_used: z.number(),
+    status: z.enum(["ok", "warning", "exceeded"]),
+  })),
+  total_planned: z.number(),
+  total_actual: z.number(),
+  total_remaining: z.number(),
+  pct_used: z.number(),
+  month: z.string(),
+  budget_count: z.number(),
+});
+
 export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown>) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)

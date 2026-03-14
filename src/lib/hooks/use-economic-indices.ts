@@ -7,6 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { indexLatestResultSchema, economicIndicesResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -88,8 +89,12 @@ export function useLatestIndices() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_index_latest");
       if (error) throw error;
-      const result = data as unknown as { indices: LatestIndex[] };
-      return result.indices ?? [];
+      const parsed = indexLatestResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_index_latest", parsed);
+        return [];
+      }
+      return parsed.data.indices ?? [];
     },
   });
 }
@@ -111,8 +116,12 @@ export function useIndexHistory(indexType: string | null, months: number = 12) {
         p_limit: months + 2,
       });
       if (error) throw error;
-      const result = data as unknown as { data: IndexDataPoint[] };
-      return result.data ?? [];
+      const parsed = economicIndicesResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("get_economic_indices", parsed);
+        return [];
+      }
+      return parsed.data.data ?? [];
     },
   });
 }
@@ -138,8 +147,13 @@ export function useMultiIndexHistory(indexTypes: string[], months: number = 12) 
             p_limit: months + 2,
           });
           if (error) throw error;
-          const parsed = data as unknown as { data: IndexDataPoint[] };
-          results[idxType] = parsed.data ?? [];
+          const parsed = economicIndicesResultSchema.safeParse(data);
+          if (!parsed.success) {
+            logSchemaError("get_economic_indices", parsed);
+            results[idxType] = [];
+            return;
+          }
+          results[idxType] = parsed.data.data ?? [];
         })
       );
       return results;
