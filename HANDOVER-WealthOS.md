@@ -100,7 +100,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 ```
 src/
-├── __tests__/                    # 12 suítes de teste (Jest + RTL), 135 testes
+├── __tests__/                    # 12 suítes de teste (Jest + RTL), 150 testes
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
@@ -304,7 +304,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
 - Biometria stub retorna true: isolado, Fase 10
 - ~~Rebranding WealthOS → Oniefy: FEITO (commit 4ea3524)~~
-- ~~Cobertura de testes: FEITO (12 suítes, 135 testes, Jest + RTL)~~
+- ~~Cobertura de testes: FEITO (12 suítes, 150 testes, Jest + RTL)~~
 
 ---
 
@@ -319,7 +319,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
-| ~~Testes~~ | FEITO: Jest + RTL configurados. 12 suítes, 135 testes (schemas Zod 27/27, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils, dialog helpers, onboarding seeds, reconciliation). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
+| ~~Testes~~ | FEITO: Jest + RTL configurados. 12 suítes, 150 testes (schemas Zod 27/27, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils + sanitizeRedirectTo, dialog helpers, onboarding seeds, reconciliation). Testes SQL: 4 cenários executados no Supabase. |
 | ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
 | ~~Logo + icons~~ | FEITO: Penrose Ribbon integrado. 6 SVGs transparentes (lockup-h/v, logomark, plum/bone) + OG PNG. Favicon, apple-touch-icon, PWA icons substituídos. next/image com unoptimized. Dark mode via dark:hidden/dark:block. Login: lockup-v. Sidebar/mobile: lockup-h. |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
@@ -807,7 +807,7 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 **Testes dialog helpers (commit 9e3407b):**
 - `dialog-helpers.test.ts`: useEscapeClose (4 tests), useAutoReset (4 tests)
-- Total: 12 suítes, 135 testes
+- Total: 12 suítes, 150 testes
 
 **CFG-07: Modo offline (commit 04498b8):**
 - Service Worker (`public/sw.js`, 142 linhas): cache-first para assets estáticos, network-first para API/Supabase, fallback `/dashboard` para navegação offline, cache versioning `oniefy-v1`
@@ -866,7 +866,46 @@ Claude descartou o achado de RLS multi-user dizendo que o Oniefy era single-user
 
 **Lição:** Não rejeitar achados de auditoria sem verificar no banco. A certeza de que "já foi corrigido" precisa de evidência (`pg_proc`, não memória).
 
-**Commits:** (migration 030 no próximo commit)
+**Commits:** 69d8b46 (migration 030 + audit docs)
+
+---
+
+## 11l. Sessão 14/03/2026 (continuação) - Auditoria ChatGPT + correções
+
+**Auditoria ChatGPT (14/03/2026):**
+
+6 achados complementares ao Gemini, nota não atribuída. Qualidade superior: todos verificados e confirmados no código.
+
+| # | Achado | Sev. | Veredicto | Status |
+|---|--------|------|-----------|--------|
+| 1 | Rate limiter decorativo (signInWithPassword bypassa middleware) | CRÍTICO | **Aceito (limitação arquitetural)** | Documentado. Supabase GoTrue tem rate limiting próprio |
+| 2 | `redirectTo` cru em `router.push` (open redirect + XSS) | ALTO | **Aceito** | **CORRIGIDO.** `sanitizeRedirectTo()` em 3 arquivos |
+| 3 | SW cacheando conteúdo autenticado | ALTO | **Aceito** | **CORRIGIDO.** SW reescrito, cache apenas estáticos imutáveis, limpeza no logout |
+| 4 | Budget `family_member_id` ignorado em update/copy | MÉDIO | **Aceito** | **CORRIGIDO.** useUpdateBudget + useCopyBudgets + budgets page |
+| 5 | Callback `error=` vs login `reason=` | MÉDIO | **Aceito** | **CORRIGIDO.** Callback usa `reason=`, login lê ambos |
+| 6 | CSP `unsafe-eval` + `unsafe-inline` | BAIXO | **Aceito parcial** | Necessário em dev (Next.js), nonce/hash para produção |
+
+**Detalhes das correções:**
+- `sanitizeRedirectTo()`: rejeita `//`, `\`, `:`, `@`, `javascript:`, `data:`, URLs codificadas. 15 testes
+- `sw.js` v2: `isImmutableAsset()` permite apenas `_next/static/`, fontes, `/icons/`, `/brand/`. Zero cache de HTML/API/Supabase. Message listener `CLEAR_CACHE` no logout
+- Budget: `CopyBudgetInput` + `useCopyBudgets` agora filtram por `family_member_id` em check, fetch e insert. `useUpdateBudget` inclui `family_member_id` no payload
+- Callback: `error=auth_callback_failed` → `reason=auth_callback_failed`
+
+**Comparação Gemini vs ChatGPT:**
+
+| Aspecto | Gemini | ChatGPT |
+|---|---|---|
+| Achados reais | 2/6 (search_path + RLS futuro) | 5/6 (todos confirmados) |
+| Falsos positivos | 3 (Server Actions, DTOs, waterfall) | 0 |
+| Profundidade | Genérica, sem linhas específicas | Específica, com trechos de código |
+| Foco | Arquitetura + boas práticas | Bugs funcionais + segurança |
+| Nota | 8.5/10 | Não atribuída |
+
+O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redirect, o SW perigoso e o bug funcional do budget, que são deficiências materiais.
+
+**12 suítes, 150 testes.** CI 3/3 verde.
+
+**Commits:** 222f8db (5 correções ChatGPT)
 
 ---
 
@@ -887,9 +926,15 @@ Claude descartou o achado de RLS multi-user dizendo que o Oniefy era single-user
 | Web Workers para parsers CSV/OFX/XLSX | 1-2h | Gemini audit #4 |
 | ARIA labels + contraste em badges de status | 1h | Gemini audit #6 |
 | SSR prefetch no Dashboard (Hydration Boundary) | 1-2h | Gemini audit #5 |
+| CSP nonce/hash (remover unsafe-eval em produção) | 2h | ChatGPT audit #6 |
 | Expandir testes para CFG pages (profile, export, security) | 30 min | Backlog |
 | Estratégia mobile Capacitor vs SSR (`server.url`) | 1h | Backlog |
-| IndexedDB persistence para offline (tanstack-query-persist) | 1-2h | Backlog |
+
+**Limitações conhecidas (não corrigíveis sem mudança de arquitetura):**
+
+| Item | Motivo | Mitigação |
+|---|---|---|
+| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware Next | GoTrue tem rate limiting próprio. WAF (Vercel/Cloudflare) recomendado para produção. Alternativa: proxy server-side para login |
 
 **Backlog futuro (não urgente):**
 
@@ -898,12 +943,14 @@ Claude descartou o achado de RLS multi-user dizendo que o Oniefy era single-user
 | RLS multi-user: tabela de workspaces/grupos para login independente de membros | Gemini audit #1b |
 
 **Feito nesta sessão (consolidado):**
-- ~~Expandir testes~~ → 135 testes em 12 suítes (46 → 135, +193%)
+- ~~Expandir testes~~ → 150 testes em 12 suítes (46 → 150, +226%)
 - ~~Conciliação bancária (3 camadas)~~ → migrations 028a+028b, 3 RPCs, pg_cron overdue, UI completa
 - ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
 - ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
-- ~~CFG-07~~ → Service Worker + online status + offline banner + React Query offlineFirst
-- **Contagem de stories reconciliada:** 71 → 87/90 (81 já estavam feitas, +6 CFG nesta sessão)
+- ~~CFG-07~~ → Service Worker (v2, apenas estáticos) + online status + offline banner
+- ~~Auditoria Gemini~~ → 6 achados, 2 reais (search_path corrigido, RLS futuro aceito)
+- ~~Auditoria ChatGPT~~ → 6 achados, 5 corrigidos (redirectTo, SW, budget, callback, search_path)
+- **Contagem de stories reconciliada:** 87/90
 
 **Ação do Claudio (em paralelo):**
 
