@@ -234,6 +234,7 @@ export type Database = {
           coa_id: string | null
           cost_center_id: string | null
           created_at: string
+          family_member_id: string | null
           id: string
           month: string
           planned_amount: number
@@ -247,6 +248,7 @@ export type Database = {
           coa_id?: string | null
           cost_center_id?: string | null
           created_at?: string
+          family_member_id?: string | null
           id?: string
           month: string
           planned_amount: number
@@ -260,6 +262,7 @@ export type Database = {
           coa_id?: string | null
           cost_center_id?: string | null
           created_at?: string
+          family_member_id?: string | null
           id?: string
           month?: string
           planned_amount?: number
@@ -286,6 +289,13 @@ export type Database = {
             columns: ["cost_center_id"]
             isOneToOne: false
             referencedRelation: "cost_centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "budgets_family_member_id_fkey"
+            columns: ["family_member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
             referencedColumns: ["id"]
           },
         ]
@@ -462,7 +472,7 @@ export type Database = {
       get_assets_summary: { Args: { p_user_id: string }; Returns: Json }
       get_balance_evolution: { Args: { p_months?: number; p_user_id: string }; Returns: Json }
       get_balance_sheet: { Args: { p_user_id: string }; Returns: Json }
-      get_budget_vs_actual: { Args: { p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
+      get_budget_vs_actual: { Args: { p_family_member_id?: string; p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
       get_center_export: { Args: { p_center_id: string; p_user_id: string }; Returns: Json }
       get_center_pnl: { Args: { p_center_id: string; p_date_from?: string; p_date_to?: string; p_user_id: string }; Returns: Json }
       get_dashboard_summary: { Args: { p_user_id: string }; Returns: Json }

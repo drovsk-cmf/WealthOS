@@ -255,6 +255,7 @@ export const budgetWithCategorySchema = z.object({
   adjustment_index: z.enum(["ipca", "igpm", "inpc", "selic", "manual", "none"]).nullable(),
   coa_id: z.string().uuid().nullable(),
   cost_center_id: z.string().uuid().nullable(),
+  family_member_id: z.string().uuid().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
   categories: z.object({
@@ -303,6 +304,7 @@ export const budgetVsActualResultSchema = z.object({
     remaining: z.number(),
     pct_used: z.number(),
     status: z.enum(["ok", "warning", "exceeded"]),
+    family_member_id: z.string().uuid().nullable(),
   })),
   total_planned: z.number(),
   total_actual: z.number(),

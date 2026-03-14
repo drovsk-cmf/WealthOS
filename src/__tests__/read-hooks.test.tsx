@@ -17,6 +17,7 @@ function createBuilder() {
   const builder: any = {
     select: jest.fn(() => builder),
     eq: jest.fn(() => builder),
+    is: jest.fn(() => builder),
     order: jest.fn(() => builder),
     then: (resolve: (value: QueryResponse) => unknown) => Promise.resolve(response).then(resolve),
   };
@@ -80,6 +81,7 @@ describe("read hooks", () => {
           adjustment_index: null,
           coa_id: null,
           cost_center_id: null,
+          family_member_id: null,
           created_at: "2026-03-01T00:00:00Z",
           updated_at: "2026-03-01T00:00:00Z",
           categories: { name: "Transporte", icon: null, color: null, type: "expense" },

@@ -24,6 +24,7 @@ interface BudgetFormProps {
   open: boolean;
   onClose: () => void;
   month: string; // ISO date YYYY-MM-DD (first of month)
+  familyMemberId?: string | null;
   editData?: {
     id: string;
     category_id: string;
@@ -34,7 +35,7 @@ interface BudgetFormProps {
   } | null;
 }
 
-export function BudgetForm({ open, onClose, month, editData }: BudgetFormProps) {
+export function BudgetForm({ open, onClose, month, familyMemberId, editData }: BudgetFormProps) {
   const isEditing = !!editData;
 
   const [categoryId, setCategoryId] = useState("");
@@ -101,6 +102,7 @@ export function BudgetForm({ open, onClose, month, editData }: BudgetFormProps) 
           planned_amount: parsedAmount,
           alert_threshold: parsedThreshold,
           adjustment_index: adjustmentIndex === "none" ? null : adjustmentIndex,
+          family_member_id: familyMemberId ?? null,
         });
       }
       onClose();

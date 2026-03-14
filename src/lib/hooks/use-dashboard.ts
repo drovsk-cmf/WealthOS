@@ -91,6 +91,7 @@ export interface BudgetItem {
   remaining: number;
   pct_used: number;
   status: "ok" | "warning" | "exceeded";
+  family_member_id: string | null;
 }
 
 export interface BudgetVsActualResult {
@@ -260,9 +261,9 @@ export function useBalanceEvolution(months: number = 6) {
 
 // ─── 6. Budget vs Actual (DASH-05, ORC-05) ─────────────────────
 
-export function useBudgetVsActual(year?: number, month?: number) {
+export function useBudgetVsActual(year?: number, month?: number, familyMemberId?: string | null) {
   return useQuery({
-    queryKey: ["dashboard", "budget-vs-actual", year, month],
+    queryKey: ["dashboard", "budget-vs-actual", year, month, familyMemberId],
     staleTime: STALE_TIME,
     queryFn: async (): Promise<BudgetVsActualResult> => {
       const { supabase, userId } = await getUserId();
@@ -270,6 +271,7 @@ export function useBudgetVsActual(year?: number, month?: number) {
         p_user_id: userId,
         ...(year !== undefined && { p_year: year }),
         ...(month !== undefined && { p_month: month }),
+        ...(familyMemberId && { p_family_member_id: familyMemberId }),
       });
       if (error) throw error;
       const parsed = budgetVsActualResultSchema.safeParse(data);

@@ -30,6 +30,7 @@ export interface CreateBudgetInput {
   coa_id?: string | null;
   cost_center_id?: string | null;
   adjustment_index?: AdjustmentIndex | null;
+  family_member_id?: string | null;
 }
 
 export interface UpdateBudgetInput {
@@ -39,6 +40,7 @@ export interface UpdateBudgetInput {
   coa_id?: string | null;
   cost_center_id?: string | null;
   adjustment_index?: AdjustmentIndex | null;
+  family_member_id?: string | null;
 }
 
 export interface CopyBudgetInput {
@@ -85,15 +87,15 @@ export function formatMonthLabel(monthKey: string): string {
 
 // ─── Queries ────────────────────────────────────────────────────
 
-/** Fetch all budgets for a given month (ORC-01 list view) */
-export function useBudgets(month?: string) {
+/** Fetch budgets for a given month, optionally filtered by family member */
+export function useBudgets(month?: string, familyMemberId?: string | null) {
   const supabase = createClient();
   const monthKey = month ?? toMonthKey();
 
   return useQuery({
-    queryKey: ["budgets", monthKey],
+    queryKey: ["budgets", monthKey, familyMemberId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("budgets")
         .select(
           `
@@ -103,6 +105,14 @@ export function useBudgets(month?: string) {
         )
         .eq("month", monthKey)
         .order("planned_amount", { ascending: false });
+
+      if (familyMemberId) {
+        query = query.eq("family_member_id", familyMemberId);
+      } else {
+        query = query.is("family_member_id", null);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       const parsed = z.array(budgetWithCategorySchema).safeParse(data);
@@ -170,14 +180,21 @@ export function useCreateBudget() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // Check for duplicate (same category + month)
-      const { data: existing } = await supabase
+      // Check for duplicate (same category + month + member)
+      let dupQuery = supabase
         .from("budgets")
         .select("id")
         .eq("user_id", user.id)
         .eq("category_id", input.category_id)
-        .eq("month", input.month)
-        .maybeSingle();
+        .eq("month", input.month);
+
+      if (input.family_member_id) {
+        dupQuery = dupQuery.eq("family_member_id", input.family_member_id);
+      } else {
+        dupQuery = dupQuery.is("family_member_id", null);
+      }
+
+      const { data: existing } = await dupQuery.maybeSingle();
 
       if (existing) {
         throw new Error("Já existe orçamento para esta categoria neste mês.");
@@ -194,6 +211,7 @@ export function useCreateBudget() {
           coa_id: input.coa_id ?? null,
           cost_center_id: input.cost_center_id ?? null,
           adjustment_index: input.adjustment_index ?? null,
+          family_member_id: input.family_member_id ?? null,
         })
         .select()
         .single();

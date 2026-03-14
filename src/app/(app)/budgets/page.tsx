@@ -14,7 +14,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Users } from "lucide-react";
 import {
   useBudgets,
   useDeleteBudget,
@@ -24,6 +24,7 @@ import {
 } from "@/lib/hooks/use-budgets";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { useBudgetVsActual } from "@/lib/hooks/use-dashboard";
+import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { BudgetForm } from "@/components/budgets/budget-form";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -54,6 +55,7 @@ const STATUS_BADGES = {
 export default function BudgetsPage() {
   // ─── State ─────────────────────────────────────────────────
   const [currentMonth, setCurrentMonth] = useState(() => toMonthKey());
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editData, setEditData] = useState<EditData | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -63,13 +65,15 @@ export default function BudgetsPage() {
   useAutoReset(confirmDelete, setConfirmDelete);
 
   // ─── Queries ───────────────────────────────────────────────
-  const { data: budgets, isLoading } = useBudgets(currentMonth);
+  const { data: budgets, isLoading } = useBudgets(currentMonth, selectedMemberId);
+  const { data: members } = useFamilyMembers();
+  const activeMembers = members?.filter((m) => m.is_active) ?? [];
   const deleteBudget = useDeleteBudget();
   const copyBudgets = useCopyBudgets();
 
   // Parse year/month for RPC
   const [year, month] = currentMonth.split("-").map(Number);
-  const budgetVsActual = useBudgetVsActual(year, month);
+  const budgetVsActual = useBudgetVsActual(year, month, selectedMemberId);
   const bva = budgetVsActual.data;
 
   // ─── Month navigation ─────────────────────────────────────
@@ -167,6 +171,36 @@ export default function BudgetsPage() {
           + Nova categoria
         </button>
       </div>
+
+      {/* Member filter */}
+      {activeMembers.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto">
+          <Users className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+          <button
+            onClick={() => setSelectedMemberId(null)}
+            className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+              selectedMemberId === null
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-accent"
+            }`}
+          >
+            Lar
+          </button>
+          {activeMembers.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setSelectedMemberId(m.id)}
+              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                selectedMemberId === m.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-accent"
+              }`}
+            >
+              {m.avatar_emoji ? `${m.avatar_emoji} ` : ""}{m.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Month navigator */}
       <div className="flex items-center justify-between rounded-lg border bg-card p-3">
@@ -460,6 +494,7 @@ export default function BudgetsPage() {
           setEditData(null);
         }}
         month={currentMonth}
+        familyMemberId={selectedMemberId}
         editData={editData}
       />
     </div>
