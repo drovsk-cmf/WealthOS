@@ -917,90 +917,106 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 ---
 
-## 12. Próximos Passos
 
-**Stories restantes (3/90, todas bloqueadas por hardware):**
+## 12. Backlog Consolidado
 
-| Story | Descrição | Bloqueio |
+Lista canônica de tudo que resta. Atualizada na última sessão; qualquer nova sessão deve verificar se itens foram concluídos e removê-los.
+
+### 12.1 Stories restantes (3/90)
+
+Todas bloqueadas por hardware Apple (Xcode necessário).
+
+| Story | Descrição | Requisito |
 |---|---|---|
-| CFG-04 | Configurar notificações (push APNs) | iOS nativo |
-| FIN-17 | OCR recibo (Apple Vision + Tesseract.js) | Mac |
-| FIN-18 | Câmera comprovante (Capacitor Camera) | Mac |
+| CFG-04 | Push notifications (APNs) | Xcode + Apple Developer Account |
+| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível com Tesseract.js puro |
+| FIN-18 | Câmera comprovante (Capacitor Camera) | Xcode |
 
-**Fazível remotamente (próxima sessão):**
+### 12.2 Pré-produção web (sem Mac)
 
-| Item | Esforço | Origem |
+Itens necessários para colocar o app em produção na web (sem iOS).
+
+| # | Item | Esforço | Status |
+|---|---|---|---|
+| P1 | Deploy Vercel + domínio oniefy.com | 30 min | Não iniciado |
+| P2 | CSP nonce/hash (remover `unsafe-eval` em build de produção) | 2h | Não iniciado (ChatGPT audit #6) |
+| P3 | React Error Boundaries (crash gracioso em todas as rotas) | 1h | Não iniciado |
+| P4 | Customizar emails Supabase Auth (confirmação, reset senha) | 30 min | Não iniciado |
+| P5 | Página `/privacy` (Privacy Policy, exigida pela Apple e LGPD) | 1h | Não iniciado |
+| P6 | Seed de dados realistas para dev e demo | 1h | Não iniciado |
+| P7 | Dark mode: verificação completa em todas as 18 páginas | 1h | Não iniciado |
+| P8 | Supabase Pro (leaked password protection + limites) | 5 min | Requer assinatura Claudio |
+
+### 12.3 Qualidade e testes (sem Mac)
+
+| # | Item | Esforço | Status |
+|---|---|---|---|
+| Q1 | Expandir testes: CFG pages (profile, export, security) | 30 min | Não iniciado |
+| Q2 | Lighthouse audit + correções (performance, SEO, a11y score) | 1-2h | Não iniciado |
+| Q3 | Proxy server-side para login (corrige rate limiter real) | 2h | Não iniciado |
+
+### 12.4 iOS / App Store (requer Mac)
+
+Ordem de execução recomendada. Alternativa sem Mac: Xcode Cloud (25h grátis/mês) para build + TestFlight + submit via App Store Connect (acessível do iPad Pro). Requer Apple Developer Account (US$ 99/ano).
+
+| # | Item | Esforço | Requisito |
+|---|---|---|---|
+| I1 | Apple Developer Account (US$ 99/ano) | 5 min | Decisão Claudio |
+| I2 | Capacitor iOS build + teste (A1502 Xcode 14.2 ou Xcode Cloud) | 2h | I1 |
+| I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4-6h | I2 |
+| I4 | OCR real (WKF-03: Apple Vision nativo + Tesseract.js web + PDF) | 4-6h | I2 |
+| I5 | Submissão App Store (Mac Apple Silicon ou Xcode Cloud) | 2h | I1, I2, I3, P5 |
+
+### 12.5 Itens de auditoria deferidos
+
+Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
+
+| Item | Motivo do deferimento | Gatilho para implementar |
 |---|---|---|
-| CSP nonce/hash (remover unsafe-eval em produção) | 2h | ChatGPT audit #6 |
-| Expandir testes para CFG pages (profile, export, security) | 30 min | Backlog |
-| Estratégia mobile Capacitor vs SSR (`server.url`) | 1h | Backlog |
+| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Extrato pessoal < 5k linhas. Workers exigem bundling separado + config Next.js | Usuário reportar travamento na importação |
+| SSR prefetch no Dashboard (Gemini #5) | 6 queries paralelas, skeletons ~300ms. Refactor pesado, ganho marginal para 1-4 usuários | Escala para 10+ usuários ou TTI > 2s medido |
 
-**Itens de auditoria deferidos (custo > benefício atual):**
+### 12.6 Backlog de evolução futura
 
-| Item | Motivo do deferimento |
-|---|---|
-| Web Workers para parsers (Gemini #4) | Extrato pessoal raramente excede 5k linhas. Workers exigem bundling separado de PapaParse/SheetJS + config Next.js. Implementar se cenário real surgir |
-| SSR prefetch no Dashboard (Gemini #5) | 6 queries já paralelas via React Query. Skeletons ~300ms. Converter para Server Component + HydrationBoundary é refactor pesado com ganho marginal para 1-4 usuários |
+Não são bugs nem pré-requisitos. São evoluções que agregam valor a longo prazo.
 
-**Itens de auditoria concluídos nesta sessão:**
+| Item | Origem | Gatilho |
+|---|---|---|
+| RLS multi-user (workspaces/grupos para login independente de membros) | Gemini audit #1b | Cônjuge ou membro solicitar login próprio |
+| Orçamento delegado com aprovação | Adendo v1.2 | Demanda de família |
+| Rateio automático de overhead por centro | Estudo técnico v2.0 | Volume > 50 transações/mês com centros |
+| pg_cron para limpeza de soft-deleted (90 dias) | Adendo v1.2 | Volume de dados justificar |
+| Open Finance (Pluggy, Belvo) | Pesquisa paralela | Agregador viável + certificação |
 
-| Item | Commit |
-|---|---|
-| ~~ARIA labels + ícones em badges de status~~ (Gemini #6) | 65598b3 |
-| ~~search_path em create_transfer_with_journal~~ (Gemini #1a) | 69d8b46 |
-| ~~redirectTo sanitizer~~ (ChatGPT #2) | 222f8db |
-| ~~Service Worker v2~~ (ChatGPT #3) | 222f8db |
-| ~~Budget family_member_id~~ (ChatGPT #4) | 222f8db |
-| ~~Callback error → reason~~ (ChatGPT #5) | 222f8db |
+### 12.7 Limitações conhecidas
 
-**Limitações conhecidas (não corrigíveis sem mudança de arquitetura):**
+Não corrigíveis sem mudança de arquitetura. Documentadas para consciência.
 
 | Item | Motivo | Mitigação |
 |---|---|---|
-| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware Next | GoTrue tem rate limiting próprio. WAF (Vercel/Cloudflare) recomendado para produção. Alternativa: proxy server-side para login |
+| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware Next | GoTrue tem rate limiting próprio. WAF em produção. Ou: proxy server-side (Q3) |
+| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR em dev | Nonce/hash em produção (P2) |
+| Biometria é stub | Capacitor BiometricAuth requer build nativo | Funcional após I3 |
+| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query `offlineFirst` serve cache in-memory durante a sessão |
 
-**Backlog futuro (não urgente):**
+### 12.8 Ações do Claudio (paralelas, não dependem de sessão Claude)
 
-| Item | Origem |
-|---|---|
-| RLS multi-user: tabela de workspaces/grupos para login independente de membros | Gemini audit #1b |
+| Item | Ação | Status |
+|---|---|---|
+| ~~Logo definitivo~~ | Penrose Ribbon integrado (commit dbb5bb6) | FEITO |
+| Supabase Pro | Habilitar: Auth > Settings > HaveIBeenPwned | Pendente (decisão de custo) |
+| Validação fiscal periódica | IRPF, INSS, salário mínimo: verificar DOU | Recorrente |
+| Apple Developer Account | US$ 99/ano, necessário para I1-I5 | Pendente (decisão Claudio) |
 
-**Feito nesta sessão (consolidado):**
-- ~~Expandir testes~~ → 150 testes em 12 suítes (46 → 150, +226%)
-- ~~Conciliação bancária (3 camadas)~~ → migrations 028a+028b, 3 RPCs, pg_cron overdue, UI completa
-- ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
-- ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
-- ~~CFG-07~~ → Service Worker (v2, apenas estáticos) + online status + offline banner
-- ~~Auditoria Gemini~~ → 6 achados: 1 bug corrigido (search_path), 1 backlog (RLS), 1 implementado (ARIA), 2 deferidos (Workers, SSR), 1 rejeitado (DTOs)
-- ~~Auditoria ChatGPT~~ → 6 achados: 5 corrigidos (redirectTo, SW, budget, callback, search_path), 1 parcial (CSP)
-- ~~ARIA / acessibilidade~~ → ícones Lucide + `role="status"` + `aria-label` em 4 páginas (transações, contas a pagar, orçamento, conciliação)
-- **Contagem de stories reconciliada:** 87/90
+---
 
-**Ação do Claudio (em paralelo):**
+## 13. Sessão 14/03/2026 (log)
 
-| Item | Ação |
-|---|---|
-| ~~Logo definitivo~~ | FEITO: Penrose Ribbon integrado (commit dbb5bb6) |
-| Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
-| Validação mensal de parâmetros fiscais | IRPF, INSS, salário mínimo podem mudar por portaria/lei. Verificar periodicamente se há novas publicações no DOU. |
-| Apple Developer Account | US$ 99/ano. Necessário para submissão App Store. Claudio decidiu não assinar ainda |
-
-**Requer Mac (A1502 para dev, Mac emprestado para submit):**
-
-| Item | Esforço |
-|---|---|
-| Biometria real (Capacitor BiometricAuth) | 4-6h |
-| OCR real (WKF-03, Apple Vision + Tesseract.js, **+PDF**) | 4-6h |
-| Capacitor iOS build + teste (A1502 com Xcode 14.2) | 2h |
-| Submissão App Store (Mac com Apple Silicon emprestado) | 2h |
-
-**Alternativa sem Mac:** Xcode Cloud (25h grátis/mês) para build + TestFlight + submit via App Store Connect (acessível do iPad). Requer Apple Developer Account (US$ 99/ano) + configuração inicial do .xcodeproj (pode ser feita via GitHub Actions macOS runner).
-
-**Commits desta sessão (14/03/2026, 18 commits):**
+20 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
-| 4788b11 | HANDOVER (sessão anterior, incluído no repo) |
+| 4788b11 | docs: HANDOVER (sessão anterior) |
 | 7b5fa1f | test: 46 → 122 (4 suítes novas) |
 | 7e48af6 | docs: HANDOVER testes |
 | 06eedc0 | feat: conciliação bancária Camadas 1+2 |
@@ -1010,7 +1026,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 | e193f02 | feat: CFG-06 (pg_cron account deletion) |
 | ed0ca63 | docs: HANDOVER CFG |
 | 9e3407b | test: dialog helpers (12 suítes, 135 testes) |
-| 04498b8 | feat: CFG-07 (Service Worker v1 + offline) |
+| 04498b8 | feat: CFG-07 (Service Worker + offline) |
 | 6f681cc | docs: HANDOVER CFG-07 |
 | 07e6a0c | docs: HANDOVER contagem reconciliada 87/90 |
 | 69d8b46 | fix: search_path (Gemini audit) + docs |
@@ -1018,10 +1034,23 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 | ce9847a | docs: HANDOVER final dual audit |
 | fcd2434 | docs: HANDOVER verified against pg_proc + filesystem |
 | 65598b3 | a11y: icons + aria-labels on all status badges |
+| 1861935 | docs: HANDOVER audit items resolved/deferred |
+| 95b8e62 | feat: privacy mode + MFA disable option |
+
+**Entregas consolidadas:**
+- Conciliação bancária (3 camadas): schema + auto-matching + UI manual
+- CFG-01/02/03/05/06/07: perfil, senha, moeda, export, deletion lifecycle, offline
+- Privacy mode: eye toggle + `<Mv>` em 14 páginas
+- MFA disable: desativação com confirmação TOTP
+- Auditoria Gemini (6 achados): 1 corrigido, 1 backlog, 1 a11y, 2 deferidos, 1 rejeitado
+- Auditoria ChatGPT (6 achados): 5 corrigidos, 1 parcial (CSP)
+- ARIA/a11y: ícones + aria-labels em badges de status (4 páginas)
+- Testes: 46 → 150 (+226%), 12 suítes
+- Stories: 81 → 87/90
 
 ---
 
-## 13. Conexões
+## 14. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
