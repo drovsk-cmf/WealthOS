@@ -63,11 +63,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 39 (29 RPCs + 6 trigger functions + 4 cron wrappers) |
-| Triggers | 19 |
-| ENUMs | 24 |
-| Migrations aplicadas | 40 partes em 27 versões (001 a 027) |
-| pg_cron jobs | 4 (workflow tasks diário, depreciação mensal, balance check semanal, **índices diário**) |
+| Functions (total) | 42 (32 RPCs + 7 trigger functions + 5 cron wrappers) |
+| Triggers | 20 |
+| ENUMs | 25 |
+| Migrations aplicadas | 42 partes em 29 versões (001 a 028b) |
+| pg_cron jobs | 5 (workflow tasks diário, depreciação mensal, balance check semanal, índices diário, **overdue diário**) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -79,12 +79,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (29 RPCs + 6 triggers + 4 cron)
+### 3.3 Functions (32 RPCs + 7 triggers + 5 cron)
 
 | Grupo | Functions |
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member, handle_new_user |
-| Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance |
+| Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, **sync_payment_status** |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
@@ -92,8 +92,9 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
 | Fiscal | get_fiscal_report, get_fiscal_projection |
 | Índices | get_economic_indices, get_index_latest |
-| Import | import_transactions_batch, auto_categorize_transaction |
-| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC / 03h BRT) |
+| Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction |
+| **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
+| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), **cron_mark_overdue_transactions (diário 01h UTC)** |
 
 ### 3.4 Código Fonte (~90 arquivos em src/)
 
@@ -142,12 +143,13 @@ src/
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
 │   ├── categories/category-form.tsx
-│   ├── connections/              # Wizard de importação decomposto (WEA-013)
+│   ├── connections/              # Wizard de importação + conciliação (WEA-013)
 │   │   ├── import-wizard.tsx
 │   │   ├── import-step-upload.tsx
 │   │   ├── import-step-mapping.tsx
 │   │   ├── import-step-preview.tsx
-│   │   └── import-step-result.tsx
+│   │   ├── import-step-result.tsx
+│   │   └── reconciliation-panel.tsx  # Camada 3: conciliação manual lado a lado
 │   ├── dashboard/ (8 componentes + index.ts)
 │   ├── recurrences/recurrence-form.tsx
 │   └── transactions/transaction-form.tsx
@@ -155,12 +157,12 @@ src/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (16 hooks: accounts, assets, auth-init, bank-connections, budgets,
+│   ├── hooks/ (17 hooks: accounts, assets, auth-init, bank-connections, budgets,
 │   │          categories, chart-of-accounts, cost-centers, dashboard, dialog-helpers,
-│   │          economic-indices, family-members, fiscal, recurrences, transactions,
-│   │          workflows)
+│   │          economic-indices, family-members, fiscal, reconciliation, recurrences,
+│   │          transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 25 schemas Zod (todos os RPCs cobertos)
+│   ├── schemas/rpc.ts            # 27 schemas Zod (todos os RPCs cobertos)
 │   ├── services/
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
 │   │   └── transaction-engine.ts
@@ -326,7 +328,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
 | Leaked password protection | Requer Supabase Pro. Claudio acionará quando assinar a plataforma |
 | ~~Ícones Lucide~~ | FEITO: emojis decorativos (📊🏦📈✓📄💰🏷️📋) substituídos por Lucide React SVG icons em 7 arquivos. Emojis de avatar familiar mantidos (dados persistidos em BD) |
-| Conciliação bancária (3 camadas) | **Camada 1:** Status tracking: ENUM lifecycle (pendente → vencida → paga → cancelada), `due_date` separado de `date`, pg_cron diário marca vencidas. **Camada 2:** Auto-matching na importação: ao importar extrato, cruzar com pendentes (mesma conta, valor ±10%, janela ±7 dias); se match, baixa a pendente em vez de duplicar; registra ajuste se valor difere. **Camada 3:** Tela de reconciliação manual: lado a lado pendentes × importadas sem match, usuário liga pares manualmente. Pré-requisito: Camada 1 antes de 2. |
+| ~~Conciliação bancária (3 camadas)~~ | FEITO: **Camada 1:** ENUM `payment_status` (pending/overdue/paid/cancelled), `due_date`, trigger bidirecional `is_paid ↔ payment_status`, pg_cron diário marca vencidas. **Camada 2:** Auto-matching na importação: `import_transactions_batch` reescrita com score (±10% valor, ±7 dias, threshold 25), registra ajuste se valor difere. **Camada 3:** Tela de reconciliação manual na aba "Conciliação" da página de conexões: lado a lado pendentes × importadas, filtro por conta, validação de mesma conta, exibição de ajuste. RPCs: `find_reconciliation_candidates`, `match_transactions`. Migration 028a+028b. |
 | ~~Orçamento delegado por membro~~ | FEITO: Migration 027 (family_member_id em budgets, FK, unique constraint, RPC reescrita). UI com seletor de membro (pill buttons). Hooks e schemas Zod atualizados. Sem membros cadastrados: funciona como antes. |
 
 ---
@@ -729,16 +731,59 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ---
 
+## 11h. Sessão 14/03/2026 (continuação) - Conciliação bancária (3 camadas)
+
+**Migration 028a (schema):**
+- ENUM `payment_status` (pending, overdue, paid, cancelled)
+- 4 novas colunas em `transactions`: `payment_status`, `due_date`, `matched_transaction_id`, `amount_adjustment`
+- Trigger bidirecional `sync_payment_status`: `is_paid ↔ payment_status` (backward compatible)
+- Backfill: transações com `is_paid=true` recebem `payment_status='paid'`
+- 2 indexes: `idx_transactions_payment_status`, `idx_transactions_reconciliation`
+
+**Migration 028b (RPCs + cron):**
+- `cron_mark_overdue_transactions`: diário 01:00 UTC, marca `pending → overdue` quando `due_date < today`
+- `find_reconciliation_candidates(p_user_id, p_account_id, p_amount, p_date, p_tolerance_pct, p_tolerance_days)`: busca pendentes na mesma conta com valor ±10% e data ±7 dias, retorna até 5 ordenados por match_score
+- `match_transactions(p_user_id, p_pending_id, p_imported_id)`: vincula pendente a importada, registra ajuste, soft-delete da importada (audit trail)
+- `import_transactions_batch` reescrita (v2): antes de inserir, procura pendente com auto-match (score < 25). Se encontrar, baixa em vez de duplicar. Novo campo `matched` no retorno
+
+**Frontend (Camada 3):**
+- Hook `use-reconciliation.ts`: `useUnmatchedImports`, `usePendingUnmatched`, `useMatchTransactions`
+- Componente `reconciliation-panel.tsx` (279 linhas): duas colunas (pendentes × importadas), filtro por conta, seleção de par, exibição de ajuste, validação de mesma conta, toast de sucesso
+- Nova aba "Conciliação" na página de conexões (3 abas: Importar | Conciliação | Conexões)
+- `import-step-result.tsx`: exibe contagem de conciliadas automaticamente com ícone Link
+- `bills/page.tsx`: usa `payment_status` para badges (overdue em vermelho), prioriza `due_date` sobre `date`
+- Schemas Zod: `reconciliationCandidateSchema`, `matchTransactionsResultSchema`, `importBatchResultSchema` (v2 com `matched`)
+- 5 testes novos (total: 127)
+
+**Score de matching (referência):**
+- Fórmula: `(|amount_diff| / max(amount, 0.01)) * 50 + |days_diff| * 5`
+- Score < 25 = auto-match (ex: 5% diferença + 2 dias = 2.5 + 10 = 12.5)
+- Score 25+ = não auto-match, fica para conciliação manual
+
+**pg_cron jobs (5 ativos):**
+1. `cron_generate_workflow_tasks` (diário 02h UTC)
+2. `cron_mark_overdue_transactions` (diário 01h UTC)
+3. `cron_fetch_economic_indices` (diário 06h UTC)
+4. `cron_depreciate_assets` (mensal dia 1 03h UTC)
+5. `cron_balance_integrity_check` (semanal dom 04h UTC)
+
+**Commits desta sessão:** 7e48af6 (HANDOVER testes), 06eedc0 (reconciliation Camadas 1+2), 7ffccf7 (reconciliation Camada 3)
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
 
 | Item | Esforço |
 |---|---|
-| Conciliação bancária (3 camadas: status lifecycle, auto-matching, tela manual) | 1-2 dias |
+| Remaining 19 stories do backlog (90 - 71 = 19) | A priorizar |
+| Service Worker (PWA offline) | 2-4h |
+| Estratégia mobile Capacitor vs SSR (`server.url`) | 1h |
 
 **Feito nesta sessão:**
-- ~~Expandir cobertura de testes (alvo: 80+)~~ → FEITO: 122 testes em 11 suítes (commit 7b5fa1f)
+- ~~Expandir cobertura de testes (alvo: 80+)~~ → FEITO: 127 testes em 11 suítes (commits 7b5fa1f, 06eedc0)
+- ~~Conciliação bancária (3 camadas)~~ → FEITO: migration 028a+028b, 3 RPCs, 5 pg_cron jobs, UI completa (commits 06eedc0, 7ffccf7)
 
 **Ação do Claudio (em paralelo):**
 
