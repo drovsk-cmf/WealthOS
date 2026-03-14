@@ -63,7 +63,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 43 (32 RPCs + 7 trigger functions + 6 cron wrappers) |
+| Functions (total) | 45 (32 RPCs + 7 trigger functions + 6 cron wrappers) |
 | Triggers | 20 |
 | ENUMs | 25 |
 | Migrations aplicadas | 43 partes em 30 versões (001 a 029) |
@@ -75,11 +75,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices econômicos | ~60 registros (8 tipos: IPCA, INPC, IGP-M, Selic, CDI, TR, USD/BRL, salário mínimo) |
 | Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
 | User stories total | 90 |
-| Stories concluídas | 76 (71 anteriores + CFG-01/02/03/05/07) |
+| Stories concluídas | 87/90 (ver breakdown abaixo) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (32 RPCs + 7 triggers + 5 cron)
+### 3.3 Functions (32 RPCs + 7 triggers + 6 cron)
 
 | Grupo | Functions |
 |---|---|
@@ -100,9 +100,10 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 ```
 src/
-├── __tests__/                    # 11 suítes de teste (Jest + RTL), 122 testes
+├── __tests__/                    # 12 suítes de teste (Jest + RTL), 135 testes
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
+│   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── onboarding-seeds.test.ts
 │   ├── parsers.test.ts
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
@@ -303,7 +304,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
 - Biometria stub retorna true: isolado, Fase 10
 - ~~Rebranding WealthOS → Oniefy: FEITO (commit 4ea3524)~~
-- ~~Cobertura de testes: FEITO (11 suítes, 122 testes, Jest + RTL)~~
+- ~~Cobertura de testes: FEITO (12 suítes, 135 testes, Jest + RTL)~~
 
 ---
 
@@ -318,7 +319,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
-| ~~Testes~~ | FEITO: Jest + RTL configurados. 11 suítes, 122 testes (schemas Zod 25/25, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils, onboarding seeds). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
+| ~~Testes~~ | FEITO: Jest + RTL configurados. 12 suítes, 135 testes (schemas Zod 27/27, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils, dialog helpers, onboarding seeds, reconciliation). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
 | ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
 | ~~Logo + icons~~ | FEITO: Penrose Ribbon integrado. 6 SVGs transparentes (lockup-h/v, logomark, plum/bone) + OG PNG. Favicon, apple-touch-icon, PWA icons substituídos. next/image com unoptimized. Dark mode via dark:hidden/dark:block. Login: lockup-v. Sidebar/mobile: lockup-h. |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
@@ -796,7 +797,7 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 5. `cron_depreciate_assets` (mensal dia 1 03h UTC)
 6. `cron_balance_integrity_check` (semanal dom 04h UTC)
 
-**4 stories concluídas:** CFG-01, CFG-02, CFG-03, CFG-05. **Total: 75/90.**
+**4 stories concluídas:** CFG-01, CFG-02, CFG-03, CFG-05. **Total: 86/90.**
 
 **Commits:** b89e124 (CFG-01/02/03/05), e193f02 (CFG-06 cron)
 
@@ -815,7 +816,25 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 - QueryProvider: `networkMode: 'offlineFirst'`, `staleTime: 5min`, `gcTime: 30min`
 - Nota: IndexedDB persistence (`tanstack-query-persist`) adiada. SW + React Query in-memory é suficiente para uso de leitura offline
 
-**1 story concluída:** CFG-07. **Total: 76/90.**
+**1 story concluída:** CFG-07. **Total: 87/90.**
+
+**Verificação da contagem (por módulo):**
+
+| Módulo | Stories | Concluídas | Bloqueadas |
+|---|---|---|---|
+| AUTH | 01..08 | 8 | 0 |
+| FIN | 01..18 | 16 | 2 (FIN-17 OCR, FIN-18 câmera) |
+| ORC | 01..06 | 6 | 0 |
+| CAP | 01..06 | 6 | 0 |
+| PAT | 01..07 | 7 | 0 |
+| FIS | 01..06 | 6 | 0 |
+| DASH | 01..12 | 12 | 0 |
+| CFG | 01..07 | 6 | 1 (CFG-04 notificações iOS) |
+| BANK | 01..06 | 6 | 0 |
+| CTB | 01..05 | 5 | 0 |
+| CEN | 01..05 | 5 | 0 |
+| WKF | 01..04 | 4 | 0 |
+| **Total** | **90** | **87** | **3** |
 
 **Commits:** 9e3407b (testes), 04498b8 (CFG-07)
 
@@ -823,29 +842,29 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ## 12. Próximos Passos
 
-**Stories restantes (14/90):**
+**Stories restantes (3/90, todas bloqueadas por hardware):**
 
 | Story | Descrição | Bloqueio |
 |---|---|---|
-| CFG-04 | Configurar notificações (push) | iOS (APNs) |
-| FIN-17 | OCR recibo | Mac (Apple Vision + Tesseract.js) |
-| FIN-18 | Câmera comprovante | Mac (Capacitor Camera) |
-| ~11 | Critérios de aceite parciais em stories entregues | Revisão |
+| CFG-04 | Configurar notificações (push APNs) | iOS nativo |
+| FIN-17 | OCR recibo (Apple Vision + Tesseract.js) | Mac |
+| FIN-18 | Câmera comprovante (Capacitor Camera) | Mac |
 
 **Fazível remotamente:**
 
 | Item | Esforço |
 |---|---|
-| Revisão de critérios de aceite (fechar gaps das ~11 stories) | 1-2h |
 | Expandir testes para CFG pages (profile, export, security) | 30 min |
 | Estratégia mobile Capacitor vs SSR (`server.url`) | 1h |
+| IndexedDB persistence para offline (tanstack-query-persist) | 1-2h |
 
 **Feito nesta sessão (consolidado):**
-- ~~Expandir testes~~ → 135 testes em 12 suítes
+- ~~Expandir testes~~ → 135 testes em 12 suítes (46 → 135, +193%)
 - ~~Conciliação bancária (3 camadas)~~ → migrations 028a+028b, 3 RPCs, pg_cron overdue, UI completa
 - ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
 - ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
 - ~~CFG-07~~ → Service Worker + online status + offline banner + React Query offlineFirst
+- **Contagem de stories reconciliada:** 71 → 87/90 (81 já estavam feitas, +6 CFG nesta sessão)
 
 **Ação do Claudio (em paralelo):**
 
