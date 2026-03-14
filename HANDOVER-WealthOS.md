@@ -927,16 +927,31 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 | FIN-17 | OCR recibo (Apple Vision + Tesseract.js) | Mac |
 | FIN-18 | Câmera comprovante (Capacitor Camera) | Mac |
 
-**Fazível remotamente:**
+**Fazível remotamente (próxima sessão):**
 
 | Item | Esforço | Origem |
 |---|---|---|
-| Web Workers para parsers CSV/OFX/XLSX | 1-2h | Gemini audit #4 |
-| ARIA labels + contraste em badges de status | 1h | Gemini audit #6 |
-| SSR prefetch no Dashboard (Hydration Boundary) | 1-2h | Gemini audit #5 |
 | CSP nonce/hash (remover unsafe-eval em produção) | 2h | ChatGPT audit #6 |
 | Expandir testes para CFG pages (profile, export, security) | 30 min | Backlog |
 | Estratégia mobile Capacitor vs SSR (`server.url`) | 1h | Backlog |
+
+**Itens de auditoria deferidos (custo > benefício atual):**
+
+| Item | Motivo do deferimento |
+|---|---|
+| Web Workers para parsers (Gemini #4) | Extrato pessoal raramente excede 5k linhas. Workers exigem bundling separado de PapaParse/SheetJS + config Next.js. Implementar se cenário real surgir |
+| SSR prefetch no Dashboard (Gemini #5) | 6 queries já paralelas via React Query. Skeletons ~300ms. Converter para Server Component + HydrationBoundary é refactor pesado com ganho marginal para 1-4 usuários |
+
+**Itens de auditoria concluídos nesta sessão:**
+
+| Item | Commit |
+|---|---|
+| ~~ARIA labels + ícones em badges de status~~ (Gemini #6) | 65598b3 |
+| ~~search_path em create_transfer_with_journal~~ (Gemini #1a) | 69d8b46 |
+| ~~redirectTo sanitizer~~ (ChatGPT #2) | 222f8db |
+| ~~Service Worker v2~~ (ChatGPT #3) | 222f8db |
+| ~~Budget family_member_id~~ (ChatGPT #4) | 222f8db |
+| ~~Callback error → reason~~ (ChatGPT #5) | 222f8db |
 
 **Limitações conhecidas (não corrigíveis sem mudança de arquitetura):**
 
@@ -956,8 +971,9 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 - ~~CFG-01/02/03/05~~ → profile + password + currency + export (2 novas páginas)
 - ~~CFG-06~~ → lifecycle completo com pg_cron hard delete (migration 029)
 - ~~CFG-07~~ → Service Worker (v2, apenas estáticos) + online status + offline banner
-- ~~Auditoria Gemini~~ → 6 achados, 2 reais (search_path corrigido, RLS futuro aceito)
-- ~~Auditoria ChatGPT~~ → 6 achados, 5 corrigidos (redirectTo, SW, budget, callback, search_path)
+- ~~Auditoria Gemini~~ → 6 achados: 1 bug corrigido (search_path), 1 backlog (RLS), 1 implementado (ARIA), 2 deferidos (Workers, SSR), 1 rejeitado (DTOs)
+- ~~Auditoria ChatGPT~~ → 6 achados: 5 corrigidos (redirectTo, SW, budget, callback, search_path), 1 parcial (CSP)
+- ~~ARIA / acessibilidade~~ → ícones Lucide + `role="status"` + `aria-label` em 4 páginas (transações, contas a pagar, orçamento, conciliação)
 - **Contagem de stories reconciliada:** 87/90
 
 **Ação do Claudio (em paralelo):**
@@ -980,7 +996,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Alternativa sem Mac:** Xcode Cloud (25h grátis/mês) para build + TestFlight + submit via App Store Connect (acessível do iPad). Requer Apple Developer Account (US$ 99/ano) + configuração inicial do .xcodeproj (pode ser feita via GitHub Actions macOS runner).
 
-**Commits desta sessão (14/03/2026, 16 commits):**
+**Commits desta sessão (14/03/2026, 18 commits):**
 
 | Commit | Escopo |
 |---|---|
@@ -1000,6 +1016,8 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 | 69d8b46 | fix: search_path (Gemini audit) + docs |
 | 222f8db | fix: 5 achados ChatGPT (redirectTo, SW v2, budget, callback) |
 | ce9847a | docs: HANDOVER final dual audit |
+| fcd2434 | docs: HANDOVER verified against pg_proc + filesystem |
+| 65598b3 | a11y: icons + aria-labels on all status badges |
 
 ---
 
