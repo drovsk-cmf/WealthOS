@@ -63,11 +63,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 45 (32 RPCs + 7 trigger functions + 6 cron wrappers) |
+| Functions (total) | 44 (31 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
 | Triggers | 20 |
 | ENUMs | 25 |
-| Migrations aplicadas | 44 partes em 31 versões (001 a 030) |
-| pg_cron jobs | 6 (workflow tasks, depreciação, balance check, índices, overdue, **account deletions**) |
+| Migrations aplicadas | 44 partes no Supabase, 33 SQL files no repo (001 a 030) |
+| pg_cron jobs | 6: mark-overdue-transactions (01h), generate-workflow-tasks (02h), process-account-deletions (03:30), cron_fetch_indices (06h), depreciate-assets (mensal 03h), balance-integrity-check (dom 04h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -79,12 +79,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (32 RPCs + 7 triggers + 6 cron)
+### 3.3 Functions (31 RPCs + 7 triggers + 6 cron = 44)
 
 | Grupo | Functions |
 |---|---|
-| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member, handle_new_user |
-| Triggers | handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, **sync_payment_status** |
+| Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member |
+| Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
 | Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
@@ -96,7 +96,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (~90 arquivos em src/)
+### 3.4 Código Fonte (90 arquivos em src/, 12 testes, 17.368 linhas)
 
 ```
 src/
@@ -112,7 +112,7 @@ src/
 │   ├── rpc-schemas.test.ts
 │   ├── rpc-schemas-extended.test.ts   # 17 schemas restantes (assets, centers, indices, workflows, dashboard)
 │   ├── transaction-hooks.test.tsx
-│   └── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate
+│   └── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
 ├── app/
 │   ├── (app)/                    # Rotas autenticadas (18 páginas)
 │   │   ├── accounts/page.tsx
@@ -121,7 +121,7 @@ src/
 │   │   ├── budgets/page.tsx
 │   │   ├── categories/page.tsx
 │   │   ├── chart-of-accounts/page.tsx
-│   │   ├── connections/page.tsx   # Wizard decomposto em 5 componentes
+│   │   ├── connections/page.tsx   # 3 abas: Importar + Conciliação + Conexões
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
 │   │   ├── family/page.tsx
@@ -130,7 +130,7 @@ src/
 │   │   ├── tax/page.tsx
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
-│   │   └── layout.tsx            # Sidebar (lógica auth extraída para useAuthInit)
+│   │   └── layout.tsx            # Sidebar, auth, offline banner, SW cache cleanup on logout
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
@@ -168,12 +168,20 @@ src/
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
 │   │   └── transaction-engine.ts
 │   ├── supabase/ (client.ts, server.ts)
-│   ├── utils/index.ts
+│   ├── utils/index.ts            # cn, formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
-├── middleware.ts                  # Root redirect, auth check, session refresh
-└── types/database.ts             # 26 tables, 34 functions, 24 enums (migration 027 incluída)
+├── middleware.ts                  # Rate limit, session refresh, route protection, Server-Timing
+└── types/database.ts             # 25 tables, 37 functions, 25 enums (migration 030)
 ```
+
+**Arquivos fora de `src/`:**
+- `public/sw.js` - Service Worker v2 (cache apenas estáticos imutáveis, limpeza no logout)
+- `public/manifest.json` - PWA manifest
+- `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
+- `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
+- `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
+- `supabase/migrations/` - 33 SQL files (001 a 030, ~5.600 linhas)
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -668,7 +676,7 @@ Itens não autorizados e motivos:
 **Pacotes 2 e 3 (executados por Claude):**
 
 - Pacote 2 (WEA-009): Testes SQL executados no Supabase. Corrigido `account_nature` → `group_type`. 4/4 cenários passaram
-- Pacote 3: `database.ts` regenerado via `Supabase:generate_typescript_types`. 26 tabelas, 34 functions, 24 enums. 12 erros `null` vs `undefined` corrigidos em 4 arquivos
+- Pacote 3: `database.ts` regenerado via `Supabase:generate_typescript_types`. Atualizado novamente nas sessões subsequentes (mais recente: migration 030)
 
 **Estado final dos testes:**
 - 11 suítes, 122 testes, todos passando
@@ -969,6 +977,29 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 | OCR real (WKF-03, Apple Vision + Tesseract.js, **+PDF**) | 4-6h |
 | Capacitor iOS build + teste (A1502 com Xcode 14.2) | 2h |
 | Submissão App Store (Mac com Apple Silicon emprestado) | 2h |
+
+**Alternativa sem Mac:** Xcode Cloud (25h grátis/mês) para build + TestFlight + submit via App Store Connect (acessível do iPad). Requer Apple Developer Account (US$ 99/ano) + configuração inicial do .xcodeproj (pode ser feita via GitHub Actions macOS runner).
+
+**Commits desta sessão (14/03/2026, 16 commits):**
+
+| Commit | Escopo |
+|---|---|
+| 4788b11 | HANDOVER (sessão anterior, incluído no repo) |
+| 7b5fa1f | test: 46 → 122 (4 suítes novas) |
+| 7e48af6 | docs: HANDOVER testes |
+| 06eedc0 | feat: conciliação bancária Camadas 1+2 |
+| 7ffccf7 | feat: conciliação UI Camada 3 |
+| 7037527 | docs: HANDOVER reconciliação |
+| b89e124 | feat: CFG-01/02/03/05 (perfil, senha, moeda, export) |
+| e193f02 | feat: CFG-06 (pg_cron account deletion) |
+| ed0ca63 | docs: HANDOVER CFG |
+| 9e3407b | test: dialog helpers (12 suítes, 135 testes) |
+| 04498b8 | feat: CFG-07 (Service Worker v1 + offline) |
+| 6f681cc | docs: HANDOVER CFG-07 |
+| 07e6a0c | docs: HANDOVER contagem reconciliada 87/90 |
+| 69d8b46 | fix: search_path (Gemini audit) + docs |
+| 222f8db | fix: 5 achados ChatGPT (redirectTo, SW v2, budget, callback) |
+| ce9847a | docs: HANDOVER final dual audit |
 
 ---
 
