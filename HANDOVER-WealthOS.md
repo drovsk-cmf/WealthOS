@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 11 de março de 2026
+**Data:** 14 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
@@ -66,7 +66,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Functions (total) | 39 (29 RPCs + 6 trigger functions + 4 cron wrappers) |
 | Triggers | 19 |
 | ENUMs | 24 |
-| Migrations aplicadas | 38 partes em 25 versões (001 a 025) |
+| Migrations aplicadas | 39 partes em 26 versões (001 a 026) |
 | pg_cron jobs | 4 (workflow tasks diário, depreciação mensal, balance check semanal, **índices diário**) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -95,10 +95,18 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Import | import_transactions_batch, auto_categorize_transaction |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC / 03h BRT) |
 
-### 3.4 Código Fonte (77 arquivos em src/)
+### 3.4 Código Fonte (~90 arquivos em src/)
 
 ```
 src/
+├── __tests__/                    # 7 suítes de teste (Jest + RTL)
+│   ├── auth-validation.test.ts
+│   ├── onboarding-seeds.test.ts
+│   ├── parsers.test.ts
+│   ├── read-hooks.test.tsx
+│   ├── rpc-auto-categorize-schema.test.ts
+│   ├── rpc-schemas.test.ts
+│   └── transaction-hooks.test.tsx
 ├── app/
 │   ├── (app)/                    # Rotas autenticadas (16 páginas)
 │   │   ├── accounts/page.tsx
@@ -107,6 +115,7 @@ src/
 │   │   ├── budgets/page.tsx
 │   │   ├── categories/page.tsx
 │   │   ├── chart-of-accounts/page.tsx
+│   │   ├── connections/page.tsx   # Wizard decomposto em 5 componentes
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
 │   │   ├── family/page.tsx
@@ -115,7 +124,7 @@ src/
 │   │   ├── tax/page.tsx
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
-│   │   └── layout.tsx            # Sidebar com 15 links
+│   │   └── layout.tsx            # Sidebar (lógica auth extraída para useAuthInit)
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
@@ -124,11 +133,17 @@ src/
 │   │   ├── auth/callback/route.ts
 │   │   └── indices/fetch/route.ts  # Coleta BCB SGS
 │   └── layout.tsx, globals.css
-├── components/                   # 14 componentes (.tsx) + 1 index
+├── components/
 │   ├── accounts/account-form.tsx
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
 │   ├── categories/category-form.tsx
+│   ├── connections/              # Wizard de importação decomposto (WEA-013)
+│   │   ├── import-wizard.tsx
+│   │   ├── import-step-upload.tsx
+│   │   ├── import-step-mapping.tsx
+│   │   ├── import-step-preview.tsx
+│   │   └── import-step-result.tsx
 │   ├── dashboard/ (8 componentes + index.ts)
 │   ├── recurrences/recurrence-form.tsx
 │   └── transactions/transaction-form.tsx
@@ -136,18 +151,21 @@ src/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (15 hooks: accounts, assets, bank-connections, budgets, categories,
-│   │          chart-of-accounts, cost-centers, dashboard, dialog-helpers,
+│   ├── hooks/ (16 hooks: accounts, assets, auth-init, bank-connections, budgets,
+│   │          categories, chart-of-accounts, cost-centers, dashboard, dialog-helpers,
 │   │          economic-indices, family-members, fiscal, recurrences, transactions,
 │   │          workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── services/transaction-engine.ts
+│   ├── schemas/rpc.ts            # Schemas Zod para 9 RPCs (WEA-002)
+│   ├── services/
+│   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
+│   │   └── transaction-engine.ts
 │   ├── supabase/ (client.ts, server.ts)
 │   ├── utils/index.ts
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
 ├── middleware.ts                  # Root redirect, auth check, session refresh
-└── types/database.ts             # 25 tables, 38 functions, 24 enums typed
+└── types/database.ts             # 26 tables, 34 functions, 24 enums (regenerado via MCP)
 ```
 
 ### 3.5 Design System "Plum Ledger"
@@ -279,7 +297,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 - Estratégia mobile Capacitor vs SSR: resolver na Fase 10 com `server.url`
 - Biometria stub retorna true: isolado, Fase 10
 - ~~Rebranding WealthOS → Oniefy: FEITO (commit 4ea3524)~~
-- Cobertura de testes: expandir na Fase 10
+- ~~Cobertura de testes: FEITO (7 suítes, 46 testes, Jest + RTL)~~
 
 ---
 
@@ -294,9 +312,9 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
 | Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
 | Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
-| Testes | Jest + React Testing Library, cobertura mínima |
+| ~~Testes~~ | FEITO: Jest + RTL configurados. 7 suítes, 46 testes (schemas Zod, parsers, hooks leitura/mutação, auth validation, onboarding seeds). Testes SQL: 4 cenários executados no Supabase (transação, transferência ativo-ativo, ativo-passivo, journal desbalanceado). |
 | ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
-| Logo + icons | Em andamento: conceito Penrose Ribbon aprovado, SVGs em iteração. Maze Cube tentada e revertida (847549e → 74e837d). Quando pronto: integrar favicon, PWA icons (192/512), app icon (1024), marca em `public/brand/`. Componente logo.tsx precisa ser recriado. |
+| ~~Logo + icons~~ | FEITO: Penrose Ribbon integrado. 6 SVGs transparentes (lockup-h/v, logomark, plum/bone) + OG PNG. Favicon, apple-touch-icon, PWA icons substituídos. next/image com unoptimized. Dark mode via dark:hidden/dark:block. Login: lockup-v. Sidebar/mobile: lockup-h. |
 | ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
 | ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
 | ~~Redirect raiz~~ | CORRIGIDO anteriormente |
@@ -573,33 +591,126 @@ Uma sessão anterior tentou integrar um conceito de logo "Maze Cube" com tipogra
 
 ---
 
+## 11f. Sessão 14/03/2026 - Logo + Tagline + Auditoria Codex + Testes + Estabilização
+
+**Logo Penrose Ribbon integrada (commit dbb5bb6):**
+
+Assets fornecidos pelo Claudio (zip com brand kit completo). Integração via `next/image` com `unoptimized` (sem SVG inline, lição do Maze Cube):
+- 6 SVGs transparentes em `public/brand/`: lockup-h (plum/bone), lockup-v (plum/bone), logomark (plum/bone)
+- OG image: `og-plum-bone-1200x630.png` (1200x630)
+- Favicon.ico: multi-size 16x16 + 32x32 (gerado via Pillow)
+- apple-touch-icon: 180x180, PWA icons: 192x192 + 512x512
+- manifest.json: `purpose: "any maskable"`
+- Dark mode: variantes plum/bone com `dark:hidden` / `hidden dark:block`
+- Login: lockup-v (h-40), Register: lockup-h (h-10), Onboarding: lockup-v (h-40)
+- Sidebar desktop: lockup-h (h-8), Header mobile: lockup-h (h-7)
+- Metadata: apple-touch-icon + OG image configurados no root layout
+
+**Tagline oficial (commit 73e59c3):**
+
+"Any asset, one clear view." adotada como tagline oficial em inglês. Tagline PT-BR em aberto. Removida "Patrimônio em campo de visão." de todos os locais (manifest, meta description, login, HANDOVER). Commit 73e59c3.
+
+**Etimologia do nome (commit d8d4d54):**
+
+Documentada na seção 1 do HANDOVER: PIE *oi-no- ("one", "any", "unique") + latim -fy (facere, "construir").
+
+**Auditoria técnica por Codex (13/03/2026):**
+
+Codex executou auditoria profunda do código. 18 achados (WEA-001 a WEA-018). Documento da auditoria commitado em `docs/AUDITORIA-TECNICA-WEALTHOS-2026-03-13.md`.
+
+Triagem Claude + Claudio: 11 autorizados, 7 rejeitados. Ordem de execução formal criada com spec por item (escopo permitido/proibido, critério de aceite, validação obrigatória). Documento em `resposta-auditoria-codex.md`.
+
+Itens não autorizados e motivos:
+- WEA-001 (credenciais em docs): repo privado, anon key pública por design
+- WEA-004 (biometria stub): requer Mac, planejado para fase iOS
+- WEA-006 (build sem env): comportamento esperado, CI tem as variáveis
+- WEA-007 (CSP unsafe): requerido por Next.js dev + Tailwind/shadcn
+- WEA-012 (endpoint índices): single-user, já corrigido em S7
+- WEA-017 (rate limit in-memory): localhost, Redis injustificado
+- WEA-018 (boundaries frontend): depende de Zod + testes, futuro
+
+**Correções do Codex (branch work, commit único e68ef91):**
+
+11 itens implementados pelo Codex em commit único (violou política de 1 commit por WEA). Merge feito por Claude com resolução de conflitos e correções:
+
+| WEA | Correção | Status |
+|---|---|---|
+| WEA-014 | `clearEncryptionKey()` antes de `signOut()` no session timeout | OK |
+| WEA-015 | Variável `_budgetMonths` removida | OK |
+| WEA-016 | `metadataBase` adicionado ao root layout | OK |
+| WEA-003 | Onboarding seed validation: 3 RPCs devem suceder antes de `onboarding_completed` | OK (corrigido por Claude: extraído para `src/lib/services/onboarding-seeds.ts` porque App Router proíbe exports extras em page.tsx) |
+| WEA-002 | Schemas Zod para 8 RPCs: dashboard_summary, balance_sheet, solvency_metrics, fiscal_report, fiscal_projection, transaction_result, transfer_result, import_batch_result. `safeParse` em todos, fallbacks granulares | OK |
+| WEA-010 | Migration 026: `create_transfer_with_journal` inverte D/C para passivos (credit_card, loan, financing) | OK (aplicada via MCP) |
+| WEA-008 | Jest + RTL configurados. 10 testes iniciais (schemas, onboarding, hooks mutação) | OK (corrigido por Claude: import path do onboarding-seeds) |
+| WEA-009 | Testes SQL reescritos sem UUID fixo | OK (corrigido por Claude: `account_nature` → `group_type`, executado no Supabase: 4/4) |
+| WEA-005 | `useAuthInit()` extraído do layout para `src/lib/hooks/use-auth-init.ts` | OK |
+| WEA-011 | README reescrito com arquitetura real | OK (corrigido por Claude: Next.js 14 → 15) |
+| WEA-013 | Connections page decomposta: 5 componentes em `src/components/connections/` (530 → 220 linhas) | OK |
+
+**Pacote 1 Codex (testes expandidos):**
+
+36 testes novos adicionados pelo Codex (branch work, 4 commits separados):
+- `test(parsers)`: csv/ofx/xlsx com fixtures simuladas (14 tests)
+- `test(hooks)`: useAccounts/useCategories/useBudgets sucesso + erro (6 tests)
+- `test(auth-validation)`: loginSchema/registerSchema (10 tests)
+- `test(rpc-schema)`: autoCategorizeTransactionSchema (4 tests)
+- Novo schema: `autoCategorizeTransactionSchema` em `src/lib/schemas/rpc.ts`
+- `jest.setup.ts`: polyfill crypto para jsdom
+- Merge por Claude com 3 conflitos resolvidos + mesma regressão do onboarding-seeds corrigida novamente
+
+**Pacotes 2 e 3 (executados por Claude):**
+
+- Pacote 2 (WEA-009): Testes SQL executados no Supabase. Corrigido `account_nature` → `group_type`. 4/4 cenários passaram
+- Pacote 3: `database.ts` regenerado via `Supabase:generate_typescript_types`. 26 tabelas, 34 functions, 24 enums. 12 erros `null` vs `undefined` corrigidos em 4 arquivos
+
+**Estado final dos testes:**
+- 7 suítes, 46 testes, todos passando
+- Testes SQL: 4 cenários executados no Supabase
+- CI: 3/3 jobs verdes (Security, Lint & TypeCheck, Build)
+
+**Modelo operacional Claude + Codex validado:**
+
+1. Claude analisa, produz ordem de execução com spec detalhada
+2. Claudio envia ao Codex
+3. Codex executa em branch separada
+4. Claude revisa, corrige, valida e faz merge + aplica migrations
+
+Problemas recorrentes do Codex: reintroduz bugs já corrigidos (trabalha sobre snapshot sem consciência de correções posteriores), não segue política de commits, não entrega relatório final.
+
+**Commits desta sessão (14/03/2026):**
+74e837d (revert Maze Cube), 4d5c251 (HANDOVER 11e), dbb5bb6 (logo Penrose Ribbon), 73e59c3 (tagline), d8d4d54 (etimologia), e68ef91 (Codex auditoria), a5f093f (fix onboarding-seeds), 7aee0ca (merge Pacote 1 Codex), 9bd7991 (pacotes 2+3), 0798e29 (README fix)
+
+---
+
 ## 12. Próximos Passos
 
 **Fazível remotamente (próxima sessão Claude):**
 
 | Item | Esforço |
 |---|---|
-| Testes Jest + React Testing Library (cobertura mínima) | 1-2 dias |
-| Logo: integrar SVGs definitivos ao projeto (aguardando assets finais do Claudio; Maze Cube revertida) | 1-2h |
 | UX médios: drag-and-drop no upload, feedback loading em mutations, ícone desativar conta (lixeira → archive) | 2-3h |
 | Conciliação bancária (3 camadas) | 1-2 dias |
 | Orçamento delegado por membro | 4-6h |
+| Expandir schemas Zod para RPCs restantes (22 `as unknown as` remanescentes em hooks fora do escopo WEA-002) | 2-3h |
+| Expandir cobertura de testes (alvo: 80+ test cases) | 1 dia |
 
 **Ação do Claudio (em paralelo):**
 
 | Item | Ação |
 |---|---|
-| Logo definitivo | Em andamento: conceito Penrose Ribbon aprovado, iterando SVGs com ChatGPT. Tentativa Maze Cube (commit 847549e) revertida. Briefing completo gerado. |
+| ~~Logo definitivo~~ | FEITO: Penrose Ribbon integrado (commit dbb5bb6) |
 | Leaked password protection | Requer Supabase Pro. Habilitar quando assinar: Auth > Settings > HaveIBeenPwned |
 | Validação mensal de parâmetros fiscais | IRPF, INSS, salário mínimo podem mudar por portaria/lei. Verificar periodicamente se há novas publicações no DOU. |
+| Apple Developer Account | US$ 99/ano. Necessário para submissão App Store. Claudio decidiu não assinar ainda |
 
-**Requer Mac + Xcode:**
+**Requer Mac (A1502 para dev, Mac emprestado para submit):**
 
 | Item | Esforço |
 |---|---|
 | Biometria real (Capacitor BiometricAuth) | 4-6h |
 | OCR real (WKF-03, Apple Vision + Tesseract.js, **+PDF**) | 4-6h |
-| Capacitor iOS build + teste + submissão App Store | 4h |
+| Capacitor iOS build + teste (A1502 com Xcode 14.2) | 2h |
+| Submissão App Store (Mac com Apple Silicon emprestado) | 2h |
 
 ---
 
