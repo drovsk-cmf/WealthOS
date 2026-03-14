@@ -66,7 +66,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Functions (total) | 45 (32 RPCs + 7 trigger functions + 6 cron wrappers) |
 | Triggers | 20 |
 | ENUMs | 25 |
-| Migrations aplicadas | 43 partes em 30 versões (001 a 029) |
+| Migrations aplicadas | 44 partes em 31 versões (001 a 030) |
 | pg_cron jobs | 6 (workflow tasks, depreciação, balance check, índices, overdue, **account deletions**) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -840,6 +840,36 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 ---
 
+## 11k. Sessão 14/03/2026 (continuação) - Auditoria Gemini + errata
+
+**Auditoria Gemini (2a rodada, 14/03/2026):**
+
+6 achados, nota 8.5/10. Triagem:
+
+| # | Achado | Sev. Gemini | Veredicto | Ação |
+|---|--------|-------------|-----------|------|
+| 1a | `search_path` faltando em `create_transfer_with_journal` | CRÍTICO | **Aceito (bug real)** | Migration 030 aplicada |
+| 1b | RLS para multi-user (workspaces/grupos familiares) | CRÍTICO | **Aceito para backlog** | Evolução futura |
+| 2 | Middleware vazado / Server Actions | ALTO | **Rejeitado** | Oniefy não usa Server Actions |
+| 3 | DTOs separados dos tipos do banco | MÉDIO | **Rejeitado** | 27 schemas Zod já cumprem esse papel |
+| 4 | Parsing pesado em Web Workers | MÉDIO | **Aceito** | Implementar |
+| 5 | Waterfall no Dashboard / SSR prefetch | BAIXO | **Aceito parcial** | React Query já paraleliza, mas SSR prefetch é válido |
+| 6 | Contraste e ARIA labels | BAIXO | **Aceito** | Implementar |
+
+**Errata: "O Gemini não leu o código"**
+
+Na triagem inicial, Claude afirmou que todas as functions já tinham `search_path` (corrigidas na migration 017). Claudio questionou. Verificação no `pg_proc` revelou que `create_transfer_with_journal` era `SECURITY DEFINER` sem `search_path` (regressão da migration 026 que reescreveu a function sem incluir a cláusula). O Gemini estava certo neste ponto. Corrigido com migration 030.
+
+**Errata: "Single-user by design"**
+
+Claude descartou o achado de RLS multi-user dizendo que o Oniefy era single-user. Claudio apontou a inconsistência: o projeto tem `family_members` com roles, `budgets.family_member_id`, transações atribuídas a membros. O modelo atual opera sob um `auth.uid()` (titular vê tudo), mas a premissa documentada é "escalável para 2-4 usuários". Quando membros tiverem login próprio, o RLS atual não suporta. O achado foi reclassificado de "rejeitado" para "aceito como evolução futura".
+
+**Lição:** Não rejeitar achados de auditoria sem verificar no banco. A certeza de que "já foi corrigido" precisa de evidência (`pg_proc`, não memória).
+
+**Commits:** (migration 030 no próximo commit)
+
+---
+
 ## 12. Próximos Passos
 
 **Stories restantes (3/90, todas bloqueadas por hardware):**
@@ -852,11 +882,20 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 
 **Fazível remotamente:**
 
-| Item | Esforço |
+| Item | Esforço | Origem |
+|---|---|---|
+| Web Workers para parsers CSV/OFX/XLSX | 1-2h | Gemini audit #4 |
+| ARIA labels + contraste em badges de status | 1h | Gemini audit #6 |
+| SSR prefetch no Dashboard (Hydration Boundary) | 1-2h | Gemini audit #5 |
+| Expandir testes para CFG pages (profile, export, security) | 30 min | Backlog |
+| Estratégia mobile Capacitor vs SSR (`server.url`) | 1h | Backlog |
+| IndexedDB persistence para offline (tanstack-query-persist) | 1-2h | Backlog |
+
+**Backlog futuro (não urgente):**
+
+| Item | Origem |
 |---|---|
-| Expandir testes para CFG pages (profile, export, security) | 30 min |
-| Estratégia mobile Capacitor vs SSR (`server.url`) | 1h |
-| IndexedDB persistence para offline (tanstack-query-persist) | 1-2h |
+| RLS multi-user: tabela de workspaces/grupos para login independente de membros | Gemini audit #1b |
 
 **Feito nesta sessão (consolidado):**
 - ~~Expandir testes~~ → 135 testes em 12 suítes (46 → 135, +193%)
