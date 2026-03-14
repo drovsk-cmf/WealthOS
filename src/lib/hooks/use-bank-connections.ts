@@ -8,6 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { importBatchResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 
 type BankConnection = Database["public"]["Tables"]["bank_connections"]["Row"];
 
@@ -130,13 +131,18 @@ export function useImportBatch() {
         p_transactions: JSON.stringify(transactions),
       });
       if (error) throw error;
-      return data as unknown as {
-        status: string;
-        imported: number;
-        skipped: number;
-        categorized: number;
-        batch_id: string;
-      };
+      const parsed = importBatchResultSchema.safeParse(data);
+      if (!parsed.success) {
+        logSchemaError("import_transactions_batch", parsed);
+        return {
+          status: "error",
+          imported: 0,
+          skipped: transactions.length,
+          categorized: 0,
+          batch_id: batchId,
+        };
+      }
+      return parsed.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });

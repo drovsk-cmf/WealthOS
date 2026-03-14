@@ -19,7 +19,6 @@ import {
   useBudgets,
   useDeleteBudget,
   useCopyBudgets,
-  useBudgetMonths,
   toMonthKey,
   formatMonthLabel,
 } from "@/lib/hooks/use-budgets";
@@ -65,7 +64,6 @@ export default function BudgetsPage() {
 
   // ─── Queries ───────────────────────────────────────────────
   const { data: budgets, isLoading } = useBudgets(currentMonth);
-  const { data: _budgetMonths } = useBudgetMonths();
   const deleteBudget = useDeleteBudget();
   const copyBudgets = useCopyBudgets();
 

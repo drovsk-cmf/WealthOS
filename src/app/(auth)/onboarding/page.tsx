@@ -12,6 +12,40 @@ type Step = "welcome" | "currency" | "security" | "mfa_enroll" | "mfa_verify" | 
 
 const STEPS: Step[] = ["welcome", "currency", "security", "mfa_enroll", "mfa_verify", "categories", "done"];
 
+
+export async function completeOnboardingSeeds(
+  supabase: any,
+  userId: string
+): Promise<void> {
+  const { error: catError } = await supabase.rpc("create_default_categories", {
+    p_user_id: userId,
+  });
+  if (catError) {
+    throw new Error(`Erro ao criar categorias padrão: ${catError.message}`);
+  }
+
+  const { error: coaError } = await supabase.rpc("create_default_chart_of_accounts", {
+    p_user_id: userId,
+  });
+  if (coaError) {
+    throw new Error(`Erro ao criar plano de contas padrão: ${coaError.message}`);
+  }
+
+  const { error: ccError } = await supabase.rpc("create_default_cost_center", {
+    p_user_id: userId,
+  });
+  if (ccError) {
+    throw new Error(`Erro ao criar centro de custo padrão: ${ccError.message}`);
+  }
+
+  const { error: updateError } = await supabase
+    .from("users_profile")
+    .update({ onboarding_completed: true })
+    .eq("id", userId);
+
+  if (updateError) throw new Error(updateError.message);
+}
+
 const CURRENCIES = [
   { code: "BRL", label: "Real brasileiro (R$)" },
   { code: "USD", label: "Dólar americano (US$)" },
@@ -135,37 +169,7 @@ export default function OnboardingPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // 1. Create default categories (receitas/despesas)
-      const { error: catError } = await supabase.rpc("create_default_categories", {
-        p_user_id: user.id,
-      });
-      if (catError) {
-        console.warn("[Oniefy] Category seed:", catError.message);
-      }
-
-      // 2. Create default chart of accounts (111 contas contábeis)
-      const { error: coaError } = await supabase.rpc("create_default_chart_of_accounts", {
-        p_user_id: user.id,
-      });
-      if (coaError) {
-        console.warn("[Oniefy] Chart of accounts seed:", coaError.message);
-      }
-
-      // 3. Create default cost center ("Pessoal")
-      const { error: ccError } = await supabase.rpc("create_default_cost_center", {
-        p_user_id: user.id,
-      });
-      if (ccError) {
-        console.warn("[Oniefy] Cost center seed:", ccError.message);
-      }
-
-      // Mark onboarding as completed
-      const { error: updateError } = await supabase
-        .from("users_profile")
-        .update({ onboarding_completed: true })
-        .eq("id", user.id);
-
-      if (updateError) throw new Error(updateError.message);
+      await completeOnboardingSeeds(supabase, user.id);
 
       setStep("done");
     } catch (err) {
