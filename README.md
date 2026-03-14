@@ -6,7 +6,7 @@ Sistema integrado de gestao financeira e patrimonial para uso pessoal.
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | Next.js 14 (App Router) + TypeScript |
+| Frontend | Next.js 15 (App Router) + React 19 + TypeScript |
 | UI | shadcn/ui + Tailwind CSS |
 | Backend | Supabase (PostgreSQL + Auth + RLS + Storage) |
 | Mobile | Capacitor (iOS) |
