@@ -13,7 +13,7 @@ import {
  * every Monday at 11:00 UTC (8:00 BRT).
  *
  * Auth: DIGEST_CRON_SECRET header (prevents unauthorized access).
- * Uses admin client (service_role) to access all users.
+ * Uses admin client (elevated privileges) to access all users.
  * If RESEND_API_KEY is not set, returns preview data without sending.
  */
 export async function POST(request: Request) {
