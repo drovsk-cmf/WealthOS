@@ -959,8 +959,8 @@ Itens necessários para colocar o app em produção na web (sem iOS).
 | # | Item | Esforço | Status |
 |---|---|---|---|
 | Q1 | ~~Expandir testes: CFG pages (profile, export, security)~~ | ~~30 min~~ | FEITO (19 testes: settings index, data export, toCsv) |
-| Q2 | Lighthouse audit + correções (performance, SEO, a11y score) | 1-2h | Não iniciado |
-| Q3 | Proxy server-side para login (corrige rate limiter real) | 2h | Não iniciado |
+| Q2 | ~~Lighthouse audit + correções (performance, SEO, a11y score)~~ | ~~1-2h~~ | FEITO (commit 150aa14) |
+| Q3 | ~~Proxy server-side para login (corrige rate limiter real)~~ | ~~2h~~ | FEITO (commit 49b7b91) |
 
 ### 12.4 iOS / App Store (requer Mac)
 
@@ -1060,7 +1060,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 |---|---|---|---|---|
 | UX-H3-01 | ~~Revelação progressiva: flags de visibilidade por volume de dados~~ | Múltiplos módulos | ~~Médio~~ | FEITO (commit f6cefec) |
 | UX-H3-02 | ~~Trigger fiscal por dado (>=10 tx tributáveis → "Ver impacto fiscal?")~~ | Motor narrativo + tax/page.tsx | ~~Baixo~~ | FEITO (commit f6cefec) |
-| UX-H3-03 | E-mail resumo semanal (segunda 8h, gastos + top 3 + pendências) | Edge Function nova + template | Médio | Não iniciado |
+| UX-H3-03 | ~~E-mail resumo semanal (segunda 8h, gastos + top 3 + pendências)~~ | Edge Function nova + template | ~~Médio~~ | FEITO (commit 1d31391) |
 | UX-H3-04 | ~~Dashboard interno de métricas (/settings/analytics)~~ | Página nova | ~~Médio~~ | FEITO (commit f6cefec) |
 | UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Ação Claudio, sem código | Baixo | Não iniciado |
 
@@ -1173,7 +1173,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ## 15. Sessão 15/03/2026 (cont.) - H1 UX Final + P2 CSP + H2 UX
 
-6 commits, CI 3/3 verde em todos.
+9 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
@@ -1183,6 +1183,9 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | c7c2275 | feat: UX-H2-03 narrative engine P1-P3 + UX-H2-06 confirmed/estimated indicator |
 | 64f2117 | feat: UX-H2-04 confidence badges + UX-H2-05 undo import batch |
 | f6cefec | feat: UX-H3-01 progressive disclosure + UX-H3-02 fiscal trigger + UX-H3-04 analytics dashboard |
+| 150aa14 | fix: Q2 Lighthouse audit (153 button types, a11y, robots.txt, skip-to-content) |
+| 49b7b91 | feat: Q3 server-side login proxy with real rate limiting |
+| 1d31391 | feat: UX-H3-03 weekly digest email (RPC + template + API routes) |
 
 **Entregas consolidadas:**
 
@@ -1266,9 +1269,33 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 **H3 UX: 3/5 itens FEITOS (H3-03 email semanal requer Edge Function, H3-05 teste de corredor é ação Claudio)**
 
+**Q2: Lighthouse audit**
+- 153 buttons: adicionado type="button" explícito (previne submit acidental)
+- Skip-to-content link no app layout (navegação por teclado)
+- aria-label no botão hamburger e inputs de data sem label
+- id="main-content" no elemento main
+- robots.txt (Disallow all exceto /privacy)
+
+**Q3: Server-side login proxy**
+- Nova API route POST /api/auth/login (signInWithPassword server-side)
+- Rate limiter aplicado server-side (5 tentativas / 15 min por IP)
+- 429 response com retryAfterSeconds
+- Login page atualizada: chama API route em vez de SDK direto
+- GoTrue built-in rate limiting permanece como camada secundária
+
+**UX-H3-03: E-mail resumo semanal**
+- Migration 033: RPC get_weekly_digest (semana anterior Mon-Sun, income, expense, top 3 categories, pending, uncategorized)
+- Template HTML inline CSS, responsivo, cores Plum Ledger (summary row, net result, top categories table, alert badges, CTA)
+- POST /api/digest/send: endpoint de cron, admin client, itera todos usuários, envia via Resend API (preview_only sem RESEND_API_KEY). Protegido por DIGEST_CRON_SECRET.
+- GET /api/digest/preview: preview autenticado, renderiza digest do usuário logado como HTML
+- Env vars para produção: RESEND_API_KEY, DIGEST_CRON_SECRET, SUPABASE_SERVICE_ROLE_KEY
+
+**H3 UX: 4/5 itens FEITOS. Apenas H3-05 (teste de corredor) é ação Claudio.**
+**Q: 2/2 itens de qualidade FEITOS.**
+
 **Testes:** 171 (sem alteração), 13 suítes
-**Migration:** 032_category_source_and_undo_import (1 enum, 1 coluna, 1 RPC, backfill)
-**Totais atualizados:** 26 tabelas, 86 RLS, 47 functions (34 RPCs + 7 triggers + 6 cron), 26 ENUMs, 35 migrations, 107 arquivos src/, ~20.500 linhas
+**Migrations:** 032 (category_source + undo_import) + 033 (weekly_digest_rpc)
+**Totais atualizados:** 26 tabelas, 86 RLS, 48 functions (36 RPCs + 6 trigger + 6 cron), 26 ENUMs, 36 migrations, 110 arquivos src/, ~21.200 linhas
 
 ---
 
