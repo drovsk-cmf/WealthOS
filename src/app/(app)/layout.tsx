@@ -5,20 +5,11 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  LayoutDashboard,
+  Home,
   ArrowLeftRight,
   Wallet,
-  Download,
-  Tag,
-  BookOpen,
-  Target,
-  Users,
   PieChart,
-  Calendar,
   Building,
-  CheckSquare,
-  FileText,
-  TrendingUp,
   Settings,
   LogOut,
   Eye,
@@ -32,22 +23,23 @@ import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
 import { usePrivacyStore } from "@/lib/stores/privacy";
 
-const NAV_ITEMS: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+/**
+ * Navigation 5+1 (UX-H1-01)
+ * 5 primary items + Settings icon separated at bottom.
+ * Routes not in NAV_MAIN are accessible via Settings hub.
+ */
+const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Início", icon: Home },
   { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
   { href: "/accounts", label: "Contas", icon: Wallet },
-  { href: "/connections", label: "Importação", icon: Download },
-  { href: "/categories", label: "Categorias", icon: Tag },
-  { href: "/chart-of-accounts", label: "Plano de Contas", icon: BookOpen },
-  { href: "/cost-centers", label: "Centros de Custo", icon: Target },
-  { href: "/family", label: "Estrutura Familiar", icon: Users },
   { href: "/budgets", label: "Orçamento", icon: PieChart },
-  { href: "/bills", label: "Contas a Pagar", icon: Calendar },
   { href: "/assets", label: "Patrimônio", icon: Building },
-  { href: "/workflows", label: "Tarefas", icon: CheckSquare },
-  { href: "/tax", label: "Fiscal", icon: FileText },
-  { href: "/indices", label: "Índices", icon: TrendingUp },
-  { href: "/settings", label: "Configurações", icon: Settings },
+];
+
+/** Routes that belong to Settings (highlight Settings icon when active) */
+const SETTINGS_ROUTES = [
+  "/settings", "/categories", "/chart-of-accounts", "/cost-centers",
+  "/family", "/connections", "/bills", "/workflows", "/tax", "/indices",
 ];
 
 export default function AppLayout({
@@ -150,26 +142,44 @@ export default function AppLayout({
           )}
         </div>
 
-        <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-          {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav className="flex flex-1 flex-col overflow-y-auto p-4">
+          <div className="flex-1 space-y-1">
+            {NAV_MAIN.map((item) => {
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Settings - separated at bottom */}
+          <div className="border-t pt-3">
+            <Link
+              href="/settings"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                SETTINGS_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"))
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+              }`}
+            >
+              <Settings className="h-4 w-4 flex-shrink-0" />
+              Configurações
+            </Link>
+          </div>
         </nav>
       </aside>
 

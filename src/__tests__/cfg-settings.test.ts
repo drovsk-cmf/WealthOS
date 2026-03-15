@@ -6,36 +6,90 @@
 // ─── Settings index: section config ──────────────────────
 
 describe("Settings index", () => {
-  const SETTINGS_SECTIONS = [
-    { href: "/settings/profile", label: "Perfil", ready: true },
-    { href: "/settings/security", label: "Segurança", ready: true },
-    { href: "/settings/data", label: "Dados e Privacidade", ready: true },
-    { href: "#", label: "Notificações", ready: false },
+  // Mirrors SETTINGS_GROUPS from settings/page.tsx (UX-H1-01: 5 subcategories)
+  const SETTINGS_GROUPS = [
+    {
+      title: "Pessoal",
+      items: [
+        { href: "/settings/profile", label: "Perfil", ready: true },
+        { href: "#", label: "Notificações", ready: false },
+      ],
+    },
+    {
+      title: "Estrutura e Cadastros",
+      items: [
+        { href: "/categories", label: "Categorias", ready: true },
+        { href: "/cost-centers", label: "Centros de Custo", ready: true },
+        { href: "/family", label: "Estrutura Familiar", ready: true },
+      ],
+    },
+    {
+      title: "Dados e Importação",
+      items: [
+        { href: "/connections", label: "Importação", ready: true },
+        { href: "/settings/data", label: "Dados e Privacidade", ready: true },
+        { href: "/bills", label: "Contas a Pagar", ready: true },
+      ],
+    },
+    {
+      title: "Avançado",
+      items: [
+        { href: "/chart-of-accounts", label: "Plano de Contas", ready: true },
+        { href: "/indices", label: "Índices Econômicos", ready: true },
+        { href: "/tax", label: "Fiscal", ready: true },
+        { href: "/workflows", label: "Tarefas", ready: true },
+      ],
+    },
+    {
+      title: "Segurança",
+      items: [
+        { href: "/settings/security", label: "Segurança", ready: true },
+      ],
+    },
   ];
 
-  it("has exactly 4 sections", () => {
-    expect(SETTINGS_SECTIONS).toHaveLength(4);
+  const allItems = SETTINGS_GROUPS.flatMap((g) => g.items);
+
+  it("has exactly 5 groups", () => {
+    expect(SETTINGS_GROUPS).toHaveLength(5);
   });
 
-  it("all ready sections have valid hrefs (not #)", () => {
-    const ready = SETTINGS_SECTIONS.filter((s) => s.ready);
+  it("has 13 total items across all groups", () => {
+    expect(allItems).toHaveLength(13);
+  });
+
+  it("all ready items have valid hrefs (not #)", () => {
+    const ready = allItems.filter((s) => s.ready);
     ready.forEach((s) => {
       expect(s.href).not.toBe("#");
-      expect(s.href).toMatch(/^\/settings\//);
+      expect(s.href).toMatch(/^\//);
     });
   });
 
-  it("disabled sections have href #", () => {
-    const disabled = SETTINGS_SECTIONS.filter((s) => !s.ready);
+  it("disabled items have href #", () => {
+    const disabled = allItems.filter((s) => !s.ready);
     disabled.forEach((s) => {
       expect(s.href).toBe("#");
     });
   });
 
-  it("Notificações is the only disabled section", () => {
-    const disabled = SETTINGS_SECTIONS.filter((s) => !s.ready);
+  it("Notificações is the only disabled item", () => {
+    const disabled = allItems.filter((s) => !s.ready);
     expect(disabled).toHaveLength(1);
     expect(disabled[0].label).toBe("Notificações");
+  });
+
+  it("moved routes are accessible via Settings groups", () => {
+    const hrefs = allItems.map((i) => i.href);
+    expect(hrefs).toContain("/categories");
+    expect(hrefs).toContain("/cost-centers");
+    expect(hrefs).toContain("/family");
+    expect(hrefs).toContain("/connections");
+    expect(hrefs).toContain("/chart-of-accounts");
+    expect(hrefs).toContain("/indices");
+    expect(hrefs).toContain("/tax");
+    expect(hrefs).toContain("/workflows");
+    expect(hrefs).toContain("/bills");
   });
 });
 
