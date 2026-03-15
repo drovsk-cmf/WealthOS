@@ -33,9 +33,13 @@ export function useCostCenters() {
   return useQuery({
     queryKey: ["cost_centers"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("cost_centers")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("is_default", { ascending: false })
         .order("name", { ascending: true });
@@ -76,10 +80,14 @@ export function useUpdateCostCenter() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: CostCenterUpdate & { id: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("cost_centers")
         .update(updates)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -98,11 +106,15 @@ export function useDeleteCostCenter() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // RLS policy blocks delete of is_default=true
       const { error } = await supabase
         .from("cost_centers")
         .update({ is_active: false })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },

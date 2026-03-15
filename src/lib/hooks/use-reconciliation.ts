@@ -37,12 +37,16 @@ export function useUnmatchedImports(accountId?: string) {
   return useQuery({
     queryKey: ["reconciliation", "imports", accountId],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("transactions")
         .select(`
           id, description, amount, date, type, payment_status, account_id, source,
           accounts!inner(name)
         `)
+        .eq("user_id", user.id)
         .eq("is_deleted", false)
         .eq("payment_status", "paid")
         .is("matched_transaction_id", null)
@@ -83,6 +87,9 @@ export function usePendingUnmatched(accountId?: string) {
   return useQuery({
     queryKey: ["reconciliation", "pending", accountId],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("transactions")
         .select(`
@@ -90,6 +97,7 @@ export function usePendingUnmatched(accountId?: string) {
           accounts!inner(name),
           categories(name)
         `)
+        .eq("user_id", user.id)
         .eq("is_deleted", false)
         .in("payment_status", ["pending", "overdue"])
         .is("matched_transaction_id", null)

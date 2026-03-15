@@ -41,9 +41,13 @@ export function useCategories(type?: CategoryType) {
   return useQuery({
     queryKey: ["categories", type ?? "all"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("categories")
         .select("*")
+        .eq("user_id", user.id)
         .order("type", { ascending: true })
         .order("name", { ascending: true });
 
@@ -92,10 +96,14 @@ export function useUpdateCategory() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: CategoryUpdate & { id: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("categories")
         .update(updates)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -114,10 +122,14 @@ export function useDeleteCategory() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("categories")
         .delete()
         .eq("id", id)
+        .eq("user_id", user.id)
         .eq("is_system", false); // Safety: can't delete system categories
 
       if (error) throw error;

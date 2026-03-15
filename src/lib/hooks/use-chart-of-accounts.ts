@@ -52,9 +52,13 @@ export function useChartOfAccounts() {
   return useQuery({
     queryKey: ["chart_of_accounts"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("chart_of_accounts")
         .select("*")
+        .eq("user_id", user.id)
         .order("sort_order", { ascending: true })
         .order("internal_code", { ascending: true });
 
@@ -73,10 +77,14 @@ export function useToggleAccountActive() {
 
   return useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("chart_of_accounts")
         .update({ is_active })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },

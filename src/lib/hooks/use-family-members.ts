@@ -46,9 +46,13 @@ export function useFamilyMembers() {
   return useQuery({
     queryKey: ["family_members"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("family_members")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("created_at", { ascending: true });
 
@@ -109,10 +113,14 @@ export function useUpdateFamilyMember() {
       id,
       ...updates
     }: Partial<Pick<FamilyMember, "name" | "relationship" | "role" | "birth_date" | "is_tax_dependent" | "avatar_emoji">> & { id: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("family_members")
         .update(updates)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -141,18 +149,23 @@ export function useDeactivateFamilyMember() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // Get member to find linked cost center
       const { data: member } = await supabase
         .from("family_members")
         .select("cost_center_id")
         .eq("id", id)
+        .eq("user_id", user.id)
         .single();
 
       // Deactivate member
       const { error } = await supabase
         .from("family_members")
         .update({ is_active: false })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) throw error;
 

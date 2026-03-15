@@ -96,6 +96,9 @@ export function useBudgets(month?: string, familyMemberId?: string | null) {
   return useQuery({
     queryKey: ["budgets", monthKey, familyMemberId],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("budgets")
         .select(
@@ -104,6 +107,7 @@ export function useBudgets(month?: string, familyMemberId?: string | null) {
           categories!inner(name, icon, color, type)
         `
         )
+        .eq("user_id", user.id)
         .eq("month", monthKey)
         .order("planned_amount", { ascending: false });
 
@@ -134,10 +138,14 @@ export function useBudget(id: string | null) {
     queryKey: ["budgets", "detail", id],
     enabled: !!id,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("budgets")
         .select("*, categories!inner(name, icon, color)")
         .eq("id", id!)
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
@@ -153,9 +161,13 @@ export function useBudgetMonths() {
   return useQuery({
     queryKey: ["budgets", "months"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("budgets")
         .select("month")
+        .eq("user_id", user.id)
         .order("month", { ascending: false });
 
       if (error) throw error;
@@ -236,6 +248,9 @@ export function useUpdateBudget() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: UpdateBudgetInput) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const payload: BudgetUpdate = {};
       if (updates.planned_amount !== undefined)
         payload.planned_amount = updates.planned_amount;
@@ -253,6 +268,7 @@ export function useUpdateBudget() {
         .from("budgets")
         .update(payload)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
@@ -275,7 +291,10 @@ export function useDeleteBudget() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("budgets").delete().eq("id", id);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { error } = await supabase.from("budgets").delete().eq("id", id).eq("user_id", user.id);
 
       if (error) throw error;
     },

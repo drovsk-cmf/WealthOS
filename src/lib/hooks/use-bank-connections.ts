@@ -34,9 +34,13 @@ export function useBankConnections() {
   return useQuery({
     queryKey: ["bank_connections"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("bank_connections")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("institution_name", { ascending: true });
       if (error) throw error;
@@ -84,10 +88,14 @@ export function useDeactivateBankConnection() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("bank_connections")
         .update({ is_active: false, updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
       if (error) throw error;
     },
     onSuccess: () => {
