@@ -47,7 +47,7 @@ function buildCsp(nonce: string): string {
   // Nonce available via x-nonce header for future strict-dynamic upgrade.
   const scriptSrc = isDev
     ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-    : `script-src 'self' 'unsafe-inline' 'nonce-${nonce}'`;
+    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
 
   // style-src: unsafe-inline needed for Tailwind inline style attributes
   const styleSrc = "style-src 'self' 'unsafe-inline'";
@@ -212,7 +212,6 @@ export async function middleware(request: NextRequest) {
 
   // ── CSP header (P2) ──
   supabaseResponse.headers.set("Content-Security-Policy", buildCsp(nonce));
-  supabaseResponse.headers.set("x-nonce", nonce);
 
   // Rate limit headers on auth routes (reuse result from first check)
   if (rlResultForHeaders) {

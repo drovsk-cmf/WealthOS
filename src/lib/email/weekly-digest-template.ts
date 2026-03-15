@@ -17,6 +17,14 @@ export interface WeeklyDigestData {
   user_name: string;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function formatBRL(value: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -40,7 +48,7 @@ export function buildWeeklyDigestHtml(data: WeeklyDigestData): string {
           .map(
             (c, i) =>
               `<tr>
-                <td style="padding:8px 0;border-bottom:1px solid #EDE8E0;font-size:14px;color:#241E29;">${i + 1}. ${c.category_name}</td>
+                <td style="padding:8px 0;border-bottom:1px solid #EDE8E0;font-size:14px;color:#241E29;">${i + 1}. ${escapeHtml(c.category_name)}</td>
                 <td style="padding:8px 0;border-bottom:1px solid #EDE8E0;font-size:14px;color:#C4715B;text-align:right;font-family:'JetBrains Mono',monospace;">${formatBRL(c.total)}</td>
               </tr>`
           )

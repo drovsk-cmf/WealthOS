@@ -25,10 +25,17 @@ export async function GET(request: Request) {
   const supabase = await createClient();
 
   // ─── Email confirmation / password reset (magic link) ─────
+  const VALID_OTP_TYPES = ["signup", "email", "recovery", "invite"] as const;
+  type OtpType = (typeof VALID_OTP_TYPES)[number];
+
   if (tokenHash && type) {
+    if (!VALID_OTP_TYPES.includes(type as OtpType)) {
+      return NextResponse.redirect(`${origin}/login?reason=auth_callback_failed`);
+    }
+
     const { error } = await supabase.auth.verifyOtp({
       token_hash: tokenHash,
-      type: type as "signup" | "email" | "recovery" | "invite",
+      type: type as OtpType,
     });
 
     if (error) {
