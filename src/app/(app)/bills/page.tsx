@@ -128,7 +128,7 @@ export default function BillsPage() {
             Gerencie suas despesas recorrentes
           </p>
         </div>
-        <button onClick={handleNew}
+        <button type="button" onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
           + Nova recorrência
         </button>
@@ -140,7 +140,7 @@ export default function BillsPage() {
           { key: "pending", label: "Pendentes", count: pendingBills?.length ?? 0 },
           { key: "recurrences", label: "Recorrências", count: recurrences?.length ?? 0 },
         ] as const).map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)}
+          <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}>
@@ -211,17 +211,17 @@ export default function BillsPage() {
                     {/* Pay button (CAP-05) */}
                     {confirmPay === bill.id ? (
                       <div className="flex items-center gap-1">
-                        <button onClick={() => handlePay(bill.id)} disabled={payBill.isPending}
+                        <button type="button" onClick={() => handlePay(bill.id)} disabled={payBill.isPending}
                           className="rounded-md bg-verdant px-2 py-1 text-xs font-medium text-white">
                           Confirmar
                         </button>
-                        <button onClick={() => setConfirmPay(null)}
+                        <button type="button" onClick={() => setConfirmPay(null)}
                           className="rounded-md px-2 py-1 text-xs text-muted-foreground">
                           Não
                         </button>
                       </div>
                     ) : (
-                      <button onClick={() => setConfirmPay(bill.id)}
+                      <button type="button" onClick={() => setConfirmPay(bill.id)}
                         className="rounded-md bg-verdant/15 px-3 py-1.5 text-xs font-medium text-verdant transition-colors hover:bg-verdant/20"
                         title="Marcar como paga">
                         Pagar
@@ -247,7 +247,7 @@ export default function BillsPage() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Sem recorrências cadastradas.
               </p>
-              <button onClick={handleNew}
+              <button type="button" onClick={handleNew}
                 className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
                 Nova recorrência
               </button>
@@ -285,7 +285,7 @@ export default function BillsPage() {
                         </span>
 
                         {/* Edit */}
-                        <button onClick={() => handleEdit(rec)}
+                        <button type="button" onClick={() => handleEdit(rec)}
                           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                           title="Editar">
                           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,17 +296,17 @@ export default function BillsPage() {
                         {/* Deactivate (CAP-03) */}
                         {confirmDeactivate === rec.id ? (
                           <div className="flex items-center gap-1">
-                            <button onClick={() => handleDeactivate(rec.id)} disabled={deactivateRecurrence.isPending}
+                            <button type="button" onClick={() => handleDeactivate(rec.id)} disabled={deactivateRecurrence.isPending}
                               className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
                               Encerrar
                             </button>
-                            <button onClick={() => setConfirmDeactivate(null)}
+                            <button type="button" onClick={() => setConfirmDeactivate(null)}
                               className="rounded-md px-2 py-1 text-xs text-muted-foreground">
                               Não
                             </button>
                           </div>
                         ) : (
-                          <button onClick={() => setConfirmDeactivate(rec.id)}
+                          <button type="button" onClick={() => setConfirmDeactivate(rec.id)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                             title="Encerrar recorrência">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

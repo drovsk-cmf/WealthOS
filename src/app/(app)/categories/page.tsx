@@ -61,7 +61,7 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Categorias</h1>
-        <button
+        <button type="button"
           onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
@@ -72,7 +72,7 @@ export default function CategoriesPage() {
       {/* Tabs */}
       <div className="flex gap-1 rounded-lg border bg-muted p-1">
         {(["expense", "income"] as CategoryType[]).map((t) => (
-          <button
+          <button type="button"
             key={t}
             onClick={() => setActiveTab(t)}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
@@ -95,7 +95,7 @@ export default function CategoriesPage() {
           <p className="text-sm text-muted-foreground">
             Nenhuma categoria de {activeTab === "expense" ? "despesa" : "receita"}.
           </p>
-          <button
+          <button type="button"
             onClick={handleNew}
             className="mt-3 text-sm font-medium text-primary hover:underline"
           >
@@ -137,7 +137,7 @@ export default function CategoriesPage() {
 
               {/* Actions */}
               <div className="flex gap-1">
-                <button
+                <button type="button"
                   onClick={() => handleEdit(cat)}
                   className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                   title="Editar"
@@ -151,14 +151,14 @@ export default function CategoriesPage() {
                   <>
                     {confirmDelete === cat.id ? (
                       <div className="flex items-center gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(cat.id)}
                           disabled={deleteCategory.isPending}
                           className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                         >
                           Confirmar
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => setConfirmDelete(null)}
                           className="rounded-md px-2 py-1 text-xs text-muted-foreground"
                         >
@@ -166,7 +166,7 @@ export default function CategoriesPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
+                      <button type="button"
                         onClick={() => setConfirmDelete(cat.id)}
                         className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                         title="Excluir"

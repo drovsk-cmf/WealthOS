@@ -77,7 +77,7 @@ export default function AccountsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Contas</h1>
-        <button
+        <button type="button"
           onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
@@ -122,7 +122,7 @@ export default function AccountsPage() {
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
             Cadastre suas contas bancárias, cartões de crédito e investimentos para ver saldos consolidados em tempo real. A maioria dos usuários começa com conta corrente + cartão.
           </p>
-          <button
+          <button type="button"
             onClick={handleNew}
             className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
@@ -190,7 +190,7 @@ export default function AccountsPage() {
 
               {/* Actions */}
               <div className="flex gap-1">
-                <button
+                <button type="button"
                   onClick={() => handleEdit(account)}
                   className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                   title="Editar"
@@ -201,14 +201,14 @@ export default function AccountsPage() {
                 </button>
                 {confirmDelete === account.id ? (
                   <div className="flex items-center gap-1">
-                    <button
+                    <button type="button"
                       onClick={() => handleDeactivate(account.id)}
                       disabled={deactivate.isPending}
                       className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                     >
                       Confirmar
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => setConfirmDelete(null)}
                       className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:text-foreground"
                     >
@@ -216,7 +216,7 @@ export default function AccountsPage() {
                     </button>
                   </div>
                 ) : (
-                  <button
+                  <button type="button"
                     onClick={() => setConfirmDelete(account.id)}
                     className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     title="Desativar"

@@ -94,10 +94,10 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
       {/* Period selector */}
       <div className="flex items-center gap-3 text-xs">
         <span className="text-muted-foreground">Período:</span>
-        <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
+        <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} aria-label="Data inicial"
           className="h-7 rounded border border-input bg-background px-2 text-xs" />
         <span className="text-muted-foreground">a</span>
-        <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)}
+        <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} aria-label="Data final"
           className="h-7 rounded border border-input bg-background px-2 text-xs" />
       </div>
 
@@ -151,11 +151,11 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
 
       {/* CEN-05: Export buttons */}
       <div className="flex gap-2 pt-2">
-        <button onClick={handleExportCsv} disabled={centerExport.isPending}
+        <button type="button" onClick={handleExportCsv} disabled={centerExport.isPending}
           className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
           {centerExport.isPending ? "Exportando" : "Exportar CSV"}
         </button>
-        <button onClick={handleExportJson} disabled={centerExport.isPending}
+        <button type="button" onClick={handleExportJson} disabled={centerExport.isPending}
           className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
           {centerExport.isPending ? "Exportando" : "Exportar JSON"}
         </button>
@@ -251,7 +251,7 @@ export default function CostCentersPage() {
             Clique num centro para ver o P&L.
           </p>
         </div>
-        <button onClick={handleNew}
+        <button type="button" onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
           + Novo centro
         </button>
@@ -267,7 +267,7 @@ export default function CostCentersPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             Nenhum centro de custo cadastrado.
           </p>
-          <button onClick={handleNew}
+          <button type="button" onClick={handleNew}
             className="mt-3 text-sm font-medium text-primary hover:underline">
             Criar primeiro
           </button>
@@ -305,7 +305,7 @@ export default function CostCentersPage() {
 
                   {/* Actions (stop propagation to not toggle P&L) */}
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => handleEdit(center)}
+                    <button type="button" onClick={() => handleEdit(center)}
                       className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" title="Editar">
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -316,15 +316,15 @@ export default function CostCentersPage() {
                       <>
                         {confirmDelete === center.id ? (
                           <div className="flex items-center gap-1">
-                            <button onClick={() => handleDelete(center.id)} disabled={deleteCenter.isPending}
+                            <button type="button" onClick={() => handleDelete(center.id)} disabled={deleteCenter.isPending}
                               className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
                               Confirmar
                             </button>
-                            <button onClick={() => setConfirmDelete(null)}
+                            <button type="button" onClick={() => setConfirmDelete(null)}
                               className="rounded-md px-2 py-1 text-xs text-muted-foreground">Não</button>
                           </div>
                         ) : (
-                          <button onClick={() => setConfirmDelete(center.id)}
+                          <button type="button" onClick={() => setConfirmDelete(center.id)}
                             className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive" title="Desativar">
                             <Archive className="h-4 w-4" />
                           </button>

@@ -143,7 +143,7 @@ export default function AssetsPage() {
             Bens, investimentos e ativos
           </p>
         </div>
-        <button onClick={handleNew}
+        <button type="button" onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
           + Novo bem
         </button>
@@ -215,7 +215,7 @@ export default function AssetsPage() {
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
             Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
           </p>
-          <button onClick={handleNew}
+          <button type="button" onClick={handleNew}
             className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             + Cadastrar bem
           </button>
@@ -274,21 +274,21 @@ export default function AssetsPage() {
                 {/* Action bar */}
                 <div className="flex items-center gap-1 border-t px-4 py-2">
                   {/* PAT-07: Toggle history */}
-                  <button onClick={() => setExpandedAsset(isExpanded ? null : asset.id)}
+                  <button type="button" onClick={() => setExpandedAsset(isExpanded ? null : asset.id)}
                     className="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                     {isExpanded ? "Fechar" : "Histórico"}
                   </button>
 
                   {/* PAT-05: Depreciate */}
                   {Number(asset.depreciation_rate) > 0 && (
-                    <button onClick={() => handleDepreciate(asset.id)} disabled={depreciateAsset.isPending}
+                    <button type="button" onClick={() => handleDepreciate(asset.id)} disabled={depreciateAsset.isPending}
                       className="rounded-md px-2 py-1 text-xs text-burnished transition-colors hover:bg-burnished/10">
                       Depreciar
                     </button>
                   )}
 
                   {/* PAT-02: Edit */}
-                  <button onClick={() => handleEdit(asset)}
+                  <button type="button" onClick={() => handleEdit(asset)}
                     className="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                     Editar
                   </button>
@@ -297,15 +297,15 @@ export default function AssetsPage() {
                   <div className="flex-1" />
                   {confirmDelete === asset.id ? (
                     <div className="flex items-center gap-1">
-                      <button onClick={() => handleDelete(asset.id)} disabled={deleteAsset.isPending}
+                      <button type="button" onClick={() => handleDelete(asset.id)} disabled={deleteAsset.isPending}
                         className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
                         Confirmar
                       </button>
-                      <button onClick={() => setConfirmDelete(null)}
+                      <button type="button" onClick={() => setConfirmDelete(null)}
                         className="rounded-md px-2 py-1 text-xs text-muted-foreground">Não</button>
                     </div>
                   ) : (
-                    <button onClick={() => setConfirmDelete(asset.id)}
+                    <button type="button" onClick={() => setConfirmDelete(asset.id)}
                       className="rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:text-destructive">
                       Excluir
                     </button>

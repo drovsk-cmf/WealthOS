@@ -82,7 +82,7 @@ export default function DashboardPage() {
           <p className="mt-1 text-xs text-terracotta">
             {(summary.error || balanceSheet.error || solvency.error)?.message}
           </p>
-          <button
+          <button type="button"
             onClick={() => {
               summary.refetch();
               balanceSheet.refetch();

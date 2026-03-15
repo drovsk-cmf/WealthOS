@@ -166,7 +166,7 @@ export default function BudgetsPage() {
             Controle seus gastos por categoria
           </p>
         </div>
-        <button
+        <button type="button"
           onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
@@ -178,7 +178,7 @@ export default function BudgetsPage() {
       {activeMembers.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto">
           <Users className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-          <button
+          <button type="button"
             onClick={() => setSelectedMemberId(null)}
             className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
               selectedMemberId === null
@@ -189,7 +189,7 @@ export default function BudgetsPage() {
             Lar
           </button>
           {activeMembers.map((m) => (
-            <button
+            <button type="button"
               key={m.id}
               onClick={() => setSelectedMemberId(m.id)}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -206,7 +206,7 @@ export default function BudgetsPage() {
 
       {/* Month navigator */}
       <div className="flex items-center justify-between rounded-lg border bg-card p-3">
-        <button
+        <button type="button"
           onClick={() => navigateMonth(-1)}
           className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent"
         >
@@ -226,7 +226,7 @@ export default function BudgetsPage() {
           )}
         </div>
 
-        <button
+        <button type="button"
           onClick={() => navigateMonth(1)}
           className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent"
         >
@@ -265,13 +265,13 @@ export default function BudgetsPage() {
             Defina limites de gasto por categoria para saber se o mês vai fechar no azul. Com pelo menos 1 semana de transações registradas, as sugestões ficam mais precisas.
           </p>
           <div className="mt-5 flex gap-3">
-            <button
+            <button type="button"
               onClick={handleNew}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Criar orçamento
             </button>
-            <button
+            <button type="button"
               onClick={() => setConfirmCopy(true)}
               className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
@@ -286,7 +286,7 @@ export default function BudgetsPage() {
         <div className="space-y-2">
           {/* ORC-02: Copy button when there are budgets */}
           <div className="flex justify-end">
-            <button
+            <button type="button"
               onClick={() => {
                 // Navigate to next month that has no budgets to copy into
                 const nextMonth = new Date(currentMonth + "T12:00:00");
@@ -350,7 +350,7 @@ export default function BudgetsPage() {
                     </span>
 
                     {/* Edit button */}
-                    <button
+                    <button type="button"
                       onClick={() => handleEdit(b)}
                       className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                       title="Editar"
@@ -363,14 +363,14 @@ export default function BudgetsPage() {
                     {/* Delete button (ORC-04) */}
                     {confirmDelete === b.id ? (
                       <div className="flex items-center gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleDelete(b.id)}
                           disabled={deleteBudget.isPending}
                           className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                         >
                           Sim
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => setConfirmDelete(null)}
                           className="rounded-md px-2 py-1 text-xs text-muted-foreground"
                         >
@@ -378,7 +378,7 @@ export default function BudgetsPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
+                      <button type="button"
                         onClick={() => setConfirmDelete(b.id)}
                         className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                         title="Remover"
@@ -473,13 +473,13 @@ export default function BudgetsPage() {
             )}
 
             <div className="mt-5 flex justify-end gap-3">
-              <button
+              <button type="button"
                 onClick={() => { setConfirmCopy(false); setCopyError(""); }}
                 className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
               >
                 Cancelar
               </button>
-              <button
+              <button type="button"
                 onClick={handleCopy}
                 disabled={copyBudgets.isPending}
                 className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"

@@ -56,11 +56,11 @@ function TaskAction({
     if (!showInput) {
       return (
         <div className="flex gap-1">
-          <button onClick={() => setShowInput(true)}
+          <button type="button" onClick={() => setShowInput(true)}
             className="rounded-md bg-info-slate/15 px-2.5 py-1 text-xs font-medium text-info-slate hover:bg-info-slate/20">
             Atualizar saldo
           </button>
-          <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
+          <button type="button" onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
             className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent">
             Pular
           </button>
@@ -74,7 +74,7 @@ function TaskAction({
           onChange={(e) => setBalanceValue(e.target.value)}
           placeholder="Saldo atual" autoFocus
           className="h-7 w-28 rounded border border-input bg-background px-2 text-xs" />
-        <button
+        <button type="button"
           onClick={() => {
             const val = parseFloat(balanceValue.replace(",", "."));
             if (!isNaN(val)) {
@@ -85,7 +85,7 @@ function TaskAction({
           className="rounded-md bg-verdant px-2 py-1 text-xs font-medium text-white hover:bg-verdant/80">
           OK
         </button>
-        <button onClick={() => setShowInput(false)}
+        <button type="button" onClick={() => setShowInput(false)}
           className="rounded-md px-2 py-1 text-xs text-muted-foreground">
           Cancelar
         </button>
@@ -97,13 +97,13 @@ function TaskAction({
     // WKF-03: Upload stub (full OCR in Phase 10)
     return (
       <div className="flex gap-1">
-        <button
+        <button type="button"
           onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente" })}
           disabled={isPending}
           className="rounded-md bg-verdant/15 px-2.5 py-1 text-xs font-medium text-verdant hover:bg-verdant/20">
           Concluir
         </button>
-        <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
+        <button type="button" onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
           className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent">
           Pular
         </button>
@@ -114,13 +114,13 @@ function TaskAction({
   // Generic: categorize_transactions, review_fiscal
   return (
     <div className="flex gap-1">
-      <button
+      <button type="button"
         onClick={() => onComplete(task.id, "completed")}
         disabled={isPending}
         className="rounded-md bg-verdant/15 px-2.5 py-1 text-xs font-medium text-verdant hover:bg-verdant/20">
         Concluir
       </button>
-      <button onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
+      <button type="button" onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
         className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent">
         Pular
       </button>
@@ -225,7 +225,7 @@ export default function WorkflowsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleGenerateTasks} disabled={generateTasks.isPending}
+          <button type="button" onClick={handleGenerateTasks} disabled={generateTasks.isPending}
             className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50">
             {generateTasks.isPending ? "Gerando" : "Gerar tarefas do mês"}
           </button>
@@ -247,7 +247,7 @@ export default function WorkflowsPage() {
           { key: "tasks" as const, label: "Pendentes", count: pendingCount },
           { key: "workflows" as const, label: "Workflows", count: workflows?.length ?? 0 },
         ]).map((t) => (
-          <button key={t.key} onClick={() => setTab(t.key)}
+          <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}>
@@ -320,7 +320,7 @@ export default function WorkflowsPage() {
       {tab === "workflows" && (
         <>
           <div className="flex justify-end">
-            <button onClick={() => setShowNewWorkflow(true)}
+            <button type="button" onClick={() => setShowNewWorkflow(true)}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
               + Novo workflow
             </button>
@@ -361,15 +361,15 @@ export default function WorkflowsPage() {
                   {/* Deactivate */}
                   {confirmDeactivate === wf.id ? (
                     <div className="flex items-center gap-1">
-                      <button onClick={() => handleDeactivate(wf.id)} disabled={deactivateWorkflow.isPending}
+                      <button type="button" onClick={() => handleDeactivate(wf.id)} disabled={deactivateWorkflow.isPending}
                         className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground">
                         Encerrar
                       </button>
-                      <button onClick={() => setConfirmDeactivate(null)}
+                      <button type="button" onClick={() => setConfirmDeactivate(null)}
                         className="rounded-md px-2 py-1 text-xs text-muted-foreground">Não</button>
                     </div>
                   ) : (
-                    <button onClick={() => setConfirmDeactivate(wf.id)}
+                    <button type="button" onClick={() => setConfirmDeactivate(wf.id)}
                       className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                       title="Encerrar workflow">
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

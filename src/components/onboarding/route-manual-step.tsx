@@ -129,7 +129,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
           {/* Account type selector */}
           <div className="space-y-2">
             {ACCOUNT_TYPES.map((opt) => (
-              <button
+              <button type="button"
                 key={opt.value}
                 onClick={() => {
                   setAccountType(opt.value);
@@ -173,7 +173,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
             />
           </div>
 
-          <button
+          <button type="button"
             onClick={handleCreateAccount}
             disabled={isLoading}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
@@ -207,7 +207,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
 
           {/* Type toggle */}
           <div className="flex gap-2">
-            <button
+            <button type="button"
               onClick={() => setTxType("expense")}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg border p-3 text-sm transition-colors ${
                 txType === "expense"
@@ -218,7 +218,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
               <ArrowDownRight className="h-4 w-4" />
               Despesa
             </button>
-            <button
+            <button type="button"
               onClick={() => setTxType("income")}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg border p-3 text-sm transition-colors ${
                 txType === "income"
@@ -266,7 +266,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
             />
           </div>
 
-          <button
+          <button type="button"
             onClick={handleCreateTransaction}
             disabled={isLoading || !txAmount}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
@@ -281,7 +281,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
             )}
           </button>
 
-          <button
+          <button type="button"
             onClick={handleSkipTransaction}
             className="w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
           >

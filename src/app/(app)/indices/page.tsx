@@ -155,7 +155,7 @@ export default function IndicesPage() {
             Indicadores macroeconômicos do BCB e IBGE
           </p>
         </div>
-        <button
+        <button type="button"
           onClick={() => fetchIndices.mutate()}
           disabled={fetchIndices.isPending}
           className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
@@ -188,7 +188,7 @@ export default function IndicesPage() {
             const isSelected = selectedIndices.has(idx.index_type);
 
             return (
-              <button
+              <button type="button"
                 key={idx.index_type}
                 onClick={() => toggleIndex(idx.index_type)}
                 className={`rounded-lg border p-4 text-left transition-all ${
@@ -250,7 +250,7 @@ export default function IndicesPage() {
                 : `Comparativo (${selectedIndices.size} índices)`}
             </h3>
             <div className="flex items-center gap-3">
-              <button
+              <button type="button"
                 onClick={() => setShowAccumulated(!showAccumulated)}
                 className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${
                   showAccumulated
@@ -262,7 +262,7 @@ export default function IndicesPage() {
               </button>
               <div className="flex gap-1">
                 {[6, 12, 24, 36].map((m) => (
-                  <button
+                  <button type="button"
                     key={m}
                     onClick={() => setHistoryMonths(m)}
                     className={`rounded px-2 py-0.5 text-[11px] font-medium transition-colors ${

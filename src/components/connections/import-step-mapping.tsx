@@ -21,7 +21,7 @@ export function ImportStepMapping({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Mapeamento de colunas</h2>
-        <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground">
+        <button type="button" onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground">
           Voltar
         </button>
       </div>
@@ -92,7 +92,7 @@ export function ImportStepMapping({
         </div>
       )}
 
-      <button
+      <button type="button"
         onClick={onApply}
         disabled={!mapping}
         className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"

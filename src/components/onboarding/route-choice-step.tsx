@@ -87,7 +87,7 @@ export function RouteChoiceStep({ onSelect, onSkip }: RouteChoiceStepProps) {
       </div>
 
       {/* Recommended route (dominant card) */}
-      <button
+      <button type="button"
         onClick={() => onSelect(primary.id)}
         className="group relative w-full rounded-xl border-2 border-primary bg-primary/5 p-5 text-left transition-colors hover:bg-primary/10"
       >
@@ -119,7 +119,7 @@ export function RouteChoiceStep({ onSelect, onSkip }: RouteChoiceStepProps) {
           Ou escolha outra opção:
         </p>
         {alternatives.map((route) => (
-          <button
+          <button type="button"
             key={route.id}
             onClick={() => onSelect(route.id)}
             className="group flex w-full items-center gap-3 rounded-lg border border-input p-3 text-left transition-colors hover:bg-accent"
@@ -140,7 +140,7 @@ export function RouteChoiceStep({ onSelect, onSkip }: RouteChoiceStepProps) {
       </div>
 
       {/* Skip link */}
-      <button
+      <button type="button"
         onClick={onSkip}
         className="w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
       >

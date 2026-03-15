@@ -206,7 +206,7 @@ export default function ProfileSettingsPage() {
           </div>
         </div>
 
-        <button
+        <button type="button"
           onClick={handleSaveProfile}
           disabled={saving}
           className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
@@ -261,7 +261,7 @@ export default function ProfileSettingsPage() {
           </div>
         </div>
 
-        <button
+        <button type="button"
           onClick={handleChangePassword}
           disabled={passwordSaving || !newPassword || !confirmPassword}
           className="rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"

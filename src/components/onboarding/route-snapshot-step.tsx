@@ -152,7 +152,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
             className="relative space-y-3 rounded-lg border border-input p-4"
           >
             {assets.length > 1 && (
-              <button
+              <button type="button"
                 onClick={() => removeAsset(idx)}
                 className="absolute right-2 top-2 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                 aria-label="Remover"
@@ -164,7 +164,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
             {/* Category selector */}
             <div className="flex flex-wrap gap-1.5">
               {CATEGORIES.map((cat) => (
-                <button
+                <button type="button"
                   key={cat.value}
                   onClick={() => updateAsset(idx, "category", cat.value)}
                   className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs transition-colors ${
@@ -214,7 +214,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
 
       {/* Add another */}
       {assets.length < 3 && (
-        <button
+        <button type="button"
           onClick={addAsset}
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-input p-3 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
@@ -223,7 +223,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
         </button>
       )}
 
-      <button
+      <button type="button"
         onClick={handleSave}
         disabled={saving}
         className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
@@ -238,7 +238,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
         )}
       </button>
 
-      <button
+      <button type="button"
         onClick={handleSkip}
         className="w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
       >

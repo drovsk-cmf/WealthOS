@@ -143,7 +143,7 @@ function LoginContent() {
 
       {/* OAuth buttons - Apple first per App Store guideline 4.8 */}
       <div className="space-y-3">
-        <button
+        <button type="button"
           onClick={() => handleOAuthLogin("apple")}
           disabled={loading}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-input bg-foreground px-4 py-3 text-sm font-medium text-background transition-colors hover:bg-foreground/90 disabled:opacity-50"
@@ -154,7 +154,7 @@ function LoginContent() {
           Continuar com Apple
         </button>
 
-        <button
+        <button type="button"
           onClick={() => handleOAuthLogin("google")}
           disabled={loading}
           className="flex w-full items-center justify-center gap-3 rounded-lg border border-input bg-background px-4 py-3 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"

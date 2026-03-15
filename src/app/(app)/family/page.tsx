@@ -127,7 +127,7 @@ export default function FamilyPage() {
             {members?.length || 0} membro(s). Cada membro gera automaticamente um centro de custo.
           </p>
         </div>
-        <button
+        <button type="button"
           onClick={handleNew}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
@@ -155,7 +155,7 @@ export default function FamilyPage() {
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
             Nenhum membro cadastrado. Adicione os membros da família para rastrear despesas e receitas individuais.
           </p>
-          <button
+          <button type="button"
             onClick={handleNew}
             className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
@@ -207,7 +207,7 @@ export default function FamilyPage() {
 
               {/* Actions */}
               <div className="flex gap-1">
-                <button
+                <button type="button"
                   onClick={() => handleEdit(m)}
                   className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
                   title="Editar"
@@ -218,14 +218,14 @@ export default function FamilyPage() {
                 </button>
                 {confirmDelete === m.id ? (
                   <div className="flex items-center gap-1">
-                    <button
+                    <button type="button"
                       onClick={() => handleDeactivate(m.id)}
                       disabled={deactivateMember.isPending}
                       className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                     >
                       Confirmar
                     </button>
-                    <button
+                    <button type="button"
                       onClick={() => setConfirmDelete(null)}
                       className="rounded-md px-2 py-1 text-xs text-muted-foreground"
                     >
@@ -233,7 +233,7 @@ export default function FamilyPage() {
                     </button>
                   </div>
                 ) : (
-                  <button
+                  <button type="button"
                     onClick={() => setConfirmDelete(m.id)}
                     className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                     title="Desativar"

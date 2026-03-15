@@ -84,6 +84,13 @@ export default function AppLayout({
 
   return (
     <div className="flex min-h-screen">
+      {/* Skip to content (a11y) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground"
+      >
+        Ir para conteúdo
+      </a>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -122,7 +129,7 @@ export default function AppLayout({
             <div className="mt-2 flex items-center justify-between">
               <p className="truncate text-xs text-muted-foreground">{userName}</p>
               <div className="flex items-center gap-0.5">
-                <button
+                <button type="button"
                   onClick={toggleValues}
                   className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title={valuesHidden ? "Exibir valores" : "Ocultar valores"}
@@ -130,7 +137,7 @@ export default function AppLayout({
                 >
                   {valuesHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                 </button>
-                <button
+                <button type="button"
                   onClick={handleLogout}
                   className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title="Sair"
@@ -184,12 +191,13 @@ export default function AppLayout({
       </aside>
 
       {/* Main content */}
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Mobile header */}
         <header className="flex h-16 items-center border-b px-4 lg:hidden">
-          <button
+          <button type="button"
             onClick={() => setSidebarOpen(true)}
             className="rounded-md p-2 text-muted-foreground hover:bg-accent"
+            aria-label="Abrir menu"
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

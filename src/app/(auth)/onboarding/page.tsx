@@ -289,7 +289,7 @@ export default function OnboardingPage() {
           {(step === "security" ||
             step === "mfa_enroll" ||
             step === "categories") && (
-            <button
+            <button type="button"
               onClick={() => {
                 setError(null);
                 if (step === "security") handleSecurity();
@@ -369,7 +369,7 @@ export default function OnboardingPage() {
             ))}
           </div>
 
-          <button
+          <button type="button"
             onClick={() => setStep("currency")}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
 
           <div className="space-y-2">
             {CURRENCIES.map((c) => (
-              <button
+              <button type="button"
                 key={c.code}
                 onClick={() => setCurrency(c.code)}
                 className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left text-sm transition-colors ${
@@ -416,7 +416,7 @@ export default function OnboardingPage() {
             ))}
           </div>
 
-          <button
+          <button type="button"
             onClick={handleCurrency}
             disabled={loading}
             className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
@@ -477,7 +477,7 @@ export default function OnboardingPage() {
           </div>
 
           <div className="text-center">
-            <button
+            <button type="button"
               onClick={() => setShowSecret(!showSecret)}
               className="text-xs text-primary hover:underline"
             >

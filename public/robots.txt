@@ -1,0 +1,8 @@
+# Oniefy - Private financial app, no public content to index
+User-agent: *
+Disallow: /
+
+# Allow privacy page for legal indexing
+Allow: /privacy
+
+Sitemap: https://oniefy.com/sitemap.xml

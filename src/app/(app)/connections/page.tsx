@@ -45,7 +45,7 @@ export default function ConnectionsPage() {
           { key: "reconciliation" as const, label: "Conciliação" },
           { key: "connections" as const, label: "Conexões" },
         ]).map((t) => (
-          <button
+          <button type="button"
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -101,7 +101,7 @@ function ConnectionsManager() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <button
+        <button type="button"
           onClick={() => setShowNew(true)}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
         >
@@ -142,19 +142,19 @@ function ConnectionsManager() {
 
               {confirmDelete === conn.id ? (
                 <div className="flex items-center gap-1">
-                  <button
+                  <button type="button"
                     onClick={() => handleDeactivate(conn.id)}
                     disabled={deactivateConnection.isPending}
                     className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                   >
                     Confirmar
                   </button>
-                  <button onClick={() => setConfirmDelete(null)} className="rounded-md px-2 py-1 text-xs text-muted-foreground">
+                  <button type="button" onClick={() => setConfirmDelete(null)} className="rounded-md px-2 py-1 text-xs text-muted-foreground">
                     Não
                   </button>
                 </div>
               ) : (
-                <button
+                <button type="button"
                   onClick={() => setConfirmDelete(conn.id)}
                   className="rounded-md p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   title="Desconectar"

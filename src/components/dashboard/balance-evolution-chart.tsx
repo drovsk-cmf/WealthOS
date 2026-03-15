@@ -112,7 +112,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
         <h3 className="text-sm font-semibold">Evolução Mensal</h3>
         <div className="flex gap-1">
           {PERIOD_OPTIONS.map((opt) => (
-            <button
+            <button type="button"
               key={opt.value}
               onClick={() => setPeriod(opt.value)}
               className="rounded px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"

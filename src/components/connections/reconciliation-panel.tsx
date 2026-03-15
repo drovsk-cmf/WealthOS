@@ -48,7 +48,7 @@ function TxRow({
   onSelect: () => void;
 }) {
   return (
-    <button
+    <button type="button"
       onClick={onSelect}
       className={`w-full rounded-lg border p-3 text-left transition-all ${
         selected
@@ -189,7 +189,7 @@ export function ReconciliationPanel() {
               (ajuste: {formatCurrency(Math.abs(lastResult.adjustment))})
             </span>
           )}
-          <button
+          <button type="button"
             onClick={() => setLastResult(null)}
             className="ml-auto text-xs text-muted-foreground hover:text-foreground"
           >
@@ -275,7 +275,7 @@ export function ReconciliationPanel() {
               </span>
             )}
           </div>
-          <button
+          <button type="button"
             onClick={handleMatch}
             disabled={!canMatch || matchMutation.isPending}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"

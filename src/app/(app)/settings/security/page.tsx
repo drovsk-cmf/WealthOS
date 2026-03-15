@@ -139,7 +139,7 @@ export default function SecuritySettingsPage() {
               {mfaEnrolled ? "Ativo" : "Inativo"}
             </span>
             {mfaEnrolled && !showMfaDisable && (
-              <button
+              <button type="button"
                 onClick={() => setShowMfaDisable(true)}
                 className="rounded-md border border-destructive/50 px-2.5 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
               >
@@ -166,7 +166,7 @@ export default function SecuritySettingsPage() {
                 className="flex h-9 w-32 rounded-md border border-input bg-background px-3 py-1 text-sm font-mono tracking-widest text-center"
                 placeholder="000000"
               />
-              <button
+              <button type="button"
                 onClick={async () => {
                   if (mfaDisableCode.length !== 6) return;
                   setLoading("mfa-disable");
@@ -195,7 +195,7 @@ export default function SecuritySettingsPage() {
               >
                 {loading === "mfa-disable" ? "Verificando..." : "Confirmar"}
               </button>
-              <button
+              <button type="button"
                 onClick={() => { setShowMfaDisable(false); setMfaDisableCode(""); }}
                 className="rounded-md border px-3 py-1.5 text-xs font-medium"
               >
@@ -234,7 +234,7 @@ export default function SecuritySettingsPage() {
               Timeout automático após 30 minutos de inatividade
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={handleLogoutAllDevices}
             disabled={loading === "logout"}
             className="rounded-md border border-destructive/50 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-50"
@@ -255,7 +255,7 @@ export default function SecuritySettingsPage() {
               Seus dados serão removidos permanentemente em{" "}
               {new Date(new Date(deletionPending).getTime() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("pt-BR")}.
             </div>
-            <button
+            <button type="button"
               onClick={async () => {
                 setLoading("cancel-delete");
                 const { data: { user } } = await supabase.auth.getUser();
@@ -276,7 +276,7 @@ export default function SecuritySettingsPage() {
             </button>
           </div>
         ) : !showDeleteConfirm ? (
-          <button
+          <button type="button"
             onClick={() => setShowDeleteConfirm(true)}
             className="rounded-md border border-destructive/50 px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10"
           >
@@ -301,14 +301,14 @@ export default function SecuritySettingsPage() {
               />
             </div>
             <div className="flex gap-2">
-              <button
+              <button type="button"
                 onClick={handleRequestDeletion}
                 disabled={deleteConfirmText !== "EXCLUIR" || loading === "delete"}
                 className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground disabled:opacity-50"
               >
                 {loading === "delete" ? "Processando..." : "Confirmar exclusão"}
               </button>
-              <button
+              <button type="button"
                 onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
                 className="rounded-md border px-3 py-1.5 text-xs font-medium"
               >

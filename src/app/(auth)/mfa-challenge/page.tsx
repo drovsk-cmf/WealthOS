@@ -109,7 +109,7 @@ function MfaChallengeContent() {
         </button>
       </form>
 
-      <button onClick={handleLogout}
+      <button type="button" onClick={handleLogout}
         className="w-full text-center text-sm text-muted-foreground hover:text-foreground">
         Usar outra conta
       </button>

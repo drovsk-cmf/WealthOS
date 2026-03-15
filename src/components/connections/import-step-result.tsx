@@ -54,7 +54,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           <p className="mt-1 text-sm text-muted-foreground">
             As transações importadas foram removidas.
           </p>
-          <button
+          <button type="button"
             onClick={onReset}
             className="mt-6 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
@@ -129,7 +129,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           Ver transações
           <ArrowRight className="h-4 w-4" />
         </a>
-        <button
+        <button type="button"
           onClick={onReset}
           className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
         >
@@ -146,7 +146,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
                 Desfazer {imported} transações importadas?
               </p>
               <div className="flex gap-2">
-                <button
+                <button type="button"
                   onClick={handleUndo}
                   disabled={undoImport.isPending}
                   className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground"
@@ -157,7 +157,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
                     "Confirmar"
                   )}
                 </button>
-                <button
+                <button type="button"
                   onClick={() => setConfirmUndo(false)}
                   className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
                 >
@@ -166,7 +166,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
               </div>
             </div>
           ) : (
-            <button
+            <button type="button"
               onClick={() => setConfirmUndo(true)}
               className="flex w-full items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground"
             >

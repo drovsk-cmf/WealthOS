@@ -38,7 +38,7 @@ function TreeNode({
       >
         {/* Expand/collapse */}
         {hasChildren ? (
-          <button
+          <button type="button"
             onClick={() => setExpanded(!expanded)}
             className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-accent"
           >
@@ -105,7 +105,7 @@ function TreeNode({
 
         {/* Active toggle (only for leaves, non-system allowed) */}
         {isLeaf && (
-          <button
+          <button type="button"
             onClick={() => onToggle(node.id, !node.is_active)}
             className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
               node.is_active ? "bg-primary" : "bg-muted"
@@ -213,7 +213,7 @@ export default function ChartOfAccountsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button
+          <button type="button"
             onClick={() => setShowCreate(true)}
             className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >

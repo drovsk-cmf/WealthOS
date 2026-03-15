@@ -80,7 +80,7 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Transações</h1>
-        <button
+        <button type="button"
           onClick={() => setFormOpen(true)}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
@@ -90,7 +90,7 @@ export default function TransactionsPage() {
 
       {/* Quick filters */}
       <div className="flex gap-2">
-        <button
+        <button type="button"
           onClick={() => { setPage(0); setFilters((prev) => { const next = { ...prev }; delete next.paymentStatus; return next; }); }}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             !filters.paymentStatus
@@ -100,7 +100,7 @@ export default function TransactionsPage() {
         >
           Todas
         </button>
-        <button
+        <button type="button"
           onClick={() => updateFilter("paymentStatus", filters.paymentStatus === "pending" ? undefined : "pending")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             filters.paymentStatus === "pending"
@@ -110,7 +110,7 @@ export default function TransactionsPage() {
         >
           Pendentes
         </button>
-        <button
+        <button type="button"
           onClick={() => updateFilter("paymentStatus", filters.paymentStatus === "overdue" ? undefined : "overdue")}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             filters.paymentStatus === "overdue"
@@ -133,7 +133,7 @@ export default function TransactionsPage() {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
-        <button
+        <button type="button"
           onClick={() => setShowFilters(!showFilters)}
           className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
             showFilters || Object.keys(filters).some((k) => k !== "search" && filters[k as keyof TransactionFilters])
@@ -196,7 +196,7 @@ export default function TransactionsPage() {
           </div>
 
           {Object.keys(filters).some((k) => k !== "search" && filters[k as keyof TransactionFilters]) && (
-            <button
+            <button type="button"
               onClick={() => setFilters(filters.search ? { search: filters.search } : {})}
               className="col-span-2 text-xs text-primary hover:underline sm:col-span-4"
             >
@@ -226,7 +226,7 @@ export default function TransactionsPage() {
                 Comece lançando uma despesa (~30 segundos) ou importando um extrato do seu banco (~2 minutos) para ver para onde o dinheiro vai.
               </p>
               <div className="mt-5 flex gap-3">
-                <button
+                <button type="button"
                   onClick={() => setFormOpen(true)}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
@@ -322,14 +322,14 @@ export default function TransactionsPage() {
                   <>
                     {confirmReverse === tx.id ? (
                       <div className="flex items-center gap-1">
-                        <button
+                        <button type="button"
                           onClick={() => handleReverse(tx.id)}
                           disabled={reverseTransaction.isPending}
                           className="rounded-md bg-destructive px-2 py-1 text-xs text-destructive-foreground"
                         >
                           Estornar
                         </button>
-                        <button
+                        <button type="button"
                           onClick={() => setConfirmReverse(null)}
                           className="rounded-md px-2 py-1 text-xs text-muted-foreground"
                         >
@@ -337,7 +337,7 @@ export default function TransactionsPage() {
                         </button>
                       </div>
                     ) : (
-                      <button
+                      <button type="button"
                         onClick={() => setConfirmReverse(tx.id)}
                         className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                         title="Estornar"
@@ -355,7 +355,7 @@ export default function TransactionsPage() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between pt-2">
-            <button
+            <button type="button"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
               className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
@@ -365,7 +365,7 @@ export default function TransactionsPage() {
             <span className="text-xs text-muted-foreground tabular-nums">
               Página {page + 1}{transactions.length < PAGE_SIZE ? ` (última)` : ""}
             </span>
-            <button
+            <button type="button"
               onClick={() => setPage((p) => p + 1)}
               disabled={transactions.length < PAGE_SIZE}
               className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
