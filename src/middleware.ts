@@ -160,10 +160,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect root to dashboard
+  // Redirect root: check onboarding status for authenticated users
   if (pathname === "/" && user) {
+    const { data: profile } = await supabase
+      .from("users_profile")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single();
+
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = profile && !profile.onboarding_completed ? "/onboarding" : "/dashboard";
     return NextResponse.redirect(url);
   }
   if (pathname === "/" && !user) {

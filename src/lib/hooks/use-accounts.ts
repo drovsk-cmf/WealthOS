@@ -120,7 +120,8 @@ export function useCreateAccount() {
       const parentCode = coaParentCode || mapping?.parentCode;
       const tier = mapping?.tier ?? "T1";
 
-      // Auto-create individual COA entry under the parent
+      // Auto-create individual COA entry under the parent.
+      // COA must succeed before account creation to maintain consistency.
       let coaId: string | null = null;
       if (parentCode) {
         const { data: coaResult, error: coaError } = await supabase.rpc(
@@ -132,10 +133,11 @@ export function useCreateAccount() {
           }
         );
         if (coaError) {
-          console.warn("[Oniefy] Auto-create COA failed:", coaError.message);
-        } else {
-          coaId = coaResult;
+          throw new Error(
+            "Não foi possível criar o plano de contas associado. Tente novamente."
+          );
         }
+        coaId = coaResult;
       }
 
       const { data, error } = await supabase
