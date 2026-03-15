@@ -1299,7 +1299,80 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 16. Conexões
+## 16. Estudo de Privacidade: Proteção de Dados Contra Acesso Administrativo
+
+**Data:** 15/03/2026
+**Origem:** Preocupação do proprietário com conforto de testers beta ao inserir dados financeiros reais sabendo que o admin tem acesso ao banco.
+**Método:** Prompt estruturado consultado em 3 IAs (ChatGPT, Perplexity, Gemini Deep Research). Consolidação cruzada abaixo.
+
+### 16.1 Diagnóstico (unânime nas 3 análises)
+
+O problema não é RLS, Supabase ou PostgreSQL. O problema é a **fronteira de confiança**: quem controla o ambiente onde dado em claro e chave coexistem pode ler o dado. O role `postgres` (superuser) bypassa RLS por definição. Como o servidor precisa calcular `SUM()`, `GROUP BY`, `ORDER BY` sobre valores numéricos, esses valores precisam estar em texto claro no banco. Não existe solução na stack atual (Supabase + Vercel + solo dev) que impeça tecnicamente o admin de ver dados E ao mesmo tempo preserve o motor analítico server-side.
+
+### 16.2 Arquiteturas avaliadas
+
+| Abordagem | Viabilidade | Esforço | Veredicto (consenso) |
+|---|---|---|---|
+| **E2E duas camadas** (valores em claro, textos cifrados no client) | Agora | 2-4 sem | Melhor relação custo/benefício para fase atual |
+| **TEE / Evervault** (RPCs migram para enclaves seguros) | Médio prazo | 4-12 sem | Solução técnica real; free tier viável (5-15k decriptações/mês); fora de fase |
+| **Local-first** (modelo Actual Budget: SQLite/Wasm + CRDTs + Libsodium) | v2.0 | 8-12+ sem | Reescrita completa; mata jobs autônomos e multi-dispositivo sem aba ativa |
+| **FHE** (criptografia homomórfica) | Descartado | — | Ordens de magnitude mais lento; sem bibliotecas maduras |
+| **Blind indexes / OPE** | Insuficiente | — | Resolve igualdade exata, falha em SUM/ORDER BY/GROUP BY; OPE vaza padrões |
+| **Split-key sem TEE** | Insuficiente | — | Admin controla código + infra = pode capturar chave reunida em runtime |
+| **Auditoria interna (mesmo banco)** | Insuficiente | — | Admin pode desabilitar triggers, apagar logs, alterar funções |
+| **Auditoria externa imutável** (pgAudit → S3 WORM) | Agora | 1-2 sem | Resolve "vigia vigiando a si mesmo"; não impede acesso, mas torna rastreável e inburlável |
+| **Azure SQL Always Encrypted + enclaves** | Replataformização | 10-16 sem | Maduro em enterprise; incompatível com Supabase/Vercel |
+| **MongoDB Queryable Encryption** | Mudança de stack | — | Suporta equality + range, não SUM(); insuficiente para analytics |
+| **Tokenização** | Complementar | — | Protege texto em repouso; não resolve cálculos sobre valores numéricos |
+
+### 16.3 Referências de mercado
+
+| Produto | Modelo | Por que funciona para eles |
+|---|---|---|
+| **1Password / Proton / Standard Notes** | Zero-knowledge E2E puro | Servidor nunca precisa calcular sobre o conteúdo. É storage + sync de blobs |
+| **Actual Budget** | Local-first (SQLite Wasm + CRDTs + E2E) | Toda computação no client. Servidor é cofre burro. Sem jobs autônomos |
+| **Lunch Money / YNAB** | Server-side analytics + governança | Valores em claro no banco. Confiança via compliance, RBAC, NDAs, políticas |
+| **1Password (enterprise)** | Zero-knowledge + Confidential Computing | Adicionou TEE (enclaves) quando precisou de features server-side (SSO, auditoria) |
+| **Dashlane** | Zero-knowledge + Confidential Computing | Mesmo caminho do 1Password para features corporativas |
+
+### 16.4 Decisão: roadmap em 3 fases
+
+**Fase 1: Agora (beta com amigos)**
+- Modelo atual com transparência radical
+- Sugerir dados aproximados aos testers
+- Política de privacidade honesta (já existe em /privacy)
+- Exclusão real de conta em 7 dias (já implementado)
+- Decisão: NÃO implementar nenhuma mudança arquitetural para o beta
+
+**Fase 2: Pré-lançamento público (quando decidir abrir)**
+- Expandir E2E para campos textuais: description, account name, asset name (admin vê números e categorias, mas não textos descritivos)
+- Auditoria externa imutável: pgAudit → Supabase log drain (Pro) → S3 WORM
+- Role de aplicação sem superuser para operação diária
+- Auto-categorização ajustada para operar sem texto em claro (client-side ou consentimento por sessão)
+- Digest semanal usando apenas agregados + categorias (sem textos livres)
+- Esforço estimado: 2-4 semanas
+
+**Fase 3: Se tracionar (pós-validação de retenção)**
+- Opção A: TEE via Evervault (migrar RPCs para Evervault Functions; free tier cobre alfa)
+- Opção B: Local-first completo (reescrita; modelo Actual Budget)
+- Opção C: Manter Fase 2 + buscar SOC 2 Type II (caminho corporativo)
+- Decisão depende de: volume de usuários, feedback sobre privacidade, modelo de negócio (B2C vs B2B)
+
+### 16.5 O que comunicar aos testers beta
+
+Mensagem recomendada (validada pelas 3 análises):
+
+> "O Oniefy protege seus dados com isolamento por usuário (cada pessoa só vê os próprios dados), criptografia de campos sensíveis (CPF, notas privadas) e exclusão real de conta. Como todo app financeiro que faz cálculos automáticos (dashboard, orçamento, fiscal), os valores numéricos ficam acessíveis ao sistema para processar. Eu tenho acesso administrativo ao banco de dados, como qualquer fundador de SaaS, mas me comprometo a não acessar dados individuais. Se preferir, use valores arredondados para testar o fluxo. Você pode deletar sua conta a qualquer momento e todos os dados são apagados em 7 dias."
+
+### 16.6 Fontes consultadas
+
+- ChatGPT (o3): análise com 9 referências (PostgreSQL docs, Google Cloud, 1Password, Proton, Apple, AWS, Microsoft Learn x2, MongoDB)
+- Perplexity Pro: análise com referências a Cyfuture, Scaleout Systems, 1Password whitepaper, blog Terminal3, Uplatz, Windows Forum
+- Gemini Deep Research: análise de 113 referências acadêmicas e de mercado (Supabase docs, Evervault, Dashlane, Actual Budget, Ink & Switch, ETH Zurich, MIT Monomi, USENIX, VLDB, PCI DSS, SOC 2)
+
+---
+
+## 17. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
