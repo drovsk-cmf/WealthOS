@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirme seu e-mail</title>
+</head>
+<body style="margin:0;padding:0;background-color:#F5F0E8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F0E8;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;overflow:hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#3D2944;padding:32px 40px;text-align:center;">
+              <span style="font-size:28px;font-weight:700;color:#F5F0E8;letter-spacing:0.5px;">Oniefy</span>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              <h1 style="margin:0 0 16px;font-size:22px;font-weight:600;color:#1A1A1A;">Confirme seu e-mail</h1>
+              <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#4A4A4A;">
+                Obrigado por criar sua conta no Oniefy. Para ativar seu acesso, confirme seu endereço de e-mail clicando no botão abaixo.
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto 24px;">
+                <tr>
+                  <td style="background-color:#3D2944;border-radius:8px;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#F5F0E8;text-decoration:none;">
+                      Confirmar e-mail
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 8px;font-size:13px;line-height:1.5;color:#6B6B6B;">
+                Se o botão acima não funcionar, copie e cole este link no seu navegador:
+              </p>
+              <p style="margin:0 0 24px;font-size:12px;line-height:1.5;color:#6B6B6B;word-break:break-all;">
+                {{ .ConfirmationURL }}
+              </p>
+              <p style="margin:0;font-size:13px;line-height:1.5;color:#6B6B6B;">
+                Se você não criou uma conta no Oniefy, ignore este e-mail.
+              </p>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px;border-top:1px solid #E8E3DD;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#9A9A9A;">
+                Oniefy &mdash; Any asset, one clear view.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

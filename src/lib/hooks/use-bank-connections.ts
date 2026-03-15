@@ -25,7 +25,7 @@ export const SYNC_STATUS_COLORS: Record<string, string> = {
   syncing: "text-info-slate bg-info-slate/15",
   error: "text-terracotta bg-terracotta/15",
   expired: "text-burnished bg-burnished/15",
-  manual: "text-gray-600 bg-gray-100",
+  manual: "text-muted-foreground bg-muted",
 };
 
 export function useBankConnections() {

@@ -35,6 +35,18 @@ enable_signup = true
 double_confirm_changes = true
 enable_confirmations = true
 
+[auth.email.template.confirmation]
+subject = "Oniefy: Confirme seu e-mail"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Oniefy: Redefinir sua senha"
+content_path = "./supabase/templates/recovery.html"
+
+[auth.email.template.email_change]
+subject = "Oniefy: Confirme seu novo e-mail"
+content_path = "./supabase/templates/email_change.html"
+
 [auth.mfa]
 enabled = true
 max_enrolled_factors = 10

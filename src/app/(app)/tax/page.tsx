@@ -111,7 +111,7 @@ export default function FiscalPage() {
 
           {/* KPI row */}
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-lg bg-white/80 p-3">
+            <div className="rounded-lg bg-card/80 p-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 Renda Tributável Projetada
               </p>
@@ -123,7 +123,7 @@ export default function FiscalPage() {
               </p>
             </div>
 
-            <div className="rounded-lg bg-white/80 p-3">
+            <div className="rounded-lg bg-card/80 p-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 IRPF Estimado Anual
               </p>
@@ -137,7 +137,7 @@ export default function FiscalPage() {
               )}
             </div>
 
-            <div className="rounded-lg bg-white/80 p-3">
+            <div className="rounded-lg bg-card/80 p-3">
               <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
                 IRRF Retido (fontes)
               </p>
@@ -172,7 +172,7 @@ export default function FiscalPage() {
 
           {/* Explanation */}
           {prov.monthly_provision > 0 && (
-            <div className="mt-4 rounded-lg bg-white/60 p-4">
+            <div className="mt-4 rounded-lg bg-card/60 p-4">
               <p className="text-sm font-semibold text-burnished">
                 Por que provisionar?
               </p>
