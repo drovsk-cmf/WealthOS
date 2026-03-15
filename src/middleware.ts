@@ -43,8 +43,8 @@ function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
 
   // In dev: unsafe-eval required for Next.js HMR + React Fast Refresh
-  // In prod: no unsafe-eval. unsafe-inline kept for Next.js inline scripts.
-  // Nonce available via x-nonce header for future strict-dynamic upgrade.
+  // In prod: no unsafe-eval/unsafe-inline. Uses nonce + strict-dynamic.
+  // strict-dynamic allows scripts loaded by nonce'd scripts to execute.
   const scriptSrc = isDev
     ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
     : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
