@@ -1035,7 +1035,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | UX-H1-05 | Resumo pós-importação (total, top categorias, N pendentes, CTA revisar) | FIN-16, import-step-result.tsx | Baixo-Médio | Não iniciado |
 | UX-H1-06 | Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5) | DASH-01, dashboard/page.tsx | Alto | Não iniciado |
 | UX-H1-07 | ~~Tabela analytics_events + eventos mínimos de onboarding~~ | Schema (migration 031), hook, dashboard | ~~Baixo~~ | FEITO |
-| UX-H1-08 | Mover Contas a Pagar para filtro "pendentes" em Transações | bills/page.tsx → transactions | Baixo | Não iniciado |
+| UX-H1-08 | ~~Mover Contas a Pagar para filtro "pendentes" em Transações~~ | transactions/page.tsx, use-transactions.ts | ~~Baixo~~ | FEITO |
 
 **H2: Primeiras 2 semanas pós-lançamento (retenção D7)**
 

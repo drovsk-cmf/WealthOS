@@ -88,6 +88,40 @@ export default function TransactionsPage() {
         </button>
       </div>
 
+      {/* Quick filters */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => { setPage(0); setFilters((prev) => { const next = { ...prev }; delete next.paymentStatus; return next; }); }}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            !filters.paymentStatus
+              ? "bg-primary text-primary-foreground"
+              : "border bg-card text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Todas
+        </button>
+        <button
+          onClick={() => updateFilter("paymentStatus", filters.paymentStatus === "pending" ? undefined : "pending")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            filters.paymentStatus === "pending"
+              ? "bg-burnished text-white"
+              : "border bg-card text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Pendentes
+        </button>
+        <button
+          onClick={() => updateFilter("paymentStatus", filters.paymentStatus === "overdue" ? undefined : "overdue")}
+          className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+            filters.paymentStatus === "overdue"
+              ? "bg-terracotta text-white"
+              : "border bg-card text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Vencidas
+        </button>
+      </div>
+
       {/* Search + filter toggle */}
       <div className="flex gap-2">
         <div className="flex-1">

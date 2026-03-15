@@ -16,6 +16,7 @@ export interface TransactionFilters {
   accountId?: string;
   categoryId?: string;
   type?: TransactionType;
+  paymentStatus?: "pending" | "overdue" | "paid" | "cancelled";
   dateFrom?: string;
   dateTo?: string;
   search?: string;
@@ -55,6 +56,9 @@ export function useTransactions(filters: TransactionFilters = {}) {
       }
       if (filters.type) {
         query = query.eq("type", filters.type);
+      }
+      if (filters.paymentStatus) {
+        query = query.eq("payment_status", filters.paymentStatus);
       }
       if (filters.dateFrom) {
         query = query.gte("date", filters.dateFrom);
