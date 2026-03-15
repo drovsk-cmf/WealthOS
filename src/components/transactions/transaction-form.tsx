@@ -15,10 +15,11 @@
  */
 
 import { useState, useEffect } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
+import { useAutoCategory } from "@/lib/hooks/use-auto-category";
 import { useCreateTransaction, useCreateTransfer } from "@/lib/services/transaction-engine";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -64,6 +65,20 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
   const [error, setError] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(false);
 
+  // UX-H2-01: Auto-categorization
+  const [manualCategory, setManualCategory] = useState(false);
+  const { suggestedCategoryId } = useAutoCategory(
+    description,
+    type !== "transfer" && !manualCategory && !categoryId
+  );
+
+  // Apply suggestion when it arrives and user hasn't manually chosen
+  useEffect(() => {
+    if (suggestedCategoryId && !manualCategory && !categoryId) {
+      setCategoryId(suggestedCategoryId);
+    }
+  }, [suggestedCategoryId, manualCategory, categoryId]);
+
   // Reset on open
   useEffect(() => {
     if (open) {
@@ -79,6 +94,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
       setNotes("");
       setError(null);
       setShowMore(false);
+      setManualCategory(false);
     }
   }, [open, defaultType, accounts]);
 
@@ -281,13 +297,22 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               {/* Category (not for transfers) */}
               {type !== "transfer" && (
                 <div className="space-y-1.5">
-                  <label htmlFor="tx-category" className="text-sm font-medium">
+                  <label htmlFor="tx-category" className="flex items-center gap-1.5 text-sm font-medium">
                     Categoria
+                    {categoryId && !manualCategory && suggestedCategoryId && (
+                      <span className="flex items-center gap-0.5 text-xs font-normal text-primary">
+                        <Sparkles className="h-3 w-3" />
+                        sugerida
+                      </span>
+                    )}
                   </label>
                   <select
                     id="tx-category"
                     value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
+                    onChange={(e) => {
+                      setCategoryId(e.target.value);
+                      setManualCategory(!!e.target.value);
+                    }}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <option value="">Sem categoria</option>
