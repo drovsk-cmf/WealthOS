@@ -6,6 +6,10 @@ import {
   rateLimitHeaders,
   type RateLimitResult,
 } from "@/lib/auth/rate-limiter";
+import { validateEnv } from "@/lib/config/env";
+
+// Fail fast if env vars are missing
+validateEnv();
 
 /**
  * Oniefy Middleware
