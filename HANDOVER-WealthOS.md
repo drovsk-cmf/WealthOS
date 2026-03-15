@@ -63,10 +63,10 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 46 (33 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
+| Functions (total) | 47 (34 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
 | Triggers | 20 |
-| ENUMs | 25 |
-| Migrations aplicadas | 44 partes no Supabase, 33 SQL files no repo (001 a 030) |
+| ENUMs | 26 |
+| Migrations aplicadas | 46 partes no Supabase, 35 SQL files no repo (001 a 032) |
 | pg_cron jobs | 6: mark-overdue-transactions (01h), generate-workflow-tasks (02h), process-account-deletions (03:30), cron_fetch_indices (06h), depreciate-assets (mensal 03h), balance-integrity-check (dom 04h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -92,12 +92,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
 | Fiscal | get_fiscal_report, get_fiscal_projection |
 | Índices | get_economic_indices, get_index_latest |
-| Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction |
+| Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction, **undo_import_batch** |
 | **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
 | **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (104 arquivos em src/, 13 testes, ~19.700 linhas)
+### 3.4 Código Fonte (105 arquivos em src/, 13 testes, ~20.200 linhas)
 
 ```
 src/
@@ -187,7 +187,7 @@ src/
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
 - `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
-- `supabase/migrations/` - 34 SQL files (001 a 031, ~5.700 linhas)
+- `supabase/migrations/` - 35 SQL files (001 a 032, ~5.800 linhas)
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -1050,8 +1050,8 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | UX-H2-01 | ~~Auto-categorização no FAB e importação (transaction_classification_rules)~~ | TransactionForm, import-wizard | ~~Médio~~ | FEITO (commit c051aa8) |
 | UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | CFG-04 (infra existe), Edge Function nova | Médio | Não iniciado |
 | UX-H2-03 | ~~Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês)~~ | dashboard/page.tsx | ~~Médio~~ | FEITO (commit c7c2275) |
-| UX-H2-04 | Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude | Múltiplas páginas | Médio | Não iniciado |
-| UX-H2-05 | Desfazer importação: estorno em lote (72h, append-only) | FIN-16, RPC nova | Médio | Não iniciado |
+| UX-H2-04 | ~~Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude~~ | Múltiplas páginas | ~~Médio~~ | FEITO (commit 64f2117) |
+| UX-H2-05 | ~~Desfazer importação: estorno em lote (72h, append-only)~~ | FIN-16, RPC nova | ~~Médio~~ | FEITO (commit 64f2117) |
 | UX-H2-06 | ~~Indicador confirmado/estimado no saldo consolidado do Dashboard~~ | SummaryCards, hook | ~~Baixo~~ | FEITO (commit c7c2275) |
 
 **H3: Mês 1-3 pós-lançamento (retenção D30)**
@@ -1181,6 +1181,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | 56f6244 | feat: P2 CSP nonce-based policy (remove unsafe-eval in production) |
 | c051aa8 | feat: UX-H2-01 auto-categorization in TransactionForm |
 | c7c2275 | feat: UX-H2-03 narrative engine P1-P3 + UX-H2-06 confirmed/estimated indicator |
+| 64f2117 | feat: UX-H2-04 confidence badges + UX-H2-05 undo import batch |
 
 **Entregas consolidadas:**
 
@@ -1230,8 +1231,24 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 - Badge "Confirmado" (verdant) no saldo atual
 - Badge "Previsto: X" (burnished) exibido apenas quando difere do atual
 
+**UX-H2-04: Camada de confiança**
+- Migration 032: novo enum category_assignment_source (manual|auto|import_auto), coluna category_source em transactions, backfill
+- Badge "sugerida" em transações auto-categorizadas na lista de transações
+- Indicador "Xd sem atualização" em contas (accounts) com updated_at > 7 dias
+- category_source propagado via TransactionForm → transaction engine → DB
+- RPC undo_import_batch incluída na mesma migration (UX-H2-05)
+
+**UX-H2-05: Desfazer importação (72h window)**
+- RPC undo_import_batch: soft-delete de batch inteiro, janela de 72h, validação de ownership
+- Hook useUndoImportBatch em use-bank-connections
+- Botão "Desfazer importação" no ImportStepResult com confirm/cancel e estado "desfeito"
+- batchId propagado do import wizard até o componente de resultado
+
+**H2 UX: 6/6 itens FEITOS. Backlog H2 completo.**
+
 **Testes:** 171 (sem alteração), 13 suítes
-**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 106 arquivos src/, ~20.200 linhas
+**Migration:** 032_category_source_and_undo_import (1 enum, 1 coluna, 1 RPC, backfill)
+**Totais atualizados:** 26 tabelas, 86 RLS, 47 functions (34 RPCs + 7 triggers + 6 cron), 26 ENUMs, 35 migrations, 105 arquivos src/, ~20.500 linhas
 
 ---
 
