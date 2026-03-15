@@ -66,17 +66,32 @@ function LoginContent() {
       return;
     }
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // Q3: Server-side login proxy (real rate limiting)
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (signInError) {
-      setError(
-        signInError.message === "Invalid login credentials"
-          ? "Email ou senha incorretos."
-          : signInError.message
-      );
+      if (res.status === 429) {
+        const data = await res.json();
+        setError(data.error || "Muitas tentativas. Aguarde alguns minutos.");
+        setLoading(false);
+        return;
+      }
+
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Erro ao fazer login.");
+        setLoading(false);
+        return;
+      }
+
+      // Session cookies set by server. Refresh client to pick them up.
+      await supabase.auth.getSession();
+    } catch {
+      setError("Erro de conexão. Tente novamente.");
       setLoading(false);
       return;
     }
