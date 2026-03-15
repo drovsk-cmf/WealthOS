@@ -449,6 +449,12 @@ export default function OnboardingPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Gerando QR code para seu autenticador.
           </p>
+          <button type="button"
+            onClick={() => setStep("categories")}
+            className="mt-4 text-xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Configurar depois
+          </button>
         </div>
       )}
 
@@ -529,6 +535,13 @@ export default function OnboardingPage() {
             app autenticador, você precisará dos códigos de recuperação para
             entrar na sua conta.
           </div>
+
+          <button type="button"
+            onClick={() => setStep("categories")}
+            className="w-full text-center text-xs text-muted-foreground hover:text-foreground hover:underline"
+          >
+            Configurar depois
+          </button>
         </>
       )}
 
