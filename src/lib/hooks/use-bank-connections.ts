@@ -152,3 +152,37 @@ export function useImportBatch() {
     },
   });
 }
+
+/** UX-H2-05: Undo an import batch (soft-delete, 72h window) */
+export function useUndoImportBatch() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (batchId: string) => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("undo_import_batch", {
+        p_user_id: user.id,
+        p_batch_id: batchId,
+      });
+      if (error) throw error;
+
+      const result = data as { status: string; message?: string; undone_count?: number; batch_id?: string };
+      if (result.status === "error") {
+        throw new Error(result.message || "Erro ao desfazer importação.");
+      }
+
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    },
+  });
+}

@@ -24,6 +24,7 @@ type EntrySource = Database["public"]["Enums"]["entry_source"];
 export interface CreateTransactionInput {
   account_id: string;
   category_id?: string | null;
+  category_source?: "manual" | "auto" | "import_auto" | null;
   type: TransactionType;
   amount: number;
   description?: string | null;
@@ -105,6 +106,14 @@ export async function createTransaction(
     await supabase
       .from("transactions")
       .update({ family_member_id: input.family_member_id })
+      .eq("id", result.transaction_id);
+  }
+
+  // UX-H2-04: Set category_source if category was assigned
+  if (input.category_source && input.category_id && result.transaction_id) {
+    await supabase
+      .from("transactions")
+      .update({ category_source: input.category_source })
       .eq("id", result.transaction_id);
   }
 

@@ -148,9 +148,22 @@ export default function AccountsPage() {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <p className="font-medium">{account.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {ACCOUNT_TYPE_LABELS[account.type]}
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span>{ACCOUNT_TYPE_LABELS[account.type]}</span>
+                  {(() => {
+                    const days = Math.floor(
+                      (Date.now() - new Date(account.updated_at).getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    );
+                    if (days >= 7)
+                      return (
+                        <span className="rounded bg-burnished/10 px-1 py-0.5 text-[9px] font-medium text-burnished">
+                          {days}d sem atualização
+                        </span>
+                      );
+                    return null;
+                  })()}
+                </div>
               </div>
 
               {/* Balances */}

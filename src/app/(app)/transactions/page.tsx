@@ -293,7 +293,16 @@ export default function TransactionsPage() {
                         </span>
                       );
                     })()}
-                    {tx.category_name && <span>{tx.category_name}</span>}
+                    {tx.category_name && (
+                      <span className="inline-flex items-center gap-1">
+                        {tx.category_name}
+                        {tx.category_source && tx.category_source !== "manual" && (
+                          <span className="rounded bg-primary/10 px-1 py-0.5 text-[9px] font-medium text-primary">
+                            sugerida
+                          </span>
+                        )}
+                      </span>
+                    )}
                     {!tx.is_paid && (
                       <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished"
                         role="status" aria-label="Pendente">

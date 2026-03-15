@@ -149,6 +149,9 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
         await createTransaction.mutateAsync({
           account_id: accountId,
           category_id: categoryId || null,
+          category_source: categoryId
+            ? manualCategory ? "manual" : "auto"
+            : null,
           type,
           amount: parsedAmount,
           description: description || null,

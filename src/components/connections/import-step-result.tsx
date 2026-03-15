@@ -1,25 +1,69 @@
-import { CircleCheck, Link, AlertCircle, ArrowRight } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { CircleCheck, Link, AlertCircle, ArrowRight, Undo2, Loader2 } from "lucide-react";
+import { useUndoImportBatch } from "@/lib/hooks/use-bank-connections";
 
 interface Props {
   imported?: number;
   skipped?: number;
   categorized?: number;
   matched?: number;
+  batchId?: string | null;
   onReset: () => void;
 }
 
 /**
- * ImportStepResult (UX-H1-05)
+ * ImportStepResult (UX-H1-05 + UX-H2-05)
  *
  * Enhanced post-import summary with:
  * - Total imported with celebration
  * - Auto-categorized vs. pending review count
  * - Reconciliation matches
  * - Actionable CTAs: review uncategorized, view transactions, import another
+ * - UX-H2-05: Undo import (soft-delete batch within 72h)
  */
-export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, onReset }: Props) {
+export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, batchId, onReset }: Props) {
   const uncategorized = Math.max(0, imported - categorized);
   const hasUncategorized = uncategorized > 0;
+
+  const undoImport = useUndoImportBatch();
+  const [confirmUndo, setConfirmUndo] = useState(false);
+  const [undone, setUndone] = useState(false);
+
+  async function handleUndo() {
+    if (!batchId) return;
+    try {
+      const result = await undoImport.mutateAsync(batchId);
+      setUndone(true);
+      setConfirmUndo(false);
+      // result.undone_count is available if needed
+    } catch {
+      // Error handled by mutation state
+    }
+  }
+
+  if (undone) {
+    return (
+      <div className="rounded-lg border bg-card">
+        <div className="flex flex-col items-center px-6 py-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+            <Undo2 className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-bold">Importação desfeita</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            As transações importadas foram removidas.
+          </p>
+          <button
+            onClick={onReset}
+            className="mt-6 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            Importar outro arquivo
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border bg-card">
@@ -92,6 +136,53 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           Importar outro arquivo
         </button>
       </div>
+
+      {/* UX-H2-05: Undo import */}
+      {batchId && imported > 0 && (
+        <div className="border-t px-6 py-4">
+          {confirmUndo ? (
+            <div className="flex items-center justify-between rounded-lg bg-destructive/10 px-4 py-3">
+              <p className="text-sm text-destructive">
+                Desfazer {imported} transações importadas?
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleUndo}
+                  disabled={undoImport.isPending}
+                  className="rounded-md bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground"
+                >
+                  {undoImport.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    "Confirmar"
+                  )}
+                </button>
+                <button
+                  onClick={() => setConfirmUndo(false)}
+                  className="rounded-md px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmUndo(true)}
+              className="flex w-full items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+              Desfazer importação (disponível por 72h)
+            </button>
+          )}
+          {undoImport.isError && (
+            <p className="mt-2 text-center text-xs text-destructive">
+              {undoImport.error instanceof Error
+                ? undoImport.error.message
+                : "Erro ao desfazer importação."}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
