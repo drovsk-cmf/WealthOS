@@ -51,6 +51,7 @@ function useAttentionItems() {
       dueSoon: number;
       staleAccounts: number;
       recentImportCount: number;
+      lastTransactionDaysAgo: number | undefined;
     }> => {
       // Parallel queries for efficiency
       const today = new Date().toISOString().slice(0, 10);
@@ -63,7 +64,7 @@ function useAttentionItems() {
         Date.now() - 7 * 24 * 60 * 60 * 1000
       ).toISOString();
 
-      const [uncatRes, overdueRes, dueSoonRes, staleRes, importRes] =
+      const [uncatRes, overdueRes, dueSoonRes, staleRes, importRes, lastTxRes] =
         await Promise.all([
           // Uncategorized transactions
           supabase
@@ -102,7 +103,22 @@ function useAttentionItems() {
               "created_at",
               new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
             ),
+          // Last transaction date (for inactivity check)
+          supabase
+            .from("transactions")
+            .select("created_at")
+            .eq("is_deleted", false)
+            .order("created_at", { ascending: false })
+            .limit(1),
         ]);
+
+      // Calculate days since last transaction
+      let lastTransactionDaysAgo: number | undefined;
+      if (lastTxRes.data && lastTxRes.data.length > 0) {
+        const lastDate = new Date(lastTxRes.data[0].created_at);
+        const diffMs = Date.now() - lastDate.getTime();
+        lastTransactionDaysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      }
 
       return {
         uncategorized: uncatRes.count ?? 0,
@@ -110,6 +126,7 @@ function useAttentionItems() {
         dueSoon: dueSoonRes.count ?? 0,
         staleAccounts: staleRes.count ?? 0,
         recentImportCount: importRes.count ?? 0,
+        lastTransactionDaysAgo,
       };
     },
   });

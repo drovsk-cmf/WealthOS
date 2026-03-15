@@ -45,7 +45,7 @@ export function SummaryCards({ data, isLoading }: Props) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {/* Saldo Atual (DASH-01) */}
+      {/* Saldo Atual (DASH-01 + UX-H2-06: confirmed/estimated indicator) */}
       <div className="rounded-lg border bg-card p-5 shadow-sm">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Saldo Atual
@@ -57,9 +57,16 @@ export function SummaryCards({ data, isLoading }: Props) {
         >
           <Mv>{formatCurrency(balance)}</Mv>
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Previsto: <Mv>{formatCurrency(projected)}</Mv>
-        </p>
+        <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1 rounded-full bg-verdant/10 px-1.5 py-0.5 text-[10px] font-medium text-verdant">
+            Confirmado
+          </span>
+          {projected !== balance && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-burnished/10 px-1.5 py-0.5 text-[10px] font-medium text-burnished">
+              Previsto: <Mv>{formatCurrency(projected)}</Mv>
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Receitas do Mês (DASH-02) */}

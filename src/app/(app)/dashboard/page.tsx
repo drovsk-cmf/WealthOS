@@ -3,10 +3,10 @@
 import React from "react";
 
 /**
- * Oniefy - Início (Dashboard) - UX-H1-06
+ * Oniefy - Início (Dashboard) - UX-H1-06 + UX-H2-03
  *
  * 3-section vertical layout:
- * Seção 1: Card narrativo (P0 empty, P4 post-import, P5 neutral)
+ * Seção 1: Card narrativo (P0-P5: empty, post-import, budget, end-of-month, inactive, neutral)
  * Seção 2: Fila de atenção (até 5 pendências)
  * Seção 3: Resumo financeiro (conteúdo original, abaixo da dobra)
  */
@@ -93,12 +93,14 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06) ═══ */}
+      {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06 + UX-H2-03) ═══ */}
       <NarrativeCard
         summary={summary.data}
         hasTransactions={hasTransactions}
         hasRecentImport={hasRecentImport}
         recentImportCount={attention.data?.recentImportCount}
+        budgetData={budgetVsActual.data}
+        lastTransactionDaysAgo={attention.data?.lastTransactionDaysAgo}
         isLoading={summary.isLoading || attention.isLoading}
       />
 
