@@ -946,7 +946,7 @@ Itens necessários para colocar o app em produção na web (sem iOS).
 | # | Item | Esforço | Status |
 |---|---|---|---|
 | P1 | Deploy Vercel + domínio oniefy.com | 30 min | Não iniciado |
-| P2 | CSP nonce/hash (remover `unsafe-eval` em build de produção) | 2h | Não iniciado (ChatGPT audit #6) |
+| P2 | ~~CSP nonce/hash (remover `unsafe-eval` em build de produção)~~ | ~~2h~~ | FEITO (commit 56f6244) |
 | P3 | ~~React Error Boundaries (crash gracioso em todas as rotas)~~ | ~~1h~~ | FEITO (global-error + app/error + auth/error) |
 | P4 | ~~Customizar emails Supabase Auth (confirmação, reset senha)~~ | ~~30 min~~ | FEITO (3 templates HTML + config.toml) |
 | P5 | ~~Página `/privacy` (Privacy Policy, exigida pela Apple e LGPD)~~ | ~~1h~~ | FEITO (11 seções, LGPD + Apple) |
@@ -1047,7 +1047,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 | # | Item | Impacta | Esforço | Status |
 |---|---|---|---|---|
-| UX-H2-01 | Auto-categorização no FAB e importação (transaction_classification_rules) | TransactionForm, import-wizard | Médio | Não iniciado |
+| UX-H2-01 | ~~Auto-categorização no FAB e importação (transaction_classification_rules)~~ | TransactionForm, import-wizard | ~~Médio~~ | FEITO (commit c051aa8) |
 | UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | CFG-04 (infra existe), Edge Function nova | Médio | Não iniciado |
 | UX-H2-03 | Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês) | dashboard/page.tsx | Médio | Não iniciado |
 | UX-H2-04 | Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude | Múltiplas páginas | Médio | Não iniciado |
@@ -1171,13 +1171,15 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 15. Sessão 15/03/2026 (cont.) - H1 UX Final: Onboarding Routes + Dashboard Início
+## 15. Sessão 15/03/2026 (cont.) - H1 UX Final + P2 CSP + H2 UX Start
 
-1 commit, CI 3/3 verde.
+3 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
 | 7b3ffdd | feat: UX-H1-02 onboarding steps 8-10 + UX-H1-06 dashboard Início v1 |
+| 56f6244 | feat: P2 CSP nonce-based policy (remove unsafe-eval in production) |
+| c051aa8 | feat: UX-H2-01 auto-categorization in TransactionForm |
 
 **Entregas consolidadas:**
 
@@ -1200,8 +1202,24 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 **H1 UX: 8/8 itens FEITOS. Backlog H1 completo.**
 
+**P2: CSP nonce-based policy**
+- CSP movido de next.config.js (estático) para middleware (nonce por request)
+- Produção: `script-src 'self' 'unsafe-inline' 'nonce-{N}'` (sem unsafe-eval)
+- Dev: `script-src 'self' 'unsafe-eval' 'unsafe-inline'` (HMR compat)
+- Nonce via crypto.getRandomValues (16 bytes, base64, btoa para edge runtime)
+- Header x-nonce na response para futuro upgrade strict-dynamic
+- Demais security headers (HSTS, X-Frame, etc.) permanecem em next.config.js
+
+**UX-H2-01: Auto-categorização no TransactionForm**
+- Novo hook useAutoCategory: debounce 400ms, chama RPC auto_categorize_transaction
+- AbortController para cancelar requests em voo quando descrição muda
+- Integrado no TransactionForm: preenche categoria automaticamente ao digitar descrição
+- Indicador visual (Sparkles + "sugerida") no label da categoria
+- Override manual: se usuário seleciona categoria, auto-suggest para
+- Import batch já usa auto_categorize internamente (sem mudança necessária)
+
 **Testes:** 171 (sem alteração), 13 suítes
-**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 104 arquivos src/, ~19.700 linhas
+**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 105 arquivos src/, ~19.900 linhas
 
 ---
 
