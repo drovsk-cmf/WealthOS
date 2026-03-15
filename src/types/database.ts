@@ -515,6 +515,7 @@ export type Database = {
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }
       track_event: { Args: { p_event_name: string; p_properties?: Json }; Returns: string }
       undo_import_batch: { Args: { p_user_id: string; p_batch_id: string }; Returns: Json }
+      get_weekly_digest: { Args: { p_user_id: string }; Returns: Json }
       get_retention_metrics: { Args: Record<string, never>; Returns: Json }
     }
     Enums: {
