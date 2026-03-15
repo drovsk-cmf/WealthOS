@@ -63,7 +63,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 25 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 44 (31 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
+| Functions (total) | 46 (33 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
 | Triggers | 20 |
 | ENUMs | 25 |
 | Migrations aplicadas | 44 partes no Supabase, 33 SQL files no repo (001 a 030) |
@@ -79,7 +79,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (31 RPCs + 7 triggers + 6 cron = 44)
+### 3.3 Functions (33 RPCs + 7 triggers + 6 cron = 46)
 
 | Grupo | Functions |
 |---|---|
@@ -94,15 +94,17 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices | get_economic_indices, get_index_latest |
 | Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction |
 | **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
+| **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (90 arquivos em src/, 12 testes, 17.368 linhas)
+### 3.4 Código Fonte (93 arquivos em src/, 13 testes, ~17.800 linhas)
 
 ```
 src/
-├── __tests__/                    # 12 suítes de teste (Jest + RTL), 150 testes
+├── __tests__/                    # 13 suítes de teste (Jest + RTL), 171 testes
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
+│   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── onboarding-seeds.test.ts
 │   ├── parsers.test.ts
@@ -130,11 +132,15 @@ src/
 │   │   ├── tax/page.tsx
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
-│   │   └── layout.tsx            # Sidebar, auth, offline banner, SW cache cleanup on logout
+│   │   ├── error.tsx              # Error boundary (UX: P3)
+│   │   └── layout.tsx            # Sidebar 5+1 (UX-H1-01), auth, offline banner
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
+│   │   ├── error.tsx              # Error boundary auth (UX: P3)
 │   │   └── layout.tsx
+│   ├── privacy/page.tsx           # Privacy Policy pública (UX: P5, LGPD + Apple)
+│   ├── global-error.tsx           # Error boundary root (UX: P3)
 │   ├── api/
 │   │   ├── auth/callback/route.ts
 │   │   └── indices/fetch/route.ts  # Coleta BCB SGS
@@ -158,7 +164,7 @@ src/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── crypto/index.ts
-│   ├── hooks/ (18 hooks: accounts, assets, auth-init, bank-connections, budgets,
+│   ├── hooks/ (19 hooks: accounts, analytics, assets, auth-init, bank-connections, budgets,
 │   │          categories, chart-of-accounts, cost-centers, dashboard, dialog-helpers,
 │   │          economic-indices, family-members, fiscal, online-status, reconciliation,
 │   │          recurrences, transactions, workflows)
@@ -172,7 +178,7 @@ src/
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
 ├── middleware.ts                  # Rate limit, session refresh, route protection, Server-Timing
-└── types/database.ts             # 25 tables, 37 functions, 25 enums (migration 030)
+└── types/database.ts             # 26 tables, 39 functions, 25 enums (migration 031)
 ```
 
 **Arquivos fora de `src/`:**
@@ -181,7 +187,7 @@ src/
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
 - `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
-- `supabase/migrations/` - 33 SQL files (001 a 030, ~5.600 linhas)
+- `supabase/migrations/` - 34 SQL files (001 a 031, ~5.700 linhas)
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -1113,35 +1119,55 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 14. Sessão 15/03/2026 - UX Strategy + Pre-production batch
+## 14. Sessão 15/03/2026 - UX Strategy + Pre-production + H1 UX Implementation
 
-2 commits, CI 3/3 verde em ambos.
+8 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
 | 3570657 | docs: HANDOVER 12.9 UX/retention backlog (19 items, 3 horizons) |
-| b022cd3 | feat: P3 P4 P5 P6 P7 Q1 - error boundaries, email templates, privacy page, demo seed, dark mode fixes, CFG tests (169 tests) |
+| b022cd3 | feat: P3 P4 P5 P6 P7 Q1 - error boundaries, email templates, privacy page, demo seed, dark mode fixes, CFG tests |
+| 85c4974 | docs: HANDOVER session log + backlog P3-P7/Q1 done |
+| 6bd189e | feat: UX-H1-01 navigation 5+1 (15→6 items, settings hub 5 subcategories, 171 tests) |
+| 145c9c6 | feat: UX-H1-07 analytics_events (migration 031, track_event RPC, retention metrics RPC, useAnalytics hook) |
+| 122be5e | feat: UX-H1-08 pending/overdue quick filters on Transactions |
+| 60e84d8 | feat: UX-H1-03 + UX-H1-05 motivational empty states (4 pages) + enhanced import result summary |
+| b055c49 | feat: UX-H1-04 quick transaction form (3 decisions visible, rest behind "Mais opções") |
 
 **Entregas consolidadas:**
 
-**UX Strategy (sem código, produto/estratégia):**
+**Bloco 1: UX Strategy (sem código, produto/estratégia)**
 - Análise crítica de 4 auditorias externas de UX (2 Gemini, 2 ChatGPT)
 - 2 rodadas de revisão cruzada (Gemini + ChatGPT avaliaram o plano Claude)
 - Documento consolidado `oniefy-estrategia-ux-retencao-v2.docx` (14 seções, 632 parágrafos)
 - 10 correções incorporadas na v2.0 a partir das revisões cruzadas
-- 9 decisões de produto registradas no HANDOVER (navegação 5+1, dois níveis de valor, etc.)
+- 9 decisões de produto registradas no HANDOVER §12.9
 - 19 itens de backlog UX/Retenção organizados em 3 horizontes (8 H1 + 6 H2 + 5 H3)
 - 6 métricas-alvo definidas (D1 >35%, D7 >20%, D30 >12%)
 
-**Pre-production batch (6 itens executados):**
+**Bloco 2: Pre-production batch (6 itens)**
 - P3: Error Boundaries (3 arquivos: global-error.tsx, (app)/error.tsx, (auth)/error.tsx)
 - P4: Email templates Supabase Auth (3 templates HTML: confirmation, recovery, email_change + config.toml)
 - P5: Página /privacy (11 seções, LGPD + Apple, link de settings/data)
-- P6: Seed de dados realistas (5 contas, ~60 tx em 3 meses, 8 budgets, 4 ativos, perfil Hybrid Earner)
-- P7: Dark mode audit (4 correções: bg-white→bg-card em tax, text-gray→muted em bank-connections; 2 intencionais preservados)
-- Q1: Testes CFG settings (19 testes: settings index, data export config, toCsv logic)
+- P6: Seed de dados realistas (003_demo_data.sql: 5 contas, ~60 tx, 8 budgets, 4 ativos, perfil Hybrid Earner)
+- P7: Dark mode audit (5 correções: 4x bg-white→bg-card em tax, 1x text-gray→muted em bank-connections; 2 intencionais preservados)
+- Q1: Testes CFG settings (19 testes: settings groups 5 subcategorias, data export config 14 tabelas, toCsv)
 
-**Testes:** 150 → 169 (+19), 13 suítes (12 + 1 nova)
+**Bloco 3: UX H1 Implementation (6/8 itens)**
+- UX-H1-01: Navegação 5+1. Sidebar de 15→6 itens. Settings hub com 5 subcategorias (Pessoal, Estrutura e Cadastros, Dados e Importação, Avançado, Segurança) contendo 13 itens. SETTINGS_ROUTES array para highlight contextual
+- UX-H1-03: Estados vazios motivacionais em 4 páginas (Transações, Contas, Orçamento, Patrimônio). Cada um com: benefício claro, estimativa de esforço, máx 2 CTAs. Transações: 2 CTAs (nova transação + importar extrato)
+- UX-H1-04: Formulário rápido. Quick mode: valor (autofocus h-14 text-2xl) + tipo toggle (default despesa) + conta (pré-selecionada, omitida se 1 só). "Mais opções" expande: descrição, categoria, data, status, membro, notas. Bottom sheet no mobile
+- UX-H1-05: Resumo pós-importação. Grid de stats (importadas, categorizadas, para revisar, conciliadas) + alertas contextuais (duplicadas, uncategorized) + CTAs (ver transações, importar outro)
+- UX-H1-07: Tabela analytics_events (migration 031). RPCs: track_event (SECURITY DEFINER) + get_retention_metrics (D1/D7/D30 por coorte). Hook useAnalytics com fire-and-forget. dashboard_viewed tracking 1x/sessão
+- UX-H1-08: Filtro payment_status no hook useTransactions. Quick-filter chips (Todas/Pendentes/Vencidas) na UI de Transações. Contas a Pagar acessível via Settings > Dados e Importação
+
+**O que falta no H1 (2 itens de esforço alto, interdependentes):**
+- UX-H1-02: Onboarding Steps 8-10 (rota recomendada device-aware + alternativas)
+- UX-H1-06: Dashboard Início v1 (fila de atenção + motor narrativo P0/P4/P5)
+
+**Testes:** 150 → 171 (+21), 13 suítes
+**Migration:** 031_analytics_events (1 tabela, 2 índices, 2 RLS, 2 RPCs)
+**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions (33 RPCs + 7 triggers + 6 cron), 25 ENUMs, 34 migrations
 
 ---
 
