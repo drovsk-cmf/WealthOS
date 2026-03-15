@@ -6,3 +6,5 @@ export { BudgetSummaryCard } from "./budget-summary-card";
 export { SolvencyPanel } from "./solvency-panel";
 export { BalanceEvolutionChart } from "./balance-evolution-chart";
 export { QuickEntryFab } from "./quick-entry-fab";
+export { NarrativeCard } from "./narrative-card";
+export { AttentionQueue, useAttentionItems } from "./attention-queue";

@@ -3,13 +3,12 @@
 import React from "react";
 
 /**
- * Oniefy - Dashboard (Phase 3)
+ * Oniefy - Início (Dashboard) - UX-H1-06
  *
- * Layout conforme adendo v1.4, seção 2.4:
- * - Seção A: Visão Operacional (DASH-01 to DASH-05)
- * - Seção B: Cockpit de Solvência (DASH-06, DASH-07, DASH-09 to DASH-12)
- * - CTB-05: Balanço Patrimonial (entre as duas seções)
- * - DASH-08: FAB lançamento rápido (flutuante)
+ * 3-section vertical layout:
+ * Seção 1: Card narrativo (P0 empty, P4 post-import, P5 neutral)
+ * Seção 2: Fila de atenção (até 5 pendências)
+ * Seção 3: Resumo financeiro (conteúdo original, abaixo da dobra)
  */
 
 import {
@@ -31,6 +30,9 @@ import {
   SolvencyPanel,
   BalanceEvolutionChart,
   QuickEntryFab,
+  NarrativeCard,
+  AttentionQueue,
+  useAttentionItems,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -39,21 +41,31 @@ export default function DashboardPage() {
   // Track dashboard view once per session
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => { trackDashboardView(); }, []);
+
   const summary = useDashboardSummary();
   const balanceSheet = useBalanceSheet();
   const solvency = useSolvencyMetrics();
   const topCategories = useTopCategories();
   const evolution = useBalanceEvolution(6);
   const budgetVsActual = useBudgetVsActual();
+  const attention = useAttentionItems();
 
   const hasError =
     summary.error || balanceSheet.error || solvency.error;
+
+  // Derive narrative state from attention data
+  const hasTransactions =
+    (summary.data?.month_income ?? 0) > 0 ||
+    (summary.data?.month_expense ?? 0) > 0 ||
+    (attention.data?.uncategorized ?? 0) > 0 ||
+    (attention.data?.overdue ?? 0) > 0;
+  const hasRecentImport = (attention.data?.recentImportCount ?? 0) > 0;
 
   return (
     <div className="space-y-8 pb-20">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Início</h2>
         <p className="text-sm text-muted-foreground">
           Visão geral das suas finanças
         </p>
@@ -81,7 +93,19 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ═══ SEÇÃO A: Visão Operacional ═══ */}
+      {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06) ═══ */}
+      <NarrativeCard
+        summary={summary.data}
+        hasTransactions={hasTransactions}
+        hasRecentImport={hasRecentImport}
+        recentImportCount={attention.data?.recentImportCount}
+        isLoading={summary.isLoading || attention.isLoading}
+      />
+
+      {/* ═══ SEÇÃO 2: Fila de Atenção (UX-H1-06) ═══ */}
+      <AttentionQueue budgetData={budgetVsActual.data} />
+
+      {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 
       {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
       <SummaryCards data={summary.data} isLoading={summary.isLoading} />
@@ -116,7 +140,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ═══ SEÇÃO B: Cockpit de Solvência ═══ */}
+      {/* ═══ Cockpit de Solvência ═══ */}
 
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Tiers */}
       <SolvencyPanel data={solvency.data} isLoading={solvency.isLoading} />
