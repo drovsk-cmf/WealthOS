@@ -20,6 +20,7 @@ import {
   useBudgetVsActual,
 } from "@/lib/hooks/use-dashboard";
 import { useAnalytics } from "@/lib/hooks/use-analytics";
+import { useProgressiveDisclosure } from "@/lib/hooks/use-progressive-disclosure";
 
 import {
   SummaryCards,
@@ -49,6 +50,7 @@ export default function DashboardPage() {
   const evolution = useBalanceEvolution(6);
   const budgetVsActual = useBudgetVsActual();
   const attention = useAttentionItems();
+  const disclosure = useProgressiveDisclosure();
 
   const hasError =
     summary.error || balanceSheet.error || solvency.error;
@@ -105,7 +107,10 @@ export default function DashboardPage() {
       />
 
       {/* ═══ SEÇÃO 2: Fila de Atenção (UX-H1-06) ═══ */}
-      <AttentionQueue budgetData={budgetVsActual.data} />
+      <AttentionQueue
+        budgetData={budgetVsActual.data}
+        showFiscalTrigger={disclosure.data?.showFiscalTrigger}
+      />
 
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 

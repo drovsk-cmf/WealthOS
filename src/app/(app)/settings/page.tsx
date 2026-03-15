@@ -26,6 +26,7 @@ import {
   Download,
   CheckSquare,
   Calendar,
+  BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -73,6 +74,7 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
       { href: "/indices", icon: TrendingUp, label: "Índices Econômicos", description: "IPCA, Selic, CDI, câmbio", ready: true },
       { href: "/tax", icon: FileText, label: "Fiscal", description: "Visão fiscal e provisionamento IR", ready: true },
       { href: "/workflows", icon: CheckSquare, label: "Tarefas", description: "Workflows e rituais periódicos", ready: true },
+      { href: "/settings/analytics", icon: BarChart3, label: "Métricas", description: "Retenção, eventos e volume de dados", ready: true },
     ],
   },
   {

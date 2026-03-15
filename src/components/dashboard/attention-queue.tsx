@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   Clock,
   RefreshCw,
+  FileText,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -37,6 +38,7 @@ interface AttentionItem {
 
 interface AttentionQueueProps {
   budgetData?: BudgetVsActualResult;
+  showFiscalTrigger?: boolean;
 }
 
 function useAttentionItems() {
@@ -132,7 +134,7 @@ function useAttentionItems() {
   });
 }
 
-export function AttentionQueue({ budgetData }: AttentionQueueProps) {
+export function AttentionQueue({ budgetData, showFiscalTrigger }: AttentionQueueProps) {
   const { data, isLoading } = useAttentionItems();
 
   if (isLoading) {
@@ -207,6 +209,18 @@ export function AttentionQueue({ budgetData }: AttentionQueueProps) {
       label: `${data.staleAccounts} conta${data.staleAccounts > 1 ? "s" : ""} desatualizada${data.staleAccounts > 1 ? "s" : ""}`,
       detail: "Saldo não atualizado há mais de 7 dias",
       href: "/accounts",
+      urgency: "low",
+    });
+  }
+
+  // 6. Fiscal trigger (UX-H3-02: reveal when >=10 income transactions)
+  if (showFiscalTrigger) {
+    items.push({
+      id: "fiscal",
+      icon: FileText,
+      label: "Ver impacto fiscal?",
+      detail: "Você já tem receitas suficientes para uma projeção de IR",
+      href: "/tax",
       urgency: "low",
     });
   }
