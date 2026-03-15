@@ -1049,10 +1049,10 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 |---|---|---|---|---|
 | UX-H2-01 | ~~Auto-categorização no FAB e importação (transaction_classification_rules)~~ | TransactionForm, import-wizard | ~~Médio~~ | FEITO (commit c051aa8) |
 | UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | CFG-04 (infra existe), Edge Function nova | Médio | Não iniciado |
-| UX-H2-03 | Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês) | dashboard/page.tsx | Médio | Não iniciado |
+| UX-H2-03 | ~~Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês)~~ | dashboard/page.tsx | ~~Médio~~ | FEITO (commit c7c2275) |
 | UX-H2-04 | Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude | Múltiplas páginas | Médio | Não iniciado |
 | UX-H2-05 | Desfazer importação: estorno em lote (72h, append-only) | FIN-16, RPC nova | Médio | Não iniciado |
-| UX-H2-06 | Indicador confirmado/estimado no saldo consolidado do Dashboard | SummaryCards, hook | Baixo | Não iniciado |
+| UX-H2-06 | ~~Indicador confirmado/estimado no saldo consolidado do Dashboard~~ | SummaryCards, hook | ~~Baixo~~ | FEITO (commit c7c2275) |
 
 **H3: Mês 1-3 pós-lançamento (retenção D30)**
 
@@ -1171,15 +1171,16 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 15. Sessão 15/03/2026 (cont.) - H1 UX Final + P2 CSP + H2 UX Start
+## 15. Sessão 15/03/2026 (cont.) - H1 UX Final + P2 CSP + H2 UX
 
-3 commits, CI 3/3 verde em todos.
+5 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
 | 7b3ffdd | feat: UX-H1-02 onboarding steps 8-10 + UX-H1-06 dashboard Início v1 |
 | 56f6244 | feat: P2 CSP nonce-based policy (remove unsafe-eval in production) |
 | c051aa8 | feat: UX-H2-01 auto-categorization in TransactionForm |
+| c7c2275 | feat: UX-H2-03 narrative engine P1-P3 + UX-H2-06 confirmed/estimated indicator |
 
 **Entregas consolidadas:**
 
@@ -1218,8 +1219,19 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 - Override manual: se usuário seleciona categoria, auto-suggest para
 - Import batch já usa auto_categorize internamente (sem mudança necessária)
 
+**UX-H2-03: Motor narrativo P1-P3**
+- P1: Orçamento pressionado (>80%: burnished, >=100%: terracotta). Mostra % e valor restante/excedido
+- P2: Inatividade (7+ dias sem transação). CTAs para novo lançamento ou importação
+- P3: Fim de mês (últimos 5 dias). Parcial de receitas/despesas
+- Cadeia de prioridade: P0 > P4 > P1 > P3 > P2 > P5
+- lastTransactionDaysAgo adicionado à query de atenção (6 queries paralelas count-only)
+
+**UX-H2-06: Indicador confirmado/estimado no saldo**
+- Badge "Confirmado" (verdant) no saldo atual
+- Badge "Previsto: X" (burnished) exibido apenas quando difere do atual
+
 **Testes:** 171 (sem alteração), 13 suítes
-**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 105 arquivos src/, ~19.900 linhas
+**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 106 arquivos src/, ~20.200 linhas
 
 ---
 
