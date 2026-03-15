@@ -252,7 +252,7 @@ export default function BudgetsPage() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state (UX-H1-03) */}
       {!hasBudgetsThisMonth && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
@@ -261,17 +261,16 @@ export default function BudgetsPage() {
           <h2 className="text-lg font-semibold">
             Nenhum orçamento para {formatMonthLabel(currentMonth)}
           </h2>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Defina limites de gasto por categoria para controlar suas finanças.
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            Defina limites de gasto por categoria para saber se o mês vai fechar no azul. Com pelo menos 1 semana de transações registradas, as sugestões ficam mais precisas.
           </p>
-          <div className="mt-4 flex gap-3">
+          <div className="mt-5 flex gap-3">
             <button
               onClick={handleNew}
               className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Criar orçamento
             </button>
-            {/* ORC-02: Copy from previous month */}
             <button
               onClick={() => setConfirmCopy(true)}
               className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"

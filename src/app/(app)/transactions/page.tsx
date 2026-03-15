@@ -206,29 +206,40 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state (UX-H1-03) */}
       {transactions && transactions.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <ArrowLeftRight className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">
-            {Object.keys(filters).length > 0
-              ? "Nenhuma transação encontrada para os filtros selecionados."
-              : "Nenhuma transação registrada."}
-          </h2>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            {Object.keys(filters).length > 0
-              ? "Ajuste os filtros ou limpe a busca."
-              : "Registre uma transação para iniciar."}
-          </p>
-          {Object.keys(filters).length === 0 && (
-            <button
-              onClick={() => setFormOpen(true)}
-              className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Nova transação
-            </button>
+          {Object.keys(filters).some((k) => k !== "search" && filters[k as keyof TransactionFilters]) ? (
+            <>
+              <h2 className="text-lg font-semibold">Nenhuma transação encontrada</h2>
+              <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Ajuste os filtros ou limpe a busca para ver seus registros.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-lg font-semibold">Suas transações aparecem aqui</h2>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                Comece lançando uma despesa (~30 segundos) ou importando um extrato do seu banco (~2 minutos) para ver para onde o dinheiro vai.
+              </p>
+              <div className="mt-5 flex gap-3">
+                <button
+                  onClick={() => setFormOpen(true)}
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  + Nova transação
+                </button>
+                <a
+                  href="/connections"
+                  className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                >
+                  Importar extrato
+                </a>
+              </div>
+            </>
           )}
         </div>
       )}

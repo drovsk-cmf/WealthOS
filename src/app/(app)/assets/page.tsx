@@ -205,19 +205,19 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state (UX-H1-03) */}
       {(!assets || assets.length === 0) && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Package className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">Nenhum bem cadastrado</h2>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Nenhum bem cadastrado. Bens registrados aparecem com visão consolidada e depreciação.
+          <h2 className="text-lg font-semibold">Registre seus bens e investimentos</h2>
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
           </p>
           <button onClick={handleNew}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-            Cadastrar bem
+            className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+            + Cadastrar bem
           </button>
         </div>
       )}

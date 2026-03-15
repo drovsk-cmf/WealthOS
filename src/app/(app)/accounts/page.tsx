@@ -112,21 +112,21 @@ export default function AccountsPage() {
         </div>
       )}
 
-      {/* Empty state */}
+      {/* Empty state (UX-H1-03) */}
       {accounts && accounts.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Wallet className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">Nenhuma conta cadastrada</h2>
-          <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Contas bancárias, cartões e carteiras são registrados aqui.
+          <h2 className="text-lg font-semibold">Adicione suas contas e cartões</h2>
+          <p className="mt-1 max-w-md text-sm text-muted-foreground">
+            Cadastre suas contas bancárias, cartões de crédito e investimentos para ver saldos consolidados em tempo real. A maioria dos usuários começa com conta corrente + cartão.
           </p>
           <button
             onClick={handleNew}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Cadastrar conta
+            + Adicionar conta
           </button>
         </div>
       )}
