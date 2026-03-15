@@ -29,6 +29,10 @@ interface IndexSource {
   is_active: boolean;
 }
 
+// Allowlist of hostnames permitted for external data fetches.
+// Currently only BCB SGS is active. Add hosts here when new providers are enabled.
+const ALLOWED_HOSTS = ["api.bcb.gov.br"];
+
 function parseBcbDate(dateStr: string): string {
   // DD/MM/YYYY → YYYY-MM-DD
   const [d, m, y] = dateStr.split("/");
@@ -82,6 +86,21 @@ export async function POST() {
         const url = source.api_url_template
           .replace("{start}", formatDateForBcb(startDate))
           .replace("{end}", formatDateForBcb(endDate));
+
+        // SSRF protection: only allow fetches to known API hosts
+        let parsedUrl: URL;
+        try {
+          parsedUrl = new URL(url);
+        } catch {
+          fetchResult.errors.push(`URL inválida: ${url}`);
+          results.push(fetchResult);
+          continue;
+        }
+        if (!ALLOWED_HOSTS.includes(parsedUrl.hostname)) {
+          fetchResult.errors.push(`Host não permitido: ${parsedUrl.hostname}`);
+          results.push(fetchResult);
+          continue;
+        }
 
         const response = await fetch(url, {
           headers: { Accept: "application/json" },
