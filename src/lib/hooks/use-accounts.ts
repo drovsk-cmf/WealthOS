@@ -177,10 +177,10 @@ export function useCreateAccount() {
 
       return data as Account;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
-      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      await queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
     },
   });
 }
@@ -214,8 +214,8 @@ export function useUpdateAccount() {
       if (error) throw error;
       return data as Account;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -237,8 +237,8 @@ export function useDeactivateAccount() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }

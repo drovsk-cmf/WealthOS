@@ -84,8 +84,8 @@ export function useCreateCategory() {
       if (error) throw error;
       return data as Category;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }
@@ -110,8 +110,8 @@ export function useUpdateCategory() {
       if (error) throw error;
       return data as Category;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }
@@ -134,8 +134,8 @@ export function useDeleteCategory() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
     },
   });
 }

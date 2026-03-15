@@ -173,7 +173,9 @@ export function mapToTransactions(
       continue;
     }
 
-    const description = rawDesc || "Sem descrição";
+    // Strip leading formula-triggering characters to prevent CSV injection
+    const sanitized = rawDesc.replace(/^[=+\-@]+/, "");
+    const description = sanitized || "Sem descrição";
     const type = amount >= 0 ? "income" : "expense";
     const absAmount = Math.abs(amount);
     const externalId = `csv_${date}_${absAmount.toFixed(2)}_${i}`;

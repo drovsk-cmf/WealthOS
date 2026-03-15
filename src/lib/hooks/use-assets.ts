@@ -247,9 +247,9 @@ export function useCreateAsset() {
 
       return data as Asset;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -303,9 +303,9 @@ export function useUpdateAsset() {
       if (error) throw error;
       return data as Asset;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -325,9 +325,9 @@ export function useDeleteAsset() {
       const { error } = await supabase.from("assets").delete().eq("id", id).eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -354,9 +354,9 @@ export function useDepreciateAsset() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

@@ -88,8 +88,8 @@ export function useToggleAccountActive() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
     },
   });
 }
@@ -123,8 +123,8 @@ export function useCreateCOA() {
       if (error) throw error;
       return data as string;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
     },
   });
 }

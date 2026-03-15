@@ -236,11 +236,11 @@ export function useCreateRecurrence() {
 
       return rec as Recurrence;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -285,9 +285,9 @@ export function useUpdateRecurrence() {
       if (error) throw error;
       return data as Recurrence;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
     },
   });
 }
@@ -309,9 +309,9 @@ export function useDeactivateRecurrence() {
         .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
     },
   });
 }
@@ -349,11 +349,11 @@ export function usePayBill() {
 
       return { transactionId, nextResult };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

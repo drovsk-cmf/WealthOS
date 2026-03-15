@@ -221,8 +221,8 @@ export function useAutoCreateWorkflow() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -250,8 +250,8 @@ export function useGenerateTasks() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
     },
   });
 }
@@ -288,9 +288,9 @@ export function useCompleteTask() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -327,8 +327,8 @@ export function useCreateWorkflow() {
       if (error) throw error;
       return data as Workflow;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -350,9 +350,9 @@ export function useDeactivateWorkflow() {
         .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
     },
   });
 }

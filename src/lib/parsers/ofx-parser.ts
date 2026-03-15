@@ -92,16 +92,21 @@ function extractBlocks(content: string, tag: string): string[] {
     blocks.push(match[1]);
   }
 
-  // Fallback for SGML without closing tags
+  // Fallback for SGML without closing tags — use split to avoid ReDoS
   if (blocks.length === 0) {
-    const sgmlRegex = new RegExp(`<${tag}>([\\s\\S]*?)(?=<${tag}>|</${tag.replace("STMTTRN", "BANKTRANLIST")}>|$)`, "gi");
-    while ((match = sgmlRegex.exec(content)) !== null) {
-      blocks.push(match[1]);
+    const openTag = `<${tag}>`;
+    const parts = content.split(new RegExp(openTag, "gi"));
+    for (let i = 1; i < parts.length; i++) {
+      const part = parts[i];
+      const endIdx = part.search(new RegExp(`</?${tag.replace("STMTTRN", "BANKTRANLIST")}`, "i"));
+      blocks.push(endIdx >= 0 ? part.slice(0, endIdx) : part);
     }
   }
 
   return blocks;
 }
+
+const MAX_OFX_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function parseOFX(content: string): Promise<OFXParseResult> {
   const result: OFXParseResult = {
@@ -109,6 +114,11 @@ export async function parseOFX(content: string): Promise<OFXParseResult> {
     duplicatesSkipped: 0,
     errors: [],
   };
+
+  if (content.length > MAX_OFX_SIZE) {
+    result.errors.push("Arquivo OFX muito grande. Limite: 10MB.");
+    return result;
+  }
 
   try {
     // Strip SGML header if present

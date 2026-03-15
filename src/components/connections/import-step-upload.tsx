@@ -51,6 +51,9 @@ export function ImportStepUpload({
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
 
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) return;
+
     const ext = "." + file.name.split(".").pop()?.toLowerCase();
     if (!ACCEPTED_EXTENSIONS.includes(ext)) return;
 

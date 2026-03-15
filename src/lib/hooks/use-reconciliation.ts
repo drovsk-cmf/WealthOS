@@ -154,11 +154,11 @@ export function useMatchTransactions() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["reconciliation"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["reconciliation"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }

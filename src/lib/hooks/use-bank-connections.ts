@@ -76,8 +76,8 @@ export function useCreateBankConnection() {
       if (error) throw error;
       return data as BankConnection;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -98,8 +98,8 @@ export function useDeactivateBankConnection() {
         .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -153,10 +153,10 @@ export function useImportBatch() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -186,11 +186,11 @@ export function useUndoImportBatch() {
 
       return result;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }

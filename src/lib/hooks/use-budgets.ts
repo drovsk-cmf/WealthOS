@@ -232,9 +232,9 @@ export function useCreateBudget() {
       if (error) throw error;
       return data as Budget;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["budgets"] });
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
     },
@@ -275,9 +275,9 @@ export function useUpdateBudget() {
       if (error) throw error;
       return data as Budget;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["budgets"] });
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
     },
@@ -298,9 +298,9 @@ export function useDeleteBudget() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["budgets"] });
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
     },
@@ -382,9 +382,9 @@ export function useCopyBudgets() {
       if (error) throw error;
       return data as Budget[];
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["budgets"] });
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
     },

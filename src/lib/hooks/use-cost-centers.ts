@@ -68,8 +68,8 @@ export function useCreateCostCenter() {
       if (error) throw error;
       return data as CostCenter;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -94,8 +94,8 @@ export function useUpdateCostCenter() {
       if (error) throw error;
       return data as CostCenter;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -118,8 +118,8 @@ export function useDeleteCostCenter() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -261,14 +261,22 @@ export function useAllocateToCenters() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
 
 // ─── CEN-05: Client-side CSV helper ─────────────────────────────
+
+function csvSafe(value: string): string {
+  const escaped = value.replace(/"/g, '""');
+  if (/^[=+\-@]/.test(escaped)) {
+    return `"\t${escaped}"`;
+  }
+  return `"${escaped}"`;
+}
 
 export function exportToCsv(data: CenterExport): string {
   const header =
@@ -277,11 +285,11 @@ export function exportToCsv(data: CenterExport): string {
     [
       tx.date,
       tx.type === "income" ? "Receita" : "Despesa",
-      `"${(tx.description || "").replace(/"/g, '""')}"`,
+      csvSafe(tx.description || ""),
       tx.amount.toFixed(2),
       tx.center_percentage.toFixed(1),
       tx.center_amount.toFixed(2),
-      `"${tx.coa_name}"`,
+      csvSafe(tx.coa_name),
       tx.group_type,
       tx.is_paid ? "Sim" : "Não",
     ].join(",")

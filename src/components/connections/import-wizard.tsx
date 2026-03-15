@@ -31,9 +31,16 @@ export function ImportWizard() {
   const { data: connections } = useBankConnections();
   const importBatch = useImportBatch();
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const handleFileUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      setParseErrors(["Arquivo muito grande. Limite: 10MB."]);
+      return;
+    }
 
     const ext = file.name.toLowerCase().split(".").pop();
 

@@ -97,9 +97,9 @@ export function useCreateFamilyMember() {
       if (error) throw error;
       return data as string;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["family_members"] });
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["family_members"] });
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -136,9 +136,9 @@ export function useUpdateFamilyMember() {
 
       return data as FamilyMember;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["family_members"] });
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["family_members"] });
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -177,9 +177,9 @@ export function useDeactivateFamilyMember() {
           .eq("id", member.cost_center_id);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["family_members"] });
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["family_members"] });
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
