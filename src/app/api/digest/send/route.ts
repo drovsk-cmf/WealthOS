@@ -21,13 +21,13 @@ export async function POST(request: Request) {
   const cronSecret = process.env.DIGEST_CRON_SECRET;
   if (!cronSecret) {
     return NextResponse.json(
-      { error: "Server misconfiguration" },
+      { error: "Erro de configuração do servidor" },
       { status: 500 }
     );
   }
   const authHeader = request.headers.get("x-cron-secret");
   if (!authHeader || authHeader !== cronSecret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
   // Admin client (bypasses RLS, required for cron context)

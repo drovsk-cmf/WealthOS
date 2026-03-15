@@ -2,6 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
+import { validateEnv, validateServerEnv } from "@/lib/config/env";
+
+// Fail fast if env vars are missing
+validateEnv();
 
 /**
  * Supabase client for Server Components and Route Handlers.
@@ -39,6 +43,7 @@ export async function createClient() {
  * Used only in API routes for operations that bypass RLS.
  */
 export function createAdminClient() {
+  validateServerEnv();
   return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,

@@ -6,6 +6,10 @@ import {
   rateLimitHeaders,
   type RateLimitResult,
 } from "@/lib/auth/rate-limiter";
+import { validateEnv } from "@/lib/config/env";
+
+// Fail fast if env vars are missing
+validateEnv();
 
 /**
  * Oniefy Middleware
@@ -43,8 +47,8 @@ function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
 
   // In dev: unsafe-eval required for Next.js HMR + React Fast Refresh
-  // In prod: no unsafe-eval. unsafe-inline kept for Next.js inline scripts.
-  // Nonce available via x-nonce header for future strict-dynamic upgrade.
+  // In prod: no unsafe-eval/unsafe-inline. Uses nonce + strict-dynamic.
+  // strict-dynamic allows scripts loaded by nonce'd scripts to execute.
   const scriptSrc = isDev
     ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
     : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
@@ -156,10 +160,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect root to dashboard
+  // Redirect root: check onboarding status for authenticated users
   if (pathname === "/" && user) {
+    const { data: profile } = await supabase
+      .from("users_profile")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single();
+
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = profile && !profile.onboarding_completed ? "/onboarding" : "/dashboard";
     return NextResponse.redirect(url);
   }
   if (pathname === "/" && !user) {

@@ -62,7 +62,19 @@ export default function OnboardingPage() {
   const supabase = createClient();
   const { track } = useAnalytics();
 
-  const [step, setStep] = useState<Step>("welcome");
+  const [step, setStepRaw] = useState<Step>(() => {
+    if (typeof window !== "undefined") {
+      const saved = sessionStorage.getItem("onboarding_step");
+      if (saved && STEPS.includes(saved as Step)) return saved as Step;
+    }
+    return "welcome";
+  });
+  const setStep = (s: Step) => {
+    setStepRaw(s);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("onboarding_step", s);
+    }
+  };
   const [currency, setCurrency] = useState("BRL");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -232,6 +244,7 @@ export default function OnboardingPage() {
     if (route === "import") {
       // Route B: redirect to connections page (onboarding_completed is already true)
       track("onboarding_completed", { route: "import", skipped_execution: false });
+      sessionStorage.removeItem("onboarding_step");
       router.push("/connections");
       return;
     }
@@ -241,6 +254,7 @@ export default function OnboardingPage() {
 
   function handleRouteSkip() {
     track("onboarding_completed", { route: "skipped" });
+    sessionStorage.removeItem("onboarding_step");
     router.push("/dashboard");
   }
 
@@ -263,6 +277,7 @@ export default function OnboardingPage() {
   }
 
   function handleGoToApp() {
+    sessionStorage.removeItem("onboarding_step");
     router.push("/dashboard");
   }
 

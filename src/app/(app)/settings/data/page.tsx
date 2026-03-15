@@ -10,7 +10,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Download, FileJson, FileSpreadsheet, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, AlertTriangle, FileJson, FileSpreadsheet, Loader2, Shield } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
 
@@ -19,6 +19,11 @@ type ExportFormat = "json" | "csv";
 interface ExportProgress {
   step: string;
   done: boolean;
+}
+
+interface ExportWarnings {
+  truncated: string[];
+  failed: string[];
 }
 
 const TABLES_TO_EXPORT = [
@@ -76,32 +81,49 @@ export default function DataSettingsPage() {
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState<ExportProgress[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<ExportWarnings>({ truncated: [], failed: [] });
 
   async function handleExport(format: ExportFormat) {
     setExporting(true);
     setError(null);
     setProgress([]);
+    setWarnings({ truncated: [], failed: [] });
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
       const allData: Record<string, unknown[]> = {};
+      const exportWarnings: ExportWarnings = { truncated: [], failed: [] };
       const steps: ExportProgress[] = TABLES_TO_EXPORT.map((t) => ({
         step: t.label,
         done: false,
       }));
       setProgress([...steps]);
 
+      const EXPORT_LIMIT = 10000;
+
       for (let i = 0; i < TABLES_TO_EXPORT.length; i++) {
         const table = TABLES_TO_EXPORT[i];
+
+        // Check total count to detect truncation
+        const { count } = await supabase
+          .from(table.key)
+          .select("*", { count: "exact", head: true });
+
+        if (count !== null && count > EXPORT_LIMIT) {
+          exportWarnings.truncated.push(
+            `${table.label} (${count.toLocaleString("pt-BR")} registros, apenas ${EXPORT_LIMIT.toLocaleString("pt-BR")} exportados)`
+          );
+        }
+
         const { data, error: fetchError } = await supabase
           .from(table.key)
           .select("*")
-          .limit(10000);
+          .limit(EXPORT_LIMIT);
 
         if (fetchError) {
-          console.error(`Export error on ${table.key}:`, fetchError.message);
+          exportWarnings.failed.push(table.label);
           allData[table.key] = [];
         } else {
           allData[table.key] = data ?? [];
@@ -111,13 +133,16 @@ export default function DataSettingsPage() {
         setProgress([...steps]);
       }
 
-      // Also export user profile
+      // Export user profile — explicit column list excluding encryption keys
+      // Excluded: kek_material, encryption_key_encrypted, encryption_key_iv, cpf_encrypted
       const { data: profile } = await supabase
         .from("users_profile")
-        .select("full_name, default_currency, onboarding_completed, created_at")
+        .select("full_name, default_currency, onboarding_completed, created_at, updated_at, deletion_requested_at")
         .eq("id", user.id)
         .single();
       allData["profile"] = profile ? [profile] : [];
+
+      setWarnings(exportWarnings);
 
       const timestamp = new Date().toISOString().slice(0, 10);
 
@@ -181,6 +206,29 @@ export default function DataSettingsPage() {
         {error && (
           <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
             {error}
+          </div>
+        )}
+
+        {(warnings.truncated.length > 0 || warnings.failed.length > 0) && (
+          <div className="rounded-md border border-warning/50 bg-warning/10 p-3 text-sm space-y-1">
+            <div className="flex items-center gap-1.5 font-medium text-warning-foreground">
+              <AlertTriangle className="h-4 w-4" />
+              Avisos da exportação
+            </div>
+            {warnings.failed.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                Não foi possível exportar: {warnings.failed.join(", ")}.
+                Os demais dados foram exportados com sucesso.
+              </p>
+            )}
+            {warnings.truncated.length > 0 && (
+              <div className="text-xs text-muted-foreground">
+                <p>Dados truncados (limite de 10.000 registros):</p>
+                <ul className="list-disc list-inside mt-1">
+                  {warnings.truncated.map((w, i) => <li key={i}>{w}</li>)}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
