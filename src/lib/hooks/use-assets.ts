@@ -103,9 +103,13 @@ export function useAssets() {
   return useQuery({
     queryKey: ["assets"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("assets")
         .select("*")
+        .eq("user_id", user.id)
         .order("current_value", { ascending: false });
       if (error) throw error;
       return data as Asset[];
@@ -121,10 +125,14 @@ export function useAsset(id: string | null) {
     queryKey: ["assets", "detail", id],
     enabled: !!id,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("assets")
         .select("*")
         .eq("id", id!)
+        .eq("user_id", user.id)
         .single();
       if (error) throw error;
       return data as Asset;
@@ -164,10 +172,14 @@ export function useAssetValueHistory(assetId: string | null) {
     queryKey: ["assets", "history", assetId],
     enabled: !!assetId,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("asset_value_history")
         .select("*")
         .eq("asset_id", assetId!)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as AssetValueHistory[];
@@ -235,9 +247,9 @@ export function useCreateAsset() {
 
       return data as Asset;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -291,9 +303,9 @@ export function useUpdateAsset() {
       if (error) throw error;
       return data as Asset;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -305,14 +317,17 @@ export function useDeleteAsset() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // Delete history first (FK constraint)
-      await supabase.from("asset_value_history").delete().eq("asset_id", id);
-      const { error } = await supabase.from("assets").delete().eq("id", id);
+      await supabase.from("asset_value_history").delete().eq("asset_id", id).eq("user_id", user.id);
+      const { error } = await supabase.from("assets").delete().eq("id", id).eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -339,9 +354,9 @@ export function useDepreciateAsset() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assets"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["assets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

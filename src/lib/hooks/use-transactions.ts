@@ -39,9 +39,13 @@ export function useTransactions(filters: TransactionFilters = {}) {
   return useQuery({
     queryKey: ["transactions", filters],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("transactions")
         .select("*")
+        .eq("user_id", user.id)
         .order("date", { ascending: false })
         .order("created_at", { ascending: false });
 
@@ -83,9 +87,9 @@ export function useTransactions(filters: TransactionFilters = {}) {
       const categoryIds = Array.from(new Set(txs.map((t) => t.category_id).filter(Boolean))) as string[];
 
       const [{ data: accounts }, { data: categories }] = await Promise.all([
-        supabase.from("accounts").select("id, name, color").in("id", accountIds),
+        supabase.from("accounts").select("id, name, color").eq("user_id", user.id).in("id", accountIds),
         categoryIds.length > 0
-          ? supabase.from("categories").select("id, name, icon, color").in("id", categoryIds)
+          ? supabase.from("categories").select("id, name, icon, color").eq("user_id", user.id).in("id", categoryIds)
           : Promise.resolve({ data: [] as { id: string; name: string; icon: string | null; color: string | null }[] }),
       ]);
 
@@ -115,10 +119,14 @@ export function useTransaction(id: string | null) {
     queryKey: ["transactions", id],
     enabled: !!id,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("transactions")
         .select("*")
         .eq("id", id!)
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;

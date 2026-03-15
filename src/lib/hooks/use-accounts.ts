@@ -67,9 +67,13 @@ export function useAccounts() {
   return useQuery({
     queryKey: ["accounts"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("accounts")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("created_at", { ascending: true });
 
@@ -86,10 +90,14 @@ export function useAccount(id: string | null) {
     queryKey: ["accounts", id],
     enabled: !!id,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("accounts")
         .select("*")
         .eq("id", id!)
+        .eq("user_id", user.id)
         .single();
 
       if (error) throw error;
@@ -169,10 +177,10 @@ export function useCreateAccount() {
 
       return data as Account;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
-      queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      await queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
     },
   });
 }
@@ -183,6 +191,9 @@ export function useUpdateAccount() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: AccountUpdate & { id: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // If type changed, update tier (type change is disabled in UI, but belt + suspenders)
       let tier: string | undefined;
       if (updates.type) {
@@ -196,14 +207,15 @@ export function useUpdateAccount() {
           ...(tier !== undefined && { liquidity_tier: tier }),
         })
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
       if (error) throw error;
       return data as Account;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }
@@ -214,15 +226,19 @@ export function useDeactivateAccount() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("accounts")
         .update({ is_active: false })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
   });
 }

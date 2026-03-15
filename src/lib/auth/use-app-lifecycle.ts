@@ -160,8 +160,9 @@ async function attemptBiometricUnlock(): Promise<boolean> {
     // });
     // return result.verified;
 
-    console.warn("[Oniefy] Biometric unlock: stub (Fase 10)");
-    return true; // Stub: permite acesso até plugin real estar disponível
+    // TODO: install @capacitor-community/biometric-auth and implement real biometric prompt
+    console.warn("[Oniefy] Biometric unlock: plugin not installed, denying access (Fase 10)");
+    return false;
   } catch {
     return false;
   }

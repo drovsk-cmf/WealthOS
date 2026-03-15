@@ -33,9 +33,13 @@ export function useCostCenters() {
   return useQuery({
     queryKey: ["cost_centers"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("cost_centers")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("is_default", { ascending: false })
         .order("name", { ascending: true });
@@ -64,8 +68,8 @@ export function useCreateCostCenter() {
       if (error) throw error;
       return data as CostCenter;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -76,18 +80,22 @@ export function useUpdateCostCenter() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: CostCenterUpdate & { id: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("cost_centers")
         .update(updates)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
       if (error) throw error;
       return data as CostCenter;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -98,16 +106,20 @@ export function useDeleteCostCenter() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // RLS policy blocks delete of is_default=true
       const { error } = await supabase
         .from("cost_centers")
         .update({ is_active: false })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
 
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
     },
   });
 }
@@ -249,14 +261,22 @@ export function useAllocateToCenters() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }
 
 // ─── CEN-05: Client-side CSV helper ─────────────────────────────
+
+function csvSafe(value: string): string {
+  const escaped = value.replace(/"/g, '""');
+  if (/^[=+\-@]/.test(escaped)) {
+    return `"\t${escaped}"`;
+  }
+  return `"${escaped}"`;
+}
 
 export function exportToCsv(data: CenterExport): string {
   const header =
@@ -265,11 +285,11 @@ export function exportToCsv(data: CenterExport): string {
     [
       tx.date,
       tx.type === "income" ? "Receita" : "Despesa",
-      `"${(tx.description || "").replace(/"/g, '""')}"`,
+      csvSafe(tx.description || ""),
       tx.amount.toFixed(2),
       tx.center_percentage.toFixed(1),
       tx.center_amount.toFixed(2),
-      `"${tx.coa_name}"`,
+      csvSafe(tx.coa_name),
       tx.group_type,
       tx.is_paid ? "Sim" : "Não",
     ].join(",")

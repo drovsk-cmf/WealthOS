@@ -34,9 +34,13 @@ export function useBankConnections() {
   return useQuery({
     queryKey: ["bank_connections"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("bank_connections")
         .select("*")
+        .eq("user_id", user.id)
         .eq("is_active", true)
         .order("institution_name", { ascending: true });
       if (error) throw error;
@@ -72,8 +76,8 @@ export function useCreateBankConnection() {
       if (error) throw error;
       return data as BankConnection;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -84,14 +88,18 @@ export function useDeactivateBankConnection() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("bank_connections")
         .update({ is_active: false, updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -145,10 +153,10 @@ export function useImportBatch() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }
@@ -178,11 +186,11 @@ export function useUndoImportBatch() {
 
       return result;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
     },
   });
 }

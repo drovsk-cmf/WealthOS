@@ -75,9 +75,13 @@ export function useRecurrences(activeOnly: boolean = true) {
   return useQuery({
     queryKey: ["recurrences", activeOnly],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("recurrences")
         .select("*")
+        .eq("user_id", user.id)
         .order("next_due_date", { ascending: true });
 
       if (activeOnly) {
@@ -99,10 +103,14 @@ export function useRecurrence(id: string | null) {
     queryKey: ["recurrences", "detail", id],
     enabled: !!id,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("recurrences")
         .select("*")
         .eq("id", id!)
+        .eq("user_id", user.id)
         .single();
       if (error) throw error;
       return data as Recurrence;
@@ -120,6 +128,9 @@ export function usePendingBills() {
   return useQuery({
     queryKey: ["bills", "pending"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("transactions")
         .select(`
@@ -128,6 +139,7 @@ export function usePendingBills() {
           accounts!inner(name, color),
           categories(name, icon, color)
         `)
+        .eq("user_id", user.id)
         .in("payment_status", ["pending", "overdue"])
         .eq("is_deleted", false)
         .not("recurrence_id", "is", null)
@@ -224,11 +236,11 @@ export function useCreateRecurrence() {
 
       return rec as Recurrence;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }
@@ -240,6 +252,9 @@ export function useUpdateRecurrence() {
 
   return useMutation({
     mutationFn: async ({ id, template, ...updates }: UpdateRecurrenceInput) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       // If template fields are being updated, merge with existing
       const payload: Record<string, unknown> = { ...updates };
 
@@ -248,6 +263,7 @@ export function useUpdateRecurrence() {
           .from("recurrences")
           .select("template_transaction")
           .eq("id", id)
+          .eq("user_id", user.id)
           .single();
 
         if (existing) {
@@ -262,15 +278,16 @@ export function useUpdateRecurrence() {
         .from("recurrences")
         .update(payload)
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 
       if (error) throw error;
       return data as Recurrence;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
     },
   });
 }
@@ -282,15 +299,19 @@ export function useDeactivateRecurrence() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("recurrences")
         .update({ is_active: false, updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["recurrences"] });
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["recurrences"] });
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
     },
   });
 }
@@ -328,11 +349,11 @@ export function usePayBill() {
 
       return { transactionId, nextResult };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bills"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["bills"] });
+      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

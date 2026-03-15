@@ -88,9 +88,13 @@ export function useWorkflows(activeOnly: boolean = true) {
   return useQuery({
     queryKey: ["workflows", activeOnly],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       let query = supabase
         .from("workflows")
         .select("*")
+        .eq("user_id", user.id)
         .order("name", { ascending: true });
 
       if (activeOnly) query = query.eq("is_active", true);
@@ -109,12 +113,16 @@ export function usePendingTasks() {
   return useQuery({
     queryKey: ["workflow_tasks", "pending"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("workflow_tasks")
         .select(`
           *,
-          workflows!inner(name, workflow_type)
+          workflows!inner(name, workflow_type, user_id)
         `)
+        .eq("workflows.user_id", user.id)
         .in("status", ["pending", "in_progress"])
         .order("period_end", { ascending: true })
         .order("created_at", { ascending: true });
@@ -138,9 +146,13 @@ export function usePendingTaskCount() {
     queryKey: ["workflow_tasks", "count"],
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { count, error } = await supabase
         .from("workflow_tasks")
-        .select("*", { count: "exact", head: true })
+        .select("*, workflows!inner(user_id)", { count: "exact", head: true })
+        .eq("workflows.user_id", user.id)
         .in("status", ["pending", "in_progress"]);
 
       if (error) throw error;
@@ -157,9 +169,13 @@ export function useWorkflowTasks(workflowId: string | null) {
     queryKey: ["workflow_tasks", workflowId],
     enabled: !!workflowId,
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { data, error } = await supabase
         .from("workflow_tasks")
-        .select("*")
+        .select("*, workflows!inner(user_id)")
+        .eq("workflows.user_id", user.id)
         .eq("workflow_id", workflowId!)
         .order("period_start", { ascending: false })
         .order("created_at", { ascending: true })
@@ -205,8 +221,8 @@ export function useAutoCreateWorkflow() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -234,8 +250,8 @@ export function useGenerateTasks() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
     },
   });
 }
@@ -272,9 +288,9 @@ export function useCompleteTask() {
       }
       return parsed.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -311,8 +327,8 @@ export function useCreateWorkflow() {
       if (error) throw error;
       return data as Workflow;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
     },
   });
 }
@@ -324,15 +340,19 @@ export function useDeactivateWorkflow() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
       const { error } = await supabase
         .from("workflows")
         .update({ is_active: false, updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id)
+        .eq("user_id", user.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["workflows"] });
-      queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
+      await queryClient.invalidateQueries({ queryKey: ["workflow_tasks"] });
     },
   });
 }

@@ -91,7 +91,7 @@ export async function middleware(request: NextRequest) {
   const startMs = performance.now();
   const { pathname } = request.nextUrl;
 
-  // ── CSP Nonce (P2: remove unsafe-eval in production) ──
+  // ── CSP Nonce (P2: nonce-based strict-dynamic in production; unsafe-eval removed) ──
   const nonce = generateNonce();
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
