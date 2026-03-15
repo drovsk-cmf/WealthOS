@@ -19,11 +19,15 @@ import {
 export async function POST(request: Request) {
   // ── Auth check ──
   const cronSecret = process.env.DIGEST_CRON_SECRET;
-  if (cronSecret) {
-    const authHeader = request.headers.get("x-cron-secret");
-    if (authHeader !== cronSecret) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!cronSecret) {
+    return NextResponse.json(
+      { error: "Server misconfiguration" },
+      { status: 500 }
+    );
+  }
+  const authHeader = request.headers.get("x-cron-secret");
+  if (!authHeader || authHeader !== cronSecret) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Admin client (bypasses RLS, required for cron context)

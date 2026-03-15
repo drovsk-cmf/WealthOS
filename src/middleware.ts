@@ -212,7 +212,6 @@ export async function middleware(request: NextRequest) {
 
   // ── CSP header (P2) ──
   supabaseResponse.headers.set("Content-Security-Policy", buildCsp(nonce));
-  supabaseResponse.headers.set("x-nonce", nonce);
 
   // Rate limit headers on auth routes (reuse result from first check)
   if (rlResultForHeaders) {

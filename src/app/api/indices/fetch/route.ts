@@ -173,8 +173,9 @@ export async function POST() {
       total_inserted: results.reduce((s, r) => s + r.inserted, 0),
     });
   } catch (err) {
+    console.error("[indices/fetch] Internal error:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Internal error" },
+      { error: "Erro interno ao buscar índices." },
       { status: 500 }
     );
   }

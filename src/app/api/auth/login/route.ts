@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/auth/rate-limiter";
+import { loginSchema } from "@/lib/validations/auth";
 
 /**
  * POST /api/auth/login
@@ -30,24 +31,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // ── Parse body ──
+  // ── Parse & validate body ──
   let email: string;
   let password: string;
 
   try {
     const body = await request.json();
-    email = body.email;
-    password = body.password;
+    const parsed = loginSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Email e senha são obrigatórios." },
+        { status: 400 }
+      );
+    }
+    email = parsed.data.email;
+    password = parsed.data.password;
   } catch {
     return NextResponse.json(
       { error: "Corpo da requisição inválido." },
-      { status: 400 }
-    );
-  }
-
-  if (!email || !password) {
-    return NextResponse.json(
-      { error: "Email e senha são obrigatórios." },
       { status: 400 }
     );
   }
