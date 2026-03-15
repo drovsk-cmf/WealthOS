@@ -77,6 +77,7 @@ const PUBLIC_ROUTES = [
   "/reset-password",
   "/verify-email",
   "/api/auth/callback",
+  "/api/auth/login",
   "/privacy",
 ];
 
