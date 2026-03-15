@@ -17,6 +17,7 @@ import {
  * 4. Redirect authenticated users away from public auth pages
  * 5. Allow MFA challenge and onboarding pages for authenticated users
  * 6. Add Server-Timing headers for performance monitoring
+ * 7. CSP nonce generation (P2: production-safe Content-Security-Policy)
  *
  * MFA AAL check happens client-side (app layout) because middleware
  * should stay fast - MFA API calls add latency on every route.
@@ -28,6 +29,41 @@ import {
  * - Para produção multi-região: migrar para Upstash Redis ou Vercel KV
  * - WAF (Vercel/Cloudflare) recomendado como camada adicional
  */
+
+// ── CSP Nonce (P2) ──
+
+function generateNonce(): string {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  // btoa is available in edge runtime (Buffer may not be)
+  return btoa(String.fromCharCode(...array));
+}
+
+function buildCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === "development";
+
+  // In dev: unsafe-eval required for Next.js HMR + React Fast Refresh
+  // In prod: no unsafe-eval. unsafe-inline kept for Next.js inline scripts.
+  // Nonce available via x-nonce header for future strict-dynamic upgrade.
+  const scriptSrc = isDev
+    ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+    : `script-src 'self' 'unsafe-inline' 'nonce-${nonce}'`;
+
+  // style-src: unsafe-inline needed for Tailwind inline style attributes
+  const styleSrc = "style-src 'self' 'unsafe-inline'";
+
+  return [
+    "default-src 'self'",
+    scriptSrc,
+    styleSrc,
+    "img-src 'self' data: blob: https://*.supabase.co",
+    "font-src 'self'",
+    "connect-src 'self' https://*.supabase.co https://api.bcb.gov.br wss://*.supabase.co",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+}
 
 // Routes accessible without authentication
 const PUBLIC_ROUTES = [
@@ -50,6 +86,11 @@ const AUTH_FLOW_ROUTES = [
 export async function middleware(request: NextRequest) {
   const startMs = performance.now();
   const { pathname } = request.nextUrl;
+
+  // ── CSP Nonce (P2: remove unsafe-eval in production) ──
+  const nonce = generateNonce();
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
 
   // ── Rate Limiting (auth routes only) ──
   const routeKey = extractRouteKey(pathname);
@@ -83,7 +124,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Supabase session refresh ──
-  let supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -97,7 +140,9 @@ export async function middleware(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = NextResponse.next({
+            request: { headers: requestHeaders },
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -164,6 +209,10 @@ export async function middleware(request: NextRequest) {
     "Server-Timing",
     `middleware;dur=${elapsedMs};desc="Auth middleware"`
   );
+
+  // ── CSP header (P2) ──
+  supabaseResponse.headers.set("Content-Security-Policy", buildCsp(nonce));
+  supabaseResponse.headers.set("x-nonce", nonce);
 
   // Rate limit headers on auth routes (reuse result from first check)
   if (rlResultForHeaders) {
