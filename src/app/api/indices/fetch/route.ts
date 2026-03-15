@@ -113,7 +113,14 @@ export async function POST() {
           continue;
         }
 
-        const data: BcbDataPoint[] = await response.json();
+        let data: BcbDataPoint[];
+        try {
+          data = await response.json();
+        } catch {
+          fetchResult.errors.push("Resposta não é JSON válido");
+          results.push(fetchResult);
+          continue;
+        }
 
         if (!Array.isArray(data) || data.length === 0) {
           fetchResult.errors.push("Empty response");
@@ -133,47 +140,34 @@ export async function POST() {
           filteredData = Array.from(monthMap.values());
         }
 
-        // Upsert into economic_indices
-        for (const point of filteredData) {
-          const isoDate = parseBcbDate(point.data);
-          const value = parseFloat(point.valor);
+        // Build batch of rows for upsert
+        const now = new Date().toISOString();
+        const rows = filteredData
+          .map((point) => {
+            const isoDate = parseBcbDate(point.data);
+            const value = parseFloat(point.valor);
+            if (isNaN(value)) return null;
+            // Normalize all dates to first of month for storage
+            const refDate = isoDate.slice(0, 8) + "01";
+            return {
+              index_type: source.index_type as Database["public"]["Enums"]["index_type"],
+              reference_date: refDate,
+              value,
+              source_primary: `BCB SGS ${source.series_code}`,
+              fetched_at: now,
+            };
+          })
+          .filter((r): r is NonNullable<typeof r> => r !== null);
 
-          if (isNaN(value)) continue;
-
-          // For monthly series, normalize to first of month
-          const refDate =
-            source.periodicity === "monthly"
-              ? isoDate.slice(0, 8) + "01"
-              : isoDate.slice(0, 8) + "01"; // Always first of month for storage
-
+        if (rows.length > 0) {
           const { error: upsertErr } = await adminClient
             .from("economic_indices")
-            .upsert(
-              {
-                index_type: source.index_type as Database["public"]["Enums"]["index_type"],
-                reference_date: refDate,
-                value,
-                source_primary: `BCB SGS ${source.series_code}`,
-                fetched_at: new Date().toISOString(),
-              },
-              { onConflict: "index_type,reference_date", ignoreDuplicates: false }
-            );
+            .upsert(rows, { onConflict: "index_type,reference_date", ignoreDuplicates: false });
 
           if (upsertErr) {
-            // If upsert fails (no unique constraint), try insert with conflict skip
-            const { error: insertErr } = await adminClient
-              .from("economic_indices")
-              .insert({
-                index_type: source.index_type as Database["public"]["Enums"]["index_type"],
-                reference_date: refDate,
-                value,
-                source_primary: `BCB SGS ${source.series_code}`,
-                fetched_at: new Date().toISOString(),
-              });
-
-            if (!insertErr) fetchResult.inserted++;
+            fetchResult.errors.push(`Upsert falhou: ${upsertErr.message}`);
           } else {
-            fetchResult.inserted++;
+            fetchResult.inserted = rows.length;
           }
         }
       } catch (err) {
