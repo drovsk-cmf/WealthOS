@@ -342,7 +342,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 
 ---
 
-## 8. Documentação de Referência (8 documentos no projeto)
+## 8. Documentação de Referência (9 documentos no projeto)
 
 | Doc | Conteúdo chave |
 |---|---|
@@ -354,6 +354,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | wealthos-adendo-v1.4.docx | Solvência (LCR, runway), evoluções futuras (9 items) |
 | wealthos-estudo-contabil-v1.5-final.docx | Modelo contábil partida dobrada, 133 contas, centros, workflows |
 | wealthos-estudo-tecnico-v2.0.docx | Estudo técnico completo, 10 tabelas, triggers, RPCs, fases revisadas |
+| oniefy-estrategia-ux-retencao-v2.docx | **Estratégia consolidada de UX, ativação e retenção.** Consolida 4 auditorias externas (2 Gemini + 2 ChatGPT) + 2 rodadas de revisão crítica cruzada. Define: framework de retenção (4 portões), 2 níveis de valor (operacional + estrutural), navegação 5+1, onboarding redesenhado (3 rotas com default por dispositivo), estados vazios, fricção de input (<10s, 3 decisões), camada de confiança de dados, dashboard como fila de atenção, motor narrativo, revelação progressiva cronológica, reengajamento externo (push + email), métricas e instrumentação. Plano de implementação em 3 horizontes (H1/H2/H3). Delta de escopo estimado: ~12-15 stories novas ou ampliadas. |
 
 ---
 
@@ -1007,6 +1008,68 @@ Não corrigíveis sem mudança de arquitetura. Documentadas para consciência.
 | Supabase Pro | Habilitar: Auth > Settings > HaveIBeenPwned | Pendente (decisão de custo) |
 | Validação fiscal periódica | IRPF, INSS, salário mínimo: verificar DOU | Recorrente |
 | Apple Developer Account | US$ 99/ano, necessário para I1-I5 | Pendente (decisão Claudio) |
+
+### 12.9 UX, Ativação e Retenção (oniefy-estrategia-ux-retencao-v2.0)
+
+Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de referência: `oniefy-estrategia-ux-retencao-v2.docx`. Origem: consolidação de 4 auditorias externas (Gemini x2, ChatGPT x2) + 2 rodadas de revisão crítica cruzada + análise do código real + benchmarks 2025-2026.
+
+**Decisões de produto tomadas:**
+- **Navegação:** de 15 itens para 5+1 (Início, Transações, Contas, Orçamento, Patrimônio + Configurações)
+- **Dois níveis de valor:** Nível 1 operacional (clareza do mês, Semana 1) + Nível 2 estrutural (PL consolidado + fôlego, Mês 1-2)
+- **Onboarding:** rota recomendada por dispositivo (mobile=manual, desktop=importação) + 2 alternativas em texto secundário
+- **Lançamento rápido:** meta reformulada de "3 toques" para "3 decisões obrigatórias em <10 segundos"
+- **Motor narrativo:** escopo reduzido no H1 (apenas P0, P4, P5); P1-P3 entram no H2 após instrumentação
+- **Orçamento:** visível no menu desde Dia 0 com estado vazio educativo (não ocultar módulo)
+- **Fiscal:** revelação por trigger de dados (>=10 tx com tax_treatment tributável), não por calendário
+- **Configurações:** 5 subcategorias internas (Pessoal, Estrutura e Cadastros, Dados e Importação, Avançado, Segurança)
+- **Régua de decisão UX:** (1) Reduz tempo até valor? (2) Cria motivo para voltar? (3) Superfície simples, núcleo robusto? Se "não" para 2/3, prioridade é secundária
+
+**H1: Antes do lançamento (ativação + instrumentação)**
+
+| # | Item | Impacta | Esforço | Status |
+|---|---|---|---|---|
+| UX-H1-01 | Reestruturar layout.tsx: 5+1 itens de navegação | layout.tsx | Médio | Não iniciado |
+| UX-H1-02 | Onboarding Steps 8-10: rota recomendada (device-aware) + alternativas | AUTH-05, onboarding/page.tsx | Alto | Não iniciado |
+| UX-H1-03 | Estados vazios motivacionais (Transações, Contas, Orçamento, Patrimônio) | 4 pages | Médio | Não iniciado |
+| UX-H1-04 | Formulário rápido: modo default com 3 decisões, <10s. "Mais opções" para expandir | DASH-08, TransactionForm | Médio | Não iniciado |
+| UX-H1-05 | Resumo pós-importação (total, top categorias, N pendentes, CTA revisar) | FIN-16, import-step-result.tsx | Baixo-Médio | Não iniciado |
+| UX-H1-06 | Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5) | DASH-01, dashboard/page.tsx | Alto | Não iniciado |
+| UX-H1-07 | Tabela analytics_events + eventos mínimos de onboarding | Schema novo (migration) | Baixo | Não iniciado |
+| UX-H1-08 | Mover Contas a Pagar para filtro "pendentes" em Transações | bills/page.tsx → transactions | Baixo | Não iniciado |
+
+**H2: Primeiras 2 semanas pós-lançamento (retenção D7)**
+
+| # | Item | Impacta | Esforço | Status |
+|---|---|---|---|---|
+| UX-H2-01 | Auto-categorização no FAB e importação (transaction_classification_rules) | TransactionForm, import-wizard | Médio | Não iniciado |
+| UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | CFG-04 (infra existe), Edge Function nova | Médio | Não iniciado |
+| UX-H2-03 | Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês) | dashboard/page.tsx | Médio | Não iniciado |
+| UX-H2-04 | Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude | Múltiplas páginas | Médio | Não iniciado |
+| UX-H2-05 | Desfazer importação: estorno em lote (72h, append-only) | FIN-16, RPC nova | Médio | Não iniciado |
+| UX-H2-06 | Indicador confirmado/estimado no saldo consolidado do Dashboard | SummaryCards, hook | Baixo | Não iniciado |
+
+**H3: Mês 1-3 pós-lançamento (retenção D30)**
+
+| # | Item | Impacta | Esforço | Status |
+|---|---|---|---|---|
+| UX-H3-01 | Revelação progressiva: flags de visibilidade por volume de dados | Múltiplos módulos | Médio | Não iniciado |
+| UX-H3-02 | Trigger fiscal por dado (>=10 tx tributáveis → "Ver impacto fiscal?") | Motor narrativo + tax/page.tsx | Baixo | Não iniciado |
+| UX-H3-03 | E-mail resumo semanal (segunda 8h, gastos + top 3 + pendências) | Edge Function nova + template | Médio | Não iniciado |
+| UX-H3-04 | Dashboard interno de métricas (/settings/analytics) | Página nova | Médio | Não iniciado |
+| UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Ação Claudio, sem código | Baixo | Não iniciado |
+
+**Totais: 19 itens (8 H1 + 6 H2 + 5 H3). Delta estimado: ~12-15 stories novas ou ampliações substanciais de stories existentes.**
+
+**Métricas-alvo definidas no documento:**
+
+| Métrica | Meta |
+|---|---|
+| Onboarding completion | >70% |
+| Time to first value | <5 min |
+| D1 retention | >35% |
+| D7 retention | >20% |
+| D30 retention | >12% |
+| Transações/semana (sem 2+) | >5 |
 
 ---
 
