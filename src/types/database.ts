@@ -78,6 +78,30 @@ export type Database = {
           },
         ]
       }
+      analytics_events: {
+        Row: {
+          id: string
+          user_id: string
+          event_name: string
+          properties: Json
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          event_name: string
+          properties?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          event_name?: string
+          properties?: Json
+          created_at?: string
+        }
+        Relationships: []
+      }
       asset_value_history: {
         Row: {
           asset_id: string
@@ -489,6 +513,8 @@ export type Database = {
       import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id: string; p_transactions: Json; p_user_id: string }; Returns: Json }
       match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }
+      track_event: { Args: { p_event_name: string; p_properties?: Json }; Returns: string }
+      get_retention_metrics: { Args: Record<string, never>; Returns: Json }
     }
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "loan" | "financing"

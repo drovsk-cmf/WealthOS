@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 /**
  * Oniefy - Dashboard (Phase 3)
  *
@@ -18,6 +20,7 @@ import {
   useBalanceEvolution,
   useBudgetVsActual,
 } from "@/lib/hooks/use-dashboard";
+import { useAnalytics } from "@/lib/hooks/use-analytics";
 
 import {
   SummaryCards,
@@ -31,6 +34,11 @@ import {
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
+  const { trackDashboardView } = useAnalytics();
+
+  // Track dashboard view once per session
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => { trackDashboardView(); }, []);
   const summary = useDashboardSummary();
   const balanceSheet = useBalanceSheet();
   const solvency = useSolvencyMetrics();
