@@ -97,7 +97,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (93 arquivos em src/, 13 testes, ~17.800 linhas)
+### 3.4 Código Fonte (104 arquivos em src/, 13 testes, ~19.700 linhas)
 
 ```
 src/
@@ -1035,11 +1035,11 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | # | Item | Impacta | Esforço | Status |
 |---|---|---|---|---|
 | UX-H1-01 | ~~Reestruturar layout.tsx: 5+1 itens de navegação~~ | layout.tsx, settings/page.tsx | ~~Médio~~ | FEITO (commit 6bd189e) |
-| UX-H1-02 | Onboarding Steps 8-10: rota recomendada (device-aware) + alternativas | AUTH-05, onboarding/page.tsx | Alto | Não iniciado |
+| UX-H1-02 | ~~Onboarding Steps 8-10: rota recomendada (device-aware) + alternativas~~ | AUTH-05, onboarding/page.tsx | ~~Alto~~ | FEITO (commit 7b3ffdd) |
 | UX-H1-03 | ~~Estados vazios motivacionais (Transações, Contas, Orçamento, Patrimônio)~~ | 4 pages | ~~Médio~~ | FEITO |
 | UX-H1-04 | ~~Formulário rápido: modo default com 3 decisões, <10s. "Mais opções" para expandir~~ | DASH-08, TransactionForm | ~~Médio~~ | FEITO |
 | UX-H1-05 | ~~Resumo pós-importação (total, top categorias, N pendentes, CTA revisar)~~ | FIN-16, import-step-result.tsx | ~~Baixo-Médio~~ | FEITO |
-| UX-H1-06 | Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5) | DASH-01, dashboard/page.tsx | Alto | Não iniciado |
+| UX-H1-06 | ~~Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5)~~ | DASH-01, dashboard/page.tsx | ~~Alto~~ | FEITO (commit 7b3ffdd) |
 | UX-H1-07 | ~~Tabela analytics_events + eventos mínimos de onboarding~~ | Schema (migration 031), hook, dashboard | ~~Baixo~~ | FEITO |
 | UX-H1-08 | ~~Mover Contas a Pagar para filtro "pendentes" em Transações~~ | transactions/page.tsx, use-transactions.ts | ~~Baixo~~ | FEITO |
 
@@ -1171,7 +1171,41 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 15. Conexões
+## 15. Sessão 15/03/2026 (cont.) - H1 UX Final: Onboarding Routes + Dashboard Início
+
+1 commit, CI 3/3 verde.
+
+| Commit | Escopo |
+|---|---|
+| 7b3ffdd | feat: UX-H1-02 onboarding steps 8-10 + UX-H1-06 dashboard Início v1 |
+
+**Entregas consolidadas:**
+
+**UX-H1-02: Onboarding Steps 8-10 (rota recomendada device-aware)**
+- Step 8 (RouteChoiceStep): Card dominante com rota recomendada por viewport (mobile <1024px → "Lançamento rápido", desktop → "Importar extrato") + 2 alternativas em texto secundário + link "Pular"
+- Step 9A (RouteManualStep): Mini-wizard inline com 2 fases: criar conta (tipo + nome) → registrar primeira transação (tipo + valor + descrição). Usa useCreateAccount + useCreateTransaction
+- Step 9B: Rota "Importar extrato" redireciona para /connections (onboarding_completed já marcado após seeds)
+- Step 9C (RouteSnapshotStep): Registrar 1-3 bens com categoria + nome + valor. Usa useCreateAsset
+- Step 10 (CelebrationStep): Resumo do que foi configurado (criptografia, 2FA, seeds, + stats da rota), sugestão de próximo passo contextual, CTA "Ir para o Início"
+- Analytics: onboarding_started (mount), onboarding_route_chosen (route + device), onboarding_completed (route + stats), first_transaction
+- 4 novos componentes em src/components/onboarding/ + barrel index
+- Fluxo original (Steps 1-7) preservado integralmente; step "done" substituído por route_choice → route_execution → celebration
+
+**UX-H1-06: Dashboard Início v1 (fila de atenção + motor narrativo)**
+- Heading renomeado: "Dashboard" → "Início"
+- Seção 1 (NarrativeCard): Motor narrativo reduzido com 3 estados: P0 estado vazio (CTAs criar conta + importar), P4 pós-importação (CTA revisar transações), P5 resumo neutro (receitas/despesas/resultado do mês)
+- Seção 2 (AttentionQueue): Fila de até 5 pendências priorizadas: (1) transações vencidas, (2) sem categoria, (3) orçamento >80%, (4) vencendo em 3 dias, (5) contas desatualizadas (7+ dias). Tudo client-side com queries paralelas
+- Seção 3: Conteúdo original (SummaryCards, 3-col grid, balanço, evolução, solvência) empurrado abaixo da dobra
+- Sem nova migration; AttentionQueue usa 5 queries paralelas count-only ao Supabase
+
+**H1 UX: 8/8 itens FEITOS. Backlog H1 completo.**
+
+**Testes:** 171 (sem alteração), 13 suítes
+**Totais atualizados:** 26 tabelas, 86 RLS, 46 functions, 25 ENUMs, 34 migrations, 104 arquivos src/, ~19.700 linhas
+
+---
+
+## 16. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
