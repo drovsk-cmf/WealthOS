@@ -941,18 +941,18 @@ Itens necessários para colocar o app em produção na web (sem iOS).
 |---|---|---|---|
 | P1 | Deploy Vercel + domínio oniefy.com | 30 min | Não iniciado |
 | P2 | CSP nonce/hash (remover `unsafe-eval` em build de produção) | 2h | Não iniciado (ChatGPT audit #6) |
-| P3 | React Error Boundaries (crash gracioso em todas as rotas) | 1h | Não iniciado |
-| P4 | Customizar emails Supabase Auth (confirmação, reset senha) | 30 min | Não iniciado |
-| P5 | Página `/privacy` (Privacy Policy, exigida pela Apple e LGPD) | 1h | Não iniciado |
-| P6 | Seed de dados realistas para dev e demo | 1h | Não iniciado |
-| P7 | Dark mode: verificação completa em todas as 18 páginas | 1h | Não iniciado |
+| P3 | ~~React Error Boundaries (crash gracioso em todas as rotas)~~ | ~~1h~~ | FEITO (global-error + app/error + auth/error) |
+| P4 | ~~Customizar emails Supabase Auth (confirmação, reset senha)~~ | ~~30 min~~ | FEITO (3 templates HTML + config.toml) |
+| P5 | ~~Página `/privacy` (Privacy Policy, exigida pela Apple e LGPD)~~ | ~~1h~~ | FEITO (11 seções, LGPD + Apple) |
+| P6 | ~~Seed de dados realistas para dev e demo~~ | ~~1h~~ | FEITO (003_demo_data.sql: 5 contas, ~60 tx, 8 budgets, 4 ativos) |
+| P7 | ~~Dark mode: verificação completa em todas as 18 páginas~~ | ~~1h~~ | FEITO (5 correções: tax bg-white→bg-card, bank-connections gray→muted; 2 intencionais preservados) |
 | P8 | Supabase Pro (leaked password protection + limites) | 5 min | Requer assinatura Claudio |
 
 ### 12.3 Qualidade e testes (sem Mac)
 
 | # | Item | Esforço | Status |
 |---|---|---|---|
-| Q1 | Expandir testes: CFG pages (profile, export, security) | 30 min | Não iniciado |
+| Q1 | ~~Expandir testes: CFG pages (profile, export, security)~~ | ~~30 min~~ | FEITO (19 testes: settings index, data export, toCsv) |
 | Q2 | Lighthouse audit + correções (performance, SEO, a11y score) | 1-2h | Não iniciado |
 | Q3 | Proxy server-side para login (corrige rate limiter real) | 2h | Não iniciado |
 
@@ -1113,7 +1113,39 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ---
 
-## 14. Conexões
+## 14. Sessão 15/03/2026 - UX Strategy + Pre-production batch
+
+2 commits, CI 3/3 verde em ambos.
+
+| Commit | Escopo |
+|---|---|
+| 3570657 | docs: HANDOVER 12.9 UX/retention backlog (19 items, 3 horizons) |
+| b022cd3 | feat: P3 P4 P5 P6 P7 Q1 - error boundaries, email templates, privacy page, demo seed, dark mode fixes, CFG tests (169 tests) |
+
+**Entregas consolidadas:**
+
+**UX Strategy (sem código, produto/estratégia):**
+- Análise crítica de 4 auditorias externas de UX (2 Gemini, 2 ChatGPT)
+- 2 rodadas de revisão cruzada (Gemini + ChatGPT avaliaram o plano Claude)
+- Documento consolidado `oniefy-estrategia-ux-retencao-v2.docx` (14 seções, 632 parágrafos)
+- 10 correções incorporadas na v2.0 a partir das revisões cruzadas
+- 9 decisões de produto registradas no HANDOVER (navegação 5+1, dois níveis de valor, etc.)
+- 19 itens de backlog UX/Retenção organizados em 3 horizontes (8 H1 + 6 H2 + 5 H3)
+- 6 métricas-alvo definidas (D1 >35%, D7 >20%, D30 >12%)
+
+**Pre-production batch (6 itens executados):**
+- P3: Error Boundaries (3 arquivos: global-error.tsx, (app)/error.tsx, (auth)/error.tsx)
+- P4: Email templates Supabase Auth (3 templates HTML: confirmation, recovery, email_change + config.toml)
+- P5: Página /privacy (11 seções, LGPD + Apple, link de settings/data)
+- P6: Seed de dados realistas (5 contas, ~60 tx em 3 meses, 8 budgets, 4 ativos, perfil Hybrid Earner)
+- P7: Dark mode audit (4 correções: bg-white→bg-card em tax, text-gray→muted em bank-connections; 2 intencionais preservados)
+- Q1: Testes CFG settings (19 testes: settings index, data export config, toCsv logic)
+
+**Testes:** 150 → 169 (+19), 13 suítes (12 + 1 nova)
+
+---
+
+## 15. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
