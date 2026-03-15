@@ -28,7 +28,7 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
           },
           // CSP moved to middleware (P2) for nonce-based policy per request
         ],
