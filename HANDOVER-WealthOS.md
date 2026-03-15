@@ -97,7 +97,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (105 arquivos em src/, 13 testes, ~20.200 linhas)
+### 3.4 Código Fonte (107 arquivos em src/, 13 testes, ~20.500 linhas)
 
 ```
 src/
@@ -1058,10 +1058,10 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 | # | Item | Impacta | Esforço | Status |
 |---|---|---|---|---|
-| UX-H3-01 | Revelação progressiva: flags de visibilidade por volume de dados | Múltiplos módulos | Médio | Não iniciado |
-| UX-H3-02 | Trigger fiscal por dado (>=10 tx tributáveis → "Ver impacto fiscal?") | Motor narrativo + tax/page.tsx | Baixo | Não iniciado |
+| UX-H3-01 | ~~Revelação progressiva: flags de visibilidade por volume de dados~~ | Múltiplos módulos | ~~Médio~~ | FEITO (commit f6cefec) |
+| UX-H3-02 | ~~Trigger fiscal por dado (>=10 tx tributáveis → "Ver impacto fiscal?")~~ | Motor narrativo + tax/page.tsx | ~~Baixo~~ | FEITO (commit f6cefec) |
 | UX-H3-03 | E-mail resumo semanal (segunda 8h, gastos + top 3 + pendências) | Edge Function nova + template | Médio | Não iniciado |
-| UX-H3-04 | Dashboard interno de métricas (/settings/analytics) | Página nova | Médio | Não iniciado |
+| UX-H3-04 | ~~Dashboard interno de métricas (/settings/analytics)~~ | Página nova | ~~Médio~~ | FEITO (commit f6cefec) |
 | UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Ação Claudio, sem código | Baixo | Não iniciado |
 
 **Totais: 19 itens (8 H1 + 6 H2 + 5 H3). Delta estimado: ~12-15 stories novas ou ampliações substanciais de stories existentes.**
@@ -1173,7 +1173,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 ## 15. Sessão 15/03/2026 (cont.) - H1 UX Final + P2 CSP + H2 UX
 
-5 commits, CI 3/3 verde em todos.
+6 commits, CI 3/3 verde em todos.
 
 | Commit | Escopo |
 |---|---|
@@ -1182,6 +1182,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | c051aa8 | feat: UX-H2-01 auto-categorization in TransactionForm |
 | c7c2275 | feat: UX-H2-03 narrative engine P1-P3 + UX-H2-06 confirmed/estimated indicator |
 | 64f2117 | feat: UX-H2-04 confidence badges + UX-H2-05 undo import batch |
+| f6cefec | feat: UX-H3-01 progressive disclosure + UX-H3-02 fiscal trigger + UX-H3-04 analytics dashboard |
 
 **Entregas consolidadas:**
 
@@ -1246,9 +1247,28 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 
 **H2 UX: 6/6 itens FEITOS. Backlog H2 completo.**
 
+**UX-H3-01: Revelação progressiva**
+- Hook useProgressiveDisclosure: 7 queries paralelas count-only, cache 5 min
+- Flags: showFiscalTrigger, totalTransactions, totalAccounts, totalAssets, hasBudgets, costCenterCount, activeWorkflowCount
+- Consumido pelo dashboard (fiscal trigger) e analytics page (volume)
+
+**UX-H3-02: Trigger fiscal por dado**
+- Item "Ver impacto fiscal?" na fila de atenção quando >=10 transações de receita
+- Heurística: income count como proxy de complexidade IRPF (evita join pesado com COA)
+- Link direto para /tax, urgência baixa
+
+**UX-H3-04: Dashboard interno de métricas**
+- Nova página /settings/analytics (Settings > Avançado > Métricas)
+- Seção 1: Retenção (D1/D7/D30 via get_retention_metrics RPC, com metas do doc UX)
+- Seção 2: Eventos (últimos 30 dias, tabela por frequência)
+- Seção 3: Volume de dados (transações, contas, ativos, receitas)
+- Acessível via Settings hub
+
+**H3 UX: 3/5 itens FEITOS (H3-03 email semanal requer Edge Function, H3-05 teste de corredor é ação Claudio)**
+
 **Testes:** 171 (sem alteração), 13 suítes
 **Migration:** 032_category_source_and_undo_import (1 enum, 1 coluna, 1 RPC, backfill)
-**Totais atualizados:** 26 tabelas, 86 RLS, 47 functions (34 RPCs + 7 triggers + 6 cron), 26 ENUMs, 35 migrations, 105 arquivos src/, ~20.500 linhas
+**Totais atualizados:** 26 tabelas, 86 RLS, 47 functions (34 RPCs + 7 triggers + 6 cron), 26 ENUMs, 35 migrations, 107 arquivos src/, ~20.500 linhas
 
 ---
 
