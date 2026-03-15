@@ -1031,7 +1031,7 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | UX-H1-01 | ~~Reestruturar layout.tsx: 5+1 itens de navegação~~ | layout.tsx, settings/page.tsx | ~~Médio~~ | FEITO (commit 6bd189e) |
 | UX-H1-02 | Onboarding Steps 8-10: rota recomendada (device-aware) + alternativas | AUTH-05, onboarding/page.tsx | Alto | Não iniciado |
 | UX-H1-03 | ~~Estados vazios motivacionais (Transações, Contas, Orçamento, Patrimônio)~~ | 4 pages | ~~Médio~~ | FEITO |
-| UX-H1-04 | Formulário rápido: modo default com 3 decisões, <10s. "Mais opções" para expandir | DASH-08, TransactionForm | Médio | Não iniciado |
+| UX-H1-04 | ~~Formulário rápido: modo default com 3 decisões, <10s. "Mais opções" para expandir~~ | DASH-08, TransactionForm | ~~Médio~~ | FEITO |
 | UX-H1-05 | ~~Resumo pós-importação (total, top categorias, N pendentes, CTA revisar)~~ | FIN-16, import-step-result.tsx | ~~Baixo-Médio~~ | FEITO |
 | UX-H1-06 | Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5) | DASH-01, dashboard/page.tsx | Alto | Não iniciado |
 | UX-H1-07 | ~~Tabela analytics_events + eventos mínimos de onboarding~~ | Schema (migration 031), hook, dashboard | ~~Baixo~~ | FEITO |
