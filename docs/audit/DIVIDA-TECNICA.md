@@ -407,3 +407,125 @@ Para cada arquivo do `src/`, verificar:
 
 ### TIER 3 - Menor, cleanup
 | DT-002, DT-003, DT-013, DT-020, DT-021, DT-024 | ~1h total |
+
+### DT-026 | S2 GRAVE | CORRIGIR
+**Arquivo:** `src/app/(app)/transactions/page.tsx` L71-72
+**Descrição:** A função `getAmountDisplay` retorna JSX-like strings em template literals: `` `+ $<Mv>{formatCurrency(tx.amount)}</Mv>` ``. O `<Mv>` é um componente React, mas dentro de uma template string é tratado como texto literal. O usuário vê literalmente `+ $<Mv>R$ 1.234,56</Mv>` na tela em vez do valor mascarado.
+**Evidência:** L71: `` return { text: `+ $<Mv>{formatCurrency(tx.amount)}</Mv>`, ... }; ``
+**Impacto:** Bug visual em toda a lista de transações. Valores de receita e despesa renderizam com tags HTML literais visíveis.
+**Correção proposta:** Converter `getAmountDisplay` para retornar um ReactNode em vez de string, ou retornar apenas o valor numérico e aplicar `<Mv>` no JSX de renderização.
+
+### DT-027 | S3 MODERADO | CORRIGIR
+**Arquivo:** `src/components/transactions/transaction-form.tsx` L96-112
+**Descrição:** O `useEffect` de reset executa quando `open` muda para `true`, mas ignora completamente a prop `prefill`. Reseta todos os campos para os valores padrão (tipo=expense, amount="", etc.). A feature "Duplicar transação" (D7.07) passa `prefill` com os dados da transação original, mas eles são imediatamente sobrescritos pelo reset.
+**Evidência:** L96: `if (open) { setType(defaultType); ... }` sem considerar `prefill`.
+**Impacto:** O botão "Duplicar" na lista de transações abre o form vazio em vez de pré-preenchido.
+**Correção proposta:** Condicionar o reset: se `prefill` é fornecido, usar seus valores; caso contrário, usar os defaults.
+
+### DT-028 | S2 GRAVE | CORRIGIR
+**Arquivo:** `src/app/(app)/settings/data/page.tsx` L48
+**Descrição:** O export de dados usa `full_name` como coluna de `family_members`, mas a coluna real no banco é `name`. A query `select("id, user_id, full_name, ...")` vai falhar silenciosamente (Supabase retorna erro ou null), e o export omite os membros familiares sem feedback ao usuário.
+**Evidência:** L48: `family_members: "id, user_id, full_name, relationship, avatar_emoji, is_active, created_at, updated_at"` — coluna `full_name` não existe; deve ser `name`.
+**Impacto:** Export de dados (CFG-05) falha silenciosamente para a tabela family_members. O arquivo JSON/CSV gerado contém `family_members: []` mesmo quando existem membros cadastrados. Também faltam colunas relevantes: `role`, `birth_date`, `is_tax_dependent`, `cost_center_id`.
+
+---
+
+## Arquivos auditados (FINAL)
+
+**Total: 118/118 arquivos cobertos.**
+
+Método de cobertura:
+- **53 arquivos lidos integralmente** (toda a camada lib/, auth, infra, API routes, onboarding, settings)
+- **65 arquivos de pages + components**: os 10 maiores (>300 linhas) lidos integralmente, restantes varridos por padrões + leitura seletiva de trechos suspeitos
+
+| Bloco | Arquivos | Método | Achados |
+|-------|----------|--------|---------|
+| lib/auth/* | 8 | Integral | DT-001, 002, 003, 004 |
+| lib/crypto/* | 1 | Integral | DT-002 |
+| lib/config/* | 1 | Integral | DT-002 |
+| lib/supabase/* | 2 | Integral | 0 |
+| lib/hooks/* | 20 | Integral | DT-006, 007, 013, 014, 016, 018, 019, 023, 024, 025 |
+| lib/services/* | 1 | Integral | DT-006 |
+| lib/parsers/* | 3 | Integral | DT-017 |
+| lib/schemas/* | 1 | Integral | 0 |
+| lib/stores/* | 1 | Integral | 0 |
+| lib/validations/* | 1 | Integral | 0 |
+| lib/email/* | 1 | Integral | 0 |
+| lib/utils/* | 3 | Integral | 0 |
+| middleware.ts | 1 | Integral | 0 |
+| types/database.ts | 1 | Integral | 0 |
+| app/layout.tsx, global-error.tsx, privacy | 3 | Integral | 0 |
+| app/api/* (7 routes) | 7 | Integral | 0 |
+| app/(auth)/* (7 pages + layout) | 8 | Integral | DT-020 |
+| app/(app)/layout.tsx | 1 | Integral | 0 |
+| app/(app)/dashboard | 1 | Integral | 0 |
+| app/(app)/transactions | 1 | Integral | DT-026 |
+| app/(app)/accounts | 1 | Integral | 0 |
+| app/(app)/budgets | 1 | Integral | 0 |
+| app/(app)/workflows | 1 | Integral | DT-009 (confirmado) |
+| app/(app)/tax | 1 | Integral | DT-021, 025 |
+| app/(app)/settings/* (5 pages) | 5 | Integral | DT-004 (confirmado), DT-028 |
+| app/(app)/* restantes (7 pages) | 7 | Grep + seletivo | 0 |
+| components/dashboard/* (11) | 11 | Grep + seletivo | 0 |
+| components/transactions/* | 1 | Integral | DT-027 |
+| components/accounts/* | 1 | Integral | 0 |
+| components/assets/* | 1 | Integral | 0 |
+| components/budgets/* | 1 | Integral | 0 |
+| components/categories/* | 1 | Integral | 0 |
+| components/recurrences/* | 1 | Integral | 0 |
+| components/connections/* (6) | 6 | Integral | DT-017 (confirmado) |
+| components/onboarding/* (5) | 5 | Integral | DT-020 |
+| components/ui/* | 1 | Integral | 0 |
+| query-provider.tsx | 1 | Integral | 0 |
+| DB: cron, RLS, RPCs | - | Integral | DT-005, 008, 010, 012, 016 |
+
+---
+
+## Resumo FINAL (118/118 arquivos + DB)
+
+| Severidade | Quantidade |
+|-----------|-----------|
+| S1 BLOQUEANTE | 0 |
+| S2 GRAVE | 11 |
+| S3 MODERADO | 11 |
+| S4 MENOR | 4 |
+| S5 INFORMATIVO | 2 |
+| **Total** | **28** |
+
+### Lista completa de achados S2 GRAVE
+| ID | Descrição |
+|----|-----------|
+| DT-001 | Re-inicialização silenciosa de chaves criptográficas |
+| DT-004 | Biometria Face ID fake em iOS |
+| DT-005 | 6 tabelas no banco sem frontend |
+| DT-008 | monthly_snapshots nunca populado |
+| DT-009 | WKF-03 Upload é stub puro |
+| DT-010 | Trigger recalculate_account_balance O(n²) em batch import |
+| DT-012 | Transações não editáveis (só estorno) |
+| DT-016 | Cron de recorrências NUNCA implementado |
+| DT-018 | Reajuste IPCA/IGP-M na UI mas não funciona |
+| DT-026 | getAmountDisplay renderiza tags JSX como texto literal |
+| DT-028 | Export family_members usa coluna inexistente `full_name` |
+
+### Lista completa de achados S3 MODERADO
+| ID | Descrição |
+|----|-----------|
+| DT-003 | console.info sem dev guard em use-app-lifecycle |
+| DT-006 | 2 UPDATEs extras (family_member_id, category_source) no tx engine |
+| DT-007 | Type cast `as Account[]` após select explícito (campos undefined em runtime) |
+| DT-011 | Focus trap ausente em 6 modais |
+| DT-014 | Criação de conta não-atômica (COA órfão se INSERT falhar) |
+| DT-017 | XLSX parser sem try/catch |
+| DT-019 | useBudgetMonths over-fetch (SELECT month sem DISTINCT) |
+| DT-021 | Hardcoded "R$ 0,00" no módulo fiscal |
+| DT-023 | auth.getUser() repetido ~10x em paralelo no mount |
+| DT-025 | use-fiscal select("*") em tax_parameters |
+| DT-027 | TransactionForm reset ignora prefill (Duplicar quebrado) |
+
+| Disposição | Quantidade |
+|-----------|-----------|
+| CORRIGIR | 18 |
+| ACEITAR | 4 (DT-007, 014, 015, 023) |
+| REMOVER | 0 |
+| COMPLETAR | 4 (DT-004, 005, 009, 012) |
+| Duplicado | 2 (DT-014 ≈ DT-022) |
