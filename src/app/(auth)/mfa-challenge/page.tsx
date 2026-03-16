@@ -50,7 +50,7 @@ function MfaChallengeContent() {
         await loadEncryptionKey(supabase);
       } catch {
         // DEK load failure is non-blocking (E2E fields won't decrypt)
-        console.warn("[Oniefy] Failed to load DEK after MFA");
+        if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Failed to load DEK after MFA");
       }
 
       router.push(redirectTo);

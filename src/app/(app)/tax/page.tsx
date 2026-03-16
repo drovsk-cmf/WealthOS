@@ -21,7 +21,7 @@
  */
 
 import { useState } from "react";
-import { FileSearch } from "lucide-react";
+import { FileSearch, Building, Landmark } from "lucide-react";
 import {
   useFiscalReport,
   useFiscalProjection,
@@ -29,6 +29,8 @@ import {
   TAX_TREATMENT_LABELS,
   TAX_TREATMENT_COLORS,
 } from "@/lib/hooks/use-fiscal";
+import { useAssets, ASSET_CATEGORY_LABELS } from "@/lib/hooks/use-assets";
+import { useAccounts, ACCOUNT_TYPE_LABELS } from "@/lib/hooks/use-accounts";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 
@@ -47,6 +49,14 @@ export default function FiscalPage() {
   const { data: report, isLoading: loadingReport } = useFiscalReport(selectedYear);
   const { data: projection, isLoading: loadingProjection } = useFiscalProjection(selectedYear);
   const { data: parameters } = useTaxParameters();
+
+  // FIS-03: Bens e Direitos + FIS-04: Dívidas e Ônus
+  const { data: assets } = useAssets();
+  const { data: accounts } = useAccounts();
+
+  // Classify accounts for IRPF: assets (positive balance non-liability) vs liabilities (loan, financing, credit_card with balance)
+  const assetAccounts = accounts?.filter(a => !["credit_card", "loan", "financing"].includes(a.type) && a.current_balance > 0) ?? [];
+  const liabilityAccounts = accounts?.filter(a => ["credit_card", "loan", "financing"].includes(a.type) && a.current_balance !== 0) ?? [];
 
   const years = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
 
@@ -282,6 +292,93 @@ export default function FiscalPage() {
           </div>
         )}
       </div>
+
+      {/* ═══ FIS-03: BENS E DIREITOS ═══ */}
+      {(assets && assets.length > 0) || assetAccounts.length > 0 ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Building className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-bold">Bens e Direitos</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Consolidação para declaração IRPF. Valores em 31/12/{selectedYear}.
+          </p>
+
+          <div className="space-y-2">
+            {/* Contas bancárias com saldo positivo */}
+            {assetAccounts.map(a => (
+              <div key={a.id} className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium">{a.name}</p>
+                  <p className="text-xs text-muted-foreground">{ACCOUNT_TYPE_LABELS[a.type]}</p>
+                </div>
+                <p className="font-semibold tabular-nums"><Mv>{formatCurrency(a.current_balance)}</Mv></p>
+              </div>
+            ))}
+
+            {/* Bens patrimoniais */}
+            {assets?.map(a => (
+              <div key={a.id} className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium">{a.name}</p>
+                  <p className="text-xs text-muted-foreground">{ASSET_CATEGORY_LABELS[a.category]} · Aquisição: {formatDate(a.acquisition_date)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold tabular-nums"><Mv>{formatCurrency(a.current_value)}</Mv></p>
+                  <p className="text-[11px] text-muted-foreground">Aquisição: <Mv>{formatCurrency(a.acquisition_value)}</Mv></p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Totals */}
+          <div className="rounded-lg border bg-muted/50 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted-foreground">Total Bens e Direitos</p>
+              <p className="text-lg font-bold tabular-nums">
+                <Mv>{formatCurrency(
+                  assetAccounts.reduce((s, a) => s + a.current_balance, 0) +
+                  (assets?.reduce((s, a) => s + a.current_value, 0) ?? 0)
+                )}</Mv>
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* ═══ FIS-04: DÍVIDAS E ÔNUS REAIS ═══ */}
+      {liabilityAccounts.length > 0 ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Landmark className="h-5 w-5 text-muted-foreground" />
+            <h2 className="text-lg font-bold">Dívidas e Ônus Reais</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Saldos devedores em 31/12/{selectedYear}.
+          </p>
+
+          <div className="space-y-2">
+            {liabilityAccounts.map(a => (
+              <div key={a.id} className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium">{a.name}</p>
+                  <p className="text-xs text-muted-foreground">{ACCOUNT_TYPE_LABELS[a.type]}</p>
+                </div>
+                <p className="font-semibold tabular-nums text-terracotta"><Mv>{formatCurrency(Math.abs(a.current_balance))}</Mv></p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-lg border bg-muted/50 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-muted-foreground">Total Dívidas</p>
+              <p className="text-lg font-bold tabular-nums text-terracotta">
+                <Mv>{formatCurrency(Math.abs(liabilityAccounts.reduce((s, a) => s + a.current_balance, 0)))}</Mv>
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* ═══ PARÂMETROS FISCAIS (referência) ═══ */}
       <div className="space-y-3">

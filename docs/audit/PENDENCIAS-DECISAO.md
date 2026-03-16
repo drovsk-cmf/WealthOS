@@ -183,9 +183,94 @@ Listados para completude. Não bloqueiam nada, não são dívida técnica.
 
 ---
 
-## Resumo para decisão rápida
+---
 
-**Total: 22 itens pendentes de decisão.**
+## GRUPO 8: Gaps entre especificação e código (varredura cruzada)
+
+Itens descobertos ao cruzar os 8 documentos de especificação (funcional v1, adendos v1.1-v1.4, estudo técnico, estudo contábil) contra o código real. Nenhuma varredura anterior (grep, leitura de código, HANDOVER) capturou estes.
+
+### 8.1 CAP-05: Visão calendário de vencimentos
+**Spec:** Funcional v1, story CAP-05
+**Estado:** Bills page tem lista com 2 tabs (Pendentes + Recorrências). Nenhuma visualização de calendário.
+**Opções:**
+1. FAZER: calendário mensal com dots nos dias de vencimento. Estimar: 3-4h
+2. DESCARTAR: lista com ordenação por data é suficiente. Remover CAP-05 da contagem de stories entregues
+3. ADIAR: implementar se usuários pedirem
+
+### 8.2 FIS-03: Bens e direitos para IRPF
+**Spec:** Funcional v1, story FIS-03
+**Estado:** Dados existem (tabela `assets` + `accounts`). Mas a tax page NÃO renderiza seção "Bens e Direitos". Mostra apenas: Rendimentos + Deduções + Provisionamento + Parâmetros.
+**Impacto:** Seção obrigatória da DIRPF. Quem usa o Oniefy para organizar dados fiscais não encontra a consolidação de bens.
+**Opções:**
+1. FAZER: adicionar seção "Bens e Direitos" na tax page (query assets + accounts tipo investment). Estimar: 2-3h
+2. ADIAR: bens já são acessíveis via /assets. Consolidação fiscal pode esperar
+
+### 8.3 FIS-04: Dívidas e ônus reais para IRPF
+**Spec:** Funcional v1, story FIS-04
+**Estado:** Contas tipo loan/financing existem no banco. Tax page não as lista em seção de dívidas.
+**Impacto:** Mesma situação de FIS-03. Seção obrigatória da DIRPF.
+**Opções:**
+1. FAZER junto com 8.2 (mesma implementação, seção adicional). +1h sobre 8.2
+2. ADIAR: dívidas acessíveis via /accounts
+
+### 8.4 PAT-06: Anexar documentos a bens patrimoniais
+**Spec:** Funcional v1, story PAT-06
+**Estado:** Tabela `documents` existe. Storage bucket existe. Zero código de upload ou vínculo com assets.
+**Sobreposição:** Vinculado a 1.1 (WKF-03 upload). Mesma infraestrutura necessária.
+**Opções:**
+1. FAZER junto com 1.1 (upload genérico serve WKF-03 e PAT-06). Adiciona campo `asset_id` na tabela documents
+2. ADIAR junto com 1.1
+3. DESCARTAR: remover PAT-06 da contagem de stories
+
+### 8.5 Export criptografado com senha
+**Spec:** Especificação v1 §3.6: "download dos dados em JSON/CSV (criptografado com senha)"
+**Estado:** Export gera JSON/CSV em plain text. Sem nenhuma criptografia aplicada ao arquivo exportado.
+**Opções:**
+1. FAZER: gerar ZIP com senha (AES-256) usando library como `fflate` ou `archiver`. Estimar: 2-3h
+2. DESCARTAR: export plain text é mais prático. Criptografia de arquivo é security theater se o dispositivo já é do usuário
+3. ADIAR: implementar apenas se exigido por compliance
+
+### 8.6 Logs de acesso (auditoria, 90 dias)
+**Spec:** Especificação v1 §3.7: "Logs de acesso mantidos para auditoria (últimos 90 dias)"
+**Estado:** `analytics_events` existe (UX tracking), mas não é log de acesso. Nenhuma tabela `access_logs`. Supabase tem logs próprios (auth logs), mas sem controle do app.
+**Opções:**
+1. FAZER: tabela `access_logs` (user_id, action, ip, timestamp) + trigger em login/logout/export/delete. Estimar: 2-3h
+2. ACEITAR: Supabase Auth logs cobrem logins. Para single-user, logs de acesso do app são redundantes
+3. ADIAR: implementar quando tiver multi-user
+
+### 8.7 Screenshot prevention (iOS)
+**Spec:** Especificação v1 §3.5: "tela em branco ao entrar no App Switcher (opcional, configurável)"
+**Estado:** Zero código. Requer Capacitor plugin.
+**Nota:** Spec marca como "opcional, configurável".
+**Opções:**
+1. ADIAR para sprint iOS (I2). Trivial com `@capacitor-community/privacy-screen`
+2. DESCARTAR: spec diz "opcional"
+
+### 8.8 Jailbreak detection (iOS)
+**Spec:** Especificação v1 §3.5: "alerta ao usuário se dispositivo comprometido"
+**Estado:** Zero código. Requer Capacitor plugin ou lib nativa.
+**Opções:**
+1. ADIAR para sprint iOS
+2. DESCARTAR: jailbreak detection é facilmente contornável e controverso (Apple não exige)
+
+### 8.9 Certificate pinning (iOS)
+**Spec:** Especificação v1 §3.5: "Certificate pinning para comunicação com Supabase"
+**Estado:** Zero código. Requer configuração nativa no Capacitor/iOS.
+**Opções:**
+1. ADIAR para sprint iOS. Implementar via `capacitor-ssl-pinning` ou config nativa
+2. DESCARTAR: TLS 1.3 + HSTS já protegem contra MITM na maioria dos cenários
+
+### 8.10 FIN-11: Edição de transferências
+**Spec:** Funcional v1 story FIN-11 ("Editar transação" sem distinção de tipo)
+**Estado:** DT-012 implementou edição para income/expense. Botão Editar não aparece para transferências (`tx.type !== "transfer"`).
+**Sobreposição:** Já listado em PENDENCIAS-DECISAO.md item 1.7.
+**Opções:** Mesmas de 1.7
+
+---
+
+## Resumo para decisão rápida (ATUALIZADO)
+
+**Total: 32 itens pendentes de decisão.**
 
 | Grupo | Itens | Decisão mais rápida |
 |-------|-------|-------------------|
@@ -196,3 +281,21 @@ Listados para completude. Não bloqueiam nada, não são dívida técnica.
 | 5. Qualidade residual | 4 | FAZER 5.1 e 5.2 agora (1h). ADIAR 5.3 e 5.4 |
 | 6. Infra/Claudio | 5 | Decisão do Claudio |
 | 7. Longo prazo | 6 | Todos com gatilho, não são pendências |
+| **8. Gaps spec vs código** | **10** | **8.2+8.3 são os mais graves (IRPF). 8.7-8.9 são iOS. 8.5+8.6 requerem decisão de escopo** |
+
+### Priorização recomendada dos novos achados
+
+**Urgente (afeta integridade do módulo fiscal):**
+- 8.2 FIS-03 + 8.3 FIS-04: Bens/Dívidas na tax page. Sem isso, o módulo fiscal está incompleto. 3-4h total.
+
+**Decisão de escopo (honestidade vs spec):**
+- 8.1 CAP-05: Calendário. Recomendo DESCARTAR (lista funciona)
+- 8.4 PAT-06: Documentos em bens. Recomendo ADIAR (vinculado a WKF-03)
+- 8.5 Export cripto: Recomendo DESCARTAR (security theater)
+- 8.6 Access logs: Recomendo ACEITAR (Supabase cobre logins)
+
+**iOS (agrupar no sprint iOS):**
+- 8.7, 8.8, 8.9: Todos ADIAR para sprint iOS
+
+**Duplicado:**
+- 8.10: Já coberto em 1.7
