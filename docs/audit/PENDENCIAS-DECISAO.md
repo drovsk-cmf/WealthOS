@@ -196,7 +196,7 @@ Sprint único quando Mac disponível. ~25-35h.
 | Item | Decisão | Esforço |
 |------|---------|---------|
 | 1.1 Instrument Serif | ADIAR (landing page) | 0 |
-| 1.2 Orçamento aprovação | ADIAR (login próprio membros) | 0 |
+| 1.2 Orçamento aprovação | ~~ADIAR~~ → **FEITO** (commit c58128c, migrations 042-043) | 0 |
 | 1.3 CAP-05 Calendário | **FAZER** | 3-4h |
 | 1.4 Export criptografado | **FAZER** | 2-3h |
 | 1.5 Logs de acesso | **FAZER** | 2-3h |
@@ -213,7 +213,7 @@ Sprint único quando Mac disponível. ~25-35h.
 | 5.1 OCR web Tesseract.js | **FAZER** | 4-6h |
 | 5.2 Web Push notifications | **FAZER** | 4-6h |
 
-**Totais:** 15 FAZER (~33-44h), 2 ADIAR, 0 DESCARTAR
+**Totais:** 15 FAZER (~33-44h), 1 ADIAR, 0 DESCARTAR, 1 FEITO
 
 **Cadeia de pré-requisitos:**
 - 4.2 (upload) → 4.3 (docs em bens)
