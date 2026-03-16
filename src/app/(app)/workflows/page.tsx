@@ -34,6 +34,7 @@ import { useAccounts } from "@/lib/hooks/use-accounts";
 import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import type { TaskWithWorkflow } from "@/lib/hooks/use-workflows";
+import FocusTrap from "focus-trap-react";
 
 type Tab = "tasks" | "workflows";
 type WorkflowType = Database["public"]["Enums"]["workflow_type"];
@@ -389,6 +390,7 @@ export default function WorkflowsPage() {
 
       {/* New workflow dialog */}
       {showNewWorkflow && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowNewWorkflow(false)} />
           <div className="relative z-50 mx-4 w-full max-w-md rounded-lg border bg-card p-6 shadow-xl">
@@ -451,6 +453,7 @@ export default function WorkflowsPage() {
             </form>
           </div>
         </div>
+        </FocusTrap>
       )}
     </div>
   );

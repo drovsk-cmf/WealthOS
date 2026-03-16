@@ -10,6 +10,7 @@ import {
 import { useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import type { COATreeNode } from "@/lib/hooks/use-chart-of-accounts";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type GroupType = Database["public"]["Enums"]["group_type"];
 
@@ -263,6 +264,7 @@ export default function ChartOfAccountsPage() {
 
       {/* Create dialog */}
       {showCreate && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowCreate(false)} />
           <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
@@ -345,6 +347,7 @@ export default function ChartOfAccountsPage() {
             </form>
           </div>
         </div>
+        </FocusTrap>
       )}
     </div>
   );

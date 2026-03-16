@@ -26,6 +26,7 @@ import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatDate } from "@/lib/utils";
 import { ImportWizard } from "@/components/connections/import-wizard";
 import { ReconciliationPanel } from "@/components/connections/reconciliation-panel";
+import FocusTrap from "focus-trap-react";
 
 type Tab = "connections" | "import" | "reconciliation";
 
@@ -174,6 +175,7 @@ function ConnectionsManager() {
       )}
 
       {showNew && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="fixed inset-0 bg-black/50" onClick={() => setShowNew(false)} />
           <div className="relative z-50 mx-4 w-full max-w-md rounded-lg border bg-card p-6 shadow-xl">
@@ -214,6 +216,7 @@ function ConnectionsManager() {
             </form>
           </div>
         </div>
+        </FocusTrap>
       )}
 
       <div className="rounded-lg border bg-muted/50 p-4">

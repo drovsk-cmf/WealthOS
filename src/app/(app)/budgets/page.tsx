@@ -33,6 +33,7 @@ import { BudgetForm } from "@/components/budgets/budget-form";
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
@@ -503,6 +504,7 @@ export default function BudgetsPage() {
 
       {/* Copy confirmation dialog (ORC-02) */}
       {confirmCopy && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center"
           onKeyDown={(e) => { if (e.key === "Escape") { setConfirmCopy(false); setCopyError(""); } }}
         >
@@ -542,6 +544,7 @@ export default function BudgetsPage() {
             </div>
           </div>
         </div>
+        </FocusTrap>
       )}
 
       {/* Budget form dialog */}

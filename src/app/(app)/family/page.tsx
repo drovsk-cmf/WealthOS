@@ -15,6 +15,7 @@ import {
 } from "@/lib/hooks/use-family-members";
 import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type FamilyMember = Database["public"]["Tables"]["family_members"]["Row"];
 type FamilyRelationship = Database["public"]["Enums"]["family_relationship"];
@@ -252,6 +253,7 @@ export default function FamilyPage() {
 
       {/* Form dialog */}
       {showForm && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} />
           <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
@@ -359,6 +361,7 @@ export default function FamilyPage() {
             </form>
           </div>
         </div>
+        </FocusTrap>
       )}
     </div>
   );

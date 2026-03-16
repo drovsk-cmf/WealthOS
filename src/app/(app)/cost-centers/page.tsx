@@ -32,6 +32,7 @@ import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatCurrency, formatDate, getColorName } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type CostCenter = Database["public"]["Tables"]["cost_centers"]["Row"];
 type CenterType = Database["public"]["Enums"]["center_type"];
@@ -366,6 +367,7 @@ export default function CostCentersPage() {
 
       {/* Form dialog */}
       {formOpen && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setFormOpen(false); setEditing(null); }} />
           <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
@@ -433,6 +435,7 @@ export default function CostCentersPage() {
             </form>
           </div>
         </div>
+        </FocusTrap>
       )}
     </div>
   );
