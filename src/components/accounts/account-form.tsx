@@ -8,7 +8,7 @@ import {
   FINANCING_SUBTYPES,
   PRESET_COLORS,
 } from "@/lib/hooks/use-accounts";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
@@ -219,6 +219,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
+                  aria-label={getColorName(c)}
                   className={`h-8 w-8 rounded-full border-2 transition-transform ${
                     color === c
                       ? "scale-110 border-foreground"

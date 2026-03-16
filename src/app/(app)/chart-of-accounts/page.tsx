@@ -40,6 +40,7 @@ function TreeNode({
         {hasChildren ? (
           <button type="button"
             onClick={() => setExpanded(!expanded)}
+            aria-label={expanded ? "Recolher subcategorias" : "Expandir subcategorias"}
             className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-accent"
           >
             <svg

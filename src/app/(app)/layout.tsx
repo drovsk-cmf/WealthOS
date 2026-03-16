@@ -146,6 +146,7 @@ export default function AppLayout({
                   onClick={handleLogout}
                   className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   title="Sair"
+                  aria-label="Sair"
                 >
                   <LogOut className="h-3.5 w-3.5" />
                 </button>

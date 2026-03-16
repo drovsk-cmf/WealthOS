@@ -223,7 +223,7 @@ export default function BillsPage() {
                     ) : (
                       <button type="button" onClick={() => setConfirmPay(bill.id)}
                         className="rounded-md bg-verdant/15 px-3 py-1.5 text-xs font-medium text-verdant transition-colors hover:bg-verdant/20"
-                        title="Marcar como paga">
+                        title="Marcar como paga" aria-label="Marcar como paga">
                         Pagar
                       </button>
                     )}
@@ -287,7 +287,7 @@ export default function BillsPage() {
                         {/* Edit */}
                         <button type="button" onClick={() => handleEdit(rec)}
                           className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                          title="Editar">
+                          title="Editar" aria-label="Editar">
                           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
@@ -308,7 +308,7 @@ export default function BillsPage() {
                         ) : (
                           <button type="button" onClick={() => setConfirmDeactivate(rec.id)}
                             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                            title="Encerrar recorrência">
+                            title="Encerrar recorrência" aria-label="Encerrar recorrência">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>

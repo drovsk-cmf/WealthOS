@@ -7,6 +7,7 @@ import {
   CATEGORY_ICONS,
   CATEGORY_COLORS,
 } from "@/lib/hooks/use-categories";
+import { getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
@@ -145,6 +146,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
+                  aria-label={getColorName(c)}
                   className={`h-7 w-7 rounded-full border-2 transition-transform ${
                     color === c ? "scale-110 border-foreground" : "border-transparent hover:scale-105"
                   }`}

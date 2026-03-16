@@ -27,7 +27,7 @@ import {
   CENTER_TYPE_OPTIONS,
 } from "@/lib/hooks/use-cost-centers";
 import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, getColorName } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
@@ -306,7 +306,7 @@ export default function CostCentersPage() {
                   {/* Actions (stop propagation to not toggle P&L) */}
                   <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                     <button type="button" onClick={() => handleEdit(center)}
-                      className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" title="Editar">
+                      className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground" title="Editar" aria-label="Editar">
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
@@ -325,7 +325,7 @@ export default function CostCentersPage() {
                           </div>
                         ) : (
                           <button type="button" onClick={() => setConfirmDelete(center.id)}
-                            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive" title="Desativar">
+                            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive" title="Desativar" aria-label="Desativar">
                             <Archive className="h-4 w-4" />
                           </button>
                         )}
@@ -406,6 +406,7 @@ export default function CostCentersPage() {
                 <div className="flex flex-wrap gap-2">
                   {PRESET_COLORS.map((c) => (
                     <button key={c} type="button" onClick={() => setColor(c)}
+                      aria-label={getColorName(c)}
                       className={`h-7 w-7 rounded-full border-2 transition-transform ${
                         color === c ? "scale-110 border-foreground" : "border-transparent hover:scale-105"
                       }`}

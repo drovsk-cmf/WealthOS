@@ -94,3 +94,23 @@ export function sanitizeRedirectTo(
 
   return trimmed;
 }
+
+// ─── Color names for accessibility ──────────────────────────
+const COLOR_NAME_MAP: Record<string, string> = {
+  "#56688F": "Azul ardósia",
+  "#2F7A68": "Verde esmeralda",
+  "#A97824": "Âmbar",
+  "#A64A45": "Terracota",
+  "#6F6678": "Lavanda",
+  "#A7794E": "Bronze",
+  "#7E9487": "Sálvia",
+  "#241E29": "Grafite",
+  "#4A7A6E": "Verde jade",
+  "#8B6B4A": "Canela",
+  "#CEC4B8": "Areia",
+  "#5A7B8F": "Azul aço",
+};
+
+export function getColorName(hex: string): string {
+  return COLOR_NAME_MAP[hex.toUpperCase()] ?? COLOR_NAME_MAP[hex] ?? hex;
+}

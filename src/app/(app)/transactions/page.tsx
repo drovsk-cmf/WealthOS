@@ -135,6 +135,7 @@ export default function TransactionsPage() {
         </div>
         <button type="button"
           onClick={() => setShowFilters(!showFilters)}
+          aria-label="Filtrar transações"
           className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
             showFilters || Object.keys(filters).some((k) => k !== "search" && filters[k as keyof TransactionFilters])
               ? "border-primary bg-primary/5 text-primary"
@@ -340,7 +341,7 @@ export default function TransactionsPage() {
                       <button type="button"
                         onClick={() => setConfirmReverse(tx.id)}
                         className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                        title="Estornar"
+                        title="Estornar" aria-label="Estornar"
                       >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
