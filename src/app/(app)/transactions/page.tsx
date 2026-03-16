@@ -40,7 +40,7 @@ export default function TransactionsPage() {
   const [page, setPage] = useState(0);
 
   const paginatedFilters = { ...filters, limit: PAGE_SIZE, offset: page * PAGE_SIZE };
-  const { data: transactions, isLoading } = useTransactions(paginatedFilters);
+  const { data: transactions, isLoading, dataUpdatedAt } = useTransactions(paginatedFilters);
   const { data: accounts } = useAccounts();
   const reverseTransaction = useReverseTransaction();
 
@@ -410,6 +410,14 @@ export default function TransactionsPage() {
       )}
 
       {/* Form dialog */}
+      {/* D7.11: Sync indicator */}
+      {dataUpdatedAt > 0 && (
+        <p className="text-center text-[11px] text-muted-foreground/60">
+          Atualizado há{" "}
+          {Math.max(1, Math.round((Date.now() - dataUpdatedAt) / 60000))} min
+        </p>
+      )}
+
       <TransactionForm
         open={formOpen}
         onClose={() => { setFormOpen(false); setDuplicateData(null); }}

@@ -22,6 +22,7 @@ import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useAutoCategory } from "@/lib/hooks/use-auto-category";
 import { useCreateTransaction, useCreateTransfer } from "@/lib/services/transaction-engine";
+import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
@@ -70,6 +71,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isPaid, setIsPaid] = useState(true);
   const [notes, setNotes] = useState(prefill?.notes ?? "");
+  const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState<string | null>(null);
   const [showMore, setShowMore] = useState(!!prefill);
 
@@ -200,7 +202,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           {/* Decision 1: Amount (autofocus) */}
           <div className="space-y-1.5">
             <label htmlFor="tx-amount" className="text-sm font-medium">
-              Valor (R$)
+              Valor ({currSymbol})
             </label>
             <input
               id="tx-amount"

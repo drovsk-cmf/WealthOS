@@ -18,6 +18,7 @@ import {
   FREQUENCY_OPTIONS,
 } from "@/lib/hooks/use-recurrences";
 import { ADJUSTMENT_INDEX_OPTIONS } from "@/lib/hooks/use-budgets";
+import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import type { Database } from "@/types/database";
 
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
@@ -53,6 +54,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
   const [endDate, setEndDate] = useState("");
   const [adjustmentIndex, setAdjustmentIndex] = useState<AdjustmentIndex>("none");
   const [adjustmentRate, setAdjustmentRate] = useState("");
+  const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState("");
 
   const { data: accounts } = useAccounts();
@@ -209,7 +211,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           {/* Amount + Description */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="rec-amount" className="text-sm font-medium">Valor (R$)</label>
+              <label htmlFor="rec-amount" className="text-sm font-medium">Valor ({currSymbol})</label>
               <input id="rec-amount" type="text" inputMode="decimal" value={amount}
                 onChange={(e) => setAmount(e.target.value)} placeholder="0,00"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required aria-required="true" />

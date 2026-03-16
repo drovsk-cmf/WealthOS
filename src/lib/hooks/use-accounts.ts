@@ -73,7 +73,7 @@ export function useAccounts() {
 
       const { data, error } = await supabase
         .from("accounts")
-        .select("*")
+        .select("id, name, type, color, initial_balance, current_balance, projected_balance, is_active, created_at, updated_at")
         .eq("user_id", user.id)
         .eq("is_active", true)
         .order("created_at", { ascending: true });

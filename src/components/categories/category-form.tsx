@@ -109,6 +109,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Mercado"
+              aria-required="true"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               autoFocus
             />
@@ -190,14 +191,14 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {loading ? "Salvando" : isEdit ? "Salvar" : "Criar"}
             </button>

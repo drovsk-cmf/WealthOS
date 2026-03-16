@@ -9,6 +9,7 @@ import {
   FINANCING_SUBTYPES,
   PRESET_COLORS,
 } from "@/lib/hooks/use-accounts";
+import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
@@ -29,6 +30,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [financingSubtype, setFinancingSubtype] = useState(FINANCING_SUBTYPES[0].value);
   const [initialBalance, setInitialBalance] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
+  const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState<string | null>(null);
 
   const createAccount = useCreateAccount();
@@ -180,8 +182,8 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             <div className="space-y-1.5">
               <label htmlFor="acc-balance" className="text-sm font-medium">
                 {type === "credit_card" || type === "loan" || type === "financing"
-                  ? "Saldo devedor atual (R$)"
-                  : "Saldo inicial (R$)"}
+                  ? `Saldo devedor atual (${currSymbol})`
+                  : `Saldo inicial (${currSymbol})`}
               </label>
               <input
                 id="acc-balance"
@@ -239,14 +241,14 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+              className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
               {loading ? "Salvando" : isEdit ? "Salvar" : "Criar conta"}
             </button>

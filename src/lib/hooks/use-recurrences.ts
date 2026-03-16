@@ -81,7 +81,7 @@ export function useRecurrences(activeOnly: boolean = true) {
 
       let query = supabase
         .from("recurrences")
-        .select("*")
+        .select("id, frequency, interval_count, start_date, end_date, next_due_date, is_active, adjustment_index, adjustment_rate, template_transaction, created_at")
         .eq("user_id", user.id)
         .order("next_due_date", { ascending: true });
 

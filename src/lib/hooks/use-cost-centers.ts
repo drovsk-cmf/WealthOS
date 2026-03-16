@@ -38,7 +38,7 @@ export function useCostCenters() {
 
       const { data, error } = await supabase
         .from("cost_centers")
-        .select("*")
+        .select("id, name, type, color, icon, is_active, is_default, is_overhead, parent_id, created_at, updated_at")
         .eq("user_id", user.id)
         .eq("is_active", true)
         .order("is_default", { ascending: false })

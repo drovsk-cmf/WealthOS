@@ -15,6 +15,7 @@ import {
   useUpdateAsset,
   ASSET_CATEGORY_OPTIONS,
 } from "@/lib/hooks/use-assets";
+import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import type { Database } from "@/types/database";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
@@ -46,6 +47,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
   const [depreciationRate, setDepreciationRate] = useState("0");
   const [insurancePolicy, setInsurancePolicy] = useState("");
   const [insuranceExpiry, setInsuranceExpiry] = useState("");
+  const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState("");
 
   const createAsset = useCreateAsset();
@@ -152,14 +154,14 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           {/* Values */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição (R$)</label>
+              <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição ({currSymbol})</label>
               <input id="asset-acq-value" type="text" inputMode="decimal" value={acquisitionValue}
                 onChange={(e) => { setAcquisitionValue(e.target.value); if (!isEditing && !currentValue) setCurrentValue(e.target.value); }}
                 placeholder="0,00" required={!isEditing} aria-required={!isEditing} disabled={isEditing}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50" />
             </div>
             <div>
-              <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual (R$)</label>
+              <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual ({currSymbol})</label>
               <input id="asset-cur-value" type="text" inputMode="decimal" value={currentValue}
                 onChange={(e) => setCurrentValue(e.target.value)} placeholder="0,00" required aria-required="true"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />

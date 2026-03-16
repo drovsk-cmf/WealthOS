@@ -16,6 +16,7 @@ import {
   useUpdateBudget,
   ADJUSTMENT_INDEX_OPTIONS,
 } from "@/lib/hooks/use-budgets";
+import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 
@@ -43,6 +44,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   const [amount, setAmount] = useState("");
   const [threshold, setThreshold] = useState("80");
   const [adjustmentIndex, setAdjustmentIndex] = useState<AdjustmentIndex>("none");
+  const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState("");
 
   const { data: categories } = useCategories();
@@ -158,7 +160,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
 
           {/* Amount */}
           <div>
-            <label htmlFor="budget-amount" className="text-sm font-medium">Valor orçado (R$)</label>
+            <label htmlFor="budget-amount" className="text-sm font-medium">Valor orçado ({currSymbol})</label>
             <input
               id="budget-amount"
               type="text"
