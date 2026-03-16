@@ -7,7 +7,7 @@ import { toast } from "sonner";
  *
  * WKF-01: Auto-create workflows (integrated into account creation hook)
  * WKF-02: Pending tasks as checklist, grouped by workflow
- * WKF-03: Upload document in task (stub - marks complete with note)
+ * WKF-03: Upload document in task (DT-009: manual verification only, upload not implemented)
  * WKF-04: Update balance directly in task
  *
  * Two tabs: "Tarefas" (pending checklist) + "Workflows" (manage rules)
@@ -96,14 +96,15 @@ function TaskAction({
   }
 
   if (task.task_type === "upload_document") {
-    // WKF-03: Upload stub (full OCR in Phase 10)
+    // DT-009: Upload not implemented. User can mark as manually verified.
     return (
-      <div className="flex gap-1">
+      <div className="flex items-center gap-1">
+        <span className="text-[10px] text-muted-foreground">Sem upload</span>
         <button type="button"
-          onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente" })}
+          onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente (upload indisponível)" })}
           disabled={isPending}
-          className="rounded-md bg-verdant/15 px-2.5 py-1 text-xs font-medium text-verdant hover:bg-verdant/20">
-          Concluir
+          className="rounded-md bg-burnished/15 px-2.5 py-1 text-xs font-medium text-burnished hover:bg-burnished/20">
+          Conferido
         </button>
         <button type="button" onClick={() => onComplete(task.id, "skipped")} disabled={isPending}
           className="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent">

@@ -20,6 +20,7 @@ import {
 import { ADJUSTMENT_INDEX_OPTIONS } from "@/lib/hooks/use-budgets";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
@@ -152,6 +153,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
   const isPending = createRecurrence.isPending || updateRecurrence.isPending;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className="relative z-50 mx-4 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg border bg-card p-6 shadow-xl">
@@ -303,5 +305,6 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }

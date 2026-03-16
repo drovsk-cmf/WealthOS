@@ -485,15 +485,18 @@ export type Database = {
       create_default_chart_of_accounts: { Args: { p_user_id: string }; Returns: undefined }
       create_default_cost_center: { Args: { p_user_id: string }; Returns: string }
       create_family_member: { Args: { p_avatar_emoji?: string; p_birth_date?: string; p_is_tax_dependent?: boolean; p_name: string; p_relationship?: Database["public"]["Enums"]["family_relationship"]; p_role?: Database["public"]["Enums"]["family_role"]; p_user_id: string }; Returns: string }
-      create_transaction_with_journal: { Args: { p_account_id: string; p_amount?: number; p_category_id?: string; p_counterpart_coa_id?: string; p_date?: string; p_description?: string; p_is_paid?: boolean; p_notes?: string; p_source?: Database["public"]["Enums"]["entry_source"]; p_tags?: string[]; p_type?: Database["public"]["Enums"]["transaction_type"]; p_user_id: string }; Returns: Json }
+      create_transaction_with_journal: { Args: { p_account_id: string; p_amount?: number; p_category_id?: string; p_category_source?: Database["public"]["Enums"]["category_assignment_source"]; p_counterpart_coa_id?: string; p_date?: string; p_description?: string; p_family_member_id?: string; p_is_paid?: boolean; p_notes?: string; p_source?: Database["public"]["Enums"]["entry_source"]; p_tags?: string[]; p_type?: Database["public"]["Enums"]["transaction_type"]; p_user_id: string }; Returns: Json }
       create_transfer_with_journal: { Args: { p_amount: number; p_date?: string; p_description?: string; p_from_account_id: string; p_is_paid?: boolean; p_source?: Database["public"]["Enums"]["entry_source"]; p_to_account_id: string; p_user_id: string }; Returns: Json }
       cron_balance_integrity_check: { Args: Record<string, never>; Returns: undefined }
       cron_depreciate_assets: { Args: Record<string, never>; Returns: undefined }
       cron_fetch_economic_indices: { Args: Record<string, never>; Returns: Json }
       cron_generate_workflow_tasks: { Args: Record<string, never>; Returns: undefined }
+      cron_generate_monthly_snapshots: { Args: Record<string, never>; Returns: undefined }
+      cron_generate_recurring_transactions: { Args: Record<string, never>; Returns: undefined }
       cron_mark_overdue_transactions: { Args: Record<string, never>; Returns: undefined }
       cron_process_account_deletions: { Args: Record<string, never>; Returns: undefined }
       depreciate_asset: { Args: { p_asset_id: string; p_user_id: string }; Returns: Json }
+      edit_transaction: { Args: { p_user_id: string; p_transaction_id: string; p_account_id: string; p_category_id?: string; p_type?: Database["public"]["Enums"]["transaction_type"]; p_amount?: number; p_description?: string; p_date?: string; p_is_paid?: boolean; p_notes?: string; p_tags?: string[]; p_family_member_id?: string; p_category_source?: Database["public"]["Enums"]["category_assignment_source"] }; Returns: Json }
       find_reconciliation_candidates: { Args: { p_account_id: string; p_amount: number; p_date: string; p_tolerance_days?: number; p_tolerance_pct?: number; p_user_id: string }; Returns: Json }
       generate_next_recurrence: { Args: { p_recurrence_id: string; p_user_id: string }; Returns: Json }
       generate_tasks_for_period: { Args: { p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
@@ -512,6 +515,7 @@ export type Database = {
       get_top_categories: { Args: { p_limit?: number; p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
       import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id: string; p_transactions: Json; p_user_id: string }; Returns: Json }
       match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
+      recalculate_account_balance_for: { Args: { p_account_id: string }; Returns: undefined }
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }
       track_event: { Args: { p_event_name: string; p_properties?: Json }; Returns: string }
       undo_import_batch: { Args: { p_user_id: string; p_batch_id: string }; Returns: Json }

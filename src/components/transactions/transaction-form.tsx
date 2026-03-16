@@ -21,10 +21,11 @@ import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useAutoCategory } from "@/lib/hooks/use-auto-category";
-import { useCreateTransaction, useCreateTransfer } from "@/lib/services/transaction-engine";
+import { useCreateTransaction, useCreateTransfer, useEditTransaction } from "@/lib/services/transaction-engine";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type CategoryType = Database["public"]["Enums"]["category_type"];
@@ -33,6 +34,7 @@ interface TransactionFormProps {
   open: boolean;
   onClose: () => void;
   defaultType?: TransactionType;
+  /** Pre-fill fields (for Duplicate or Edit) */
   prefill?: {
     type?: TransactionType;
     amount?: string;
@@ -42,6 +44,8 @@ interface TransactionFormProps {
     familyMemberId?: string;
     notes?: string;
   } | null;
+  /** When set, form submits as edit (reverse + re-create) instead of create */
+  editTransactionId?: string | null;
 }
 
 const TYPE_CONFIG: Record<
@@ -53,7 +57,7 @@ const TYPE_CONFIG: Record<
   transfer: { label: "Transferência", color: "text-info-slate", bgColor: "border-info-slate bg-info-slate/10" },
 };
 
-export function TransactionForm({ open, onClose, defaultType = "expense", prefill }: TransactionFormProps) {
+export function TransactionForm({ open, onClose, defaultType = "expense", prefill, editTransactionId }: TransactionFormProps) {
   // Hooks
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
@@ -76,7 +80,8 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const [showMore, setShowMore] = useState(!!prefill);
 
   const createTransfer = useCreateTransfer();
-  const loading = createTransaction.isPending || createTransfer.isPending;
+  const editTransaction = useEditTransaction();
+  const loading = createTransaction.isPending || createTransfer.isPending || editTransaction.isPending;
 
   // UX-H2-01: Auto-categorization
   const [manualCategory, setManualCategory] = useState(false);
@@ -149,7 +154,25 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     }
 
     try {
-      if (type === "transfer") {
+      if (editTransactionId && type !== "transfer") {
+        // DT-012: Edit mode (atomic reverse + re-create)
+        await editTransaction.mutateAsync({
+          original_transaction_id: editTransactionId,
+          account_id: accountId,
+          category_id: categoryId || null,
+          category_source: categoryId
+            ? manualCategory ? "manual" : "auto"
+            : null,
+          type,
+          amount: parsedAmount,
+          description: description || null,
+          date,
+          is_paid: isPaid,
+          notes: notes || null,
+          family_member_id: familyMemberId || null,
+        });
+        toast.success("Transação editada.");
+      } else if (type === "transfer") {
         await createTransfer.mutateAsync({
           from_account_id: accountId,
           to_account_id: toAccountId,
@@ -158,6 +181,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           date,
           is_paid: isPaid,
         });
+        toast.success("Transação criada com sucesso.");
       } else {
         await createTransaction.mutateAsync({
           account_id: accountId,
@@ -173,8 +197,8 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           notes: notes || null,
           family_member_id: familyMemberId || null,
         });
+        toast.success("Transação criada com sucesso.");
       }
-      toast.success("Transação criada com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");
@@ -184,11 +208,12 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   if (!open) return null;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-lg border bg-card p-6 shadow-lg">
-        <h2 className="text-lg font-semibold">Nova transação</h2>
+        <h2 className="text-lg font-semibold">{editTransactionId ? "Editar transação" : "Nova transação"}</h2>
 
         {error && (
           <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
@@ -451,11 +476,12 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
                     : "bg-terracotta hover:bg-terracotta/80"
               }`}
             >
-              {loading ? "Salvando" : `Lançar ${TYPE_CONFIG[type].label.toLowerCase()}`}
+              {loading ? "Salvando" : editTransactionId ? "Salvar alterações" : `Lançar ${TYPE_CONFIG[type].label.toLowerCase()}`}
             </button>
           </div>
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }

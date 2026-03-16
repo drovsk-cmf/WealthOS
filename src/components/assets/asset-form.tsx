@@ -17,6 +17,7 @@ import {
 } from "@/lib/hooks/use-assets";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
 
@@ -123,6 +124,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
   const isPending = createAsset.isPending || updateAsset.isPending;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
       <div className="relative z-50 mx-4 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg border bg-card p-6 shadow-xl">
@@ -218,5 +220,6 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }

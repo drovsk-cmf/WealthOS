@@ -19,6 +19,7 @@ import {
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
@@ -120,6 +121,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   const isPending = createBudget.isPending || updateBudget.isPending;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
@@ -245,5 +247,6 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }

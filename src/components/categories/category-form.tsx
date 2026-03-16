@@ -10,6 +10,7 @@ import {
 import { getColorName } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type CategoryType = Database["public"]["Enums"]["category_type"];
@@ -85,6 +86,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
   if (!open) return null;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
@@ -206,5 +208,6 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }

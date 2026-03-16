@@ -256,6 +256,13 @@ export const reversalResultSchema = z.object({
   reversal_journal_id: z.string().uuid().nullable(),
 });
 
+export const editTransactionResultSchema = z.object({
+  original_id: z.string().uuid(),
+  new_transaction_id: z.string().uuid(),
+  new_journal_entry_id: z.string().uuid().nullable(),
+  reversal_journal_id: z.string().uuid().nullable(),
+});
+
 // ─── Table query schemas ─────────────────────────────────────
 
 export const taxParameterSchema = z.object({

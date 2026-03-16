@@ -14,7 +14,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
-import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema } from "@/lib/schemas/rpc";
+import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema, editTransactionResultSchema } from "@/lib/schemas/rpc";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -63,6 +63,17 @@ export interface ReversalResult {
   reversal_journal_id: string | null;
 }
 
+export interface EditTransactionInput extends CreateTransactionInput {
+  original_transaction_id: string;
+}
+
+export interface EditTransactionResult {
+  original_id: string;
+  new_transaction_id: string;
+  new_journal_entry_id: string | null;
+  reversal_journal_id: string | null;
+}
+
 // ─── Service functions ──────────────────────────────────────
 
 /**
@@ -89,6 +100,9 @@ export async function createTransaction(
     p_notes: input.notes ?? undefined,
     p_tags: input.tags ?? undefined,
     p_counterpart_coa_id: input.counterpart_coa_id ?? undefined,
+    // DT-006: Pass directly to RPC instead of separate UPDATEs
+    p_family_member_id: input.family_member_id ?? undefined,
+    p_category_source: input.category_source ?? undefined,
   });
 
   if (error) throw new Error(error.message);
@@ -99,25 +113,8 @@ export async function createTransaction(
     logSchemaError("create_transaction_with_journal", parsed);
     throw new Error("Resposta inválida ao criar transação.");
   }
-  const result = parsed.data;
 
-  // Set family_member_id if provided (not part of the RPC, set after)
-  if (input.family_member_id && result.transaction_id) {
-    await supabase
-      .from("transactions")
-      .update({ family_member_id: input.family_member_id })
-      .eq("id", result.transaction_id);
-  }
-
-  // UX-H2-04: Set category_source if category was assigned
-  if (input.category_source && input.category_id && result.transaction_id) {
-    await supabase
-      .from("transactions")
-      .update({ category_source: input.category_source })
-      .eq("id", result.transaction_id);
-  }
-
-  return result;
+  return parsed.data;
 }
 
 /**
@@ -177,6 +174,42 @@ export async function reverseTransaction(
   return parsed.data;
 }
 
+/**
+ * Edit a transaction (atomic reverse + re-create).
+ * DT-012: Preserves append-only journal model while providing edit UX.
+ */
+export async function editTransaction(
+  input: EditTransactionInput
+): Promise<EditTransactionResult> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sessão expirada.");
+
+  const { data, error } = await supabase.rpc("edit_transaction", {
+    p_user_id: user.id,
+    p_transaction_id: input.original_transaction_id,
+    p_account_id: input.account_id,
+    p_category_id: input.category_id ?? undefined,
+    p_type: input.type,
+    p_amount: input.amount,
+    p_description: input.description ?? undefined,
+    p_date: input.date,
+    p_is_paid: input.is_paid,
+    p_notes: input.notes ?? undefined,
+    p_tags: input.tags ?? undefined,
+    p_family_member_id: input.family_member_id ?? undefined,
+    p_category_source: input.category_source ?? undefined,
+  });
+
+  if (error) throw new Error(error.message);
+  const parsed = editTransactionResultSchema.safeParse(data);
+  if (!parsed.success) {
+    logSchemaError("edit_transaction", parsed);
+    throw new Error("Resposta inválida ao editar transação.");
+  }
+  return parsed.data;
+}
+
 // ─── React Query Hooks ──────────────────────────────────────
 
 export function useCreateTransaction() {
@@ -211,6 +244,19 @@ export function useReverseTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
+    },
+  });
+}
+
+export function useEditTransaction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: editTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

@@ -34,6 +34,7 @@ export default function TransactionsPage() {
     accountId?: string;
     categoryId?: string;
   } | null>(null);
+  const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
   const [showFilters, setShowFilters] = useState(false);
   const [confirmReverse, setConfirmReverse] = useState<string | null>(null);
@@ -91,7 +92,7 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Transações</h1>
         <button type="button"
-          onClick={() => setFormOpen(true)}
+          onClick={() => { setEditingTransactionId(null); setDuplicateData(null); setFormOpen(true); }}
           className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
         >
           + Nova transação
@@ -238,7 +239,7 @@ export default function TransactionsPage() {
               </p>
               <div className="mt-5 flex gap-3">
                 <button type="button"
-                  onClick={() => setFormOpen(true)}
+                  onClick={() => { setEditingTransactionId(null); setDuplicateData(null); setFormOpen(true); }}
                   className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   + Nova transação
@@ -361,10 +362,34 @@ export default function TransactionsPage() {
                   </>
                 )}
 
+                {/* DT-012: Edit button */}
+                {!tx.is_deleted && tx.type !== "transfer" && (
+                  <button type="button"
+                    onClick={() => {
+                      setEditingTransactionId(tx.id);
+                      setDuplicateData({
+                        type: tx.type as "expense" | "income",
+                        amount: String(tx.amount),
+                        description: tx.description ?? "",
+                        accountId: tx.account_id,
+                        categoryId: tx.category_id ?? undefined,
+                      });
+                      setFormOpen(true);
+                    }}
+                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    title="Editar" aria-label="Editar"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                )}
+
                 {/* D7.07: Duplicate button */}
                 {!tx.is_deleted && (
                   <button type="button"
                     onClick={() => {
+                      setEditingTransactionId(null);
                       setDuplicateData({
                         type: tx.type as "expense" | "income" | "transfer",
                         amount: String(tx.amount),
@@ -420,8 +445,9 @@ export default function TransactionsPage() {
 
       <TransactionForm
         open={formOpen}
-        onClose={() => { setFormOpen(false); setDuplicateData(null); }}
+        onClose={() => { setFormOpen(false); setDuplicateData(null); setEditingTransactionId(null); }}
         prefill={duplicateData}
+        editTransactionId={editingTransactionId}
       />
     </div>
   );

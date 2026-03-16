@@ -12,6 +12,7 @@ import {
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
+import FocusTrap from "focus-trap-react";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type AccountType = Database["public"]["Enums"]["account_type"];
@@ -92,6 +93,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   if (!open) return null;
 
   return (
+    <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
@@ -256,5 +258,6 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
         </form>
       </div>
     </div>
+    </FocusTrap>
   );
 }
