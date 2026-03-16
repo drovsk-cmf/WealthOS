@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -53,6 +53,15 @@ export default function AppLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const supabase = createClient();
 
+  // Close sidebar on ESC key
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && sidebarOpen) setSidebarOpen(false);
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, [sidebarOpen]);
+
   // Session timeout (30min inactivity)
   useSessionTimeout();
 
@@ -101,11 +110,18 @@ export default function AppLayout({
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSidebarOpen(false); }}
+          role="button"
+          aria-label="Fechar menu"
+          tabIndex={0}
         />
       )}
 
       {/* Sidebar */}
       <aside
+        role={sidebarOpen ? "dialog" : undefined}
+        aria-modal={sidebarOpen ? true : undefined}
+        aria-label={sidebarOpen ? "Menu de navegação" : undefined}
         className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col border-r bg-card transition-transform duration-200 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}

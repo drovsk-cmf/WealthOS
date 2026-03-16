@@ -322,10 +322,10 @@ export default function FiscalPage() {
                       <table className="w-full text-xs">
                         <thead>
                           <tr className="border-b text-muted-foreground">
-                            <th className="py-1 text-left font-medium">Faixa</th>
-                            <th className="py-1 text-right font-medium">Alíquota</th>
+                            <th scope="col" className="py-1 text-left font-medium">Faixa</th>
+                            <th scope="col" className="py-1 text-right font-medium">Alíquota</th>
                             {(param.brackets[0] as Record<string, unknown>)?.deduction !== undefined && (
-                              <th className="py-1 text-right font-medium">Dedução</th>
+                              <th scope="col" className="py-1 text-right font-medium">Dedução</th>
                             )}
                           </tr>
                         </thead>

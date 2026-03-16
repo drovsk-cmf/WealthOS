@@ -60,7 +60,7 @@ export function ImportStepMapping({
             <thead>
               <tr className="border-b">
                 {csvHeaders.map((h, i) => (
-                  <th
+                  <th scope="col"
                     key={i}
                     className={`px-2 py-1 text-left font-medium ${
                       i === mapping?.date

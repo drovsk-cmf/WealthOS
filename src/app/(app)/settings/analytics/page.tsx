@@ -175,8 +175,8 @@ export default function AnalyticsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="px-4 py-2 text-left font-medium">Evento</th>
-                  <th className="px-4 py-2 text-right font-medium">Total</th>
+                  <th scope="col" className="px-4 py-2 text-left font-medium">Evento</th>
+                  <th scope="col" className="px-4 py-2 text-right font-medium">Total</th>
                 </tr>
               </thead>
               <tbody>

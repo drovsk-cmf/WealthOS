@@ -340,10 +340,10 @@ export default function IndicesPage() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b text-muted-foreground">
-                    <th className="py-1.5 text-left font-medium">Período</th>
-                    <th className="py-1.5 text-right font-medium">Valor</th>
-                    <th className="py-1.5 text-right font-medium">Acum. Ano</th>
-                    <th className="py-1.5 text-right font-medium">Acum. 12m</th>
+                    <th scope="col" className="py-1.5 text-left font-medium">Período</th>
+                    <th scope="col" className="py-1.5 text-right font-medium">Valor</th>
+                    <th scope="col" className="py-1.5 text-right font-medium">Acum. Ano</th>
+                    <th scope="col" className="py-1.5 text-right font-medium">Acum. 12m</th>
                   </tr>
                 </thead>
                 <tbody>
