@@ -297,6 +297,7 @@ export function useUpdateAsset() {
           ...(coaId !== undefined && { coa_id: coaId }),
         })
         .eq("id", id)
+        .eq("user_id", user.id)
         .select()
         .single();
 

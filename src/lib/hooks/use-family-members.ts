@@ -131,7 +131,8 @@ export function useUpdateFamilyMember() {
         await supabase
           .from("cost_centers")
           .update({ name: updates.name })
-          .eq("id", data.cost_center_id);
+          .eq("id", data.cost_center_id)
+          .eq("user_id", user.id);
       }
 
       return data as FamilyMember;
@@ -174,7 +175,8 @@ export function useDeactivateFamilyMember() {
         await supabase
           .from("cost_centers")
           .update({ is_active: false })
-          .eq("id", member.cost_center_id);
+          .eq("id", member.cost_center_id)
+          .eq("user_id", user.id);
       }
     },
     onSuccess: async () => {

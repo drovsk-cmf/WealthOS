@@ -43,6 +43,11 @@ const TABLES_TO_EXPORT = [
   { key: "bank_connections", label: "Conexões bancárias" },
 ] as const;
 
+// D2.01: Explicit columns for tables with sensitive fields
+const TABLE_SELECT_COLUMNS: Partial<Record<string, string>> = {
+  family_members: "id, user_id, full_name, relationship, avatar_emoji, is_active, created_at, updated_at",
+};
+
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -117,9 +122,10 @@ export default function DataSettingsPage() {
           );
         }
 
+        const selectCols = TABLE_SELECT_COLUMNS[table.key] ?? "*";
         const { data, error: fetchError } = await supabase
           .from(table.key)
-          .select("*")
+          .select(selectCols)
           .limit(EXPORT_LIMIT);
 
         if (fetchError) {

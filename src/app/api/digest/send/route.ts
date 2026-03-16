@@ -59,10 +59,11 @@ export async function POST(request: Request) {
       );
 
       if (digestError || !digest) {
+        if (digestError) console.error("[digest/send] digest error:", digestError.message);
         results.push({
           user_id: user.id,
           status: "error",
-          error: digestError?.message || "No data",
+          error: "Falha ao gerar resumo.",
         });
         continue;
       }
@@ -127,10 +128,11 @@ export async function POST(request: Request) {
         results.push({ user_id: user.id, status: "preview_only" });
       }
     } catch (err) {
+      console.error("[digest/send] user error:", err instanceof Error ? err.message : err);
       results.push({
         user_id: user.id,
         status: "error",
-        error: err instanceof Error ? err.message : "Unknown",
+        error: "Erro inesperado.",
       });
     }
   }

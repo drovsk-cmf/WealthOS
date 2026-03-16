@@ -62,13 +62,11 @@ export async function POST(request: NextRequest) {
   });
 
   if (error) {
-    const message =
-      error.message === "Invalid login credentials"
-        ? "Email ou senha incorretos."
-        : error.message;
+    // D1.07: Never leak Supabase error details
+    console.error("[auth/login]", error.message);
 
     return NextResponse.json(
-      { error: message },
+      { error: "Email ou senha incorretos." },
       { status: 401, headers: rateLimitHeaders(rlResult) }
     );
   }

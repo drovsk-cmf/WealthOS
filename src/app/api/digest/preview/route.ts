@@ -33,8 +33,9 @@ export async function GET() {
   });
 
   if (error || !digest) {
+    if (error) console.error("[digest/preview]", error.message);
     return NextResponse.json(
-      { error: error?.message || "No digest data" },
+      { error: "Erro ao gerar prévia do resumo." },
       { status: 500 }
     );
   }

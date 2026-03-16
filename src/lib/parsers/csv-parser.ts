@@ -173,8 +173,8 @@ export function mapToTransactions(
       continue;
     }
 
-    // Strip leading formula-triggering characters to prevent CSV injection
-    const sanitized = rawDesc.replace(/^[=+\-@]+/, "");
+    // Prefix leading formula-triggering characters to prevent CSV injection (D3.06)
+    const sanitized = /^[=+\-@]/.test(rawDesc) ? `'${rawDesc}` : rawDesc;
     const description = sanitized || "Sem descrição";
     const type = amount >= 0 ? "income" : "expense";
     const absAmount = Math.abs(amount);

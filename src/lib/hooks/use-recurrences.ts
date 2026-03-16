@@ -331,6 +331,7 @@ export function usePayBill() {
         .from("transactions")
         .update({ is_paid: true })
         .eq("id", transactionId)
+        .eq("user_id", user.id)
         .select("recurrence_id")
         .single();
 

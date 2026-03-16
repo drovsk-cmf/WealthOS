@@ -179,10 +179,17 @@ export async function POST() {
       results.push(fetchResult);
     }
 
+    // D3.05: Sanitize error details before returning to client
+    const sanitizedResults = results.map((r) => ({
+      index_type: r.index_type,
+      inserted: r.inserted,
+      error_count: r.errors.length,
+    }));
+
     return NextResponse.json({
       status: "ok",
       fetched_at: new Date().toISOString(),
-      results,
+      results: sanitizedResults,
       total_inserted: results.reduce((s, r) => s + r.inserted, 0),
     });
   } catch (err) {
