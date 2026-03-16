@@ -8,6 +8,7 @@ import {
   CATEGORY_COLORS,
 } from "@/lib/hooks/use-categories";
 import { getColorName } from "@/lib/utils";
+import { toast } from "sonner";
 import type { Database } from "@/types/database";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
@@ -74,6 +75,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
           color,
         });
       }
+      toast.success(isEdit ? "Categoria atualizada." : "Categoria criada com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar categoria.");

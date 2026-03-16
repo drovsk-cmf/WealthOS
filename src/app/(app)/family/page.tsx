@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { useState, useEffect } from "react";
 import { Users, Archive } from "lucide-react";
 import {
@@ -103,6 +105,7 @@ export default function FamilyPage() {
 
   async function handleDeactivate(id: string) {
     await deactivateMember.mutateAsync(id);
+    toast.success("Membro desativado.");
     setConfirmDelete(null);
   }
 

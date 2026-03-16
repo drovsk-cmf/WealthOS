@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   useCreateAsset,
   useUpdateAsset,
@@ -109,6 +110,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           insurance_expiry: insuranceExpiry || null,
         });
       }
+      toast.success(isEditing ? "Bem atualizado." : "Bem cadastrado com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");

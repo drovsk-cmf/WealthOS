@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { translateSupabaseError } from "@/lib/utils/error-messages";
 import { loginSchema } from "@/lib/validations/auth";
 import { getAssuranceLevel, getMfaStatus } from "@/lib/auth/mfa";
 import { sanitizeRedirectTo } from "@/lib/utils";
@@ -112,7 +113,7 @@ function LoginContent() {
     });
 
     if (oauthError) {
-      setError(oauthError.message);
+      setError(translateSupabaseError(oauthError.message));
       setLoading(false);
     }
     // OAuth redirects away - loading stays true

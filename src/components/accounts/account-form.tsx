@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   useCreateAccount,
   useUpdateAccount,
@@ -79,6 +80,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           ...(type === "financing" && { coaParentCode: financingSubtype }),
         });
       }
+      toast.success(isEdit ? "Conta atualizada." : "Conta criada com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar conta.");

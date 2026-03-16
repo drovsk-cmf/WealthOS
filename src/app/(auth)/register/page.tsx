@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { translateSupabaseError } from "@/lib/utils/error-messages";
 import {
   registerSchema,
   getPasswordStrength,
@@ -77,7 +78,7 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (error) {
-      setServerError(error.message);
+      setServerError(translateSupabaseError(error.message));
       return;
     }
 

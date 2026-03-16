@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import {
@@ -138,6 +139,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           },
         });
       }
+      toast.success(isEditing ? "Recorrência atualizada." : "Recorrência criada com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");

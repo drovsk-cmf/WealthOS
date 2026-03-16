@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
@@ -117,7 +118,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
     e.preventDefault();
     setError(null);
 
-    const parsedAmount = parseFloat(amount);
+    const parsedAmount = parseFloat(amount.replace(",", "."));
     if (!parsedAmount || parsedAmount <= 0) {
       setError("Valor deve ser maior que zero.");
       return;
@@ -161,6 +162,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
           family_member_id: familyMemberId || null,
         });
       }
+      toast.success("Transação criada com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");
@@ -192,9 +194,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
             </label>
             <input
               id="tx-amount"
-              type="number"
-              step="0.01"
-              min="0.01"
+              type="text"
               inputMode="decimal"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -203,9 +203,9 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               className="flex h-14 w-full rounded-md border border-input bg-background px-4 py-2 text-2xl font-bold tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               autoFocus
             />
-            {amount && parseFloat(amount) > 0 && (
+            {amount && parseFloat(amount.replace(",", ".")) > 0 && (
               <p className="text-xs text-muted-foreground">
-                {formatCurrency(parseFloat(amount))}
+                {formatCurrency(parseFloat(amount.replace(",", ".")))}
               </p>
             )}
           </div>

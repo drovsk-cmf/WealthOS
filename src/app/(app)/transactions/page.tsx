@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { useState, useCallback } from "react";
 import { ArrowLeftRight, ArrowUpRight, ArrowDownRight, Repeat } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -54,6 +56,7 @@ export default function TransactionsPage() {
 
   async function handleReverse(id: string) {
     await reverseTransaction.mutateAsync(id);
+    toast.success("Transação estornada.");
     setConfirmReverse(null);
   }
 

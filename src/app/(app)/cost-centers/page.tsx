@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 /**
  * Oniefy - Centros de Custo (Phase 2 CRUD + Phase 5 Advanced)
  *
@@ -216,6 +218,7 @@ export default function CostCentersPage() {
       } else {
         await createCenter.mutateAsync({ name: name.trim(), type, color });
       }
+      toast.success(isEdit ? "Centro atualizado." : "Centro criado com sucesso.");
       setFormOpen(false);
       setEditing(null);
     } catch (err) {
@@ -225,6 +228,7 @@ export default function CostCentersPage() {
 
   async function handleDelete(id: string) {
     await deleteCenter.mutateAsync(id);
+    toast.success("Centro desativado.");
     setConfirmDelete(null);
     if (expandedCenter === id) setExpandedCenter(null);
   }

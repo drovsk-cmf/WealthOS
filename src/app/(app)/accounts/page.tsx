@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { useState } from "react";
 import { Wallet, Archive } from "lucide-react";
 import {
@@ -51,6 +53,7 @@ export default function AccountsPage() {
 
   async function handleDeactivate(id: string) {
     await deactivate.mutateAsync(id);
+    toast.success("Conta desativada.");
     setConfirmDelete(null);
   }
 

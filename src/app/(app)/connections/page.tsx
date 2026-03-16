@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 /**
  * Oniefy - Conexões Bancárias (Phase 9B - Standalone)
  *
@@ -79,12 +81,14 @@ function ConnectionsManager() {
     e.preventDefault();
     if (!newName.trim()) return;
     await createConnection.mutateAsync({ institution_name: newName.trim() });
+    toast.success("Conexão adicionada.");
     setNewName("");
     setShowNew(false);
   }
 
   async function handleDeactivate(id: string) {
     await deactivateConnection.mutateAsync(id);
+    toast.success("Conexão removida.");
     setConfirmDelete(null);
   }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 /**
  * Oniefy - Contas a Pagar (Phase 4)
  *
@@ -95,11 +97,13 @@ export default function BillsPage() {
 
   async function handlePay(txId: string) {
     await payBill.mutateAsync(txId);
+    toast.success("Pagamento registrado.");
     setConfirmPay(null);
   }
 
   async function handleDeactivate(id: string) {
     await deactivateRecurrence.mutateAsync(id);
+    toast.success("Recorrência encerrada.");
     setConfirmDeactivate(null);
   }
 

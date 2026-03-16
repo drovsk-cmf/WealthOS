@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 import { useState } from "react";
 import { Tag as TagIcon } from "lucide-react";
 import {
@@ -41,6 +43,7 @@ export default function CategoriesPage() {
 
   async function handleDelete(id: string) {
     await deleteCategory.mutateAsync(id);
+    toast.success("Categoria excluída.");
     setConfirmDelete(null);
   }
 

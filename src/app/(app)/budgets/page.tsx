@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 /**
  * Oniefy - Orçamento (Phase 3)
  *
@@ -126,6 +128,7 @@ export default function BudgetsPage() {
 
   async function handleDelete(id: string) {
     await deleteBudget.mutateAsync(id);
+    toast.success("Orçamento removido.");
     setConfirmDelete(null);
   }
 

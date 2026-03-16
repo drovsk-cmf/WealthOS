@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import { QueryProvider } from "@/lib/query-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -48,6 +49,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans`}>
         <QueryProvider>{children}</QueryProvider>
+        <Toaster position="bottom-right" richColors closeButton />
       </body>
     </html>
   );

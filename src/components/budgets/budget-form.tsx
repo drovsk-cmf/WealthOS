@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useCategories } from "@/lib/hooks/use-categories";
 import {
   useCreateBudget,
@@ -105,6 +106,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
           family_member_id: familyMemberId ?? null,
         });
       }
+      toast.success(isEditing ? "Orçamento atualizado." : "Orçamento criado com sucesso.");
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");

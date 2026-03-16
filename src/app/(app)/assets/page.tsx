@@ -1,5 +1,7 @@
 "use client";
 
+import { toast } from "sonner";
+
 /**
  * Oniefy - Patrimônio (Phase 4)
  *
@@ -106,6 +108,7 @@ export default function AssetsPage() {
 
   async function handleDelete(id: string) {
     await deleteAsset.mutateAsync(id);
+    toast.success("Bem removido.");
     setConfirmDelete(null);
   }
 
