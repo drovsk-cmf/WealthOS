@@ -68,6 +68,7 @@ export default function BillsPage() {
   const [editData, setEditData] = useState<EditData | null>(null);
   const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(null);
   const [confirmPay, setConfirmPay] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useAutoReset(confirmDeactivate, setConfirmDeactivate);
   useAutoReset(confirmPay, setConfirmPay);
@@ -156,6 +157,11 @@ export default function BillsPage() {
         ))}
       </div>
 
+      {/* Search */}
+      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+        placeholder={tab === "pending" ? "Buscar pendentes" : "Buscar recorrências"} aria-label="Buscar contas"
+        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+
       {/* ═══ TAB: Pendentes (CAP-04, CAP-05, CAP-06) ═══ */}
       {tab === "pending" && (
         <>
@@ -181,7 +187,7 @@ export default function BillsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {pendingBills.map((bill) => {
+              {pendingBills.filter((b) => !search || b.description?.toLowerCase().includes(search.toLowerCase())).map((bill) => {
                 const days = daysUntil(bill.due_date || bill.date);
                 const badge = urgencyBadge(days, bill.payment_status);
                 return (
@@ -258,7 +264,11 @@ export default function BillsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {recurrences.map((rec) => {
+              {recurrences.filter((r) => {
+                if (!search) return true;
+                const desc = (r.template_transaction as Record<string, unknown>)?.description as string || "";
+                return desc.toLowerCase().includes(search.toLowerCase());
+              }).map((rec) => {
                 const tmpl = rec.template_transaction as Record<string, unknown>;
                 return (
                   <div key={rec.id} className="rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/30">

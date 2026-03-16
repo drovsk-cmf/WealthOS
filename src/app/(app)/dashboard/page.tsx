@@ -154,6 +154,14 @@ export default function DashboardPage() {
 
       {/* DASH-08: FAB lançamento rápido */}
       <QuickEntryFab />
+
+      {/* D7.11: Sync indicator */}
+      {summary.dataUpdatedAt > 0 && (
+        <p className="text-center text-[11px] text-muted-foreground/60">
+          Atualizado há{" "}
+          {Math.max(1, Math.round((Date.now() - summary.dataUpdatedAt) / 60000))} min
+        </p>
+      )}
     </div>
   );
 }

@@ -24,6 +24,7 @@ export default function AccountsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useAutoReset(confirmDelete, setConfirmDelete);
 
@@ -88,6 +89,17 @@ export default function AccountsPage() {
         </button>
       </div>
 
+      {/* Search */}
+      {accounts && accounts.length > 3 && (
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar conta por nome"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        />
+      )}
+
       {/* Summary cards */}
       {accounts && accounts.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -135,9 +147,13 @@ export default function AccountsPage() {
       )}
 
       {/* Account list */}
-      {accounts && accounts.length > 0 && (
+      {accounts && accounts.length > 0 && (() => {
+        const filtered = search
+          ? accounts.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+          : accounts;
+        return (
         <div className="space-y-3">
-          {accounts.map((account) => (
+          {filtered.map((account) => (
             <div
               key={account.id}
               className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
@@ -231,7 +247,8 @@ export default function AccountsPage() {
             </div>
           ))}
         </div>
-      )}
+        );
+      })()}
 
       {/* Form dialog */}
       <AccountForm

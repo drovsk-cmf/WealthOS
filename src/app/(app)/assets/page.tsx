@@ -81,6 +81,7 @@ export default function AssetsPage() {
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [depreciationResult, setDepreciationResult] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useAutoReset(confirmDelete, setConfirmDelete);
 
@@ -151,6 +152,13 @@ export default function AssetsPage() {
           + Novo bem
         </button>
       </div>
+
+      {/* Search */}
+      {assets && assets.length > 3 && (
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar por nome" aria-label="Buscar bens"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      )}
 
       {/* PAT-06: Insurance alerts */}
       {expiringInsurance.length > 0 && (
@@ -228,7 +236,7 @@ export default function AssetsPage() {
       {/* Asset list */}
       {assets && assets.length > 0 && (
         <div className="space-y-2">
-          {assets.map((asset) => {
+          {assets.filter((a) => !search || a.name.toLowerCase().includes(search.toLowerCase())).map((asset) => {
             const depPct = Number(asset.acquisition_value) > 0
               ? ((Number(asset.acquisition_value) - Number(asset.current_value)) / Number(asset.acquisition_value) * 100)
               : 0;

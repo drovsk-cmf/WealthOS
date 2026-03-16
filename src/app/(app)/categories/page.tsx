@@ -24,10 +24,13 @@ export default function CategoriesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   useAutoReset(confirmDelete, setConfirmDelete);
 
-  const filtered = categories?.filter((c) => c.type === activeTab) ?? [];
+  const filtered = categories?.filter((c) =>
+    c.type === activeTab && (!search || c.name.toLowerCase().includes(search.toLowerCase()))
+  ) ?? [];
   const expenseCount = categories?.filter((c) => c.type === "expense").length ?? 0;
   const incomeCount = categories?.filter((c) => c.type === "income").length ?? 0;
 
@@ -88,6 +91,13 @@ export default function CategoriesPage() {
           </button>
         ))}
       </div>
+
+      {/* Search */}
+      {(categories?.length ?? 0) > 5 && (
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar categoria" aria-label="Buscar categorias"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      )}
 
       {/* Empty state */}
       {filtered.length === 0 && (
@@ -153,7 +163,8 @@ export default function CategoriesPage() {
                 {!cat.is_system && (
                   <>
                     {confirmDelete === cat.id ? (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-destructive">Transações ficarão sem categoria</span>
                         <button type="button"
                           onClick={() => handleDelete(cat.id)}
                           disabled={deleteCategory.isPending}

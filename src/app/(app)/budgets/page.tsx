@@ -297,7 +297,7 @@ export default function BudgetsPage() {
                 const nextMonth = new Date(currentMonth + "T12:00:00");
                 nextMonth.setMonth(nextMonth.getMonth() + 1);
                 setCurrentMonth(toMonthKey(nextMonth));
-                setTimeout(() => setConfirmCopy(true), 100);
+                setConfirmCopy(true);
               }}
               className="text-xs text-primary hover:underline"
             >
@@ -458,9 +458,12 @@ export default function BudgetsPage() {
 
       {/* Copy confirmation dialog (ORC-02) */}
       {confirmCopy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center"
+          onKeyDown={(e) => { if (e.key === "Escape") { setConfirmCopy(false); setCopyError(""); } }}
+        >
           <div className="fixed inset-0 bg-black/50" onClick={() => { setConfirmCopy(false); setCopyError(""); }} />
-          <div className="relative z-50 mx-4 w-full max-w-sm rounded-lg border bg-card p-6 shadow-xl">
+          <div role="dialog" aria-modal="true" aria-label="Copiar orçamento"
+            className="relative z-50 mx-4 w-full max-w-sm rounded-lg border bg-card p-6 shadow-xl">
             <h3 className="text-lg font-semibold">Copiar Orçamento</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Copiar todos os orçamentos de{" "}

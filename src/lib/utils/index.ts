@@ -12,13 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Format a number as BRL currency.
+ * Format a number as currency.
+ * @param value - numeric value
+ * @param currency - ISO 4217 code (default: "BRL")
  * @example formatCurrency(1234.56) => "R$ 1.234,56"
+ * @example formatCurrency(1234.56, "USD") => "US$ 1.234,56"
  */
-export function formatCurrency(value: number): string {
+export function formatCurrency(value: number, currency = "BRL"): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
-    currency: "BRL",
+    currency,
   }).format(value);
 }
 
