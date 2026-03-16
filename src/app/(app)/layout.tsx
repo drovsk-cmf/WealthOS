@@ -18,6 +18,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
+import { useAppLifecycle } from "@/lib/auth/use-app-lifecycle";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
@@ -54,6 +55,10 @@ export default function AppLayout({
 
   // Session timeout (30min inactivity)
   useSessionTimeout();
+
+  // DEK lifecycle: purge on background, restore on foreground (Capacitor iOS)
+  // On web: no-op. On native: manages encryption key memory safety.
+  useAppLifecycle();
 
   const { ready, userName } = useAuthInit(pathname);
   const isOnline = useOnlineStatus();
