@@ -30,8 +30,8 @@ interface IndexSource {
 }
 
 // Allowlist of hostnames permitted for external data fetches.
-// Currently only BCB SGS is active. Add hosts here when new providers are enabled.
-const ALLOWED_HOSTS = ["api.bcb.gov.br"];
+// BCB SGS is the active provider; IBGE SIDRA sources exist in DB for future activation.
+const ALLOWED_HOSTS = ["api.bcb.gov.br", "apisidra.ibge.gov.br"];
 
 function parseBcbDate(dateStr: string): string {
   // DD/MM/YYYY → YYYY-MM-DD

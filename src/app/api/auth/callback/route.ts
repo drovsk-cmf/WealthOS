@@ -25,6 +25,9 @@ export async function GET(request: Request) {
   const supabase = await createClient();
 
   // ─── Email confirmation / password reset (magic link) ─────
+  // Supabase also supports: "magiclink", "email_change", "phone_change".
+  // Omitted because Oniefy uses password-based auth only (no magic links,
+  // no email/phone change flows). Update this list if new flows are added.
   const VALID_OTP_TYPES = ["signup", "email", "recovery", "invite"] as const;
   type OtpType = (typeof VALID_OTP_TYPES)[number];
 

@@ -40,8 +40,9 @@ export async function POST(request: Request) {
     .eq("onboarding_completed", true);
 
   if (usersError || !users) {
+    console.error("[digest/send] Falha ao buscar usuários:", usersError?.message);
     return NextResponse.json(
-      { error: "Failed to fetch users", detail: usersError?.message },
+      { error: "Erro ao buscar usuários." },
       { status: 500 }
     );
   }
