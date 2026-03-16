@@ -147,23 +147,23 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
  * Stub para desbloqueio biométrico.
  * Na Fase 10, será substituído pela chamada real ao
  * @capacitor-community/biometric-auth plugin.
+ *
+ * IMPORTANTE: retorna `true` (bypass) até a implementação real.
+ * Um stub que retorna `false` sem biometria real não adiciona
+ * segurança — apenas impede restauração da DEK após background,
+ * travando o app silenciosamente quando o hook for conectado.
  */
 async function attemptBiometricUnlock(): Promise<boolean> {
   if (!isNativePlatform()) return true; // Web: bypass
 
-  try {
-    // Fase 10: substituir por:
-    // const { BiometricAuth } = await import('@capacitor-community/biometric-auth');
-    // const result = await BiometricAuth.authenticate({
-    //   reason: 'Desbloqueie para acessar seus dados financeiros',
-    //   cancelTitle: 'Cancelar',
-    // });
-    // return result.verified;
+  // TODO Fase 10: install @capacitor-community/biometric-auth
+  // const { BiometricAuth } = await import('@capacitor-community/biometric-auth');
+  // const result = await BiometricAuth.authenticate({
+  //   reason: 'Desbloqueie para acessar seus dados financeiros',
+  //   cancelTitle: 'Cancelar',
+  // });
+  // return result.verified;
 
-    // TODO: install @capacitor-community/biometric-auth and implement real biometric prompt
-    console.warn("[Oniefy] Biometric unlock: plugin not installed, denying access (Fase 10)");
-    return false;
-  } catch {
-    return false;
-  }
+  console.warn("[Oniefy] Biometric unlock: stub bypass (plugin não instalado). Implementar na Fase 10.");
+  return true;
 }
