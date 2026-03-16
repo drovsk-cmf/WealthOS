@@ -66,7 +66,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Functions (total) | 47 (34 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
 | Triggers | 20 |
 | ENUMs | 26 |
-| Migrations aplicadas | 46 partes no Supabase, 35 SQL files no repo (001 a 032) |
+| Migrations aplicadas | 37 SQL files no repo (001 a 034) |
 | pg_cron jobs | 6: mark-overdue-transactions (01h), generate-workflow-tasks (02h), process-account-deletions (03:30), cron_fetch_indices (06h), depreciate-assets (mensal 03h), balance-integrity-check (dom 04h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -97,7 +97,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (107 arquivos em src/, 13 testes, ~20.500 linhas)
+### 3.4 Código Fonte (125 arquivos em src/, 13 testes, ~23.300 linhas)
 
 ```
 src/
@@ -142,8 +142,11 @@ src/
 │   ├── privacy/page.tsx           # Privacy Policy pública (UX: P5, LGPD + Apple)
 │   ├── global-error.tsx           # Error boundary root (UX: P3)
 │   ├── api/
-│   │   ├── auth/callback/route.ts
-│   │   └── indices/fetch/route.ts  # Coleta BCB SGS
+│   │   ├── auth/callback/route.ts  # OAuth callback
+│   │   ├── auth/login/route.ts     # Login proxy with rate limiting
+│   │   ├── digest/send/route.ts    # Weekly digest cron endpoint
+│   │   ├── digest/preview/route.ts # Digest preview (authenticated)
+│   │   └── indices/fetch/route.ts  # Coleta BCB SGS (SSRF-protected)
 │   └── layout.tsx, globals.css
 ├── components/
 │   ├── accounts/account-form.tsx
@@ -158,16 +161,20 @@ src/
 │   │   ├── import-step-result.tsx
 │   │   └── reconciliation-panel.tsx  # Camada 3: conciliação manual lado a lado
 │   ├── dashboard/ (8 componentes + index.ts)
+│   ├── onboarding/ (4 step components + index.ts: route-choice, route-manual, route-snapshot, celebration)
 │   ├── recurrences/recurrence-form.tsx
 │   └── transactions/transaction-form.tsx
 ├── lib/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
+│   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
-│   ├── hooks/ (19 hooks: accounts, analytics, assets, auth-init, bank-connections, budgets,
-│   │          categories, chart-of-accounts, cost-centers, dashboard, dialog-helpers,
-│   │          economic-indices, family-members, fiscal, online-status, reconciliation,
-│   │          recurrences, transactions, workflows)
+│   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
+│   ├── hooks/ (21 hooks: accounts, analytics, assets, auth-init, auto-category,
+│   │          bank-connections, budgets, categories, chart-of-accounts, cost-centers,
+│   │          dashboard, dialog-helpers, economic-indices, family-members, fiscal,
+│   │          online-status, progressive-disclosure, reconciliation, recurrences,
+│   │          transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── schemas/rpc.ts            # 27 schemas Zod (todos os RPCs cobertos)
 │   ├── services/
@@ -187,7 +194,8 @@ src/
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
 - `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
-- `supabase/migrations/` - 35 SQL files (001 a 032, ~5.800 linhas)
+- `supabase/migrations/` - 37 SQL files (001 a 034)
+- `docs/audit/` - 9 arquivos de relatório de auditoria (00-SUMMARY + 01 a 08 por domínio)
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -1077,6 +1085,29 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 | D30 retention | >12% |
 | Transações/semana (sem 2+) | >5 |
 
+### 12.10 Remediação da auditoria Claude Code (80 achados, docs/audit/)
+
+Auditoria completa realizada em 16/03/2026 (PR #4). Relatório em `docs/audit/` (9 arquivos). Referências: OWASP ASVS L2, MASVS, Nielsen, WCAG 2.2 AA. Nota: 7/10.
+
+**Totais: 0 CRÍTICO, 15 ALTO, 39 MÉDIO, 26 BAIXO.**
+
+**Top 10 correções priorizadas (do relatório 00-SUMMARY.md):**
+
+| # | ID | Sev | Achado | Esforço |
+|---|---|---|---|---|
+| 1 | D8.04-06 + D8.08-09 | MÉDIO | Labels htmlFor + aria-required + aria-describedby em todos os forms | Médio |
+| 2 | D7.01 | ALTO | Campo monetário TransactionForm sem `.replace(",", ".")` | Baixo |
+| 3 | D3.03-05 | MÉDIO | 3 endpoints vazam erros internos do Supabase | Baixo |
+| 4 | D1.02 | ALTO | Register e forgot-password bypass rate limiter (client-side direto) | Médio |
+| 5 | D8.02-03 + D8.07 | ALTO | aria-label em botões icon-only + scope em tabelas | Baixo |
+| 6 | D3.01 | ALTO | CSV/XLSX parsers sem limite de tamanho de arquivo | Baixo |
+| 7 | D8.10 | ALTO | Informação financeira diferenciada apenas por cor | Médio |
+| 8 | D2.01 | MÉDIO | Export vaza cpf_encrypted de family_members | Baixo |
+| 9 | D2.02-03-05 | MÉDIO | 3 mutations sem filtro user_id (defesa em profundidade) | Baixo |
+| 10 | D6.01 | MÉDIO | 9 hooks com select("*") em vez de colunas explícitas | Médio |
+
+**Detalhes completos:** ver `docs/audit/01-auth-session.md` a `08-accessibility.md`.
+
 ---
 
 ## 13. Sessão 14/03/2026 (log)
@@ -1296,6 +1327,76 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 **Testes:** 171 (sem alteração), 13 suítes
 **Migrations:** 032 (category_source + undo_import) + 033 (weekly_digest_rpc)
 **Totais atualizados:** 26 tabelas, 86 RLS, 48 functions (36 RPCs + 6 trigger + 6 cron), 26 ENUMs, 36 migrations, 110 arquivos src/, ~21.200 linhas
+
+---
+
+## 15b. Sessão 15-16/03/2026 - Verificação de Segurança + Auditoria Completa
+
+**Contexto:** Batch de security fixes aplicado por Claude Code em sessão separada (PR #3). Esta sessão verificou se os fixes não quebraram funcionalidades, aplicou correções adicionais, e executou auditoria completa do codebase (8 domínios, 80 achados).
+
+### Verificação de regressão (4 suítes)
+
+| Suíte | Área | Resultado | Achados |
+|---|---|---|---|
+| 1 | Login / Zod validation | **FAIL** → CORRIGIDO | `/api/auth/login` faltava em `PUBLIC_ROUTES` do middleware. Login quebrado para todos os usuários. |
+| 2 | Dashboard / dependências | **PASS** | Zero imports de pacotes removidos. tsc limpo. Tailwind config íntegro. |
+| 3 | Data export / colunas sensíveis | **PASS** | 5 colunas sensíveis excluídas. Count antes do fetch. Warnings por tabela. |
+| 4 | Índices econômicos / batch upsert | **PASS** | Batch upsert correto (schema match). SSRF allowlist. try-catch em JSON. |
+
+### Auditoria adversarial (13 arquivos, 13 questões obrigatórias)
+
+| # | Arquivo | Veredicto | Achado |
+|---|---|---|---|
+| 1 | `api/auth/login/route.ts` | APROVADO | Zod safeParse correto, campos match frontend |
+| 2 | `api/auth/callback/route.ts` | APROVADO COM RESSALVA | Tipos OTP omitidos documentados (magiclink, email_change) |
+| 3 | `api/digest/send/route.ts` | **REPROVADO** → CORRIGIDO | `detail: usersError?.message` vazava erro interno |
+| 4 | `api/indices/fetch/route.ts` | APROVADO COM RESSALVA → CORRIGIDO | `apisidra.ibge.gov.br` adicionado à allowlist |
+| 5 | `weekly-digest-template.ts` | APROVADO COM RESSALVA → CORRIGIDO | `'` adicionado ao escapeHtml (5/5 chars OWASP) |
+| 6 | `middleware.ts` | APROVADO | CSP nonce correto, validateEnv no escopo do módulo |
+| 7 | `settings/data/page.tsx` | APROVADO | 5 colunas sensíveis excluídas, count antes do fetch |
+| 8 | `package.json` | APROVADO | Zero imports de pacotes removidos |
+| 9 | Hooks de dados (12 arquivos) | APROVADO | user_id em todos, double-filter em deletes |
+| 10 | `use-app-lifecycle.ts` | **REPROVADO** → CORRIGIDO | Stub retornava false (bug dormente). Mudado para true. Hook conectado ao layout. |
+| 11 | `csv-parser.ts` | APROVADO | Formula injection sanitizado, amount/date seguros |
+| 12 | `ofx-parser.ts` | APROVADO | Size guard, split sem ReDoS |
+| 13 | `password-blocklist.ts` | APROVADO | 184 entradas, 12+ chars, zero duplicatas, case-insensitive |
+
+### Correções aplicadas (4 commits)
+
+| Commit | Correção |
+|---|---|
+| fc8113f | `fix: add /api/auth/login to PUBLIC_ROUTES in middleware` — regressão crítica, login quebrado |
+| 470ddec | `security: remove error detail leak, harden escapeHtml, expand SSRF allowlist` — 4 arquivos |
+| ab7bb23 | `fix: biometric stub must bypass (true) until real implementation` — use-app-lifecycle.ts |
+| bf5477e | `feat: connect useAppLifecycle to app layout` — hook deixa de ser código morto |
+
+### Auditoria completa Claude Code (PR #4, branch claude/audit-wealthos-codebase-Krdqj)
+
+Prompt de auditoria v2 criado com 8 domínios baseados em OWASP ASVS L2 + MASVS + Nielsen + ISO 9241-110 + WCAG 2.2 AA. Claude Code executou com 6 agentes paralelos. Relatório em `docs/audit/` (9 arquivos Markdown).
+
+**Resultado: 80 achados (0 CRÍTICO, 15 ALTO, 39 MÉDIO, 26 BAIXO). Nota: 7/10.**
+
+| Domínio | Achados | Destaques |
+|---|---|---|
+| D1 Auth/Sessão | 8 (2A/3M/3B) | Rate limiter in-memory, register/forgot bypassa rate limit, AAL2 só client-side |
+| D2 Acesso/Dados | 5 (0A/4M/1B) | Export vaza cpf_encrypted de family_members, 3 mutations sem user_id |
+| D3 Input/Output | 6 (1A/4M/1B) | CSV/XLSX sem limite de tamanho, 3 endpoints vazam erros internos |
+| D4 Mobile | 4 (2A/1M/1B) | Biometric stub false (corrigido nesta sessão), cert pinning ausente |
+| D5 Código | 9 (0A/3M/6B) | Detecção plataforma duplicada, formatação moeda duplicada, 4 deps não usadas |
+| D6 Performance/DB | 16 (2A/7M/7B) | 9 hooks com select("*"), SECURITY DEFINER sem search_path em 001/003, trigger O(n²) |
+| D7 UX/Usabilidade | 16 (3A/8M/5B) | Campo monetário sem vírgula, sem feedback sucesso, transações não editáveis |
+| D8 Acessibilidade | 16 (5A/9M/2B) | Dialogs sem focus trap, botões sem aria-label, labels sem htmlFor |
+
+**Top 5 correções de maior alavancagem (do relatório):**
+1. Labels htmlFor + aria-required + aria-describedby em todos os formulários (5 achados em batch)
+2. Campo monetário aceitar formato brasileiro (vírgula) — TransactionForm
+3. Erros internos não expostos em 3 endpoints de API
+4. Register e forgot-password via API routes com rate limiter
+5. aria-label em botões icon-only + scope em tabelas
+
+**CI:** 4 commits passaram 3/3 jobs (Security + Lint/TypeCheck + Build)
+
+**Totais atualizados:** 26 tabelas, 86 RLS, 48 functions, 26 ENUMs, 37 migrations, 125 arquivos src/, ~23.300 linhas, 13 suítes/171 testes, docs/audit/ com 9 arquivos de relatório
 
 ---
 
