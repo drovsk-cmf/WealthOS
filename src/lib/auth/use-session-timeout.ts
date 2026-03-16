@@ -28,6 +28,12 @@ export function useSessionTimeout() {
   const handleTimeout = useCallback(async () => {
     const supabase = createClient();
     clearEncryptionKey();
+
+    // D1.04: Clear Service Worker cache on timeout
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
+    }
+
     await supabase.auth.signOut();
     router.push("/login?reason=timeout");
   }, [router]);

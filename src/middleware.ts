@@ -78,6 +78,8 @@ const PUBLIC_ROUTES = [
   "/verify-email",
   "/api/auth/callback",
   "/api/auth/login",
+  "/api/auth/register",
+  "/api/auth/forgot-password",
   "/privacy",
 ];
 

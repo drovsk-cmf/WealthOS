@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { translateSupabaseError } from "@/lib/utils/error-messages";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -11,21 +9,28 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const supabase = createClient();
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    setLoading(false);
+      const data = await res.json();
+      setLoading(false);
 
-    if (resetError) {
-      setError(translateSupabaseError(resetError.message));
+      if (!res.ok) {
+        setError(data.error || "Erro ao enviar email.");
+        return;
+      }
+    } catch {
+      setLoading(false);
+      setError("Erro de conexão. Tente novamente.");
       return;
     }
 

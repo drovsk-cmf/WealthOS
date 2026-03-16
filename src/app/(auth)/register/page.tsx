@@ -3,8 +3,6 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/client";
-import { translateSupabaseError } from "@/lib/utils/error-messages";
 import {
   registerSchema,
   getPasswordStrength,
@@ -25,8 +23,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
-
-  const supabase = createClient();
 
   const passwordStrength = useMemo(
     () => (form.password ? getPasswordStrength(form.password) : null),
@@ -66,19 +62,28 @@ export default function RegisterPage() {
     setLoading(true);
     setServerError(null);
 
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: { full_name: form.fullName },
-        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
-      },
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: form.fullName,
+          email: form.email,
+          password: form.password,
+          confirmPassword: form.confirmPassword,
+        }),
+      });
 
-    setLoading(false);
+      const data = await res.json();
+      setLoading(false);
 
-    if (error) {
-      setServerError(translateSupabaseError(error.message));
+      if (!res.ok) {
+        setServerError(data.error || "Erro ao criar conta.");
+        return;
+      }
+    } catch {
+      setLoading(false);
+      setServerError("Erro de conexão. Tente novamente.");
       return;
     }
 

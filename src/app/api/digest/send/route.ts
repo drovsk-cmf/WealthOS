@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { timingSafeCompare } from "@/lib/auth/timing-safe";
 import {
   buildWeeklyDigestHtml,
   type WeeklyDigestData,
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     );
   }
   const authHeader = request.headers.get("x-cron-secret");
-  if (!authHeader || authHeader !== cronSecret) {
+  if (!authHeader || !timingSafeCompare(authHeader, cronSecret)) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
