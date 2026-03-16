@@ -38,13 +38,14 @@ export function useTransactions(filters: TransactionFilters = {}) {
 
   return useQuery({
     queryKey: ["transactions", filters],
+    staleTime: 5 * 60 * 1000, // 5 min
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
       let query = supabase
         .from("transactions")
-        .select("*")
+        .select("id, description, amount, date, type, is_paid, payment_status, account_id, category_id, family_member_id, is_deleted, matched_transaction_id, recurrence_id, notes, created_at, accounts(name, color), categories(name, icon, color)")
         .eq("user_id", user.id)
         .order("date", { ascending: false })
         .order("created_at", { ascending: false });
@@ -82,25 +83,14 @@ export function useTransactions(filters: TransactionFilters = {}) {
       if (error) throw error;
       if (!txs || txs.length === 0) return [] as TransactionWithRelations[];
 
-      // Fetch related accounts and categories in batch
-      const accountIds = Array.from(new Set(txs.map((t) => t.account_id)));
-      const categoryIds = Array.from(new Set(txs.map((t) => t.category_id).filter(Boolean))) as string[];
-
-      const [{ data: accounts }, { data: categories }] = await Promise.all([
-        supabase.from("accounts").select("id, name, color").eq("user_id", user.id).in("id", accountIds),
-        categoryIds.length > 0
-          ? supabase.from("categories").select("id, name, icon, color").eq("user_id", user.id).in("id", categoryIds)
-          : Promise.resolve({ data: [] as { id: string; name: string; icon: string | null; color: string | null }[] }),
-      ]);
-
-      const accountMap = new Map(accounts?.map((a) => [a.id, a]) ?? []);
-      const categoryMap = new Map(categories?.map((c) => [c.id, c]) ?? []);
-
-      return txs.map((tx) => {
-        const account = accountMap.get(tx.account_id);
-        const category = tx.category_id ? categoryMap.get(tx.category_id) : null;
+      // D6.02: Relations already fetched via inline JOIN
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return txs.map((tx: any) => {
+        const account = tx.accounts as { name: string; color: string | null } | null;
+        const category = tx.categories as { name: string; icon: string | null; color: string | null } | null;
+        const { accounts: _a, categories: _c, ...rest } = tx;
         return {
-          ...tx,
+          ...rest,
           account_name: account?.name ?? "?",
           account_color: account?.color ?? null,
           category_name: category?.name ?? null,
