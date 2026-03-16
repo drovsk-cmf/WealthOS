@@ -57,6 +57,12 @@ const CURRENCIES = [
   { code: "EUR", label: "Euro (€)" },
 ];
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  BRL: "R$",
+  USD: "US$",
+  EUR: "€",
+};
+
 export default function OnboardingPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -583,11 +589,11 @@ export default function OnboardingPage() {
 
       {/* ─── Step 9: Route Execution (UX-H1-02) ──── */}
       {step === "route_execution" && selectedRoute === "manual" && (
-        <RouteManualStep onComplete={handleRouteManualComplete} />
+        <RouteManualStep onComplete={handleRouteManualComplete} currencySymbol={CURRENCY_SYMBOLS[currency] ?? "R$"} />
       )}
 
       {step === "route_execution" && selectedRoute === "snapshot" && (
-        <RouteSnapshotStep onComplete={handleRouteSnapshotComplete} />
+        <RouteSnapshotStep onComplete={handleRouteSnapshotComplete} currencySymbol={CURRENCY_SYMBOLS[currency] ?? "R$"} />
       )}
 
       {/* ─── Step 10: Celebration (UX-H1-02) ─────── */}

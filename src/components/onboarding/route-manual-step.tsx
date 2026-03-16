@@ -37,9 +37,10 @@ const ACCOUNT_TYPES: {
 
 interface RouteManualStepProps {
   onComplete: (stats: { accounts: number; transactions: number }) => void;
+  currencySymbol?: string;
 }
 
-export function RouteManualStep({ onComplete }: RouteManualStepProps) {
+export function RouteManualStep({ onComplete, currencySymbol = "R$" }: RouteManualStepProps) {
   // Phase: account creation → transaction creation
   const [phase, setPhase] = useState<"account" | "transaction">("account");
   const [error, setError] = useState<string | null>(null);
@@ -234,7 +235,7 @@ export function RouteManualStep({ onComplete }: RouteManualStepProps) {
           {/* Amount */}
           <div className="space-y-2">
             <label htmlFor="txAmount" className="text-sm font-medium">
-              Valor (R$)
+              Valor ({currencySymbol})
             </label>
             <input
               id="txAmount"

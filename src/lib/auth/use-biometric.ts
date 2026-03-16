@@ -41,11 +41,13 @@ export function useBiometricAuth(): BiometricState & {
 
   useEffect(() => {
     const platform = detectPlatform();
+    // DT-004: Report available:false until @capacitor-community/biometric-auth
+    // is installed. Prevents false sense of security on iOS builds without plugin.
+    // When the plugin is installed (Fase 10), replace this with real availability check.
     setState((prev) => ({
       ...prev,
       platform,
-      // Real availability check happens via Capacitor plugin (Fase 10)
-      available: platform === "ios",
+      available: false,
       biometricType: platform === "ios" ? "face_id" : "none",
     }));
   }, []);

@@ -158,15 +158,20 @@ export function useBudgetMonths() {
 
   return useQuery({
     queryKey: ["budgets", "months"],
+    staleTime: 10 * 60 * 1000, // 10 min
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
+      // DT-019: Supabase PostgREST doesn't support DISTINCT.
+      // Fetch only month column (minimal payload), dedup client-side.
+      // Limit 500 covers ~40 categories × 12 months before dedup.
       const { data, error } = await supabase
         .from("budgets")
         .select("month")
         .eq("user_id", user.id)
-        .order("month", { ascending: false });
+        .order("month", { ascending: false })
+        .limit(500);
 
       if (error) throw error;
 

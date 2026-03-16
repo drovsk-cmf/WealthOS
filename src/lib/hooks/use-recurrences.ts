@@ -75,7 +75,7 @@ export function useRecurrences(activeOnly: boolean = true) {
   return useQuery({
     queryKey: ["recurrences", activeOnly],
     staleTime: 5 * 60 * 1000, // 5 min
-      queryFn: async () => {
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
@@ -129,7 +129,7 @@ export function usePendingBills() {
   return useQuery({
     queryKey: ["bills", "pending"],
     staleTime: 5 * 60 * 1000, // 5 min
-      queryFn: async () => {
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 

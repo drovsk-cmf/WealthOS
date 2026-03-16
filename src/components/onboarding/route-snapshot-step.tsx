@@ -43,9 +43,10 @@ interface AssetDraft {
 
 interface RouteSnapshotStepProps {
   onComplete: (stats: { assets: number }) => void;
+  currencySymbol?: string;
 }
 
-export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
+export function RouteSnapshotStep({ onComplete, currencySymbol = "R$" }: RouteSnapshotStepProps) {
   const [assets, setAssets] = useState<AssetDraft[]>([
     { name: "", category: "real_estate", value: "" },
   ]);
@@ -191,7 +192,7 @@ export function RouteSnapshotStep({ onComplete }: RouteSnapshotStepProps) {
             {/* Value */}
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                R$
+                {currencySymbol}
               </span>
               <input
                 type="text"
