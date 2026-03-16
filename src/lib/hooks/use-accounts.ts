@@ -15,7 +15,7 @@ type AccountUpdate = Database["public"]["Tables"]["accounts"]["Update"];
 type AccountType = Database["public"]["Enums"]["account_type"];
 
 // Map account_type → parent COA code for auto-creation of individual COA entries
-const COA_PARENT_MAP: Record<AccountType, { parentCode: string; tier: string }> = {
+export const COA_PARENT_MAP: Record<AccountType, { parentCode: string; tier: string }> = {
   checking: { parentCode: "1.1.01", tier: "T1" },
   savings: { parentCode: "1.1.02", tier: "T1" },
   cash: { parentCode: "1.1.03", tier: "T1" },
@@ -50,6 +50,20 @@ export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
   { value: "investment", label: "Investimento" },
   { value: "loan", label: "Empréstimo" },
   { value: "financing", label: "Financiamento" },
+];
+
+export const LIQUIDITY_TIER_LABELS: Record<string, string> = {
+  T1: "T1 - Liquidez imediata",
+  T2: "T2 - Investimentos resgatáveis",
+  T3: "T3 - Bens e financiamentos",
+  T4: "T4 - Ilíquidos / restritos",
+};
+
+export const LIQUIDITY_TIER_OPTIONS = [
+  { value: "T1", label: "T1 - Liquidez imediata" },
+  { value: "T2", label: "T2 - Investimentos" },
+  { value: "T3", label: "T3 - Bens / financiamentos" },
+  { value: "T4", label: "T4 - Ilíquidos" },
 ];
 
 const PRESET_COLORS = [
@@ -115,7 +129,7 @@ export function useCreateAccount() {
 
   return useMutation({
     mutationFn: async (
-      input: Omit<AccountInsert, "user_id" | "coa_id" | "liquidity_tier"> & {
+      input: Omit<AccountInsert, "user_id" | "coa_id"> & {
         coaParentCode?: string; // override parent (e.g. financing sub-type)
       }
     ) => {
@@ -124,10 +138,10 @@ export function useCreateAccount() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      const { coaParentCode, ...accountInput } = input;
+      const { coaParentCode, liquidity_tier: tierOverride, ...accountInput } = input;
       const mapping = COA_PARENT_MAP[accountInput.type];
       const parentCode = coaParentCode || mapping?.parentCode;
-      const tier = mapping?.tier ?? "T1";
+      const tier = tierOverride || mapping?.tier || "T1";
 
       // Auto-create individual COA entry under the parent.
       // COA must succeed before account creation to maintain consistency.
@@ -195,9 +209,9 @@ export function useUpdateAccount() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Sessão expirada.");
 
-      // If type changed, update tier (type change is disabled in UI, but belt + suspenders)
-      let tier: string | undefined;
-      if (updates.type) {
+      // If type changed and no explicit tier override, update tier
+      let tier: string | undefined = updates.liquidity_tier;
+      if (!tier && updates.type) {
         tier = COA_PARENT_MAP[updates.type]?.tier ?? "T1";
       }
 

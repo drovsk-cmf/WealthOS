@@ -8,6 +8,8 @@ import {
   ACCOUNT_TYPE_OPTIONS,
   FINANCING_SUBTYPES,
   PRESET_COLORS,
+  LIQUIDITY_TIER_OPTIONS,
+  COA_PARENT_MAP,
 } from "@/lib/hooks/use-accounts";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency, getColorName } from "@/lib/utils";
@@ -31,6 +33,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [financingSubtype, setFinancingSubtype] = useState(FINANCING_SUBTYPES[0].value);
   const [initialBalance, setInitialBalance] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
+  const [liquidityTier, setLiquidityTier] = useState("T1");
   const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState<string | null>(null);
 
@@ -45,12 +48,14 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setType(account.type);
       setInitialBalance(String(account.initial_balance));
       setColor(account.color || PRESET_COLORS[0]);
+      setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
     } else {
       setName("");
       setType("checking");
       setFinancingSubtype(FINANCING_SUBTYPES[0].value);
       setInitialBalance("");
       setColor(PRESET_COLORS[0]);
+      setLiquidityTier("T1");
     }
     setError(null);
   }, [account, open]);
@@ -73,6 +78,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           name: name.trim(),
           type,
           color,
+          liquidity_tier: liquidityTier,
         });
       } else {
         await createAccount.mutateAsync({
@@ -80,6 +86,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           type,
           initial_balance: balance,
           color,
+          liquidity_tier: liquidityTier,
           ...(type === "financing" && { coaParentCode: financingSubtype }),
         });
       }
@@ -141,7 +148,11 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             <select
               id="acc-type"
               value={type}
-              onChange={(e) => setType(e.target.value as AccountType)}
+              onChange={(e) => {
+                const newType = e.target.value as AccountType;
+                setType(newType);
+                setLiquidityTier(COA_PARENT_MAP[newType]?.tier || "T1");
+              }}
               disabled={isEdit} // Can't change type after creation
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
             >
@@ -236,6 +247,24 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                 />
               ))}
             </div>
+          </div>
+
+          {/* Liquidity Tier */}
+          <div className="space-y-1.5">
+            <label htmlFor="acc-tier" className="text-sm font-medium">Tier de liquidez</label>
+            <select
+              id="acc-tier"
+              value={liquidityTier}
+              onChange={(e) => setLiquidityTier(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {LIQUIDITY_TIER_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              Classificação usada no cálculo de solvência (LCR, Runway)
+            </p>
           </div>
 
           {/* Buttons */}
