@@ -75,7 +75,7 @@ export function SummaryCards({ data, isLoading }: Props) {
           Receitas do Mês
         </p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-verdant">
-          <Mv>{formatCurrency(income)}</Mv>
+          <Mv>+{formatCurrency(income)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {data?.active_accounts ?? 0} contas ativas
@@ -88,7 +88,7 @@ export function SummaryCards({ data, isLoading }: Props) {
           Despesas do Mês
         </p>
         <p className="mt-1 text-2xl font-bold tabular-nums text-terracotta">
-          <Mv>{formatCurrency(expense)}</Mv>
+          <Mv>-{formatCurrency(expense)}</Mv>
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {income > 0

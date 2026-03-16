@@ -115,7 +115,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
             <button type="button"
               key={opt.value}
               onClick={() => setPeriod(opt.value)}
-              className="rounded px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              className="rounded px-2 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {opt.label}
             </button>

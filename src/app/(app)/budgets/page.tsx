@@ -446,7 +446,7 @@ export default function BudgetsPage() {
                     : "text-verdant"
                 }`}
               >
-                <Mv>{formatCurrency(bva.total_remaining)}</Mv>
+                <Mv>{bva.total_remaining >= 0 ? "+" : ""}{formatCurrency(bva.total_remaining)}</Mv>
               </p>
             </div>
           </div>

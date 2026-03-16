@@ -105,11 +105,11 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
       <div className="grid grid-cols-3 gap-3 text-center">
         <div className="rounded-lg bg-verdant/10 px-3 py-2">
           <p className="text-[10px] font-medium text-verdant">Receitas</p>
-          <p className="text-sm font-bold tabular-nums text-verdant"><Mv>{formatCurrency(income)}</Mv></p>
+          <p className="text-sm font-bold tabular-nums text-verdant"><Mv>+{formatCurrency(income)}</Mv></p>
         </div>
         <div className="rounded-lg bg-terracotta/10 px-3 py-2">
           <p className="text-[10px] font-medium text-terracotta">Despesas</p>
-          <p className="text-sm font-bold tabular-nums text-terracotta"><Mv>{formatCurrency(expense)}</Mv></p>
+          <p className="text-sm font-bold tabular-nums text-terracotta"><Mv>-{formatCurrency(expense)}</Mv></p>
         </div>
         <div className={`rounded-lg px-3 py-2 ${net >= 0 ? "bg-info-slate/10" : "bg-burnished/10"}`}>
           <p className={`text-[10px] font-medium ${net >= 0 ? "text-info-slate" : "text-burnished"}`}>Resultado</p>
