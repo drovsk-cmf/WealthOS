@@ -21,5 +21,6 @@ export {
   loadEncryptionKey,
   getActiveDEK,
   clearEncryptionKey,
+  EncryptionKeyMissingError,
 } from "./encryption-manager";
 export { useAppLifecycle } from "./use-app-lifecycle";

@@ -84,9 +84,21 @@ export async function initializeEncryption(
 /**
  * Carrega e decripta a DEK na memória após login.
  *
- * Se kek_material estiver ausente (migração de schema antigo),
- * re-inicializa a criptografia automaticamente.
+ * DT-001: NÃO re-inicializa silenciosamente. Se kek_material ou DEK
+ * estiver ausente em um perfil com onboarding completo, lança
+ * EncryptionKeyMissingError. O chamador decide como tratar.
  */
+export class EncryptionKeyMissingError extends Error {
+  constructor(reason: "kek_material" | "dek") {
+    super(
+      reason === "kek_material"
+        ? "Chave de criptografia não encontrada. Dados encriptados anteriores podem estar inacessíveis."
+        : "Chave de dados encriptados ausente. Dados anteriores podem estar inacessíveis."
+    );
+    this.name = "EncryptionKeyMissingError";
+  }
+}
+
 export async function loadEncryptionKey(
   supabase: AnySupabaseClient
 ): Promise<void> {
@@ -97,25 +109,31 @@ export async function loadEncryptionKey(
 
   const { data: profile } = await supabase
     .from("users_profile")
-    .select("kek_material, encryption_key_encrypted, encryption_key_iv")
+    .select("kek_material, encryption_key_encrypted, encryption_key_iv, onboarding_completed")
     .eq("id", user.id)
     .single();
 
-  // Caso 1: kek_material ausente → re-inicializar (migração de JWT → material estável)
+  // Case 1: kek_material absent
   if (!profile?.kek_material) {
-    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] kek_material ausente. Re-inicializando criptografia.");
+    if (!profile?.onboarding_completed) {
+      // User hasn't completed onboarding yet - encryption not set up, skip silently
+      return;
+    }
+    // Onboarding completed but kek_material missing - anomaly
+    if (process.env.NODE_ENV === "development") console.error("[Oniefy] ANOMALY: kek_material missing for completed profile. Encrypted fields are irrecoverable.");
+    // Re-initialize to allow user to continue, but flag it
     await initializeEncryption(supabase);
-    return;
+    throw new EncryptionKeyMissingError("kek_material");
   }
 
-  // Caso 2: DEK não inicializada ainda (não deveria acontecer após onboarding)
+  // Case 2: DEK missing (shouldn't happen after onboarding)
   if (!profile.encryption_key_encrypted || !profile.encryption_key_iv) {
-    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] DEK ausente. Re-inicializando criptografia.");
+    if (process.env.NODE_ENV === "development") console.error("[Oniefy] ANOMALY: DEK missing for profile with kek_material.");
     await initializeEncryption(supabase);
-    return;
+    throw new EncryptionKeyMissingError("dek");
   }
 
-  // Caso 3: normal - derivar KEK e decriptar DEK
+  // Case 3: normal - derive KEK and decrypt DEK
   const kek = await deriveKEK(profile.kek_material, HKDF_SALT);
   activeDEK = await unwrapDEK(
     profile.encryption_key_encrypted,
