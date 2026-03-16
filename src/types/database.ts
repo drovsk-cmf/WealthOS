@@ -254,42 +254,54 @@ export type Database = {
         Row: {
           adjustment_index: Database["public"]["Enums"]["adjustment_index_type"] | null
           alert_threshold: number
+          approval_status: Database["public"]["Enums"]["budget_approval_status"]
           category_id: string
           coa_id: string | null
           cost_center_id: string | null
           created_at: string
+          decided_at: string | null
+          decision_notes: string | null
           family_member_id: string | null
           id: string
           month: string
           planned_amount: number
+          proposed_at: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           adjustment_index?: Database["public"]["Enums"]["adjustment_index_type"] | null
           alert_threshold?: number
+          approval_status?: Database["public"]["Enums"]["budget_approval_status"]
           category_id: string
           coa_id?: string | null
           cost_center_id?: string | null
           created_at?: string
+          decided_at?: string | null
+          decision_notes?: string | null
           family_member_id?: string | null
           id?: string
           month: string
           planned_amount: number
+          proposed_at?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           adjustment_index?: Database["public"]["Enums"]["adjustment_index_type"] | null
           alert_threshold?: number
+          approval_status?: Database["public"]["Enums"]["budget_approval_status"]
           category_id?: string
           coa_id?: string | null
           cost_center_id?: string | null
           created_at?: string
+          decided_at?: string | null
+          decision_notes?: string | null
           family_member_id?: string | null
           id?: string
           month?: string
           planned_amount?: number
+          proposed_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -525,6 +537,7 @@ export type Database = {
     Enums: {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "loan" | "financing"
       adjustment_index_type: "ipca" | "igpm" | "inpc" | "selic" | "manual" | "none"
+      budget_approval_status: "approved" | "proposed" | "rejected"
       asset_category: "real_estate" | "vehicle" | "electronics" | "other" | "restricted"
       category_type: "income" | "expense"
       center_type: "cost_center" | "profit_center" | "neutral"

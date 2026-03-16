@@ -19,6 +19,7 @@ type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 type BudgetInsert = Database["public"]["Tables"]["budgets"]["Insert"];
 type BudgetUpdate = Database["public"]["Tables"]["budgets"]["Update"];
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
+type ApprovalStatus = Database["public"]["Enums"]["budget_approval_status"];
 
 // ─── Input types ────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export interface CreateBudgetInput {
   cost_center_id?: string | null;
   adjustment_index?: AdjustmentIndex | null;
   family_member_id?: string | null;
+  approval_status?: ApprovalStatus; // default 'approved'
 }
 
 export interface UpdateBudgetInput {
@@ -107,6 +109,7 @@ export function useBudgets(month?: string, familyMemberId?: string | null) {
         )
         .eq("user_id", user.id)
         .eq("month", monthKey)
+        .neq("approval_status", "rejected")
         .order("planned_amount", { ascending: false });
 
       if (familyMemberId) {
@@ -228,6 +231,8 @@ export function useCreateBudget() {
           cost_center_id: input.cost_center_id ?? null,
           adjustment_index: input.adjustment_index ?? null,
           family_member_id: input.family_member_id ?? null,
+          approval_status: input.approval_status ?? "approved",
+          proposed_at: input.approval_status === "proposed" ? new Date().toISOString() : null,
         })
         .select()
         .single();
@@ -283,6 +288,71 @@ export function useUpdateBudget() {
       await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
+    },
+  });
+}
+
+/** Approve a proposed budget (titular action) */
+export function useApproveBudget() {
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase
+        .from("budgets")
+        .update({
+          approval_status: "approved",
+          decided_at: new Date().toISOString(),
+        })
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .eq("approval_status", "proposed")
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Budget;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard", "budget-vs-actual"] });
+    },
+  });
+}
+
+/** Reject a proposed budget (titular action) */
+export function useRejectBudget() {
+  const supabase = createClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase
+        .from("budgets")
+        .update({
+          approval_status: "rejected",
+          decided_at: new Date().toISOString(),
+          decision_notes: notes ?? null,
+        })
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .eq("approval_status", "proposed")
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Budget;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard", "budget-vs-actual"] });
     },
   });
 }

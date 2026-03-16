@@ -45,6 +45,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   const [amount, setAmount] = useState("");
   const [threshold, setThreshold] = useState("80");
   const [adjustmentIndex, setAdjustmentIndex] = useState<AdjustmentIndex>("none");
+  const [isProposed, setIsProposed] = useState(false);
   const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState("");
 
@@ -62,11 +63,13 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
       setAmount(editData.planned_amount.toString());
       setThreshold(editData.alert_threshold.toString());
       setAdjustmentIndex(editData.adjustment_index ?? "none");
+      setIsProposed(false);
     } else {
       setCategoryId("");
       setAmount("");
       setThreshold("80");
       setAdjustmentIndex("none");
+      setIsProposed(false);
     }
     setError("");
   }, [editData, open]);
@@ -107,6 +110,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
           alert_threshold: parsedThreshold,
           adjustment_index: adjustmentIndex === "none" ? null : adjustmentIndex,
           family_member_id: familyMemberId ?? null,
+          approval_status: isProposed ? "proposed" : "approved",
         });
       }
       toast.success(isEditing ? "Orçamento atualizado." : "Orçamento criado com sucesso.");
@@ -218,6 +222,19 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
               ))}
             </select>
           </div>
+
+          {/* Proposed flag (only when creating for a family member) */}
+          {!isEditing && familyMemberId && (
+            <label className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
+              <input
+                type="checkbox"
+                checked={isProposed}
+                onChange={(e) => setIsProposed(e.target.checked)}
+                className="h-4 w-4 rounded border-input"
+              />
+              <span>Proposta pelo membro (aguarda aprovação)</span>
+            </label>
+          )}
 
           {/* Error */}
           {error && (

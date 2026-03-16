@@ -21,6 +21,8 @@ import {
   useBudgets,
   useDeleteBudget,
   useCopyBudgets,
+  useApproveBudget,
+  useRejectBudget,
   toMonthKey,
   formatMonthLabel,
 } from "@/lib/hooks/use-budgets";
@@ -73,6 +75,8 @@ export default function BudgetsPage() {
   const activeMembers = members?.filter((m) => m.is_active) ?? [];
   const deleteBudget = useDeleteBudget();
   const copyBudgets = useCopyBudgets();
+  const approveBudget = useApproveBudget();
+  const rejectBudget = useRejectBudget();
 
   // Parse year/month for RPC
   const [year, month] = currentMonth.split("-").map(Number);
@@ -337,9 +341,16 @@ export default function BudgetsPage() {
                     </div>
                   </div>
 
-                  {/* Status + actions */}
+                  {/* Status + approval + actions */}
                   <div className="flex items-center gap-2">
-                    {status !== "ok" && (
+                    {/* Approval badge for proposed budgets */}
+                    {b.approval_status === "proposed" && (
+                      <span className="inline-flex items-center gap-0.5 rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-bold text-burnished">
+                        Proposto
+                      </span>
+                    )}
+
+                    {status !== "ok" && b.approval_status !== "rejected" && (
                       <span
                         className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold ${STATUS_BADGES[status]}`}
                         role="status"
@@ -350,9 +361,43 @@ export default function BudgetsPage() {
                           : <><CircleAlert className="h-2.5 w-2.5" aria-hidden="true" />Excedido</>}
                       </span>
                     )}
-                    <span className="text-sm font-semibold tabular-nums">
-                      {pctUsed.toFixed(0)} %
-                    </span>
+                    {b.approval_status !== "proposed" && (
+                      <span className="text-sm font-semibold tabular-nums">
+                        {pctUsed.toFixed(0)} %
+                      </span>
+                    )}
+
+                    {/* Approve/Reject buttons for proposed budgets */}
+                    {b.approval_status === "proposed" && (
+                      <div className="flex items-center gap-1">
+                        <button type="button"
+                          onClick={async () => {
+                            try {
+                              await approveBudget.mutateAsync(b.id);
+                              toast.success("Orçamento aprovado.");
+                            } catch { toast.error("Erro ao aprovar."); }
+                          }}
+                          disabled={approveBudget.isPending}
+                          className="rounded-md bg-verdant/15 px-2 py-1 text-xs font-medium text-verdant hover:bg-verdant/25"
+                          title="Aprovar"
+                        >
+                          Aprovar
+                        </button>
+                        <button type="button"
+                          onClick={async () => {
+                            try {
+                              await rejectBudget.mutateAsync({ id: b.id });
+                              toast.success("Orçamento rejeitado.");
+                            } catch { toast.error("Erro ao rejeitar."); }
+                          }}
+                          disabled={rejectBudget.isPending}
+                          className="rounded-md bg-terracotta/10 px-2 py-1 text-xs font-medium text-terracotta hover:bg-terracotta/20"
+                          title="Rejeitar"
+                        >
+                          Rejeitar
+                        </button>
+                      </div>
+                    )}
 
                     {/* Edit button */}
                     <button type="button"
