@@ -157,6 +157,17 @@ export function ReconciliationPanel() {
 
   return (
     <div className="space-y-4">
+      {/* D7.10: How it works card */}
+      <details className="rounded-lg border bg-card p-4">
+        <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
+          Como funciona a conciliação?
+        </summary>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Selecione uma transação pendente à esquerda e uma importação à direita com valores compatíveis.
+          Clique em &quot;Conciliar&quot; para vinculá-las. Transações conciliadas são confirmadas automaticamente.
+        </p>
+      </details>
+
       {/* Account filter */}
       <div className="flex items-center gap-2">
         <Filter className="h-4 w-4 text-muted-foreground" />

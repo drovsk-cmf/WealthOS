@@ -27,6 +27,13 @@ const TYPE_BADGES: Record<TransactionType, { label: string; class: string; Icon:
 
 export default function TransactionsPage() {
   const [formOpen, setFormOpen] = useState(false);
+  const [duplicateData, setDuplicateData] = useState<{
+    type?: "expense" | "income" | "transfer";
+    amount?: string;
+    description?: string;
+    accountId?: string;
+    categoryId?: string;
+  } | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
   const [showFilters, setShowFilters] = useState(false);
   const [confirmReverse, setConfirmReverse] = useState<string | null>(null);
@@ -353,6 +360,28 @@ export default function TransactionsPage() {
                     )}
                   </>
                 )}
+
+                {/* D7.07: Duplicate button */}
+                {!tx.is_deleted && (
+                  <button type="button"
+                    onClick={() => {
+                      setDuplicateData({
+                        type: tx.type as "expense" | "income" | "transfer",
+                        amount: String(tx.amount),
+                        description: tx.description ?? "",
+                        accountId: tx.account_id,
+                        categoryId: tx.category_id ?? undefined,
+                      });
+                      setFormOpen(true);
+                    }}
+                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    title="Duplicar" aria-label="Duplicar"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                )}
               </div>
             );
           })}
@@ -383,7 +412,8 @@ export default function TransactionsPage() {
       {/* Form dialog */}
       <TransactionForm
         open={formOpen}
-        onClose={() => setFormOpen(false)}
+        onClose={() => { setFormOpen(false); setDuplicateData(null); }}
+        prefill={duplicateData}
       />
     </div>
   );

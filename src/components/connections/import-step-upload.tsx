@@ -13,6 +13,7 @@ interface Props {
   accounts?: Account[];
   connections?: BankConnection[];
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isParsing?: boolean;
 }
 
 const ACCEPTED_EXTENSIONS = [".csv", ".tsv", ".ofx", ".qfx", ".xlsx", ".xls", ".txt"];
@@ -25,6 +26,7 @@ export function ImportStepUpload({
   accounts,
   connections,
   onFileUpload,
+  isParsing,
 }: Props) {
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -120,8 +122,17 @@ export function ImportStepUpload({
       >
         <Upload className={`h-8 w-8 ${dragging ? "text-primary" : "text-muted-foreground"}`} />
         <p className="mt-3 text-sm font-semibold">
-          {dragging ? "Solte o arquivo aqui" : "Arraste um arquivo ou clique para selecionar"}
+          {isParsing
+            ? "Processando arquivo..."
+            : dragging
+              ? "Solte o arquivo aqui"
+              : "Arraste um arquivo ou clique para selecionar"}
         </p>
+        {isParsing && (
+          <div className="mt-2 h-1.5 w-32 overflow-hidden rounded-full bg-muted">
+            <div className="h-full animate-pulse rounded-full bg-primary" style={{ width: "70%" }} />
+          </div>
+        )}
         <p className="mt-1 text-xs text-muted-foreground">CSV, TSV, OFX, QFX, XLSX, XLS</p>
         <input
           ref={inputRef}

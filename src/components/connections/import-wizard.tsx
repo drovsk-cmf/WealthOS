@@ -18,6 +18,7 @@ type ImportStep = "upload" | "mapping" | "preview" | "result";
 export function ImportWizard() {
   const [step, setStep] = useState<ImportStep>("upload");
   const [fileType, setFileType] = useState<"csv" | "ofx" | "xlsx">("csv");
+  const [isParsing, setIsParsing] = useState(false);
   const [accountId, setAccountId] = useState("");
   const [connectionId, setConnectionId] = useState<string | null>(null);
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
@@ -41,6 +42,8 @@ export function ImportWizard() {
       return;
     }
 
+    setIsParsing(true);
+    setParseErrors([]);
     const ext = file.name.toLowerCase().split(".").pop();
 
     if (ext === "xlsx" || ext === "xls") {
@@ -52,6 +55,7 @@ export function ImportWizard() {
         setCsvHeaders(result.headers);
         setCsvRows(result.rows);
         setMapping(suggestMapping(result.headers, result.rows[0] || []));
+        setIsParsing(false);
         setStep("mapping");
       };
       reader.readAsArrayBuffer(file);
@@ -72,6 +76,7 @@ export function ImportWizard() {
             : result.errors
         );
         setSelected(new Set(result.transactions.map((_, i) => i)));
+        setIsParsing(false);
         setStep("preview");
         return;
       }
@@ -81,6 +86,7 @@ export function ImportWizard() {
       setCsvHeaders(headers);
       setCsvRows(rows);
       setMapping(suggestMapping(headers, rows[0] || []));
+      setIsParsing(false);
       setStep("mapping");
     };
     reader.readAsText(file, "utf-8");
@@ -141,6 +147,7 @@ export function ImportWizard() {
         accounts={accounts}
         connections={connections}
         onFileUpload={handleFileUpload}
+        isParsing={isParsing}
       />
     );
   }

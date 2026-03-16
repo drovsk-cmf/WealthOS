@@ -90,6 +90,18 @@ export default function FiscalPage() {
         </div>
       </div>
 
+      {/* D7.10: How it works card */}
+      <details className="rounded-lg border bg-card p-4">
+        <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
+          Como funciona o módulo fiscal?
+        </summary>
+        <p className="mt-2 text-sm text-muted-foreground">
+          O relatório fiscal é gerado automaticamente com base na classificação contábil (tax_treatment) de cada conta.
+          Receitas tributáveis, deduções e isenções são consolidadas por ano-calendário. Os valores aqui são estimativas
+          para planejamento; consulte seu contador para a declaração oficial.
+        </p>
+      </details>
+
       {/* ═══ PAINEL DE PROVISIONAMENTO (Inteligência principal) ═══ */}
       {prov && !prov.status && (
         <div className={`rounded-lg border-2 p-6 shadow-sm ${

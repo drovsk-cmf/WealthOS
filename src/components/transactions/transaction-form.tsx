@@ -32,6 +32,15 @@ interface TransactionFormProps {
   open: boolean;
   onClose: () => void;
   defaultType?: TransactionType;
+  prefill?: {
+    type?: TransactionType;
+    amount?: string;
+    description?: string;
+    accountId?: string;
+    categoryId?: string;
+    familyMemberId?: string;
+    notes?: string;
+  } | null;
 }
 
 const TYPE_CONFIG: Record<
@@ -43,28 +52,29 @@ const TYPE_CONFIG: Record<
   transfer: { label: "Transferência", color: "text-info-slate", bgColor: "border-info-slate bg-info-slate/10" },
 };
 
-export function TransactionForm({ open, onClose, defaultType = "expense" }: TransactionFormProps) {
+export function TransactionForm({ open, onClose, defaultType = "expense", prefill }: TransactionFormProps) {
+  // Hooks
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
   const { data: familyMembers } = useFamilyMembers();
-
   const createTransaction = useCreateTransaction();
-  const createTransfer = useCreateTransfer();
-  const loading = createTransaction.isPending || createTransfer.isPending;
 
   // Form state
-  const [type, setType] = useState<TransactionType>(defaultType);
-  const [accountId, setAccountId] = useState("");
+  const [type, setType] = useState<TransactionType>(prefill?.type ?? defaultType);
+  const [accountId, setAccountId] = useState(prefill?.accountId ?? "");
   const [toAccountId, setToAccountId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [familyMemberId, setFamilyMemberId] = useState("");
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState(prefill?.categoryId ?? "");
+  const [familyMemberId, setFamilyMemberId] = useState(prefill?.familyMemberId ?? "");
+  const [amount, setAmount] = useState(prefill?.amount ?? "");
+  const [description, setDescription] = useState(prefill?.description ?? "");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isPaid, setIsPaid] = useState(true);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(prefill?.notes ?? "");
   const [error, setError] = useState<string | null>(null);
-  const [showMore, setShowMore] = useState(false);
+  const [showMore, setShowMore] = useState(!!prefill);
+
+  const createTransfer = useCreateTransfer();
+  const loading = createTransaction.isPending || createTransfer.isPending;
 
   // UX-H2-01: Auto-categorization
   const [manualCategory, setManualCategory] = useState(false);
