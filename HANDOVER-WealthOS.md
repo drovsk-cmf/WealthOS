@@ -1090,21 +1090,26 @@ Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de refer
 Auditoria completa realizada em 16/03/2026 (PR #4). Relatório em `docs/audit/` (9 arquivos). Referências: OWASP ASVS L2, MASVS, Nielsen, WCAG 2.2 AA. Nota: 7/10.
 
 **Totais: 0 CRÍTICO, 15 ALTO, 39 MÉDIO, 26 BAIXO.**
+**Remediação: 63 resolvidos, 17 excluídos (aceitos/adiados).**
 
-**Top 10 correções priorizadas (do relatório 00-SUMMARY.md):**
+Remediação executada em 16/03/2026 via 12 lotes sequenciais (11 commits + 1 migration-only):
 
-| # | ID | Sev | Achado | Esforço |
-|---|---|---|---|---|
-| 1 | D8.04-06 + D8.08-09 | MÉDIO | Labels htmlFor + aria-required + aria-describedby em todos os forms | Médio |
-| 2 | D7.01 | ALTO | Campo monetário TransactionForm sem `.replace(",", ".")` | Baixo |
-| 3 | D3.03-05 | MÉDIO | 3 endpoints vazam erros internos do Supabase | Baixo |
-| 4 | D1.02 | ALTO | Register e forgot-password bypass rate limiter (client-side direto) | Médio |
-| 5 | D8.02-03 + D8.07 | ALTO | aria-label em botões icon-only + scope em tabelas | Baixo |
-| 6 | D3.01 | ALTO | CSV/XLSX parsers sem limite de tamanho de arquivo | Baixo |
-| 7 | D8.10 | ALTO | Informação financeira diferenciada apenas por cor | Médio |
-| 8 | D2.01 | MÉDIO | Export vaza cpf_encrypted de family_members | Baixo |
-| 9 | D2.02-03-05 | MÉDIO | 3 mutations sem filtro user_id (defesa em profundidade) | Baixo |
-| 10 | D6.01 | MÉDIO | 9 hooks com select("*") em vez de colunas explícitas | Médio |
+| Lote | Commit | Achados | Escopo |
+|------|--------|---------|--------|
+| 1 | 601be41 | D8.02, D8.03, D8.13 | aria-label em 23 botões icon-only + color pickers |
+| 2 | eaea2eb | D8.07, D8.11, D8.14 | scope em tabelas, sidebar a11y, auth main landmark |
+| 3 | 78d8f23 | D8.04-06, D8.08-09, D8.15-16 | htmlFor/aria-required/describedby em 6 forms, radiogroups, password strength |
+| 4 | b5f2fc5 | D8.10, D8.12 | +/- prefixos em valores financeiros, focus rings |
+| 5 | 8bf8b1b | D7.01, D7.02, D7.08, D7.13 | Campo monetário vírgula, Sonner toasts (18 pontos), erros PT-BR |
+| 6 | c79b52c | D1.02-04, D3.02 | Proxies register/forgot-password com rate limit, timing-safe, SW cleanup |
+| 7 | a60667a | D2.01-05, D3.01-06, D1.07-08 | Export sem cpf, user_id filters, error sanitization, CSV injection fix |
+| 8 | c28cd62 | D7.04-06, D7.11, D7.14-15 | formatCurrency dinâmico, busca em 4 páginas, ESC/dialog fixes, sync indicator |
+| 9 | 352ca11 | D6.01-05 | JOIN inline em transações, staleTime, trigram + matched_id indexes |
+| 10 | migration | D6.09-11, D2.04 | Cron duplicate guard, deletion timeout (migration 035+036) |
+| 11 | b1aaad4 | D5.01-08, D4.01 | detectPlatform shared, formatMonthShort, console dev-only, deps cleanup, biometric fix |
+| 12 | c023b92 | D7.07, D7.09-10, D7.12, D7.16 | Duplicar transação, help cards, parsing progress |
+
+**Achados excluídos (17):** D1.01 (Redis), D1.05 (AAL2 server), D1.06 (password rotation), D4.02-04 (biometric/native), D5.09 (TODO Fase 10), D6.06-08/12-16 (micro-otimizações), D6.15 (trigger O(n²)), D7.03 (edição transações), D8.01 (focus trap)
 
 **Detalhes completos:** ver `docs/audit/01-auth-session.md` a `08-accessibility.md`.
 
