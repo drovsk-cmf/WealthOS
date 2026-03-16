@@ -157,11 +157,13 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Type toggle */}
-          <div className="flex gap-2">
+          <div role="radiogroup" aria-label="Tipo de recorrência" className="flex gap-2">
             {(["expense", "income"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
+                role="radio"
+                aria-checked={type === t}
                 onClick={() => { setType(t); setCategoryId(""); }}
                 className={`flex-1 rounded-md py-2 text-sm font-medium transition-colors ${
                   type === t
@@ -179,9 +181,9 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           <div className="grid grid-cols-2 gap-4">
             {/* Account */}
             <div>
-              <label className="text-sm font-medium">Conta</label>
-              <select value={accountId} onChange={(e) => setAccountId(e.target.value)}
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+              <label htmlFor="rec-account" className="text-sm font-medium">Conta</label>
+              <select id="rec-account" value={accountId} onChange={(e) => setAccountId(e.target.value)}
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required aria-required="true">
                 <option value="">Selecione</option>
                 {accounts?.map((a) => (
                   <option key={a.id} value={a.id}>{a.name}</option>
@@ -191,8 +193,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
 
             {/* Category */}
             <div>
-              <label className="text-sm font-medium">Categoria</label>
-              <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
+              <label htmlFor="rec-category" className="text-sm font-medium">Categoria</label>
+              <select id="rec-category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 <option value="">Nenhuma</option>
                 {filteredCategories.map((c) => (
@@ -205,14 +207,14 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           {/* Amount + Description */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Valor (R$)</label>
-              <input type="text" inputMode="decimal" value={amount}
+              <label htmlFor="rec-amount" className="text-sm font-medium">Valor (R$)</label>
+              <input id="rec-amount" type="text" inputMode="decimal" value={amount}
                 onChange={(e) => setAmount(e.target.value)} placeholder="0,00"
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required />
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required aria-required="true" />
             </div>
             <div>
-              <label className="text-sm font-medium">Descrição</label>
-              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)}
+              <label htmlFor="rec-description" className="text-sm font-medium">Descrição</label>
+              <input id="rec-description" type="text" value={description} onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ex: Aluguel"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
@@ -221,8 +223,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           {/* Frequency + Interval */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Frequência</label>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value as Frequency)}
+              <label htmlFor="rec-frequency" className="text-sm font-medium">Frequência</label>
+              <select id="rec-frequency" value={frequency} onChange={(e) => setFrequency(e.target.value as Frequency)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {FREQUENCY_OPTIONS.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -230,9 +232,9 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">A cada</label>
+              <label htmlFor="rec-interval" className="text-sm font-medium">A cada</label>
               <div className="mt-1 flex items-center gap-2">
-                <input type="number" min={1} max={12} value={intervalCount}
+                <input id="rec-interval" type="number" min={1} max={12} value={intervalCount}
                   onChange={(e) => setIntervalCount(e.target.value)}
                   className="flex h-10 w-20 rounded-md border border-input bg-background px-3 py-2 text-sm" />
                 <span className="text-sm text-muted-foreground">
@@ -246,14 +248,14 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           <div className="grid grid-cols-2 gap-4">
             {!isEditing && (
               <div>
-                <label className="text-sm font-medium">Início</label>
-                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
-                  className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required />
+                <label htmlFor="rec-start" className="text-sm font-medium">Início</label>
+                <input id="rec-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                  className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required aria-required="true" />
               </div>
             )}
             <div>
-              <label className="text-sm font-medium">Fim (opcional)</label>
-              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+              <label htmlFor="rec-end" className="text-sm font-medium">Fim (opcional)</label>
+              <input id="rec-end" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
           </div>
@@ -261,8 +263,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           {/* Adjustment */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Reajuste</label>
-              <select value={adjustmentIndex}
+              <label htmlFor="rec-adj-index" className="text-sm font-medium">Reajuste</label>
+              <select id="rec-adj-index" value={adjustmentIndex}
                 onChange={(e) => setAdjustmentIndex(e.target.value as AdjustmentIndex)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 {ADJUSTMENT_INDEX_OPTIONS.map((o) => (
@@ -272,8 +274,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
             </div>
             {adjustmentIndex === "manual" && (
               <div>
-                <label className="text-sm font-medium">Taxa (% ao período)</label>
-                <input type="text" inputMode="decimal" value={adjustmentRate}
+                <label htmlFor="rec-adj-rate" className="text-sm font-medium">Taxa (% ao período)</label>
+                <input id="rec-adj-rate" type="text" inputMode="decimal" value={adjustmentRate}
                   onChange={(e) => setAdjustmentRate(e.target.value)} placeholder="0,00"
                   className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
               </div>
@@ -281,7 +283,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           </div>
 
           {error && (
-            <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>
+            <p role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>
           )}
 
           <div className="flex justify-end gap-3 pt-2">

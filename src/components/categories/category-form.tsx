@@ -92,7 +92,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
         </h2>
 
         {error && (
-          <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
+          <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -116,11 +116,13 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
           {!isEdit && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Tipo</label>
-              <div className="flex gap-2">
+              <div role="radiogroup" aria-label="Tipo de categoria" className="flex gap-2">
                 {(["expense", "income"] as CategoryType[]).map((t) => (
                   <button
                     key={t}
                     type="button"
+                    role="radio"
+                    aria-checked={type === t}
                     onClick={() => setType(t)}
                     className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                       type === t
@@ -158,17 +160,19 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
 
           {/* Icon */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Ícone</label>
-            <div className="grid max-h-32 grid-cols-10 gap-1 overflow-y-auto rounded-md border p-2">
+            <label id="cat-icon-label" className="text-sm font-medium">Ícone</label>
+            <div role="radiogroup" aria-labelledby="cat-icon-label" className="grid max-h-32 grid-cols-10 gap-1 overflow-y-auto rounded-md border p-2">
               {CATEGORY_ICONS.map((ic) => (
                 <button
                   key={ic}
                   type="button"
+                  role="radio"
+                  aria-checked={icon === ic}
                   onClick={() => setIcon(ic)}
                   className={`flex h-8 w-8 items-center justify-center rounded text-xs transition-colors ${
                     icon === ic ? "bg-primary text-primary-foreground" : "hover:bg-accent"
                   }`}
-                  title={ic}
+                  aria-label={ic}
                 >
                   {ic.slice(0, 2)}
                 </button>

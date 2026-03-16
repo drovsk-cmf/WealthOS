@@ -177,7 +177,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
         <h2 className="text-lg font-semibold">Nova transação</h2>
 
         {error && (
-          <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
+          <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -199,6 +199,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0,00"
+              aria-required="true"
               className="flex h-14 w-full rounded-md border border-input bg-background px-4 py-2 text-2xl font-bold tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               autoFocus
             />
@@ -210,11 +211,13 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
           </div>
 
           {/* Decision 2: Type toggle (default: expense) */}
-          <div className="flex gap-1 rounded-lg border bg-muted p-1">
+          <div role="radiogroup" aria-label="Tipo de transação" className="flex gap-1 rounded-lg border bg-muted p-1">
             {(["expense", "income", "transfer"] as TransactionType[]).map((t) => (
               <button
                 key={t}
                 type="button"
+                role="radio"
+                aria-checked={type === t}
                 onClick={() => setType(t)}
                 className={`flex-1 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
                   type === t
@@ -344,10 +347,12 @@ export function TransactionForm({ open, onClose, defaultType = "expense" }: Tran
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium">Status</label>
+                  <label htmlFor="tx-status" className="text-sm font-medium">Status</label>
                   <button
+                    id="tx-status"
                     type="button"
                     onClick={() => setIsPaid(!isPaid)}
+                    aria-pressed={isPaid}
                     className={`flex h-10 w-full items-center justify-center gap-2 rounded-md border text-sm font-medium transition-colors ${
                       isPaid
                         ? "border-verdant/30 bg-verdant/10 text-verdant"

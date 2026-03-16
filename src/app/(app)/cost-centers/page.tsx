@@ -375,15 +375,16 @@ export default function CostCentersPage() {
               <div className="space-y-1.5">
                 <label htmlFor="cc-name" className="text-sm font-medium">Nome</label>
                 <input id="cc-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Casa, Trabalho, Reforma" autoFocus
+                  placeholder="Ex: Casa, Trabalho, Reforma" autoFocus aria-required="true"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium">Tipo</label>
-                <div className="space-y-2">
+                <label id="center-type-label" className="text-sm font-medium">Tipo</label>
+                <div role="radiogroup" aria-labelledby="center-type-label" className="space-y-2">
                   {CENTER_TYPE_OPTIONS.map((opt) => (
-                    <button key={opt.value} type="button" onClick={() => setType(opt.value)}
+                    <button key={opt.value} type="button" role="radio" aria-checked={type === opt.value}
+                      onClick={() => setType(opt.value)}
                       className={`flex w-full items-start gap-3 rounded-md border p-3 text-left transition-colors ${
                         type === opt.value ? "border-primary bg-primary/5" : "border-input hover:bg-accent"
                       }`}>

@@ -104,7 +104,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
         </p>
 
         {error && (
-          <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
+          <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
             {error}
           </div>
         )}
@@ -121,6 +121,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Banco Principal"
+              aria-required="true"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               autoFocus
             />

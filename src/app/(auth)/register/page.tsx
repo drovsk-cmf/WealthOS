@@ -144,7 +144,7 @@ export default function RegisterPage() {
       </div>
 
       {serverError && (
-        <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+        <div role="alert" className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
           {serverError}
         </div>
       )}
@@ -153,37 +153,46 @@ export default function RegisterPage() {
         <div className="space-y-2">
           <label htmlFor="fullName" className="text-sm font-medium">Nome completo</label>
           <input id="fullName" type="text" value={form.fullName} onChange={(e) => updateField("fullName", e.target.value)} placeholder="Seu nome"
+            aria-required="true" aria-describedby={errors.fullName ? "err-fullName" : undefined}
             className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${errors.fullName ? "border-destructive" : "border-input"}`} />
-          {errors.fullName && <p className="text-xs text-destructive">{errors.fullName}</p>}
+          {errors.fullName && <p id="err-fullName" className="text-xs text-destructive">{errors.fullName}</p>}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="email" className="text-sm font-medium">Email</label>
           <input id="email" type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} placeholder="seu@email.com"
+            aria-required="true" aria-describedby={errors.email ? "err-email" : undefined}
             className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${errors.email ? "border-destructive" : "border-input"}`} />
-          {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+          {errors.email && <p id="err-email" className="text-xs text-destructive">{errors.email}</p>}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="password" className="text-sm font-medium">Senha</label>
           <input id="password" type="password" value={form.password} onChange={(e) => updateField("password", e.target.value)} placeholder="Mínimo 12 caracteres"
+            aria-required="true" aria-describedby={errors.password ? "err-password" : strengthConfig ? "password-strength" : undefined}
             className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${errors.password ? "border-destructive" : "border-input"}`} />
           {form.password && strengthConfig && (
             <div className="space-y-1">
-              <div className="h-1.5 w-full rounded-full bg-muted">
+              <div className="h-1.5 w-full rounded-full bg-muted"
+                role="progressbar"
+                aria-label={`Força da senha: ${strengthConfig.label}`}
+                aria-valuenow={passwordStrength === "weak" ? 25 : passwordStrength === "fair" ? 50 : passwordStrength === "good" ? 75 : 100}
+                aria-valuemin={0} aria-valuemax={100}
+              >
                 <div className={`h-1.5 rounded-full transition-all ${strengthConfig.color} ${strengthConfig.width}`} />
               </div>
-              <p className="text-xs text-muted-foreground">Força: {strengthConfig.label}</p>
+              <p id="password-strength" className="text-xs text-muted-foreground">Força: {strengthConfig.label}</p>
             </div>
           )}
-          {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
+          {errors.password && <p id="err-password" className="text-xs text-destructive">{errors.password}</p>}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="confirmPassword" className="text-sm font-medium">Confirmar senha</label>
           <input id="confirmPassword" type="password" value={form.confirmPassword} onChange={(e) => updateField("confirmPassword", e.target.value)} placeholder="Repita a senha"
+            aria-required="true" aria-describedby={errors.confirmPassword ? "err-confirmPassword" : undefined}
             className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${errors.confirmPassword ? "border-destructive" : "border-input"}`} />
-          {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p id="err-confirmPassword" className="text-xs text-destructive">{errors.confirmPassword}</p>}
         </div>
 
         <button type="submit" disabled={loading}

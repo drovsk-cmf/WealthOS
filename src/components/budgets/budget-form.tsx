@@ -135,12 +135,14 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
           {/* Category (only for creation) */}
           {!isEditing && (
             <div>
-              <label className="text-sm font-medium">Categoria</label>
+              <label htmlFor="budget-category" className="text-sm font-medium">Categoria</label>
               <select
+                id="budget-category"
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 required
+                aria-required="true"
               >
                 <option value="">Selecione</option>
                 {expenseCategories.map((c) => (
@@ -154,8 +156,9 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
 
           {/* Amount */}
           <div>
-            <label className="text-sm font-medium">Valor orçado (R$)</label>
+            <label htmlFor="budget-amount" className="text-sm font-medium">Valor orçado (R$)</label>
             <input
+              id="budget-amount"
               type="text"
               inputMode="decimal"
               value={amount}
@@ -163,6 +166,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
               placeholder="0,00"
               className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               required
+              aria-required="true"
             />
             {amount && !isNaN(parseFloat(amount.replace(",", "."))) && (
               <p className="mt-1 text-xs text-muted-foreground">
@@ -173,10 +177,11 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
 
           {/* Alert threshold */}
           <div>
-            <label className="text-sm font-medium">
+            <label htmlFor="budget-threshold" className="text-sm font-medium">
               Alerta ao atingir (%)
             </label>
             <input
+              id="budget-threshold"
               type="number"
               min={1}
               max={100}
@@ -191,8 +196,9 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
 
           {/* Adjustment index */}
           <div>
-            <label className="text-sm font-medium">Índice de reajuste</label>
+            <label htmlFor="budget-index" className="text-sm font-medium">Índice de reajuste</label>
             <select
+              id="budget-index"
               value={adjustmentIndex}
               onChange={(e) =>
                 setAdjustmentIndex(e.target.value as AdjustmentIndex)
@@ -209,7 +215,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
 
           {/* Error */}
           {error && (
-            <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">
+            <p id="budget-error" role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">
               {error}
             </p>
           )}

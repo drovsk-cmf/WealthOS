@@ -129,16 +129,17 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Name */}
           <div>
-            <label className="text-sm font-medium">Nome do bem</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Apartamento Centro" required
+            <label htmlFor="asset-name" className="text-sm font-medium">Nome do bem</label>
+            <input id="asset-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
+              placeholder="Ex: Apartamento Centro" required aria-required="true"
               className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
           </div>
 
           {/* Category */}
           <div>
-            <label className="text-sm font-medium">Categoria</label>
-            <select value={category} onChange={(e) => setCategory(e.target.value as AssetCategory)}
+            <label htmlFor="asset-category" className="text-sm font-medium">Categoria</label>
+            <select id="asset-category" value={category} onChange={(e) => setCategory(e.target.value as AssetCategory)}
+              aria-required="true"
               className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
               {ASSET_CATEGORY_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>{o.label} - {o.description}</option>
@@ -149,16 +150,16 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           {/* Values */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Valor de aquisição (R$)</label>
-              <input type="text" inputMode="decimal" value={acquisitionValue}
+              <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição (R$)</label>
+              <input id="asset-acq-value" type="text" inputMode="decimal" value={acquisitionValue}
                 onChange={(e) => { setAcquisitionValue(e.target.value); if (!isEditing && !currentValue) setCurrentValue(e.target.value); }}
-                placeholder="0,00" required={!isEditing} disabled={isEditing}
+                placeholder="0,00" required={!isEditing} aria-required={!isEditing} disabled={isEditing}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50" />
             </div>
             <div>
-              <label className="text-sm font-medium">Valor atual (R$)</label>
-              <input type="text" inputMode="decimal" value={currentValue}
-                onChange={(e) => setCurrentValue(e.target.value)} placeholder="0,00" required
+              <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual (R$)</label>
+              <input id="asset-cur-value" type="text" inputMode="decimal" value={currentValue}
+                onChange={(e) => setCurrentValue(e.target.value)} placeholder="0,00" required aria-required="true"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
           </div>
@@ -167,14 +168,14 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           <div className="grid grid-cols-2 gap-4">
             {!isEditing && (
               <div>
-                <label className="text-sm font-medium">Data de aquisição</label>
-                <input type="date" value={acquisitionDate} onChange={(e) => setAcquisitionDate(e.target.value)}
-                  required className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <label htmlFor="asset-acq-date" className="text-sm font-medium">Data de aquisição</label>
+                <input id="asset-acq-date" type="date" value={acquisitionDate} onChange={(e) => setAcquisitionDate(e.target.value)}
+                  required aria-required="true" className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
               </div>
             )}
             <div>
-              <label className="text-sm font-medium">Depreciação (% ao ano)</label>
-              <input type="text" inputMode="decimal" value={depreciationRate}
+              <label htmlFor="asset-depreciation" className="text-sm font-medium">Depreciação (% ao ano)</label>
+              <input id="asset-depreciation" type="text" inputMode="decimal" value={depreciationRate}
                 onChange={(e) => setDepreciationRate(e.target.value)} placeholder="0"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
               <p className="mt-1 text-[11px] text-muted-foreground">
@@ -186,19 +187,19 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           {/* Insurance */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">Apólice de seguro</label>
-              <input type="text" value={insurancePolicy} onChange={(e) => setInsurancePolicy(e.target.value)}
+              <label htmlFor="asset-insurance" className="text-sm font-medium">Apólice de seguro</label>
+              <input id="asset-insurance" type="text" value={insurancePolicy} onChange={(e) => setInsurancePolicy(e.target.value)}
                 placeholder="Opcional"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
             <div>
-              <label className="text-sm font-medium">Vencimento do seguro</label>
-              <input type="date" value={insuranceExpiry} onChange={(e) => setInsuranceExpiry(e.target.value)}
+              <label htmlFor="asset-insurance-expiry" className="text-sm font-medium">Vencimento do seguro</label>
+              <input id="asset-insurance-expiry" type="date" value={insuranceExpiry} onChange={(e) => setInsuranceExpiry(e.target.value)}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
           </div>
 
-          {error && <p className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}
+          {error && <p role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}
 
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} disabled={isPending}
