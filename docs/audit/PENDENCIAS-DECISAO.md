@@ -188,3 +188,40 @@ Sprint único quando Mac disponível. ~25-35h.
 | 8 | Ações Claudio | 3 | - | Paralelo |
 | 9 | **Requer Mac** | 9 | ~25-35h | Mac + parcialmente G10 |
 | 10 | **Aguardando investimento** | 2 | - | ~US$ 400/ano |
+
+---
+
+## Decisões registradas (2026-03-16)
+
+| Item | Decisão | Esforço |
+|------|---------|---------|
+| 1.1 Instrument Serif | ADIAR (landing page) | 0 |
+| 1.2 Orçamento aprovação | ADIAR (login próprio membros) | 0 |
+| 1.3 CAP-05 Calendário | **FAZER** | 3-4h |
+| 1.4 Export criptografado | **FAZER** | 2-3h |
+| 1.5 Logs de acesso | **FAZER** | 2-3h |
+| 2.1 liquidity_tier editável | **FAZER** | 30 min |
+| 2.2 Focus trap dialogs inline | **FAZER** | 1h |
+| 3.1 Type cast refinado | **FAZER** | 1-2h |
+| 3.2 Testes RPCs novas | **FAZER** | 2-3h |
+| 3.3 Sparklines solvência | **FAZER** | 2-3h |
+| 3.4 Edição transferências | **FAZER** | 2-3h |
+| 3.5 Rateio overhead UI | **FAZER** | 2-3h |
+| 4.1 Reajuste IPCA/IGP-M | **FAZER** | 3-4h |
+| 4.2 Upload WKF-03 | **FAZER** | 2-3h |
+| 4.3 PAT-06 docs em bens | **FAZER** (com 4.2) | +1h |
+| 5.1 OCR web Tesseract.js | **FAZER** | 4-6h |
+| 5.2 Web Push notifications | **FAZER** | 4-6h |
+
+**Totais:** 15 FAZER (~33-44h), 2 ADIAR, 0 DESCARTAR
+
+**Cadeia de pré-requisitos:**
+- 4.2 (upload) → 4.3 (docs em bens)
+- 4.2 (upload) → 5.1 (OCR web)
+
+**Tabelas ociosas (Grupo 6) derivadas:**
+- `tax_records`: DROP (incondicional)
+- `documents`: MANTER (4.2 aprovado)
+- `notification_tokens`: MANTER (5.2 aprovado)
+- `notification_log`: MANTER (5.2 aprovado)
+- `center_allocations`: MANTER (3.5 aprovado)
