@@ -92,24 +92,24 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     }
   }, [suggestedCategoryId, manualCategory, categoryId]);
 
-  // Reset on open
+  // Reset on open (respect prefill for Duplicate feature - DT-027)
   useEffect(() => {
     if (open) {
-      setType(defaultType);
-      setAccountId(accounts?.[0]?.id ?? "");
+      setType(prefill?.type ?? defaultType);
+      setAccountId(prefill?.accountId ?? accounts?.[0]?.id ?? "");
       setToAccountId("");
-      setCategoryId("");
-      setFamilyMemberId("");
-      setAmount("");
-      setDescription("");
+      setCategoryId(prefill?.categoryId ?? "");
+      setFamilyMemberId(prefill?.familyMemberId ?? "");
+      setAmount(prefill?.amount ?? "");
+      setDescription(prefill?.description ?? "");
       setDate(new Date().toISOString().split("T")[0]);
       setIsPaid(true);
-      setNotes("");
+      setNotes(prefill?.notes ?? "");
       setError(null);
-      setShowMore(false);
-      setManualCategory(false);
+      setShowMore(!!prefill);
+      setManualCategory(!!prefill?.categoryId);
     }
-  }, [open, defaultType, accounts]);
+  }, [open, defaultType, accounts, prefill]);
 
   // Close on ESC key
   useEffect(() => {

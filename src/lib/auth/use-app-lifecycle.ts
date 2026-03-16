@@ -70,8 +70,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           clearEncryptionKey();
           dekWasPurgedRef.current = true;
           options?.onDEKPurged?.();
-          // eslint-disable-next-line no-console
-          console.info("[Oniefy] DEK purged from memory (app backgrounded)");
+          if (process.env.NODE_ENV === "development") console.info("[Oniefy] DEK purged from memory (app backgrounded)");
         }
         return;
       }
@@ -96,8 +95,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           const supabase = createClient();
           await loadEncryptionKey(supabase);
           options?.onDEKRestored?.();
-          // eslint-disable-next-line no-console
-          console.info("[Oniefy] DEK restored after biometric unlock");
+          if (process.env.NODE_ENV === "development") console.info("[Oniefy] DEK restored after biometric unlock");
         } catch (err) {
           if (process.env.NODE_ENV === "development") console.error("[Oniefy] Failed to restore DEK on foreground:", err);
           options?.onBiometricFailed?.();

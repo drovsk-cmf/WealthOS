@@ -51,6 +51,11 @@ export function ImportWizard() {
       reader.onload = (ev) => {
         const buffer = ev.target?.result as ArrayBuffer;
         const result = parseXLSX(buffer);
+        if (result.error) {
+          setParseErrors([result.error]);
+          setIsParsing(false);
+          return;
+        }
         setFileType("xlsx");
         setCsvHeaders(result.headers);
         setCsvRows(result.rows);

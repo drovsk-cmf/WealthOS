@@ -187,7 +187,7 @@ export function useTaxParameters() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tax_parameters")
-        .select("*")
+        .select("id, parameter_type, valid_from, valid_until, brackets, limits, source_references, created_at")
         .order("parameter_type")
         .order("valid_from", { ascending: false });
       if (error) throw error;

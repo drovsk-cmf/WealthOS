@@ -26,7 +26,7 @@ type AnySupabaseClient = SupabaseClient<any, any, any>;
 // In-memory DEK reference (cleared on logout/timeout)
 let activeDEK: CryptoKey | null = null;
 
-// Salt for HKDF (fixed per-app, not secret)
+// DO NOT CHANGE - changing this value breaks existing key derivation for all users
 const HKDF_SALT = new TextEncoder().encode("wealthos-kek-salt-v2");
 
 /**

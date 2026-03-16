@@ -45,7 +45,7 @@ const TABLES_TO_EXPORT = [
 
 // D2.01: Explicit columns for tables with sensitive fields
 const TABLE_SELECT_COLUMNS: Partial<Record<string, string>> = {
-  family_members: "id, user_id, full_name, relationship, avatar_emoji, is_active, created_at, updated_at",
+  family_members: "id, user_id, name, relationship, role, birth_date, is_tax_dependent, avatar_emoji, cost_center_id, is_active, created_at, updated_at",
 };
 
 function downloadBlob(blob: Blob, filename: string) {

@@ -58,6 +58,7 @@ export async function deriveKEK(
       name: "HKDF",
       hash: "SHA-256",
       salt,
+      // DO NOT CHANGE info string - changing breaks existing key derivation
       info: new TextEncoder().encode("wealthos-e2e-kek-v2"),
     } as HkdfParams,
     keyMaterial,

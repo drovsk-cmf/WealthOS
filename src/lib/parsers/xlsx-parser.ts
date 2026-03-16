@@ -13,6 +13,7 @@ export interface XLSXParseResult {
   rows: string[][];
   sheetNames: string[];
   activeSheet: string;
+  error?: string;
 }
 
 /**
@@ -23,7 +24,12 @@ export function parseXLSX(
   buffer: ArrayBuffer,
   sheetName?: string
 ): XLSXParseResult {
-  const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
+  let workbook: XLSX.WorkBook;
+  try {
+    workbook = XLSX.read(buffer, { type: "array", cellDates: true });
+  } catch {
+    return { headers: [], rows: [], sheetNames: [], activeSheet: "", error: "Arquivo Excel inválido ou corrompido." };
+  }
 
   const sheetNames = workbook.SheetNames;
   const activeSheet = sheetName && sheetNames.includes(sheetName)

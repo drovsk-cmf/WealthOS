@@ -172,7 +172,7 @@ export default function FiscalPage() {
               }`}>
                 {prov.monthly_provision > 0
                   ? formatCurrency(prov.monthly_provision)
-                  : "R$ 0,00"}
+                  : formatCurrency(0)}
               </p>
               <p className="text-[11px] text-muted-foreground">
                 {prov.months_remaining > 0

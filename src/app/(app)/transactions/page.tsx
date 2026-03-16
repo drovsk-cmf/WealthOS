@@ -68,9 +68,9 @@ export default function TransactionsPage() {
   }
 
   function getAmountDisplay(tx: TransactionWithRelations) {
-    if (tx.type === "income") return { text: `+ $<Mv>{formatCurrency(tx.amount)}</Mv>`, class: "text-verdant" };
-    if (tx.type === "expense") return { text: `- $<Mv>{formatCurrency(tx.amount)}</Mv>`, class: "text-terracotta" };
-    return { text: formatCurrency(tx.amount), class: "text-info-slate" };
+    if (tx.type === "income") return { prefix: "+", formatted: formatCurrency(tx.amount), colorClass: "text-verdant" };
+    if (tx.type === "expense") return { prefix: "-", formatted: formatCurrency(tx.amount), colorClass: "text-terracotta" };
+    return { prefix: "", formatted: formatCurrency(tx.amount), colorClass: "text-info-slate" };
   }
 
   // ─── Loading ──────────────────────────────────────────────
@@ -324,8 +324,8 @@ export default function TransactionsPage() {
                 </div>
 
                 {/* Amount */}
-                <p className={`font-semibold ${amountDisplay.class}`}>
-                  {amountDisplay.text}
+                <p className={`font-semibold ${amountDisplay.colorClass}`}>
+                  <Mv>{amountDisplay.prefix}{amountDisplay.formatted}</Mv>
                 </p>
 
                 {/* Reverse button */}
