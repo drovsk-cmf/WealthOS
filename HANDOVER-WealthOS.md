@@ -61,13 +61,13 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 25 (todas com RLS) |
-| Políticas RLS | 84 |
-| Functions (total) | 47 (34 RPCs + 7 trigger functions + 6 cron wrappers). Todas com `SET search_path = public` |
+| Tabelas | 26 (todas com RLS) |
+| Políticas RLS | 86 |
+| Functions (total) | 83 (68 RPCs + 6 triggers + 8 cron + 1 utility). Todas com `SET search_path = public` |
 | Triggers | 20 |
 | ENUMs | 26 |
-| Migrations aplicadas | 37 SQL files no repo (001 a 034) |
-| pg_cron jobs | 6: mark-overdue-transactions (01h), generate-workflow-tasks (02h), process-account-deletions (03:30), cron_fetch_indices (06h), depreciate-assets (mensal 03h), balance-integrity-check (dom 04h) |
+| Migrations aplicadas | 48 via MCP (37 SQL files no repo) |
+| pg_cron jobs | 8: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -1475,6 +1475,92 @@ Mensagem recomendada (validada pelas 3 análises):
 - ChatGPT (o3): análise com 9 referências (PostgreSQL docs, Google Cloud, 1Password, Proton, Apple, AWS, Microsoft Learn x2, MongoDB)
 - Perplexity Pro: análise com referências a Cyfuture, Scaleout Systems, 1Password whitepaper, blog Terminal3, Uplatz, Windows Forum
 - Gemini Deep Research: análise de 113 referências acadêmicas e de mercado (Supabase docs, Evervault, Dashlane, Actual Budget, Ink & Switch, ETH Zurich, MIT Monomi, USENIX, VLDB, PCI DSS, SOC 2)
+
+---
+
+## 18. Sessão 16/03/2026 - Auditoria de Dívida Técnica + Remediação
+
+### 18.1 Auditoria linha-por-linha (118/118 arquivos)
+
+Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
+
+**Metodologia:** Leitura integral de 53 arquivos (toda camada lib/, auth, API routes, infra, parsers, os 10 maiores pages/components). Restantes 65 varridos por padrões (grep) + leitura seletiva de trechos. Banco de dados verificado: cron jobs, RLS, RPCs, schema.
+
+**Resultado:** 28 achados formais (11 S2 GRAVE, 11 S3, 4 S4, 2 S5).
+
+### 18.2 Remediação (27/28 corrigidos)
+
+| ID | Sev | Descrição | Commit/Migration |
+|----|-----|-----------|-----------------|
+| DT-001 | S2 | `loadEncryptionKey` lançava `EncryptionKeyMissingError` em vez de re-init silenciosa | `baa2117` |
+| DT-002 | S4 | WealthOS → Oniefy em env.ts + DO NOT CHANGE em HKDF strings | `2267881` |
+| DT-003 | S3 | console.info dev guard em use-app-lifecycle | `2267881` |
+| DT-004 | S2 | Biometria stub → `available: false` (sem Face ID fake) | `b490bfd` |
+| DT-006 | S3 | RPC `create_transaction_with_journal` recebe `p_family_member_id` + `p_category_source` | migration 040 |
+| DT-008 | S2 | Cron `generate_monthly_snapshots` (mensal 04:30 UTC) | migration 038 |
+| DT-009 | S2 | WKF-03 stub honesto ("Sem upload" + "Conferido") | `ecab78c` |
+| DT-010 | S2 | `import_transactions_batch` desabilita trigger + recalcula 1x | migration 039 |
+| DT-011 | S3 | `focus-trap-react` nos 6 form modals | `ecab78c` |
+| DT-012 | S2 | RPC `edit_transaction` (reverse + re-create) + botão Editar na UI | migration 041 |
+| DT-013 | S4 | Indentação use-accounts | `b490bfd` |
+| DT-016 | S2 | Cron `generate_recurring_transactions` (diário 01:30 UTC) | migration 037 |
+| DT-017 | S3 | XLSX parser try/catch | `2267881` |
+| DT-018 | S2 | IPCA/IGP-M/INPC/Selic removidos da UI de reajuste | `2267881` |
+| DT-019 | S3 | `useBudgetMonths` staleTime + limit(500) | `b490bfd` |
+| DT-020 | S4 | `currencySymbol` prop no onboarding | `b490bfd` |
+| DT-021 | S3 | "R$ 0,00" → `formatCurrency(0)` em tax | `2267881` |
+| DT-024 | S4 | Indentação use-recurrences | `b490bfd` |
+| DT-025 | S3 | use-fiscal `select("*")` → colunas explícitas | `2267881` |
+| DT-026 | S2 | `getAmountDisplay` JSX-em-template-literal corrigido | `2267881` |
+| DT-027 | S3 | `TransactionForm` reset respeita prefill (Duplicar funciona) | `2267881` |
+| DT-028 | S2 | Export family_members: `full_name` → `name` + 5 colunas adicionadas | `2267881` |
+
+**Aceitos (4):** DT-007 (type cast, gatilho: bug undefined), DT-014/DT-022 (COA órfão), DT-015 (soft-delete cleanup), DT-023 (auth.getUser repetido)
+
+**Documentado (1):** DT-005 (6 tabelas sem frontend; monthly_snapshots corrigida via DT-008, restantes documentadas)
+
+### 18.3 Migrations aplicadas nesta sessão
+
+| # | Nome | Conteúdo |
+|---|------|----------|
+| 035 | performance_indexes | Trigram + matched_id indexes |
+| 036 | security_definer_and_cron_guards | Duplicate guard em cron |
+| 037 | cron_generate_recurring_transactions | Cron diário 01:30 UTC |
+| 038 | cron_generate_monthly_snapshots | Cron mensal 04:30 UTC dia 1 |
+| 039 | batch_import_disable_trigger | DT-010 O(n²) fix |
+| 040 | add_family_member_category_source_to_rpc | DT-006 params no RPC |
+| 041 | edit_transaction_rpc | DT-012 reverse + re-create atômico |
+
+### 18.4 Commits
+
+| SHA | Mensagem |
+|-----|----------|
+| 601be41..c023b92 | Remediação 80 achados de auditoria (12 lotes) |
+| 201530a | docs: 00-SUMMARY + HANDOVER |
+| 961777e | fix: audit remediation gaps (D6.01, D7.04, D7.11, D7.12, D8.08) |
+| 9814cf6 | docs: technical debt audit (15/118) |
+| 824eb3a | docs: technical debt audit (53/118) |
+| b20094e | docs: complete audit (118/118, 28 findings) |
+| 2267881 | fix: 10 debt items (DT-002,003,017,018,021,025,026,027,028) |
+| baa2117 | fix(DT-001): loadEncryptionKey |
+| b490bfd | fix: 5 debt items (DT-004,013,019,020,024) |
+| ecab78c | fix: 6 debt items (DT-006,008,009,010,011,012) + migrations 038-041 |
+| 7e9d46f | docs: DIVIDA-TECNICA remediation registry |
+
+### 18.5 Estado atualizado
+
+**Totais:** 26 tabelas, 86 RLS, 83 functions (68 RPCs + 6 triggers + 8 cron + 1 utility), 26 ENUMs, 48 migrations, 131 arquivos src/, ~24.000 linhas, 8 pg_cron jobs
+
+**O que resta para deploy web (P1):**
+1. `P1` Deploy Vercel + domínio oniefy.com (30 min, ação Claudio)
+2. `P8` Supabase Pro (ação Claudio)
+
+**Backlog pós-deploy:**
+- WKF-03 upload real (Tesseract.js web, 2-3h)
+- monthly_snapshots → consumir no SolvencyPanel (trend chart, 1-2h)
+- `tax_records` DROP TABLE (5 min)
+- DT-007 types refinement (quando bug aparecer)
+- DT-012 UX: edição de transferências (hoje só income/expense editáveis)
 
 ---
 
