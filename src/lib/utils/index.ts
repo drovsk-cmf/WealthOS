@@ -39,6 +39,21 @@ export function formatDate(
 }
 
 /**
+ * Format a date string as short month label (D5.03).
+ * @param dateStr - ISO date string (YYYY-MM-DD or YYYY-MM)
+ * @param withYear - include 2-digit year (default: false)
+ * @example formatMonthShort("2026-03-01") => "mar"
+ * @example formatMonthShort("2026-03-01", true) => "mar 26"
+ */
+export function formatMonthShort(dateStr: string, withYear = false): string {
+  const d = new Date(dateStr + (dateStr.length <= 7 ? "-01T12:00:00" : "T12:00:00"));
+  const opts: Intl.DateTimeFormatOptions = withYear
+    ? { month: "short", year: "2-digit" }
+    : { month: "short" };
+  return d.toLocaleDateString("pt-BR", opts).replace(".", "");
+}
+
+/**
  * Format a date as relative time (e.g., "há 2 dias").
  */
 export function formatRelativeDate(date: string | Date): string {

@@ -59,14 +59,14 @@ export function useServiceWorker() {
             newWorker.addEventListener("statechange", () => {
               if (newWorker.state === "activated") {
                 // New version activated, could notify user
-                console.log("[Oniefy] Service Worker atualizado.");
+                if (process.env.NODE_ENV === "development") console.log("[Oniefy] Service Worker atualizado.");
               }
             });
           }
         });
       })
       .catch((err) => {
-        console.warn("[Oniefy] SW registration failed:", err);
+        if (process.env.NODE_ENV === "development") console.warn("[Oniefy] SW registration failed:", err);
         setStatus("error");
       });
   }, []);

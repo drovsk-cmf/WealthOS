@@ -21,6 +21,8 @@ import { createClient } from "@/lib/supabase/client";
 
 type AppState = "active" | "inactive" | "background";
 
+import { isNativePlatform } from "@/lib/utils/platform";
+
 interface CapacitorApp {
   addListener: (
     event: string,
@@ -40,21 +42,6 @@ async function getCapacitorApp(): Promise<CapacitorApp | null> {
     // Expected on web / when Capacitor plugin not installed
     return null;
   }
-}
-
-/**
- * Detecta se estamos rodando dentro do Capacitor (iOS/Android).
- */
-function isNativePlatform(): boolean {
-  if (typeof window === "undefined") return false;
-  const win = window as unknown as Record<string, unknown>;
-  if (!win.Capacitor || typeof win.Capacitor !== "object") return false;
-  const cap = win.Capacitor as Record<string, unknown>;
-  const platform =
-    cap.getPlatform && typeof cap.getPlatform === "function"
-      ? (cap.getPlatform as () => string)()
-      : "web";
-  return platform === "ios" || platform === "android";
 }
 
 interface UseAppLifecycleOptions {
@@ -101,7 +88,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
 
           if (!biometricOk) {
             options?.onBiometricFailed?.();
-            console.warn("[Oniefy] Biometric unlock failed on foreground return");
+            if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Biometric unlock failed on foreground return");
             return;
           }
 
@@ -112,7 +99,7 @@ export function useAppLifecycle(options?: UseAppLifecycleOptions) {
           // eslint-disable-next-line no-console
           console.info("[Oniefy] DEK restored after biometric unlock");
         } catch (err) {
-          console.error("[Oniefy] Failed to restore DEK on foreground:", err);
+          if (process.env.NODE_ENV === "development") console.error("[Oniefy] Failed to restore DEK on foreground:", err);
           options?.onBiometricFailed?.();
         }
       }
@@ -164,6 +151,6 @@ async function attemptBiometricUnlock(): Promise<boolean> {
   // });
   // return result.verified;
 
-  console.warn("[Oniefy] Biometric unlock: stub bypass (plugin não instalado). Implementar na Fase 10.");
+  if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Biometric unlock: stub bypass (plugin não instalado). Implementar na Fase 10.");
   return true;
 }

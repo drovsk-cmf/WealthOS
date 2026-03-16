@@ -344,5 +344,5 @@ export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
     .join(" | ");
-  console.error(`[Oniefy] RPC schema mismatch (${rpcName}): ${issues}`);
+  if (process.env.NODE_ENV === "development") console.error(`[Oniefy] RPC schema mismatch (${rpcName}): ${issues}`);
 }

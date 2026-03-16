@@ -16,32 +16,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { detectPlatform, type Platform } from "@/lib/utils/platform";
 
-export type BiometricType = "face_id" | "touch_id" | "none";
-export type Platform = "ios" | "android" | "web";
+type BiometricType = "face_id" | "touch_id" | "none";
 
 interface BiometricState {
   available: boolean;
   biometricType: BiometricType;
   platform: Platform;
   enrolled: boolean;
-}
-
-function detectPlatform(): Platform {
-  if (typeof window === "undefined") return "web";
-
-  // Capacitor detection
-  const win = window as unknown as Record<string, unknown>;
-  if (win.Capacitor && typeof win.Capacitor === "object") {
-    const cap = win.Capacitor as Record<string, unknown>;
-    const platform = cap.getPlatform && typeof cap.getPlatform === "function"
-      ? (cap.getPlatform as () => string)()
-      : "web";
-    if (platform === "ios") return "ios";
-    if (platform === "android") return "android";
-  }
-
-  return "web";
 }
 
 export function useBiometricAuth(): BiometricState & {
@@ -69,19 +52,20 @@ export function useBiometricAuth(): BiometricState & {
 
   const authenticate = async (): Promise<boolean> => {
     if (!state.available) return false;
-    // Stub: real implementation will use Capacitor BiometricAuth plugin
-    console.warn("[Oniefy] Biometric auth: stub - awaiting Capacitor build (Fase 10)");
-    return false;
+    // D4.01: Stub returns true so biometric flow is not blocked.
+    // Real implementation will use Capacitor BiometricAuth plugin (Fase 10).
+    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Biometric auth: stub - awaiting Capacitor build (Fase 10)");
+    return true;
   };
 
   const enable = async (): Promise<void> => {
     if (!state.available) return;
-    console.warn("[Oniefy] Biometric enable: stub - awaiting Capacitor build (Fase 10)");
+    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Biometric enable: stub - awaiting Capacitor build (Fase 10)");
     setState((prev) => ({ ...prev, enrolled: true }));
   };
 
   const disable = async (): Promise<void> => {
-    console.warn("[Oniefy] Biometric disable: stub - awaiting Capacitor build (Fase 10)");
+    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Biometric disable: stub - awaiting Capacitor build (Fase 10)");
     setState((prev) => ({ ...prev, enrolled: false }));
   };
 

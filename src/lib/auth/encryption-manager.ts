@@ -103,14 +103,14 @@ export async function loadEncryptionKey(
 
   // Caso 1: kek_material ausente → re-inicializar (migração de JWT → material estável)
   if (!profile?.kek_material) {
-    console.warn("[Oniefy] kek_material ausente. Re-inicializando criptografia.");
+    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] kek_material ausente. Re-inicializando criptografia.");
     await initializeEncryption(supabase);
     return;
   }
 
   // Caso 2: DEK não inicializada ainda (não deveria acontecer após onboarding)
   if (!profile.encryption_key_encrypted || !profile.encryption_key_iv) {
-    console.warn("[Oniefy] DEK ausente. Re-inicializando criptografia.");
+    if (process.env.NODE_ENV === "development") console.warn("[Oniefy] DEK ausente. Re-inicializando criptografia.");
     await initializeEncryption(supabase);
     return;
   }

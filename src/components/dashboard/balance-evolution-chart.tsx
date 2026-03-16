@@ -23,7 +23,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatMonthShort } from "@/lib/utils";
 import type { BalanceEvolutionResult } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -36,11 +36,6 @@ const PERIOD_OPTIONS = [
   { value: 6, label: "6m" },
   { value: 12, label: "12m" },
 ];
-
-function formatMonth(dateStr: string): string {
-  const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
-}
 
 function compactCurrency(value: number): string {
   if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -100,7 +95,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
   const chartData = [...points]
     .sort((a, b) => a.month.localeCompare(b.month))
     .map((p) => ({
-      month: formatMonth(p.month),
+      month: formatMonthShort(p.month),
       receitas: Number(p.income),
       despesas: Number(p.expense),
       saldo: Number(p.balance),

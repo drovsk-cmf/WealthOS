@@ -33,7 +33,7 @@ export function useAuthInit(pathname: string) {
         try {
           await loadEncryptionKey(supabase);
         } catch {
-          console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
+          if (process.env.NODE_ENV === "development") console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
         }
 
         const {

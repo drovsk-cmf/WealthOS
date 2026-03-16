@@ -32,10 +32,7 @@ import {
 } from "@/lib/hooks/use-economic-indices";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
-function formatMonth(dateStr: string): string {
-  const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" }).replace(".", "");
-}
+import { formatMonthShort } from "@/lib/utils";
 
 interface TooltipPayloadItem {
   value: number;
@@ -110,7 +107,7 @@ export default function IndicesPage() {
       for (const p of points) {
         const sortKey = p.reference_date;
         if (!monthMap.has(sortKey)) {
-          monthMap.set(sortKey, { month: formatMonth(p.reference_date) });
+          monthMap.set(sortKey, { month: formatMonthShort(p.reference_date, true) });
         }
         const row = monthMap.get(sortKey)!;
         const val = Number(p.value);

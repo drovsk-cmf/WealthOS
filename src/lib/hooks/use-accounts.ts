@@ -173,7 +173,7 @@ export function useCreateAccount() {
           p_account_name: accountInput.name,
         });
       } catch {
-        console.warn("[Oniefy] Auto-create workflow failed for account", data.id);
+        if (process.env.NODE_ENV === "development") console.warn("[Oniefy] Auto-create workflow failed for account", data.id);
       }
 
       return data as Account;
