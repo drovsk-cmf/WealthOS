@@ -1753,6 +1753,9 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 | `193cff4` | ci: novo job Unit Tests (208 testes como gate) + fix 3 suítes |
 | `d05c3b1` | fix: NODE_ENV type error no logSchemaError test |
 | `3c9067c` | security: auth guard em TODAS as 35 SECURITY DEFINER functions (migration 053) |
+| `c98e36c` | fix: onboarding bypass no middleware (protegia só / e rotas públicas) |
+| `56cc199` | perf: eliminar 80 auth.getUser() redundantes + middleware cookie cache |
+| `2b8f9a0` | docs: guias de deploy Vercel + migração Supabase SP + vercel.json |
 
 ### 20.5 Migrations aplicadas (050-053)
 
@@ -1763,36 +1766,56 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 | 052 | fix_restore_create_default_categories | Restore body de create_default_categories + auth guard |
 | 053 | auth_guard_all_security_definer | Auth guard nas 7 funções restantes (create_tx, transfer, reverse, undo, auto_cat, seed_coa, seed_cc) |
 
-### 20.6 Totais atualizados
+### 20.6 Otimização de Performance
+
+**Diagnóstico:** Dashboard fazia ~22 roundtrips ao Supabase por carregamento (~3,3s de latência pura).
+
+| # | Otimização | Status | Ganho |
+|---|---|---|---|
+| 1 | Migrar Supabase para São Paulo (sa-east-1) | Ação Claudio (docs/MIGRATE-SUPABASE-SP.md) | ~150ms → ~30ms por chamada |
+| 2 | Centralizar auth.getUser() em cache compartilhado | ✅ FEITO (20 arquivos, `cached-auth.ts`) | Elimina 10 roundtrips redundantes |
+| 3 | Deploy Vercel (produção) | Ação Claudio (docs/DEPLOY-VERCEL.md + vercel.json) | Elimina 1-3s do dev mode |
+| 4 | Middleware: cache onboarding em cookie | ✅ FEITO (cookie vinculado ao user_id) | Elimina 1 query/navegação |
+
+**`src/lib/supabase/cached-auth.ts`:** Promise dedup + TTL 30s. Concurrent hooks compartilham request in-flight. `clearAuthCache()` chamado no logout.
+
+**Bug encontrado e corrigido (commit `c98e36c`):** Middleware não verificava `onboarding_completed` em rotas protegidas. Novo usuário ia direto para /dashboard sem completar onboarding.
+
+### 20.7 Totais atualizados
 
 - **Tabelas:** 26 (todas com RLS)
 - **RLS policies:** 84
-- **Functions:** 87 (70 RPCs + 7 triggers + 9 cron + 1 utility)
+- **Functions:** 87 (70 RPCs + 7 triggers + 9 cron + 1 utility). Todas com auth.uid() guard.
 - **ENUMs:** 27
 - **Migrations:** 53+ via MCP (41 SQL files no repo)
 - **pg_cron jobs:** 9
-- **Arquivos src/:** ~126, ~24.100 linhas
+- **Arquivos src/:** ~126, ~24.000 linhas (-94 de boilerplate auth removido)
 - **Suítes de teste Jest:** 15 (208 assertions)
-- **Testes SQL (RLS):** 50 assertions (supabase/tests/test_rls_isolation.sql)
-- **CI:** 4/4 verde (Security + Lint/TypeCheck + **Unit Tests** + Build). Testes são gate obrigatório.
+- **Testes SQL (RLS):** 50+ assertions (supabase/tests/test_rls_isolation.sql)
+- **CI:** 4/4 verde (Security + Lint/TypeCheck + Unit Tests + Build)
+- **Docs:** DEPLOY-VERCEL.md, MIGRATE-SUPABASE-SP.md, PROMPT-CLAUDE-CODE-E2E.md
 
-### 20.7 Backlog de testes (Camadas pendentes)
+### 20.8 Backlog de testes
 
-| Camada | Escopo | Executor | Status |
-|---|---|---|---|
-| 2 (RLS tabelas) | 26 tabelas, 84 policies | SQL via MCP | ✅ COMPLETO (65 assertions) |
-| 2 (RLS RPCs) | 35 SECURITY DEFINER functions | SQL via MCP | ✅ COMPLETO (14 assertions, 9 vulns corrigidas) |
-| 2 (Storage) | Bucket user-documents + path traversal | SQL via MCP | ✅ VERIFICADO (4 policies, traversal bloqueado) |
-| 1 (API routes) | 5/9 rotas, auth/rate limit/sanitization | Jest no CI | ✅ COMPLETO (24 assertions, rodando no CI) |
-| 0 (Unit) | Schemas, parsers, hooks, validations | Jest no CI | ✅ COMPLETO (208 assertions, gate obrigatório) |
-| 3 (E2E) | Playwright: onboarding, transações, import, auth, a11y | Claude Code no terminal local | Não iniciado |
+| Camada | Escopo | Status |
+|---|---|---|
+| 0 (Unit) | 208 assertions Jest | ✅ Gate obrigatório no CI |
+| 1 (API routes) | 24 assertions, 5/9 rotas | ✅ Rodando no CI |
+| 2 (RLS) | 65+ assertions tabelas + 14 RPCs + Storage | ✅ Completo |
+| 3 (E2E) | 45 cenários Playwright, 8 specs | ⏳ Claude Code em execução no terminal local |
 
-**Gaps de segurança resolvidos: todos.** O único gap restante (Camada 3 E2E) é de UX/a11y, não de segurança.
+### 20.9 Próximos passos (prioridade)
 
-### 20.8 Backlog geral (inalterado)
+1. **Deploy Vercel** (Claudio, 30 min) - seguir docs/DEPLOY-VERCEL.md
+2. **Migrar Supabase para São Paulo** (Claudio cria projeto, Claude aplica migrations) - seguir docs/MIGRATE-SUPABASE-SP.md
+3. **Usar o app por 1 semana** com dados reais
+4. **Convidar 2-3 testers** para beta fechado
+5. **E2E Playwright** - em execução via Claude Code
+
+### 20.10 Backlog geral
 
 **Grupo 7 (longo prazo, gatilhos futuros):**
-- 7.1 Testes e2e Playwright (quando pipeline madura)
+- 7.1 Testes e2e Playwright (em progresso)
 - 7.2 i18n (quando landing page)
 - 7.3 Feature flags (quando multi-tenant)
 - 7.4 Monitoramento Sentry (quando produção)
@@ -1804,3 +1827,5 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 
 **Grupo 10 (investimento):**
 - Supabase Pro (~US$25/mês), Apple Developer Account (US$99/ano)
+
+- **Último commit verde:** `2b8f9a0` (4/4 jobs: Security + Lint + Unit Tests + Build)
