@@ -17,7 +17,12 @@ function createBuilder() {
   const builder: any = {
     select: jest.fn(() => builder),
     eq: jest.fn(() => builder),
+    neq: jest.fn(() => builder),
     is: jest.fn(() => builder),
+    in: jest.fn(() => builder),
+    gte: jest.fn(() => builder),
+    lte: jest.fn(() => builder),
+    limit: jest.fn(() => builder),
     order: jest.fn(() => builder),
     then: (resolve: (value: QueryResponse) => unknown) => Promise.resolve(response).then(resolve),
   };
@@ -26,6 +31,11 @@ function createBuilder() {
 
 jest.mock("@/lib/supabase/client", () => ({
   createClient: () => ({
+    auth: {
+      getUser: jest.fn().mockResolvedValue({
+        data: { user: { id: "a1000000-0000-4000-8000-000000000001" } },
+      }),
+    },
     from: jest.fn(() => createBuilder()),
   }),
 }));
@@ -79,6 +89,10 @@ describe("read hooks", () => {
           planned_amount: 100,
           alert_threshold: 80,
           adjustment_index: null,
+          approval_status: "approved",
+          proposed_at: null,
+          decided_at: null,
+          decision_notes: null,
           coa_id: null,
           cost_center_id: null,
           family_member_id: null,
@@ -90,7 +104,7 @@ describe("read hooks", () => {
       error: null,
     });
     const { result } = renderHook(() => useBudgets("2026-03-01"), { wrapper });
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.data?.length).toBeGreaterThan(0));
     expect(result.current.data?.[0]).toMatchObject({ planned_amount: 100 });
   });
 

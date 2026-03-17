@@ -250,6 +250,10 @@ describe("RPC schemas (extended)", () => {
         planned_amount: 2000,
         alert_threshold: 80,
         adjustment_index: "ipca",
+        approval_status: "approved",
+        proposed_at: null,
+        decided_at: null,
+        decision_notes: null,
         coa_id: null,
         cost_center_id: null,
         family_member_id: null,
@@ -379,15 +383,21 @@ describe("RPC schemas (extended)", () => {
   // ─── logSchemaError ────────────────────────────────────
   describe("logSchemaError", () => {
     it("loga mensagem formatada no console.error", () => {
-      const spy = jest.spyOn(console, "error").mockImplementation();
-      const badParse = assetsSummarySchema.safeParse({ total_value: "not a number" });
-      if (!badParse.success) {
-        logSchemaError("get_assets_summary", badParse);
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = "development";
+      try {
+        const spy = jest.spyOn(console, "error").mockImplementation();
+        const badParse = assetsSummarySchema.safeParse({ total_value: "not a number" });
+        if (!badParse.success) {
+          logSchemaError("get_assets_summary", badParse);
+        }
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringContaining("[Oniefy] RPC schema mismatch (get_assets_summary)")
+        );
+        spy.mockRestore();
+      } finally {
+        process.env.NODE_ENV = originalEnv;
       }
-      expect(spy).toHaveBeenCalledWith(
-        expect.stringContaining("[Oniefy] RPC schema mismatch (get_assets_summary)")
-      );
-      spy.mockRestore();
     });
   });
 

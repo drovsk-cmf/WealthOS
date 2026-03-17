@@ -1,4 +1,8 @@
 /**
+ * @jest-environment node
+ */
+
+/**
  * Oniefy - API Route Security & UX Tests
  *
  * Tests security properties of all 9 API routes:
@@ -560,18 +564,21 @@ describe("Cross-cutting security", () => {
   });
 
   it("no auth route returns stack traces", async () => {
-    mockSignInWithPassword.mockRejectedValue(new Error("Unexpected internal error\n  at Object.<anonymous> (/app/node_modules/.pnpm/something)"));
+    // Supabase returns errors as {data, error}, not by throwing.
+    // Simulate an error with stack-trace-like content.
+    mockSignInWithPassword.mockResolvedValue({
+      data: null,
+      error: { message: "Unexpected internal error\n  at Object.<anonymous> (/app/node_modules/.pnpm/something)", status: 500 },
+    });
     const loginMod = await import("@/app/api/auth/login/route");
     const req = createMockRequest("/api/auth/login", {
       body: { email: "test@example.com", password: "ValidPass123!" },
     });
 
-    // Should not crash or leak stack
     const res = await loginMod.POST(req);
-    if (res.status !== 200) {
-      const body = await res.json();
-      expect(JSON.stringify(body)).not.toContain("node_modules");
-      expect(JSON.stringify(body)).not.toContain("at Object");
-    }
+    expect(res.status).not.toBe(200);
+    const body = await res.json();
+    expect(JSON.stringify(body)).not.toContain("node_modules");
+    expect(JSON.stringify(body)).not.toContain("at Object");
   });
 });
