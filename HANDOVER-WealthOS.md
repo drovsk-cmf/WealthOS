@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 14 de março de 2026
+**Data:** 17 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
@@ -62,12 +62,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Métrica | Valor |
 |---|---|
 | Tabelas | 26 (todas com RLS) |
-| Políticas RLS | 86 |
-| Functions (total) | 83 (68 RPCs + 6 triggers + 8 cron + 1 utility). Todas com `SET search_path = public` |
-| Triggers | 20 |
-| ENUMs | 26 |
-| Migrations aplicadas | 48 via MCP (37 SQL files no repo) |
-| pg_cron jobs | 8: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h) |
+| Políticas RLS | 84 |
+| Functions (total) | 87 (70 RPCs + 7 triggers + 9 cron + 1 utility). Todas com `SET search_path = public` e auth.uid() check |
+| Triggers | 22 |
+| ENUMs | 27 |
+| Migrations aplicadas | 52+ via MCP (40 SQL files no repo) |
+| pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -79,7 +79,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (33 RPCs + 7 triggers + 6 cron = 46)
+### 3.3 Functions (70 RPCs + 7 triggers + 9 cron + 1 utility = 87)
 
 | Grupo | Functions |
 |---|---|
@@ -97,11 +97,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Analytics** | **track_event, get_retention_metrics** |
 | Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
 
-### 3.4 Código Fonte (125 arquivos em src/, 13 testes, ~23.300 linhas)
+### 3.4 Código Fonte (126 arquivos em src/, 15 testes, ~24.100 linhas)
 
 ```
 src/
-├── __tests__/                    # 13 suítes de teste (Jest + RTL), 171 testes
+├── __tests__/                    # 15 suítes de teste (Jest + RTL)
+│   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
@@ -111,6 +112,7 @@ src/
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
 │   ├── read-hooks.test.tsx
 │   ├── rpc-auto-categorize-schema.test.ts
+│   ├── rpc-new-schemas.test.ts        # 13 schemas para RPCs novas (sessão 19)
 │   ├── rpc-schemas.test.ts
 │   ├── rpc-schemas-extended.test.ts   # 17 schemas restantes (assets, centers, indices, workflows, dashboard)
 │   ├── transaction-hooks.test.tsx
@@ -194,8 +196,9 @@ src/
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
 - `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
-- `supabase/migrations/` - 37 SQL files (001 a 034)
-- `docs/audit/` - 9 arquivos de relatório de auditoria (00-SUMMARY + 01 a 08 por domínio)
+- `supabase/migrations/` - 40 SQL files (001 a 052, com gaps)
+- `supabase/tests/test_rls_isolation.sql` - Suíte de testes RLS (50 assertions, 4 batches)
+- `docs/audit/` - 9 arquivos de relatório + DIVIDA-TECNICA.md
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -1668,4 +1671,114 @@ Itens pendentes são do Grupo 7 (longo prazo), 9 (requer Mac) e 10 (investimento
 
 ### CI
 
-- **Último commit verde:** `15241b0` (3/3 jobs: Security + Lint + Build)
+- **Último commit verde:** `6b1cf50` (3/3 jobs: Security + Lint + Build)
+
+---
+
+## 20. Sessão 17/03/2026 - Validação de Dívida Técnica + Varredura RLS + Testes de Segurança
+
+### 20.1 Validação das Dívidas Técnicas (DIVIDA-TECNICA.md)
+
+Auditoria de verificação dos 28 achados da sessão 18. Cada item marcado "FEITO" foi cruzado com o código real e banco de dados.
+
+**Resultado: 18 corretos, 4 defeituosos (corrigidos), 4 aceitos, 1 documentado, 1 duplicado.**
+
+| ID | Problema | Sev | Correção |
+|----|----------|-----|----------|
+| P1 (DT-001) | `loadEncryptionKey` chamava `initializeEncryption()` antes do throw, destruindo chaves antigas antes de avisar | S2 | Removidas 2 chamadas a initializeEncryption nos caminhos de anomalia |
+| P2 (NOVO) | `/api/push/send`: auth bypass quando `CRON_SECRET` vazio (falsy) + comparação `!==` sem timing-safe | S2 | Fail-closed + `timingSafeCompare` (padrão do digest/send) |
+| P3 (NOVO) | `/api/push/send` e `/api/digest/send` fora de `PUBLIC_ROUTES`, bloqueados pelo middleware para crons | S2 | Adicionados em PUBLIC_ROUTES |
+| P4 (DT-018) | `cron_generate_recurring_transactions` ignorava reajuste IPCA/IGP-M/INPC/Selic | S3 | Bloco de lookup copiado da RPC generate_next_recurrence |
+
+### 20.2 Varredura RLS (Camada 2)
+
+Suíte de 50 assertions executada diretamente no banco via MCP, cobrindo 5 vetores de ataque:
+
+| Batch | Escopo | Resultado |
+|---|---|---|
+| SELECT isolation (21 tabelas) | User B lê dados User A | 21/21 PASS |
+| Reference tables (3 tabelas) | Leitura pública + write block | 7/7 PASS |
+| INSERT/UPDATE/DELETE spoofing | Cross-user escrita | 23/23 PASS |
+| Acesso anônimo | Sem JWT | 6/6 PASS |
+| SECURITY DEFINER RPCs (10 funções) | User B chama RPC com User A ID | **8/10 PASS, 2 FAIL** |
+
+**Vulnerabilidades encontradas e corrigidas:**
+- `get_weekly_digest(p_user_id)`: retornava dados financeiros de qualquer usuário (CRITICO). Sem `auth.uid()` check.
+- `get_budget_vs_actual(p_user_id, int, int)`: overload com inteiros sem auth check (overload com DATE tinha). Criado na migration 043.
+- `create_default_categories(p_user_id)`: chamável cross-user (baixo risco, idempotente).
+
+**Fix pattern:** `IF auth.uid() IS NOT NULL AND p_user_id != auth.uid() THEN RAISE EXCEPTION 'Forbidden'; END IF;` Permite cron/trigger (auth.uid()=NULL) e bloqueia cross-user autenticado.
+
+**Nota:** Ao aplicar o fix de `create_default_categories`, o CREATE OR REPLACE apagou o body original (apenas o guard ficou). Corrigido via migration 052 (restore completo com guard).
+
+Suíte salva em `supabase/tests/test_rls_isolation.sql` para reexecução futura.
+
+### 20.3 Testes de API Routes (Camada 1)
+
+Suíte Jest com 30+ assertions cobrindo 5 das 9 API routes:
+
+| Propriedade | Cobertura |
+|---|---|
+| Input validation | Malformed body, XSS, senhas fracas, email inválido |
+| Rate limiting | 429 com retryAfterSeconds |
+| Error sanitization | Supabase internals, stack traces, IPs nunca vazam |
+| Cron auth | Fail-closed quando secret ausente, 401 quando incorreto |
+| Anti-enumeração | forgot-password sempre 200 |
+| PT-BR | Zero mensagens em inglês nas respostas |
+| Response structure | Sem password/session/token no response de login |
+
+Arquivo: `src/__tests__/api-routes-security.test.ts`
+Rotas testadas: login, register, forgot-password, push/send, digest/send
+Rotas pendentes (requerem integração): callback, push/test, digest/preview, indices/fetch
+
+### 20.4 Commits
+
+| SHA | Conteúdo |
+|-----|----------|
+| `085507e` | fix: 4 defeitos de validação DT (encryption re-init, push auth bypass, cron routes, index adjustment) |
+| `5c59af5` | security: 2 vulnerabilidades RLS + suíte de testes SQL (50 assertions) |
+| `6b1cf50` | test: suíte de segurança API routes (30+ assertions) |
+
+### 20.5 Migrations aplicadas (050-052)
+
+| # | Nome | Conteúdo |
+|---|------|----------|
+| 050 | cron_recurring_index_adjustment | Cron de recorrências com lookup IPCA/IGP-M/INPC/Selic |
+| 051 | rls_auth_check_security_definer | Auth guards em get_weekly_digest + get_budget_vs_actual (int) |
+| 052 | fix_restore_create_default_categories | Restore body de create_default_categories + auth guard |
+
+### 20.6 Totais atualizados
+
+- **Tabelas:** 26 (todas com RLS)
+- **RLS policies:** 84
+- **Functions:** 87 (70 RPCs + 7 triggers + 9 cron + 1 utility)
+- **ENUMs:** 27
+- **Migrations:** 52+ via MCP (40 SQL files no repo)
+- **pg_cron jobs:** 9
+- **Arquivos src/:** ~126, ~24.100 linhas
+- **Suítes de teste Jest:** 15
+- **Testes SQL (RLS):** 50 assertions (supabase/tests/test_rls_isolation.sql)
+- **CI:** 3/3 verde nos 3 commits
+
+### 20.7 Backlog de testes (Camadas pendentes)
+
+| Camada | Escopo | Executor |
+|---|---|---|
+| 1 (restante) | Rodar `npx jest api-routes-security` no Windows | Claudio ou Claude Code |
+| 3 (E2E) | Playwright: onboarding, transação, import, auth flows, focus trap, privacy mode | Claude Code no terminal local |
+
+### 20.8 Backlog geral (inalterado)
+
+**Grupo 7 (longo prazo, gatilhos futuros):**
+- 7.1 Testes e2e Playwright (quando pipeline madura)
+- 7.2 i18n (quando landing page)
+- 7.3 Feature flags (quando multi-tenant)
+- 7.4 Monitoramento Sentry (quando produção)
+- 7.5 Rate limiting por IP no edge (quando Vercel deploy)
+- 7.6 Backup automatizado Storage (quando dados reais)
+
+**Grupo 9 (requer Mac com Xcode 15+):**
+- iOS App Store submission, screenshot prevention, jailbreak detection, cert pinning, biometric auth
+
+**Grupo 10 (investimento):**
+- Supabase Pro (~US$25/mês), Apple Developer Account (US$99/ano)
