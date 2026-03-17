@@ -68,8 +68,10 @@ export const ADJUSTMENT_INDEX_OPTIONS: {
 }[] = [
   { value: "none", label: "Sem reajuste" },
   { value: "manual", label: "Manual" },
-  // DT-018: IPCA, IGP-M, INPC, Selic desabilitados até implementação do ajuste automático
-  // na RPC generate_next_recurrence. Os ENUMs existem no banco, mas o backend só aplica "manual".
+  { value: "ipca", label: "IPCA (automático)" },
+  { value: "igpm", label: "IGP-M (automático)" },
+  { value: "inpc", label: "INPC (automático)" },
+  { value: "selic", label: "Selic (automático)" },
 ];
 
 // ─── Helpers ────────────────────────────────────────────────────
