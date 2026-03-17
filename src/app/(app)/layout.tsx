@@ -110,6 +110,7 @@ export default function AppLayout({
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
+          key="sidebar-overlay"
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSidebarOpen(false); }}
