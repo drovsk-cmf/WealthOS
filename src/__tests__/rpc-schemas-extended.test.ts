@@ -383,8 +383,9 @@ describe("RPC schemas (extended)", () => {
   // ─── logSchemaError ────────────────────────────────────
   describe("logSchemaError", () => {
     it("loga mensagem formatada no console.error", () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "development";
+      const env = process.env as Record<string, string | undefined>;
+      const originalEnv = env.NODE_ENV;
+      env.NODE_ENV = "development";
       try {
         const spy = jest.spyOn(console, "error").mockImplementation();
         const badParse = assetsSummarySchema.safeParse({ total_value: "not a number" });
@@ -396,7 +397,7 @@ describe("RPC schemas (extended)", () => {
         );
         spy.mockRestore();
       } finally {
-        process.env.NODE_ENV = originalEnv;
+        env.NODE_ENV = originalEnv;
       }
     });
   });
