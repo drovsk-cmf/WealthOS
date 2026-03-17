@@ -48,7 +48,7 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     title: "Pessoal",
     items: [
       { href: "/settings/profile", icon: User, label: "Perfil", description: "Nome, senha, moeda padrão", ready: true },
-      { href: "#", icon: Bell, label: "Notificações", description: "Push, alertas, lembretes", ready: false },
+      { href: "/settings/notifications", icon: Bell, label: "Notificações", description: "Push, alertas, lembretes", ready: true },
     ],
   },
   {

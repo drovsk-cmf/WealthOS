@@ -101,3 +101,49 @@ async function cacheFirst(request) {
     return new Response("", { status: 503, statusText: "Offline" });
   }
 }
+
+// ─── Push Notifications (5.2 / CFG-04 web) ──────────────────
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    payload = { title: "Oniefy", body: event.data.text() };
+  }
+
+  const options = {
+    body: payload.body || "",
+    icon: "/icons/icon-192x192.png",
+    badge: "/icons/icon-72x72.png",
+    tag: payload.tag || "oniefy-notification",
+    data: { url: payload.url || "/" },
+    vibrate: [200, 100, 200],
+    actions: payload.actions || [],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title || "Oniefy", options)
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/";
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      // Focus existing tab if open
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && "focus" in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      // Open new tab
+      return clients.openWindow(url);
+    })
+  );
+});

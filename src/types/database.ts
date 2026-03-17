@@ -449,9 +449,9 @@ export type Database = {
         Relationships: []
       }
       notification_tokens: {
-        Row: { created_at: string; device_name: string | null; device_token: string; id: string; is_active: boolean; platform: string; updated_at: string; user_id: string }
-        Insert: { created_at?: string; device_name?: string | null; device_token: string; id?: string; is_active?: boolean; platform?: string; updated_at?: string; user_id: string }
-        Update: { created_at?: string; device_name?: string | null; device_token?: string; id?: string; is_active?: boolean; platform?: string; updated_at?: string; user_id?: string }
+        Row: { created_at: string; device_name: string | null; device_token: string; id: string; is_active: boolean; platform: string; subscription_data: Json | null; updated_at: string; user_id: string }
+        Insert: { created_at?: string; device_name?: string | null; device_token: string; id?: string; is_active?: boolean; platform?: string; subscription_data?: Json | null; updated_at?: string; user_id: string }
+        Update: { created_at?: string; device_name?: string | null; device_token?: string; id?: string; is_active?: boolean; platform?: string; subscription_data?: Json | null; updated_at?: string; user_id?: string }
         Relationships: []
       }
       recurrences: {
