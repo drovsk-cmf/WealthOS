@@ -14,11 +14,53 @@
 
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
-import type { SolvencyMetrics } from "@/lib/hooks/use-dashboard";
+import type { SolvencyMetrics, MonthlySnapshot } from "@/lib/hooks/use-dashboard";
 
 interface Props {
   data: SolvencyMetrics | undefined;
   isLoading: boolean;
+  snapshots?: MonthlySnapshot[];
+}
+
+/** Inline SVG sparkline (no external dependency) */
+function Sparkline({ values, color = "currentColor", width = 64, height = 20 }: {
+  values: number[];
+  color?: string;
+  width?: number;
+  height?: number;
+}) {
+  if (values.length < 2) return null;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const pad = 1;
+  const usableW = width - pad * 2;
+  const usableH = height - pad * 2;
+  const step = usableW / (values.length - 1);
+
+  const points = values.map((v, i) => {
+    const x = pad + i * step;
+    const y = pad + usableH - ((v - min) / range) * usableH;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+
+  return (
+    <svg width={width} height={height} className="inline-block align-middle opacity-70" aria-hidden="true">
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points.join(" ")}
+      />
+      {/* Dot on last value */}
+      {(() => {
+        const lastPt = points[points.length - 1].split(",");
+        return <circle cx={lastPt[0]} cy={lastPt[1]} r={2} fill={color} />;
+      })()}
+    </svg>
+  );
 }
 
 function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
@@ -51,7 +93,7 @@ const TIER_COLORS = [
   { key: "tier4_total", label: "T4 Restrito", color: "#6F6678", desc: "FGTS, previdência com carência" },
 ] as const;
 
-export function SolvencyPanel({ data, isLoading }: Props) {
+export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -70,6 +112,14 @@ export function SolvencyPanel({ data, isLoading }: Props) {
 
   const lcrInfo = lcrStatus(lcr);
   const runwayInfo = runwayStatus(runway);
+
+  // Sparkline data from monthly snapshots
+  const lcrHistory = snapshots.map(s => s.lcr ?? 0).filter((_, i, a) => a.length > 1);
+  const runwayHistory = snapshots.map(s => s.runway_months ?? 0).filter((_, i, a) => a.length > 1);
+  const burnHistory = snapshots.map(s => s.burn_rate ?? 0).filter((_, i, a) => a.length > 1);
+  const patrimonyHistory = snapshots.map(s =>
+    (s.tier1_total ?? 0) + (s.tier2_total ?? 0) + (s.tier3_total ?? 0) + (s.tier4_total ?? 0)
+  ).filter((_, i, a) => a.length > 1);
 
   // Tier breakdown for stacked bar
   const tiers = TIER_COLORS.map((t) => ({
@@ -114,6 +164,9 @@ export function SolvencyPanel({ data, isLoading }: Props) {
               ? "Sem despesas recorrentes"
               : "Liquidez / (Burn × 6)"}
           </p>
+          {lcrHistory.length >= 2 && (
+            <div className="mt-1.5"><Sparkline values={lcrHistory} color="#2F7A68" /></div>
+          )}
         </div>
 
         {/* DASH-10: Runway */}
@@ -135,6 +188,9 @@ export function SolvencyPanel({ data, isLoading }: Props) {
           <p className="mt-1 text-[11px] text-muted-foreground">
             Meses de liberdade financeira
           </p>
+          {runwayHistory.length >= 2 && (
+            <div className="mt-1.5"><Sparkline values={runwayHistory} color="#2F7A68" /></div>
+          )}
         </div>
 
         {/* DASH-11: Burn Rate */}
@@ -148,6 +204,9 @@ export function SolvencyPanel({ data, isLoading }: Props) {
           <p className="mt-1 text-[11px] text-muted-foreground">
             Custo mensal médio (6 meses)
           </p>
+          {burnHistory.length >= 2 && (
+            <div className="mt-1.5"><Sparkline values={burnHistory} color="#A97824" /></div>
+          )}
         </div>
 
         {/* DASH-06 + DASH-12: Patrimônio Total */}
@@ -161,6 +220,9 @@ export function SolvencyPanel({ data, isLoading }: Props) {
           <p className="mt-1 text-[11px] text-muted-foreground">
             T1 + T2 + T3 + T4
           </p>
+          {patrimonyHistory.length >= 2 && (
+            <div className="mt-1.5"><Sparkline values={patrimonyHistory} color="#56688F" /></div>
+          )}
         </div>
       </div>
 

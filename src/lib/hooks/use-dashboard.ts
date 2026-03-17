@@ -283,3 +283,38 @@ export function useBudgetVsActual(year?: number, month?: number, familyMemberId?
     },
   });
 }
+
+// ─── Monthly Snapshots (for sparklines in SolvencyPanel) ─────────
+
+export interface MonthlySnapshot {
+  month: string;
+  lcr: number | null;
+  runway_months: number | null;
+  burn_rate: number | null;
+  total_balance: number;
+  total_assets: number;
+  tier1_total: number | null;
+  tier2_total: number | null;
+  tier3_total: number | null;
+  tier4_total: number | null;
+}
+
+/** Fetch last N monthly snapshots for trend sparklines */
+export function useMonthlySnapshots(months: number = 12) {
+  return useQuery({
+    queryKey: ["monthly_snapshots", months],
+    staleTime: 10 * 60 * 1000, // 10 min
+    queryFn: async (): Promise<MonthlySnapshot[]> => {
+      const { supabase, userId } = await getUserId();
+      const { data, error } = await supabase
+        .from("monthly_snapshots")
+        .select("month, lcr, runway_months, burn_rate, total_balance, total_assets, tier1_total, tier2_total, tier3_total, tier4_total")
+        .eq("user_id", userId)
+        .order("month", { ascending: true })
+        .limit(months);
+
+      if (error) throw error;
+      return (data ?? []) as MonthlySnapshot[];
+    },
+  });
+}

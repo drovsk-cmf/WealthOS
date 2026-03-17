@@ -18,6 +18,7 @@ import {
   useTopCategories,
   useBalanceEvolution,
   useBudgetVsActual,
+  useMonthlySnapshots,
 } from "@/lib/hooks/use-dashboard";
 import { useAnalytics } from "@/lib/hooks/use-analytics";
 import { useProgressiveDisclosure } from "@/lib/hooks/use-progressive-disclosure";
@@ -46,6 +47,7 @@ export default function DashboardPage() {
   const summary = useDashboardSummary();
   const balanceSheet = useBalanceSheet();
   const solvency = useSolvencyMetrics();
+  const snapshots = useMonthlySnapshots(12);
   const topCategories = useTopCategories();
   const evolution = useBalanceEvolution(6);
   const budgetVsActual = useBudgetVsActual();
@@ -150,7 +152,7 @@ export default function DashboardPage() {
       {/* ═══ Cockpit de Solvência ═══ */}
 
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Tiers */}
-      <SolvencyPanel data={solvency.data} isLoading={solvency.isLoading} />
+      <SolvencyPanel data={solvency.data} isLoading={solvency.isLoading} snapshots={snapshots.data} />
 
       {/* DASH-08: FAB lançamento rápido */}
       <QuickEntryFab />
