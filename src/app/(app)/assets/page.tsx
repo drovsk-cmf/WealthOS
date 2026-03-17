@@ -10,12 +10,13 @@ import { toast } from "sonner";
  * PAT-03: Excluir bem patrimonial
  * PAT-04: Listar bens + totalização por categoria
  * PAT-05: Calcular depreciação (botão manual por asset)
- * PAT-06: Alertas de seguro vencendo (banner)
- * PAT-07: Histórico de valor (expandable panel)
+ * PAT-06: Anexar documentos a bens (upload to Supabase Storage)
+ * PAT-07: Alertas de seguro vencendo (banner)
+ * PAT-07b: Histórico de valor (expandable panel)
  */
 
 import { useState } from "react";
-import { Package } from "lucide-react";
+import { Package, Paperclip, Trash2 } from "lucide-react";
 import {
   useAssets,
   useAssetsSummary,
@@ -25,6 +26,7 @@ import {
   ASSET_CATEGORY_LABELS,
   ASSET_CATEGORY_COLORS,
 } from "@/lib/hooks/use-assets";
+import { useDocuments, useUploadDocument, useDeleteDocument } from "@/lib/hooks/use-documents";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -71,6 +73,77 @@ function ValueHistory({ assetId }: { assetId: string }) {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+/** PAT-06: Documents attached to an asset */
+function AssetDocuments({ assetId }: { assetId: string }) {
+  const { data: docs, isLoading } = useDocuments("assets", assetId);
+  const uploadDoc = useUploadDocument();
+  const deleteDoc = useDeleteDocument();
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploadDoc.mutate(
+      { file, relatedTable: "assets", relatedId: assetId },
+      {
+        onSuccess: () => toast.success(`"${file.name}" anexado.`),
+        onError: (err) => toast.error(err instanceof Error ? err.message : "Erro no upload."),
+      }
+    );
+    e.target.value = "";
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Documentos
+        </p>
+        <label className="cursor-pointer rounded-md border px-2 py-1 text-xs font-medium transition-colors hover:bg-accent">
+          <Paperclip className="mr-1 inline h-3 w-3" />
+          Anexar
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf,.xlsx,.csv"
+            className="hidden"
+            disabled={uploadDoc.isPending}
+            onChange={handleFileChange}
+          />
+        </label>
+      </div>
+
+      {isLoading && <div className="h-6 w-32 animate-pulse rounded bg-muted" />}
+
+      {docs && docs.length > 0 ? (
+        <div className="space-y-1">
+          {docs.map((doc) => (
+            <div key={doc.id} className="flex items-center justify-between rounded border bg-muted/30 px-3 py-1.5">
+              <div className="min-w-0">
+                <p className="truncate text-xs font-medium">{doc.file_name}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {(doc.size_bytes / 1024).toFixed(0)} KB · {formatDate(doc.created_at)}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => deleteDoc.mutate({ id: doc.id, file_path: doc.file_path })}
+                disabled={deleteDoc.isPending}
+                className="ml-2 rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                title="Remover"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        !isLoading && (
+          <p className="text-xs text-muted-foreground">Nenhum documento anexado.</p>
+        )
+      )}
     </div>
   );
 }
@@ -323,10 +396,11 @@ export default function AssetsPage() {
                   )}
                 </div>
 
-                {/* PAT-07: Value history (expanded) */}
+                {/* PAT-07: Value history + PAT-06: Documents (expanded) */}
                 {isExpanded && (
-                  <div className="border-t px-4 py-3">
+                  <div className="border-t px-4 py-3 space-y-4">
                     <ValueHistory assetId={asset.id} />
+                    <AssetDocuments assetId={asset.id} />
                   </div>
                 )}
               </div>
