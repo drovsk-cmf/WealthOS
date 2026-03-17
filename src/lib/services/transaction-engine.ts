@@ -15,6 +15,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema, editTransactionResultSchema, editTransferResultSchema } from "@/lib/schemas/rpc";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -102,11 +103,9 @@ export async function createTransaction(
   input: CreateTransactionInput
 ): Promise<TransactionResult> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-
+  const userId = await getCachedUserId(supabase);
   const { data, error } = await supabase.rpc("create_transaction_with_journal", {
-    p_user_id: user.id,
+    p_user_id: userId,
     p_account_id: input.account_id,
     p_category_id: input.category_id ?? undefined,
     p_type: input.type,
@@ -144,11 +143,9 @@ export async function createTransfer(
   input: TransferInput
 ): Promise<TransferResult> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-
+  const userId = await getCachedUserId(supabase);
   const { data, error } = await supabase.rpc("create_transfer_with_journal", {
-    p_user_id: user.id,
+    p_user_id: userId,
     p_from_account_id: input.from_account_id,
     p_to_account_id: input.to_account_id,
     p_amount: input.amount,
@@ -175,11 +172,9 @@ export async function reverseTransaction(
   transactionId: string
 ): Promise<ReversalResult> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-
+  const userId = await getCachedUserId(supabase);
   const { data, error } = await supabase.rpc("reverse_transaction", {
-    p_user_id: user.id,
+    p_user_id: userId,
     p_transaction_id: transactionId,
   });
 
@@ -200,11 +195,9 @@ export async function editTransaction(
   input: EditTransactionInput
 ): Promise<EditTransactionResult> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-
+  const userId = await getCachedUserId(supabase);
   const { data, error } = await supabase.rpc("edit_transaction", {
-    p_user_id: user.id,
+    p_user_id: userId,
     p_transaction_id: input.original_transaction_id,
     p_account_id: input.account_id,
     p_category_id: input.category_id ?? undefined,
@@ -287,11 +280,9 @@ export async function editTransfer(
   input: EditTransferInput
 ): Promise<EditTransferResult> {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-
+  const userId = await getCachedUserId(supabase);
   const { data, error } = await supabase.rpc("edit_transfer", {
-    p_user_id: user.id,
+    p_user_id: userId,
     p_transaction_id: input.original_transaction_id,
     p_from_account_id: input.from_account_id,
     p_to_account_id: input.to_account_id,

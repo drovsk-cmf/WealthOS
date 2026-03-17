@@ -10,6 +10,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 import {
   balanceSheetSchema,
   balanceEvolutionResultSchema,
@@ -110,11 +111,8 @@ const STALE_TIME = 2 * 60 * 1000; // 2 minutes
 
 async function getUserId() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Sessão expirada.");
-  return { supabase, userId: user.id };
+  const userId = await getCachedUserId(supabase);
+  return { supabase, userId };
 }
 
 // ─── 1. Dashboard Summary (DASH-01, DASH-02) ──────────────────

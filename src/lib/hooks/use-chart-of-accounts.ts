@@ -8,6 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type COA = Database["public"]["Tables"]["chart_of_accounts"]["Row"];
 type GroupType = Database["public"]["Enums"]["group_type"];
@@ -53,13 +54,11 @@ export function useChartOfAccounts() {
     queryKey: ["chart_of_accounts"],
     staleTime: 5 * 60 * 1000, // 5 min
       queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("chart_of_accounts")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("sort_order", { ascending: true })
         .order("internal_code", { ascending: true });
 
@@ -78,14 +77,12 @@ export function useToggleAccountActive() {
 
   return useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("chart_of_accounts")
         .update({ is_active })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
     },
@@ -109,13 +106,9 @@ export function useCreateCOA() {
       displayName: string;
       accountName?: string;
     }) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("create_coa_child", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_parent_id: parentId,
         p_display_name: displayName,
         p_account_name: accountName || displayName,

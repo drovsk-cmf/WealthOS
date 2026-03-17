@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { centerPnlSchema, centerExportSchema, allocateToCentersResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type CostCenter = Database["public"]["Tables"]["cost_centers"]["Row"];
 type CostCenterInsert = Database["public"]["Tables"]["cost_centers"]["Insert"];
@@ -33,13 +34,11 @@ export function useCostCenters() {
   return useQuery({
     queryKey: ["cost_centers"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("cost_centers")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_active", true)
         .order("is_default", { ascending: false })
         .order("name", { ascending: true });
@@ -56,12 +55,10 @@ export function useCreateCostCenter() {
 
   return useMutation({
     mutationFn: async (input: Omit<CostCenterInsert, "user_id">) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("cost_centers")
-        .insert({ ...input, user_id: user.id, is_default: false })
+        .insert({ ...input, user_id: userId, is_default: false })
         .select()
         .single();
 
@@ -80,14 +77,12 @@ export function useUpdateCostCenter() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: CostCenterUpdate & { id: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("cost_centers")
         .update(updates)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -106,15 +101,13 @@ export function useDeleteCostCenter() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // RLS policy blocks delete of is_default=true
       const { error } = await supabase
         .from("cost_centers")
         .update({ is_active: false })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
     },
@@ -181,13 +174,9 @@ export function useCenterPnl(
     staleTime: 2 * 60 * 1000,
     queryFn: async (): Promise<CenterPnl> => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("get_center_pnl", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_center_id: centerId!,
         ...(dateFrom && { p_date_from: dateFrom }),
         ...(dateTo && { p_date_to: dateTo }),
@@ -209,13 +198,9 @@ export function useCenterExport() {
   return useMutation({
     mutationFn: async (centerId: string): Promise<CenterExport> => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("get_center_export", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_center_id: centerId,
       });
       if (error) throw error;
@@ -243,13 +228,9 @@ export function useAllocateToCenters() {
       allocations: AllocationInput[];
     }) => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("allocate_to_centers", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_transaction_id: transactionId,
         p_allocations: JSON.stringify(allocations),
       });
@@ -319,11 +300,9 @@ export function useDistributeOverhead() {
   return useMutation({
     mutationFn: async (month: string) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("distribute_overhead", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_month: month,
       });
       if (error) throw error;

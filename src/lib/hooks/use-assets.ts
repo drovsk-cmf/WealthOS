@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { assetsSummarySchema, depreciateAssetResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Asset = Database["public"]["Tables"]["assets"]["Row"];
 type AssetInsert = Database["public"]["Tables"]["assets"]["Insert"];
@@ -103,13 +104,11 @@ export function useAssets() {
   return useQuery({
     queryKey: ["assets"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("assets")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("current_value", { ascending: false });
       if (error) throw error;
       return data;
@@ -125,14 +124,12 @@ export function useAsset(id: string | null) {
     queryKey: ["assets", "detail", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("assets")
         .select("*")
         .eq("id", id!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
       if (error) throw error;
       return data as Asset;
@@ -147,11 +144,9 @@ export function useAssetsSummary() {
     staleTime: 2 * 60 * 1000,
     queryFn: async (): Promise<AssetsSummary> => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("get_assets_summary", {
-        p_user_id: user.id,
+        p_user_id: userId,
       });
       if (error) throw error;
       const parsed = assetsSummarySchema.safeParse(data);
@@ -172,14 +167,12 @@ export function useAssetValueHistory(assetId: string | null) {
     queryKey: ["assets", "history", assetId],
     enabled: !!assetId,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("asset_value_history")
         .select("*")
         .eq("asset_id", assetId!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as AssetValueHistory[];
@@ -210,15 +203,13 @@ export function useCreateAsset() {
 
   return useMutation({
     mutationFn: async (input: CreateAssetInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const coaId = await resolveCOA(supabase, input.category);
 
       const { data, error } = await supabase
         .from("assets")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           name: input.name,
           category: input.category,
           acquisition_date: input.acquisition_date,
@@ -238,7 +229,7 @@ export function useCreateAsset() {
       // Record initial value in history
       await supabase.from("asset_value_history").insert({
         asset_id: data.id,
-        user_id: user.id,
+        user_id: userId,
         previous_value: 0,
         new_value: input.current_value,
         change_reason: "Cadastro inicial",
@@ -261,9 +252,7 @@ export function useUpdateAsset() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: UpdateAssetInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // If category changed, re-link COA
       let coaId: string | null | undefined;
       if (updates.category) {
@@ -281,7 +270,7 @@ export function useUpdateAsset() {
         if (existing && Number(existing.current_value) !== updates.current_value) {
           await supabase.from("asset_value_history").insert({
             asset_id: id,
-            user_id: user.id,
+            user_id: userId,
             previous_value: existing.current_value,
             new_value: updates.current_value,
             change_reason: "Atualização manual",
@@ -297,7 +286,7 @@ export function useUpdateAsset() {
           ...(coaId !== undefined && { coa_id: coaId }),
         })
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -318,12 +307,10 @@ export function useDeleteAsset() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Delete history first (FK constraint)
-      await supabase.from("asset_value_history").delete().eq("asset_id", id).eq("user_id", user.id);
-      const { error } = await supabase.from("assets").delete().eq("id", id).eq("user_id", user.id);
+      await supabase.from("asset_value_history").delete().eq("asset_id", id).eq("user_id", userId);
+      const { error } = await supabase.from("assets").delete().eq("id", id).eq("user_id", userId);
       if (error) throw error;
     },
     onSuccess: async () => {
@@ -340,11 +327,9 @@ export function useDepreciateAsset() {
 
   return useMutation({
     mutationFn: async (assetId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("depreciate_asset", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_asset_id: assetId,
       });
       if (error) throw error;

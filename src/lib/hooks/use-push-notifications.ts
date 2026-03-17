@@ -13,6 +13,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 
@@ -85,12 +86,10 @@ export function usePushNotifications() {
 
       // Store subscription in notification_tokens
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const subJson = subscription.toJSON();
       const { error } = await supabase.from("notification_tokens").upsert({
-        user_id: user.id,
+        user_id: userId,
         platform: "web",
         device_token: subJson.endpoint ?? "",
         device_name: navigator.userAgent.slice(0, 100),
@@ -118,13 +117,11 @@ export function usePushNotifications() {
 
         // Remove from DB
         const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          await supabase.from("notification_tokens")
-            .delete()
-            .eq("user_id", user.id)
-            .eq("device_token", endpoint);
-        }
+        const userId = await getCachedUserId(supabase);
+        await supabase.from("notification_tokens")
+          .delete()
+          .eq("user_id", userId)
+          .eq("device_token", endpoint);
       }
 
       setState(s => ({ ...s, subscribed: false }));

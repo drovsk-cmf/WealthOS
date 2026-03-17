@@ -20,6 +20,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSessionTimeout } from "@/lib/auth/use-session-timeout";
 import { useAppLifecycle } from "@/lib/auth/use-app-lifecycle";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
+import { clearAuthCache } from "@/lib/supabase/cached-auth";
 import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
 import { usePrivacyStore } from "@/lib/stores/privacy";
@@ -79,6 +80,7 @@ export default function AppLayout({
 
   async function handleLogout() {
     clearEncryptionKey();
+    clearAuthCache();
     // Clear Service Worker cache on logout (prevent stale session data)
     if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });

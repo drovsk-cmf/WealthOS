@@ -8,6 +8,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
@@ -40,13 +41,11 @@ export function useTransactions(filters: TransactionFilters = {}) {
     queryKey: ["transactions", filters],
     staleTime: 5 * 60 * 1000, // 5 min
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("transactions")
         .select("id, description, amount, date, type, is_paid, payment_status, account_id, category_id, family_member_id, is_deleted, matched_transaction_id, recurrence_id, notes, created_at, accounts(name, color), categories(name, icon, color)")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("date", { ascending: false })
         .order("created_at", { ascending: false });
 
@@ -109,14 +108,12 @@ export function useTransaction(id: string | null) {
     queryKey: ["transactions", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("transactions")
         .select("*")
         .eq("id", id!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
 
       if (error) throw error;

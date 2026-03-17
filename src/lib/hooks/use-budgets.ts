@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { budgetWithCategorySchema, logSchemaError } from "@/lib/schemas/rpc";
 import { z } from "zod";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 type BudgetInsert = Database["public"]["Tables"]["budgets"]["Insert"];
@@ -98,9 +99,7 @@ export function useBudgets(month?: string, familyMemberId?: string | null) {
   return useQuery({
     queryKey: ["budgets", monthKey, familyMemberId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("budgets")
         .select(
@@ -109,7 +108,7 @@ export function useBudgets(month?: string, familyMemberId?: string | null) {
           categories!inner(name, icon, color, type)
         `
         )
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("month", monthKey)
         .neq("approval_status", "rejected")
         .order("planned_amount", { ascending: false });
@@ -141,14 +140,12 @@ export function useBudget(id: string | null) {
     queryKey: ["budgets", "detail", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("budgets")
         .select("*, categories!inner(name, icon, color)")
         .eq("id", id!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
 
       if (error) throw error;
@@ -165,16 +162,14 @@ export function useBudgetMonths() {
     queryKey: ["budgets", "months"],
     staleTime: 10 * 60 * 1000, // 10 min
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // DT-019: Supabase PostgREST doesn't support DISTINCT.
       // Fetch only month column (minimal payload), dedup client-side.
       // Limit 500 covers ~40 categories × 12 months before dedup.
       const { data, error } = await supabase
         .from("budgets")
         .select("month")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("month", { ascending: false })
         .limit(500);
 
@@ -196,16 +191,12 @@ export function useCreateBudget() {
 
   return useMutation({
     mutationFn: async (input: CreateBudgetInput) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Check for duplicate (same category + month + member)
       let dupQuery = supabase
         .from("budgets")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("category_id", input.category_id)
         .eq("month", input.month);
 
@@ -224,7 +215,7 @@ export function useCreateBudget() {
       const { data, error } = await supabase
         .from("budgets")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           category_id: input.category_id,
           month: input.month,
           planned_amount: input.planned_amount,
@@ -258,9 +249,7 @@ export function useUpdateBudget() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: UpdateBudgetInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const payload: BudgetUpdate = {};
       if (updates.planned_amount !== undefined)
         payload.planned_amount = updates.planned_amount;
@@ -278,7 +267,7 @@ export function useUpdateBudget() {
         .from("budgets")
         .update(payload)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -301,9 +290,7 @@ export function useApproveBudget() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("budgets")
         .update({
@@ -311,7 +298,7 @@ export function useApproveBudget() {
           decided_at: new Date().toISOString(),
         })
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("approval_status", "proposed")
         .select()
         .single();
@@ -333,9 +320,7 @@ export function useRejectBudget() {
 
   return useMutation({
     mutationFn: async ({ id, notes }: { id: string; notes?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("budgets")
         .update({
@@ -344,7 +329,7 @@ export function useRejectBudget() {
           decision_notes: notes ?? null,
         })
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("approval_status", "proposed")
         .select()
         .single();
@@ -366,10 +351,8 @@ export function useDeleteBudget() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
-      const { error } = await supabase.from("budgets").delete().eq("id", id).eq("user_id", user.id);
+      const userId = await getCachedUserId(supabase);
+      const { error } = await supabase.from("budgets").delete().eq("id", id).eq("user_id", userId);
 
       if (error) throw error;
     },
@@ -389,16 +372,12 @@ export function useCopyBudgets() {
 
   return useMutation({
     mutationFn: async ({ source_month, target_month, family_member_id }: CopyBudgetInput) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Check target month has no budgets for this member scope
       let existingQuery = supabase
         .from("budgets")
         .select("id")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("month", target_month)
         .limit(1);
 
@@ -420,7 +399,7 @@ export function useCopyBudgets() {
       let sourceQuery = supabase
         .from("budgets")
         .select("category_id, planned_amount, alert_threshold, coa_id, cost_center_id, adjustment_index, family_member_id")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("month", source_month);
 
       if (family_member_id) {
@@ -438,7 +417,7 @@ export function useCopyBudgets() {
 
       // Insert copies for target month, preserving family_member_id
       const copies: BudgetInsert[] = sourceBudgets.map((b) => ({
-        user_id: user.id,
+        user_id: userId,
         category_id: b.category_id,
         month: target_month,
         planned_amount: b.planned_amount,

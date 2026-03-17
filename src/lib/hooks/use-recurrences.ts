@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Recurrence = Database["public"]["Tables"]["recurrences"]["Row"];
 type RecurrenceInsert = Database["public"]["Tables"]["recurrences"]["Insert"];
@@ -76,13 +77,11 @@ export function useRecurrences(activeOnly: boolean = true) {
     queryKey: ["recurrences", activeOnly],
     staleTime: 5 * 60 * 1000, // 5 min
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("recurrences")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("next_due_date", { ascending: true });
 
       if (activeOnly) {
@@ -104,14 +103,12 @@ export function useRecurrence(id: string | null) {
     queryKey: ["recurrences", "detail", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("recurrences")
         .select("*")
         .eq("id", id!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
       if (error) throw error;
       return data as Recurrence;
@@ -130,9 +127,7 @@ export function usePendingBills() {
     queryKey: ["bills", "pending"],
     staleTime: 5 * 60 * 1000, // 5 min
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("transactions")
         .select(`
@@ -141,7 +136,7 @@ export function usePendingBills() {
           accounts!inner(name, color),
           categories(name, icon, color)
         `)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .in("payment_status", ["pending", "overdue"])
         .eq("is_deleted", false)
         .not("recurrence_id", "is", null)
@@ -178,14 +173,12 @@ export function useCreateRecurrence() {
 
   return useMutation({
     mutationFn: async (input: CreateRecurrenceInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // 1. Create recurrence record
       const { data: rec, error: recErr } = await supabase
         .from("recurrences")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           frequency: input.frequency,
           interval_count: input.interval_count ?? 1,
           start_date: input.start_date,
@@ -207,7 +200,7 @@ export function useCreateRecurrence() {
       const { data: txData, error: txErr } = await supabase.rpc(
         "create_transaction_with_journal",
         {
-          p_user_id: user.id,
+          p_user_id: userId,
           p_account_id: input.template.account_id,
           p_category_id: input.template.category_id ?? undefined,
           p_type: input.template.type,
@@ -254,9 +247,7 @@ export function useUpdateRecurrence() {
 
   return useMutation({
     mutationFn: async ({ id, template, ...updates }: UpdateRecurrenceInput) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // If template fields are being updated, merge with existing
       const payload: Record<string, unknown> = { ...updates };
 
@@ -265,7 +256,7 @@ export function useUpdateRecurrence() {
           .from("recurrences")
           .select("template_transaction")
           .eq("id", id)
-          .eq("user_id", user.id)
+          .eq("user_id", userId)
           .single();
 
         if (existing) {
@@ -280,7 +271,7 @@ export function useUpdateRecurrence() {
         .from("recurrences")
         .update(payload)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -301,14 +292,12 @@ export function useDeactivateRecurrence() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("recurrences")
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
       if (error) throw error;
     },
     onSuccess: async () => {
@@ -325,15 +314,13 @@ export function usePayBill() {
 
   return useMutation({
     mutationFn: async (transactionId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // 1. Mark transaction as paid
       const { data: tx, error: txErr } = await supabase
         .from("transactions")
         .update({ is_paid: true })
         .eq("id", transactionId)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select("recurrence_id")
         .single();
 
@@ -343,7 +330,7 @@ export function usePayBill() {
       let nextResult = null;
       if (tx.recurrence_id) {
         const { data, error } = await supabase.rpc("generate_next_recurrence", {
-          p_user_id: user.id,
+          p_user_id: userId,
           p_recurrence_id: tx.recurrence_id,
         });
         if (error) throw error;

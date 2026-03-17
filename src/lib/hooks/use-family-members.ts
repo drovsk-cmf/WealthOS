@@ -8,6 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type FamilyMember = Database["public"]["Tables"]["family_members"]["Row"];
 type FamilyRelationship = Database["public"]["Enums"]["family_relationship"];
@@ -47,13 +48,11 @@ export function useFamilyMembers() {
     queryKey: ["family_members"],
     staleTime: 5 * 60 * 1000, // 5 min
       queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("family_members")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_active", true)
         .order("created_at", { ascending: true });
 
@@ -78,15 +77,13 @@ export function useCreateFamilyMember() {
       is_tax_dependent?: boolean;
       avatar_emoji?: string;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const emoji = input.avatar_emoji
         || RELATIONSHIP_OPTIONS.find((r) => r.value === input.relationship)?.emoji
         || "👤";
 
       const { data, error } = await supabase.rpc("create_family_member", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_name: input.name,
         p_relationship: input.relationship,
         p_role: input.role || (input.relationship === "self" ? "owner" : "member"),
@@ -114,14 +111,12 @@ export function useUpdateFamilyMember() {
       id,
       ...updates
     }: Partial<Pick<FamilyMember, "name" | "relationship" | "role" | "birth_date" | "is_tax_dependent" | "avatar_emoji">> & { id: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("family_members")
         .update(updates)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -133,7 +128,7 @@ export function useUpdateFamilyMember() {
           .from("cost_centers")
           .update({ name: updates.name })
           .eq("id", data.cost_center_id)
-          .eq("user_id", user.id);
+          .eq("user_id", userId);
       }
 
       return data as FamilyMember;
@@ -151,15 +146,13 @@ export function useDeactivateFamilyMember() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Get member to find linked cost center
       const { data: member } = await supabase
         .from("family_members")
         .select("cost_center_id")
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
 
       // Deactivate member
@@ -167,7 +160,7 @@ export function useDeactivateFamilyMember() {
         .from("family_members")
         .update({ is_active: false })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
 
@@ -177,7 +170,7 @@ export function useDeactivateFamilyMember() {
           .from("cost_centers")
           .update({ is_active: false })
           .eq("id", member.cost_center_id)
-          .eq("user_id", user.id);
+          .eq("user_id", userId);
       }
     },
     onSuccess: async () => {

@@ -11,6 +11,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Json } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 export interface AccessLog {
   id: string;
@@ -33,11 +34,10 @@ export function useLogAccess() {
       metadata?: Record<string, Json | undefined>;
     }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return; // silently skip if not authenticated
+      const userId = await getCachedUserId(supabase);
 
       await supabase.from("access_logs").insert({
-        user_id: user.id,
+        user_id: userId,
         action,
         user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
         metadata,
@@ -56,13 +56,11 @@ export function useAccessLogs(limit: number = 50) {
     queryKey: ["access_logs", limit],
     staleTime: 2 * 60 * 1000,
     queryFn: async (): Promise<AccessLog[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("access_logs")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(limit);
 

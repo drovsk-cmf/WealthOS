@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { fiscalProjectionSchema, fiscalReportSchema, taxParameterSchema, logSchemaError } from "@/lib/schemas/rpc";
 import { z } from "zod";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -106,11 +107,9 @@ export function useFiscalReport(year?: number) {
     staleTime: 2 * 60 * 1000,
     queryFn: async (): Promise<FiscalReport> => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("get_fiscal_report", {
-        p_user_id: user.id,
+        p_user_id: userId,
         ...(year !== undefined && { p_year: year }),
       });
       if (error) throw error;
@@ -142,11 +141,9 @@ export function useFiscalProjection(year?: number) {
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<FiscalProjection> => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("get_fiscal_projection", {
-        p_user_id: user.id,
+        p_user_id: userId,
         ...(year !== undefined && { p_year: year }),
       });
       if (error) throw error;

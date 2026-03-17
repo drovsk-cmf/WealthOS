@@ -12,6 +12,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { autoCategorizeTransactionSchema } from "@/lib/schemas/rpc";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 interface AutoCategoryResult {
   suggestedCategoryId: string | null;
@@ -55,16 +56,14 @@ export function useAutoCategory(
 
       try {
         const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user || controller.signal.aborted) return;
+        const userId = await getCachedUserId(supabase);
+        if (!userId || controller.signal.aborted) return;
 
         const { data, error } = await supabase.rpc(
           "auto_categorize_transaction",
           {
             p_description: trimmed,
-            p_user_id: user.id,
+            p_user_id: userId,
           }
         );
 

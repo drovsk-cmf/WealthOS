@@ -12,6 +12,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { matchTransactionsResultSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 export interface UnmatchedTransaction {
   id: string;
@@ -37,16 +38,14 @@ export function useUnmatchedImports(accountId?: string) {
   return useQuery({
     queryKey: ["reconciliation", "imports", accountId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("transactions")
         .select(`
           id, description, amount, date, type, payment_status, account_id, source,
           accounts!inner(name)
         `)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_deleted", false)
         .eq("payment_status", "paid")
         .is("matched_transaction_id", null)
@@ -87,9 +86,7 @@ export function usePendingUnmatched(accountId?: string) {
   return useQuery({
     queryKey: ["reconciliation", "pending", accountId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("transactions")
         .select(`
@@ -97,7 +94,7 @@ export function usePendingUnmatched(accountId?: string) {
           accounts!inner(name),
           categories(name)
         `)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_deleted", false)
         .in("payment_status", ["pending", "overdue"])
         .is("matched_transaction_id", null)
@@ -137,11 +134,9 @@ export function useMatchTransactions() {
   return useMutation({
     mutationFn: async ({ pendingId, importedId }: { pendingId: string; importedId: string }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("match_transactions", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_pending_id: pendingId,
         p_imported_id: importedId,
       });

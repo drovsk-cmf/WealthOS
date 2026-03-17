@@ -165,30 +165,20 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect root: check onboarding status for authenticated users
-  if (pathname === "/" && user) {
-    const { data: profile } = await supabase
-      .from("users_profile")
-      .select("onboarding_completed")
-      .eq("id", user.id)
-      .single();
-
-    const url = request.nextUrl.clone();
-    url.pathname = profile && !profile.onboarding_completed ? "/onboarding" : "/dashboard";
-    return NextResponse.redirect(url);
-  }
-  if (pathname === "/" && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
+  // ── Route classification ──
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
   const isAuthFlowRoute = AUTH_FLOW_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
+
+  // Redirect root
+  if (pathname === "/" && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
 
   // Unauthenticated user trying to access protected route
   if (!user && !isPublicRoute) {
@@ -198,39 +188,55 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Authenticated user on protected route: check onboarding completion
-  if (user && !isPublicRoute && !isAuthFlowRoute) {
-    const { data: profile } = await supabase
-      .from("users_profile")
-      .select("onboarding_completed")
-      .eq("id", user.id)
-      .single();
+  // ── Onboarding gate (authenticated users only) ──
+  // Uses cookie cache to avoid DB roundtrip on every navigation.
+  // Cookie stores user_id to prevent cross-user inheritance on shared browsers.
+  // Set once after confirming onboarding_completed=true. Re-checked after 7 days.
+  if (user) {
+    const onboardingDone = request.cookies.get("onboarding_done")?.value === user.id;
 
-    if (profile && !profile.onboarding_completed) {
+    if (!onboardingDone) {
+      // No cache or different user: query DB (happens once per session after login)
+      const { data: profile } = await supabase
+        .from("users_profile")
+        .select("onboarding_completed")
+        .eq("id", user.id)
+        .single();
+
+      const completed = profile?.onboarding_completed === true;
+
+      if (completed) {
+        // Set cookie with user_id as value (validated on next request)
+        supabaseResponse.cookies.set("onboarding_done", user.id, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24 * 7, // 7 days (re-checked after expiry)
+          path: "/",
+        });
+      } else {
+        // Not completed: redirect to onboarding (unless already there)
+        if (!isAuthFlowRoute) {
+          const url = request.nextUrl.clone();
+          url.pathname = "/onboarding";
+          return NextResponse.redirect(url);
+        }
+      }
+    }
+
+    // Root redirect for authenticated users (onboarding done)
+    if (pathname === "/") {
       const url = request.nextUrl.clone();
-      url.pathname = "/onboarding";
+      url.pathname = "/dashboard";
       return NextResponse.redirect(url);
     }
-  }
 
-  // Authenticated user on public auth pages (but not auth flow pages)
-  if (user && isPublicRoute && !isAuthFlowRoute) {
-    // Check onboarding status to decide where to redirect
-    const { data: profile } = await supabase
-      .from("users_profile")
-      .select("onboarding_completed")
-      .eq("id", user.id)
-      .single();
-
-    const url = request.nextUrl.clone();
-
-    if (profile && !profile.onboarding_completed) {
-      url.pathname = "/onboarding";
-    } else {
+    // Authenticated user on public auth pages: redirect away
+    if (isPublicRoute && !isAuthFlowRoute) {
+      const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
     }
-
-    return NextResponse.redirect(url);
   }
 
   // ── Performance monitoring (Server-Timing header) ──

@@ -13,6 +13,7 @@ import type { Database } from "@/types/database";
 
 import { FileUp, Wallet, Tag, ClipboardCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Workflow = Database["public"]["Tables"]["workflows"]["Row"];
 type WorkflowTask = Database["public"]["Tables"]["workflow_tasks"]["Row"];
@@ -88,13 +89,11 @@ export function useWorkflows(activeOnly: boolean = true) {
   return useQuery({
     queryKey: ["workflows", activeOnly],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("workflows")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("name", { ascending: true });
 
       if (activeOnly) query = query.eq("is_active", true);
@@ -113,16 +112,14 @@ export function usePendingTasks() {
   return useQuery({
     queryKey: ["workflow_tasks", "pending"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("workflow_tasks")
         .select(`
           *,
           workflows!inner(name, workflow_type, user_id)
         `)
-        .eq("workflows.user_id", user.id)
+        .eq("workflows.user_id", userId)
         .in("status", ["pending", "in_progress"])
         .order("period_end", { ascending: true })
         .order("created_at", { ascending: true });
@@ -146,13 +143,11 @@ export function usePendingTaskCount() {
     queryKey: ["workflow_tasks", "count"],
     staleTime: 2 * 60 * 1000,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { count, error } = await supabase
         .from("workflow_tasks")
         .select("*, workflows!inner(user_id)", { count: "exact", head: true })
-        .eq("workflows.user_id", user.id)
+        .eq("workflows.user_id", userId)
         .in("status", ["pending", "in_progress"]);
 
       if (error) throw error;
@@ -169,13 +164,11 @@ export function useWorkflowTasks(workflowId: string | null) {
     queryKey: ["workflow_tasks", workflowId],
     enabled: !!workflowId,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("workflow_tasks")
         .select("*, workflows!inner(user_id)")
-        .eq("workflows.user_id", user.id)
+        .eq("workflows.user_id", userId)
         .eq("workflow_id", workflowId!)
         .order("period_start", { ascending: false })
         .order("created_at", { ascending: true })
@@ -204,11 +197,9 @@ export function useAutoCreateWorkflow() {
       accountName: string;
     }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("auto_create_workflow_for_account", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_account_id: accountId,
         p_account_type: accountType,
         p_account_name: accountName,
@@ -234,11 +225,9 @@ export function useGenerateTasks() {
   return useMutation({
     mutationFn: async (params?: { year?: number; month?: number }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("generate_tasks_for_period", {
-        p_user_id: user.id,
+        p_user_id: userId,
         ...(params?.year && { p_year: params.year }),
         ...(params?.month && { p_month: params.month }),
       });
@@ -271,11 +260,9 @@ export function useCompleteTask() {
       resultData?: Record<string, unknown>;
     }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("complete_workflow_task", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_task_id: taskId,
         p_status: status,
         ...(resultData && { p_result_data: JSON.stringify(resultData) }),
@@ -308,13 +295,11 @@ export function useCreateWorkflow() {
       related_account_id?: string | null;
       day_of_period?: number | null;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("workflows")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           name: input.name,
           workflow_type: input.workflow_type,
           periodicity: input.periodicity,
@@ -340,14 +325,12 @@ export function useDeactivateWorkflow() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("workflows")
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
       if (error) throw error;
     },
     onSuccess: async () => {

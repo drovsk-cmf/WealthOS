@@ -9,6 +9,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
   BRL: "R$",
@@ -24,12 +25,11 @@ export function useCurrencyLabel() {
     queryKey: ["profile-currency"],
     staleTime: 10 * 60 * 1000,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return { code: "BRL", symbol: "R$" };
+      const userId = await getCachedUserId(supabase);
       const { data: profile } = await supabase
         .from("users_profile")
         .select("default_currency")
-        .eq("id", user.id)
+        .eq("id", userId)
         .single();
       const code = profile?.default_currency ?? "BRL";
       return { code, symbol: CURRENCY_SYMBOLS[code] ?? code };

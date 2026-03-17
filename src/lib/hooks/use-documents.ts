@@ -13,6 +13,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 const BUCKET = "user-documents";
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -53,9 +54,7 @@ export function useUploadDocument() {
   return useMutation({
     mutationFn: async (input: UploadDocumentInput): Promise<Document> => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Validate
       if (input.file.size > MAX_SIZE_BYTES) {
         throw new Error(`Arquivo muito grande (máx. ${MAX_SIZE_BYTES / 1024 / 1024} MB).`);
@@ -66,7 +65,7 @@ export function useUploadDocument() {
 
       // Build storage path: {user_id}/{table}/{related_id}/{timestamp}_{filename}
       const safeName = input.file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-      const storagePath = `${user.id}/${input.relatedTable}/${input.relatedId}/${Date.now()}_${safeName}`;
+      const storagePath = `${userId}/${input.relatedTable}/${input.relatedId}/${Date.now()}_${safeName}`;
 
       // Upload to Storage
       const { error: uploadError } = await supabase.storage
@@ -82,7 +81,7 @@ export function useUploadDocument() {
       const { data, error } = await supabase
         .from("documents")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           file_path: storagePath,
           file_name: input.file.name,
           mime_type: input.file.type,
@@ -117,13 +116,11 @@ export function useDocuments(relatedTable: string, relatedId: string | null) {
     enabled: !!relatedId,
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<Document[]> => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("documents")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("related_table", relatedTable)
         .eq("related_id", relatedId!)
         .order("created_at", { ascending: false });
@@ -160,9 +157,7 @@ export function useDeleteDocument() {
   return useMutation({
     mutationFn: async (doc: { id: string; file_path: string }) => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // Delete from storage
       await supabase.storage.from(BUCKET).remove([doc.file_path]);
 
@@ -171,7 +166,7 @@ export function useDeleteDocument() {
         .from("documents")
         .delete()
         .eq("id", doc.id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
     },

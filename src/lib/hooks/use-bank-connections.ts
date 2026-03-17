@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { importBatchResultSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type BankConnection = Database["public"]["Tables"]["bank_connections"]["Row"];
 
@@ -35,13 +36,11 @@ export function useBankConnections() {
     queryKey: ["bank_connections"],
     staleTime: 5 * 60 * 1000, // 5 min
       queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("bank_connections")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_active", true)
         .order("institution_name", { ascending: true });
       if (error) throw error;
@@ -59,15 +58,11 @@ export function useCreateBankConnection() {
       institution_name: string;
       provider?: string;
     }) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("bank_connections")
         .insert({
-          user_id: user.id,
+          user_id: userId,
           institution_name: input.institution_name,
           provider: input.provider || "manual",
           sync_status: "manual",
@@ -89,14 +84,12 @@ export function useDeactivateBankConnection() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("bank_connections")
         .update({ is_active: false, updated_at: new Date().toISOString() })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
       if (error) throw error;
     },
     onSuccess: async () => {
@@ -125,15 +118,11 @@ export function useImportBatch() {
       }[];
     }) => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const batchId = crypto.randomUUID();
 
       const { data, error } = await supabase.rpc("import_transactions_batch", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_account_id: accountId,
         p_bank_connection_id: bankConnectionId || undefined,
         p_batch_id: batchId,
@@ -169,13 +158,9 @@ export function useUndoImportBatch() {
   return useMutation({
     mutationFn: async (batchId: string) => {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase.rpc("undo_import_batch", {
-        p_user_id: user.id,
+        p_user_id: userId,
         p_batch_id: batchId,
       });
       if (error) throw error;

@@ -8,6 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type AccountInsert = Database["public"]["Tables"]["accounts"]["Insert"];
@@ -82,13 +83,11 @@ export function useAccounts() {
     queryKey: ["accounts"],
     staleTime: 5 * 60 * 1000, // 5 min
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("accounts")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_active", true)
         .order("created_at", { ascending: true });
 
@@ -105,14 +104,12 @@ export function useAccount(id: string | null) {
     queryKey: ["accounts", id],
     enabled: !!id,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("accounts")
         .select("*")
         .eq("id", id!)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .single();
 
       if (error) throw error;
@@ -133,11 +130,7 @@ export function useCreateAccount() {
         coaParentCode?: string; // override parent (e.g. financing sub-type)
       }
     ) => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { coaParentCode, liquidity_tier: tierOverride, ...accountInput } = input;
       const mapping = COA_PARENT_MAP[accountInput.type];
       const parentCode = coaParentCode || mapping?.parentCode;
@@ -150,7 +143,7 @@ export function useCreateAccount() {
         const { data: coaResult, error: coaError } = await supabase.rpc(
           "create_coa_child",
           {
-            p_user_id: user.id,
+            p_user_id: userId,
             p_parent_code: parentCode,
             p_display_name: accountInput.name,
           }
@@ -167,7 +160,7 @@ export function useCreateAccount() {
         .from("accounts")
         .insert({
           ...accountInput,
-          user_id: user.id,
+          user_id: userId,
           coa_id: coaId,
           liquidity_tier: tier,
           current_balance: accountInput.initial_balance ?? 0,
@@ -181,7 +174,7 @@ export function useCreateAccount() {
       // WKF-01: Auto-create workflow for this account
       try {
         await supabase.rpc("auto_create_workflow_for_account", {
-          p_user_id: user.id,
+          p_user_id: userId,
           p_account_id: data.id,
           p_account_type: accountInput.type,
           p_account_name: accountInput.name,
@@ -206,9 +199,7 @@ export function useUpdateAccount() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: AccountUpdate & { id: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       // If type changed and no explicit tier override, update tier
       let tier: string | undefined = updates.liquidity_tier;
       if (!tier && updates.type) {
@@ -222,7 +213,7 @@ export function useUpdateAccount() {
           ...(tier !== undefined && { liquidity_tier: tier }),
         })
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -241,14 +232,12 @@ export function useDeactivateAccount() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("accounts")
         .update({ is_active: false })
         .eq("id", id)
-        .eq("user_id", user.id);
+        .eq("user_id", userId);
 
       if (error) throw error;
     },

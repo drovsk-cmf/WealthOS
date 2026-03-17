@@ -8,6 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
+import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type CategoryInsert = Database["public"]["Tables"]["categories"]["Insert"];
@@ -42,13 +43,11 @@ export function useCategories(type?: CategoryType) {
     queryKey: ["categories", type ?? "all"],
     staleTime: 5 * 60 * 1000, // 5 min
       queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       let query = supabase
         .from("categories")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .order("type", { ascending: true })
         .order("name", { ascending: true });
 
@@ -73,12 +72,10 @@ export function useCreateCategory() {
     mutationFn: async (
       input: Omit<CategoryInsert, "user_id">
     ) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("categories")
-        .insert({ ...input, user_id: user.id, is_system: false })
+        .insert({ ...input, user_id: userId, is_system: false })
         .select()
         .single();
 
@@ -97,14 +94,12 @@ export function useUpdateCategory() {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: CategoryUpdate & { id: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { data, error } = await supabase
         .from("categories")
         .update(updates)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .select()
         .single();
 
@@ -123,14 +118,12 @@ export function useDeleteCategory() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sessão expirada.");
-
+      const userId = await getCachedUserId(supabase);
       const { error } = await supabase
         .from("categories")
         .delete()
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .eq("is_system", false); // Safety: can't delete system categories
 
       if (error) throw error;
