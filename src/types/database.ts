@@ -439,12 +439,6 @@ export type Database = {
         Update: { brackets?: Json; created_at?: string; id?: string; limits?: Json | null; parameter_type?: Database["public"]["Enums"]["parameter_type"]; source_references?: Json; updated_at?: string; updated_by?: string | null; valid_from?: string; valid_until?: string | null }
         Relationships: []
       }
-      tax_records: {
-        Row: { amount: number; created_at: string; details_encrypted: string | null; document_url: string | null; id: string; irrf_withheld: number; source: string | null; type: Database["public"]["Enums"]["tax_record_type"]; updated_at: string; user_id: string; year: number }
-        Insert: { amount: number; created_at?: string; details_encrypted?: string | null; document_url?: string | null; id?: string; irrf_withheld?: number; source?: string | null; type: Database["public"]["Enums"]["tax_record_type"]; updated_at?: string; user_id: string; year: number }
-        Update: { amount?: number; created_at?: string; details_encrypted?: string | null; document_url?: string | null; id?: string; irrf_withheld?: number; source?: string | null; type?: Database["public"]["Enums"]["tax_record_type"]; updated_at?: string; user_id?: string; year?: number }
-        Relationships: []
-      }
       transactions: {
         Row: { account_id: string; amount: number; amount_adjustment: number; bank_connection_id: string | null; category_id: string | null; category_source: Database["public"]["Enums"]["category_assignment_source"] | null; created_at: string; date: string; description: string | null; due_date: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; matched_transaction_id: string | null; notes: string | null; occurred_at: string | null; payment_status: Database["public"]["Enums"]["payment_status"]; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
         Insert: { account_id: string; amount: number; amount_adjustment?: number; bank_connection_id?: string | null; category_id?: string | null; category_source?: Database["public"]["Enums"]["category_assignment_source"] | null; created_at?: string; date: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
@@ -558,7 +552,6 @@ export type Database = {
       sync_status: "active" | "syncing" | "error" | "expired" | "manual"
       task_status: "pending" | "in_progress" | "completed" | "skipped"
       task_type: "upload_document" | "update_balance" | "categorize_transactions" | "review_fiscal"
-      tax_record_type: "income" | "deduction" | "asset" | "debt"
       tax_treatment_type: "tributavel" | "isento" | "exclusivo_fonte" | "ganho_capital" | "dedutivel_integral" | "dedutivel_limitado" | "nao_dedutivel" | "variavel"
       transaction_type: "income" | "expense" | "transfer"
       value_change_source: "manual" | "depreciation"
