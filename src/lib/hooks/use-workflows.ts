@@ -93,7 +93,7 @@ export function useWorkflows(activeOnly: boolean = true) {
 
       let query = supabase
         .from("workflows")
-        .select("id, name, workflow_type, periodicity, related_account_id, is_active, day_of_period, last_completed_at, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .order("name", { ascending: true });
 
@@ -101,7 +101,7 @@ export function useWorkflows(activeOnly: boolean = true) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as Workflow[];
+      return data;
     },
   });
 }

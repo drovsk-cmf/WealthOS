@@ -40,12 +40,12 @@ export function useBankConnections() {
 
       const { data, error } = await supabase
         .from("bank_connections")
-        .select("id, institution_name, institution_logo_url, is_active, sync_status, last_sync_at, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .eq("is_active", true)
         .order("institution_name", { ascending: true });
       if (error) throw error;
-      return data as BankConnection[];
+      return data;
     },
   });
 }

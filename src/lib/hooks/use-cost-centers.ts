@@ -38,14 +38,14 @@ export function useCostCenters() {
 
       const { data, error } = await supabase
         .from("cost_centers")
-        .select("id, name, type, color, icon, is_active, is_default, is_overhead, parent_id, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .eq("is_active", true)
         .order("is_default", { ascending: false })
         .order("name", { ascending: true });
 
       if (error) throw error;
-      return data as CostCenter[];
+      return data;
     },
   });
 }

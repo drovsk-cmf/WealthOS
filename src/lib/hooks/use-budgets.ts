@@ -453,7 +453,7 @@ export function useCopyBudgets() {
         .select();
 
       if (error) throw error;
-      return data as Budget[];
+      return data;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["budgets"] });

@@ -108,11 +108,11 @@ export function useAssets() {
 
       const { data, error } = await supabase
         .from("assets")
-        .select("id, name, category, acquisition_date, acquisition_value, current_value, depreciation_rate, insurance_policy, insurance_expiry, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .order("current_value", { ascending: false });
       if (error) throw error;
-      return data as Asset[];
+      return data;
     },
   });
 }

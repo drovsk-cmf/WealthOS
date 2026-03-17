@@ -58,7 +58,7 @@ export function useChartOfAccounts() {
 
       const { data, error } = await supabase
         .from("chart_of_accounts")
-        .select("id, internal_code, display_name, account_name, group_type, parent_id, depth, is_active, is_system, tax_treatment, icon, color, sort_order, created_at")
+        .select("*")
         .eq("user_id", user.id)
         .order("sort_order", { ascending: true })
         .order("internal_code", { ascending: true });

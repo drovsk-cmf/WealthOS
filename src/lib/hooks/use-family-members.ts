@@ -52,13 +52,13 @@ export function useFamilyMembers() {
 
       const { data, error } = await supabase
         .from("family_members")
-        .select("id, name, relationship, role, birth_date, is_tax_dependent, avatar_emoji, cost_center_id, is_active, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .eq("is_active", true)
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data as FamilyMember[];
+      return data;
     },
   });
 }

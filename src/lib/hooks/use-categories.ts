@@ -47,7 +47,7 @@ export function useCategories(type?: CategoryType) {
 
       let query = supabase
         .from("categories")
-        .select("id, name, type, icon, color, is_system, parent_id, created_at, updated_at")
+        .select("*")
         .eq("user_id", user.id)
         .order("type", { ascending: true })
         .order("name", { ascending: true });
@@ -58,7 +58,7 @@ export function useCategories(type?: CategoryType) {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as Category[];
+      return data;
     },
   });
 }
