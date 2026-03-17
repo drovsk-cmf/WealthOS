@@ -71,6 +71,15 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // ── Success: log access event ──
+  const ua = request.headers.get("user-agent") ?? null;
+  await supabase.from("access_logs").insert({
+    user_id: data.user.id,
+    action: "login",
+    ip_address: ip,
+    user_agent: ua,
+  }).then(() => {}, () => {}); // fire-and-forget, never block login
+
   // ── Success: return user info (session cookies set automatically) ──
   return NextResponse.json(
     {

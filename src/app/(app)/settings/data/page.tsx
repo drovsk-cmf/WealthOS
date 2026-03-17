@@ -182,6 +182,13 @@ export default function DataSettingsPage() {
         const blob = new Blob([json], { type: "application/json" });
         downloadBlob(blob, `oniefy-dados-completos-${timestamp}.json`);
       }
+
+      // Log access event
+      await supabase.from("access_logs").insert({
+        user_id: user.id,
+        action: "export_data",
+        metadata: { format, tables: Object.keys(allData).length },
+      }).then(() => {}, () => {}); // fire-and-forget
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao exportar dados.");
     } finally {
