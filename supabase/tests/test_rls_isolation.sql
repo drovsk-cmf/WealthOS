@@ -134,10 +134,12 @@ $$;
 
 -- ================================================================
 -- BATCH 3: SECURITY DEFINER function abuse (cross-user RPC calls)
+-- Tests both READ and WRITE functions. All must return 'Forbidden'.
 -- ================================================================
 DO $$
 DECLARE
   v_user_a UUID := '04c41302-5429-4f97-9aeb-e21294d014ff';
+  v_cat_id UUID := '02c820f2-2400-4e61-9b67-fab5d2291487'; -- User A's real category
   v_result_json JSON;
   v_result_jsonb JSONB;
 BEGIN
@@ -146,6 +148,8 @@ BEGIN
     'sub', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
     'role', 'authenticated', 'aud', 'authenticated'
   )::text, true);
+
+  -- ═══ READ functions ═══
 
   BEGIN SELECT get_dashboard_summary(v_user_a) INTO v_result_json;
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_dashboard', 'FAIL', 'Returned data');
@@ -177,15 +181,60 @@ BEGIN
   EXCEPTION WHEN OTHERS THEN
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_budget_int', 'PASS', SQLERRM); END;
 
-  BEGIN SELECT create_transaction_with_journal(p_user_id := v_user_a, p_account_id := gen_random_uuid()) INTO v_result_json;
+  BEGIN SELECT auto_categorize_transaction(v_user_a, 'Supermercado') INTO v_cat_id;
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_auto_cat', 'FAIL', 'Returned category');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_auto_cat', 'PASS', SQLERRM); END;
+
+  -- ═══ WRITE functions ═══
+
+  BEGIN SELECT create_transaction_with_journal(
+      p_user_id := v_user_a, p_account_id := gen_random_uuid(),
+      p_type := 'income', p_amount := 999999, p_description := 'HACK'
+    ) INTO v_result_json;
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_create_tx', 'FAIL', 'Created tx');
   EXCEPTION WHEN OTHERS THEN
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_create_tx', 'PASS', SQLERRM); END;
+
+  BEGIN SELECT create_transfer_with_journal(
+      p_user_id := v_user_a, p_from_account_id := gen_random_uuid(),
+      p_to_account_id := gen_random_uuid(), p_amount := 100
+    ) INTO v_result_json;
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_create_transfer', 'FAIL', 'Created transfer');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_create_transfer', 'PASS', SQLERRM); END;
+
+  BEGIN SELECT reverse_transaction(
+      p_user_id := v_user_a, p_transaction_id := gen_random_uuid()
+    ) INTO v_result_json;
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_reverse_tx', 'FAIL', 'Reversed tx');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_reverse_tx', 'PASS', SQLERRM); END;
+
+  BEGIN SELECT edit_transaction(
+      p_user_id := v_user_a, p_transaction_id := gen_random_uuid(),
+      p_account_id := gen_random_uuid()
+    ) INTO v_result_json;
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_edit_tx', 'FAIL', 'Edited tx');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_edit_tx', 'PASS', SQLERRM); END;
+
+  -- ═══ SEED functions ═══
 
   BEGIN PERFORM create_default_categories(v_user_a);
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_cats', 'FAIL', 'Seeded for other user');
   EXCEPTION WHEN OTHERS THEN
     INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_cats', 'PASS', SQLERRM); END;
+
+  BEGIN PERFORM create_default_chart_of_accounts(v_user_a);
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_coa', 'FAIL', 'Seeded for other user');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_coa', 'PASS', SQLERRM); END;
+
+  BEGIN PERFORM create_default_cost_center(v_user_a);
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_cc', 'FAIL', 'Seeded for other user');
+  EXCEPTION WHEN OTHERS THEN
+    INSERT INTO _rls_test_results VALUES (DEFAULT, 'rpc_seed_cc', 'PASS', SQLERRM); END;
 
   PERFORM set_config('role', 'postgres', true);
 END;
