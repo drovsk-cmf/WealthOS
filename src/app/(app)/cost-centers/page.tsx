@@ -23,6 +23,7 @@ import {
   useDeleteCostCenter,
   useCenterPnl,
   useCenterExport,
+  useDistributeOverhead,
   exportToCsv,
   downloadFile,
   CENTER_TYPE_LABELS,
@@ -174,10 +175,12 @@ export default function CostCentersPage() {
   const createCenter = useCreateCostCenter();
   const updateCenter = useUpdateCostCenter();
   const deleteCenter = useDeleteCostCenter();
+  const distributeOverhead = useDistributeOverhead();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<CostCenter | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [confirmOverhead, setConfirmOverhead] = useState(false);
   const [expandedCenter, setExpandedCenter] = useState<string | null>(null);
 
   useAutoReset(confirmDelete, setConfirmDelete);
@@ -256,10 +259,20 @@ export default function CostCentersPage() {
             Clique num centro para ver o P&L.
           </p>
         </div>
-        <button type="button" onClick={handleNew}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-          + Novo centro
-        </button>
+        <div className="flex gap-2">
+          {centers && centers.some(c => c.is_overhead) && (
+            <button type="button"
+              onClick={() => setConfirmOverhead(true)}
+              className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Ratear overhead
+            </button>
+          )}
+          <button type="button" onClick={handleNew}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+            + Novo centro
+          </button>
+        </div>
       </div>
 
       {/* Empty state */}
@@ -433,6 +446,51 @@ export default function CostCentersPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+        </FocusTrap>
+      )}
+
+      {/* CEN-03: Overhead distribution confirmation */}
+      {confirmOverhead && (
+        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmOverhead(false)} />
+          <div className="relative z-10 w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg">
+            <h3 className="text-lg font-semibold">Ratear Overhead</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Distribui as despesas dos centros marcados como overhead para os demais centros,
+              proporcionalmente ao volume de despesas de cada um no mês atual.
+            </p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Lançamentos já rateados não serão duplicados.
+            </p>
+            <div className="mt-5 flex justify-end gap-3">
+              <button type="button"
+                onClick={() => setConfirmOverhead(false)}
+                className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
+                Cancelar
+              </button>
+              <button type="button"
+                onClick={async () => {
+                  try {
+                    const currentMonth = new Date().toISOString().split("T")[0].slice(0, 8) + "01";
+                    const result = await distributeOverhead.mutateAsync(currentMonth);
+                    if (result.status === "no_target") {
+                      toast.error(result.message ?? "Nenhum centro destino com despesas.");
+                    } else {
+                      toast.success(`Rateio concluído: ${result.allocated} lançamento(s) distribuído(s).`);
+                    }
+                    setConfirmOverhead(false);
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : "Erro ao ratear.");
+                  }
+                }}
+                disabled={distributeOverhead.isPending}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
+                {distributeOverhead.isPending ? "Rateando" : "Ratear mês atual"}
+              </button>
+            </div>
           </div>
         </div>
         </FocusTrap>

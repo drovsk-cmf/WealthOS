@@ -508,6 +508,7 @@ export type Database = {
       cron_mark_overdue_transactions: { Args: Record<string, never>; Returns: undefined }
       cron_process_account_deletions: { Args: Record<string, never>; Returns: undefined }
       depreciate_asset: { Args: { p_asset_id: string; p_user_id: string }; Returns: Json }
+      distribute_overhead: { Args: { p_user_id: string; p_month: string }; Returns: Json }
       edit_transaction: { Args: { p_user_id: string; p_transaction_id: string; p_account_id: string; p_category_id?: string; p_type?: Database["public"]["Enums"]["transaction_type"]; p_amount?: number; p_description?: string; p_date?: string; p_is_paid?: boolean; p_notes?: string; p_tags?: string[]; p_family_member_id?: string; p_category_source?: Database["public"]["Enums"]["category_assignment_source"] }; Returns: Json }
       edit_transfer: { Args: { p_user_id: string; p_transaction_id: string; p_from_account_id: string; p_to_account_id: string; p_amount: number; p_description?: string; p_date?: string; p_is_paid?: boolean }; Returns: Json }
       find_reconciliation_candidates: { Args: { p_account_id: string; p_amount: number; p_date: string; p_tolerance_days?: number; p_tolerance_pct?: number; p_user_id: string }; Returns: Json }

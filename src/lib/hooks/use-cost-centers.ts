@@ -310,3 +310,27 @@ export function downloadFile(
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// ─── CEN-03: Distribute overhead ─────────────────────────────────
+
+export function useDistributeOverhead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (month: string) => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const { data, error } = await supabase.rpc("distribute_overhead", {
+        p_user_id: user.id,
+        p_month: month,
+      });
+      if (error) throw error;
+      return data as { status: string; allocated: number; skipped: number; message?: string };
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
+    },
+  });
+}
