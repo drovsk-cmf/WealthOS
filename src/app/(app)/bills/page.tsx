@@ -16,7 +16,7 @@ import { toast } from "sonner";
  */
 
 import { useState } from "react";
-import { CalendarClock, Repeat, AlertTriangle, Clock } from "lucide-react";
+import { CalendarClock, Repeat, AlertTriangle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   useRecurrences,
   usePendingBills,
@@ -33,7 +33,7 @@ import type { Database } from "@/types/database";
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
-type Tab = "pending" | "recurrences";
+type Tab = "pending" | "recurrences" | "calendar";
 
 interface EditData {
   id: string;
@@ -69,6 +69,10 @@ export default function BillsPage() {
   const [confirmDeactivate, setConfirmDeactivate] = useState<string | null>(null);
   const [confirmPay, setConfirmPay] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [calMonth, setCalMonth] = useState(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() };
+  });
 
   useAutoReset(confirmDeactivate, setConfirmDeactivate);
   useAutoReset(confirmPay, setConfirmPay);
@@ -108,7 +112,7 @@ export default function BillsPage() {
     setConfirmDeactivate(null);
   }
 
-  const isLoading = tab === "pending" ? loadingBills : loadingRec;
+  const isLoading = tab === "pending" || tab === "calendar" ? loadingBills : loadingRec;
 
   if (isLoading) {
     return (
@@ -144,23 +148,28 @@ export default function BillsPage() {
         {([
           { key: "pending", label: "Pendentes", count: pendingBills?.length ?? 0 },
           { key: "recurrences", label: "Recorrências", count: recurrences?.length ?? 0 },
+          { key: "calendar", label: "Calendário", count: null },
         ] as const).map((t) => (
           <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
               tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}>
             {t.label}
-            <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold">
-              {t.count}
-            </span>
+            {t.count !== null && (
+              <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold">
+                {t.count}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Search */}
-      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-        placeholder={tab === "pending" ? "Buscar pendentes" : "Buscar recorrências"} aria-label="Buscar contas"
-        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      {/* Search (not shown on calendar) */}
+      {tab !== "calendar" && (
+        <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+          placeholder={tab === "pending" ? "Buscar pendentes" : "Buscar recorrências"} aria-label="Buscar contas"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+      )}
 
       {/* ═══ TAB: Pendentes (CAP-04, CAP-05, CAP-06) ═══ */}
       {tab === "pending" && (
@@ -337,6 +346,117 @@ export default function BillsPage() {
           )}
         </>
       )}
+
+      {/* ═══ TAB: Calendário (CAP-05) ═══ */}
+      {tab === "calendar" && (() => {
+        const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+        const MONTH_NAMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const { year, month } = calMonth;
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+        // Build map: day → bills due that day
+        const billsByDay = new Map<number, { description: string; amount: number; isOverdue: boolean }[]>();
+        for (const bill of pendingBills ?? []) {
+          const d = new Date(bill.date + "T12:00:00");
+          if (d.getFullYear() === year && d.getMonth() === month) {
+            const day = d.getDate();
+            if (!billsByDay.has(day)) billsByDay.set(day, []);
+            billsByDay.get(day)!.push({
+              description: bill.description ?? "Sem descrição",
+              amount: bill.amount,
+              isOverdue: bill.payment_status === "overdue",
+            });
+          }
+        }
+
+        const prevMonth = () => setCalMonth(m => m.month === 0 ? { year: m.year - 1, month: 11 } : { ...m, month: m.month - 1 });
+        const nextMonth = () => setCalMonth(m => m.month === 11 ? { year: m.year + 1, month: 0 } : { ...m, month: m.month + 1 });
+
+        const cells: (number | null)[] = [];
+        for (let i = 0; i < firstDay; i++) cells.push(null);
+        for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+        while (cells.length % 7 !== 0) cells.push(null);
+
+        return (
+          <div className="space-y-4">
+            {/* Month navigator */}
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={prevMonth} className="rounded-md p-2 hover:bg-accent" aria-label="Mês anterior">
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <h3 className="text-lg font-semibold">
+                {MONTH_NAMES[month]} {year}
+              </h3>
+              <button type="button" onClick={nextMonth} className="rounded-md p-2 hover:bg-accent" aria-label="Próximo mês">
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Calendar grid */}
+            <div className="rounded-lg border bg-card overflow-hidden">
+              {/* Weekday headers */}
+              <div className="grid grid-cols-7 border-b bg-muted/50">
+                {WEEKDAYS.map(w => (
+                  <div key={w} className="py-2 text-center text-[11px] font-semibold text-muted-foreground">{w}</div>
+                ))}
+              </div>
+
+              {/* Day cells */}
+              <div className="grid grid-cols-7">
+                {cells.map((day, i) => {
+                  const bills = day ? billsByDay.get(day) : undefined;
+                  const isToday = isCurrentMonth && day === today.getDate();
+                  const hasOverdue = bills?.some(b => b.isOverdue);
+
+                  return (
+                    <div key={i} className={`min-h-[4rem] border-b border-r p-1.5 ${
+                      day ? "hover:bg-accent/30" : "bg-muted/20"
+                    } ${i % 7 === 6 ? "border-r-0" : ""}`}>
+                      {day && (
+                        <>
+                          <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium ${
+                            isToday ? "bg-primary text-primary-foreground" : ""
+                          }`}>
+                            {day}
+                          </span>
+                          {bills && bills.length > 0 && (
+                            <div className="mt-0.5 space-y-0.5">
+                              {bills.slice(0, 2).map((b, j) => (
+                                <div key={j} className={`truncate rounded px-1 py-0.5 text-[9px] font-medium leading-tight ${
+                                  b.isOverdue ? "bg-terracotta/15 text-terracotta" : "bg-burnished/15 text-burnished"
+                                }`}>
+                                  {formatCurrency(b.amount)}
+                                </div>
+                              ))}
+                              {bills.length > 2 && (
+                                <span className="text-[9px] text-muted-foreground">+{bills.length - 2}</span>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="flex gap-4 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-burnished" /> Pendente
+              </span>
+              <span className="flex items-center gap-1">
+                <span className="h-2 w-2 rounded-full bg-terracotta" /> Vencida
+              </span>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Form dialog */}
       <RecurrenceForm open={formOpen} onClose={() => { setFormOpen(false); setEditData(null); }} editData={editData} />
