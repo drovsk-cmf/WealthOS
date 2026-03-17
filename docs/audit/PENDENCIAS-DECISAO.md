@@ -1,9 +1,21 @@
 # Oniefy - Pendências para Decisão
 
-**Data:** 2026-03-16
+**Data:** 2026-03-16 (atualizado 2026-03-17)
 **Contexto:** Pós-auditoria completa (118 arquivos + 8 specs cruzados). 32 itens pendentes em 10 grupos.
+**Status:** ✅ **17/17 itens FAZER concluídos na sessão 19 (17/03/2026).**
 
 **Disposições:** FAZER / DESCARTAR / ADIAR (com gatilho) / DELEGAR
+
+| Grupo | Itens FAZER | Status |
+|-------|-------------|--------|
+| 1 | 1.2, 1.3, 1.4, 1.5 | ✅ Todos feitos |
+| 2 | 2.1, 2.2 | ✅ Todos feitos |
+| 3 | 3.1, 3.2, 3.3, 3.4, 3.5 | ✅ Todos feitos |
+| 4 | 4.1, 4.2, 4.3 | ✅ Todos feitos |
+| 5 | 5.1, 5.2 | ✅ Todos feitos |
+| 6 | DROP tax_records | ✅ Feito |
+| 1.1 | Instrument Serif | ADIAR (landing page) |
+| 7-10 | Longo prazo / Mac / Investimento | Pendentes (dependências externas) |
 
 **Ordenação:** Grupos que dependem apenas de sessões Claude estão em ordem crescente de esforço. Grupos com dependência externa ficam no final.
 
