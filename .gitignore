@@ -42,6 +42,13 @@ supabase/.temp/
 ios/
 android/
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+e2e/.auth/
+
 # IDE
 .idea/
 .vscode/

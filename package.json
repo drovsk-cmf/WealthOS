@@ -15,7 +15,9 @@
     "cap:sync": "npx cap sync",
     "cap:open:ios": "npx cap open ios",
     "cap:build:ios": "npx cap sync && npx cap open ios",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "@capacitor/app": "^6.0.0",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^6.0.0",
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/jest": "^30.0.0",
