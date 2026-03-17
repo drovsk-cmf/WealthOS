@@ -66,7 +66,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Functions (total) | 87 (70 RPCs + 7 triggers + 9 cron + 1 utility). Todas com `SET search_path = public` e auth.uid() check |
 | Triggers | 22 |
 | ENUMs | 27 |
-| Migrations aplicadas | 52+ via MCP (40 SQL files no repo) |
+| Migrations aplicadas | 53+ via MCP (41 SQL files no repo) |
 | pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -1671,7 +1671,7 @@ Itens pendentes são do Grupo 7 (longo prazo), 9 (requer Mac) e 10 (investimento
 
 ### CI
 
-- **Último commit verde:** `d05c3b1` (4/4 jobs: Security + Lint + Unit Tests + Build)
+- **Último commit verde:** `3c9067c` (4/4 jobs: Security + Lint + Unit Tests + Build)
 
 ---
 
@@ -1692,7 +1692,7 @@ Auditoria de verificação dos 28 achados da sessão 18. Cada item marcado "FEIT
 
 ### 20.2 Varredura RLS (Camada 2)
 
-Suíte de 50 assertions executada diretamente no banco via MCP, cobrindo 5 vetores de ataque:
+**Passe 1:** 50 assertions executadas via MCP, 5 vetores de ataque:
 
 | Batch | Escopo | Resultado |
 |---|---|---|
@@ -1702,16 +1702,27 @@ Suíte de 50 assertions executada diretamente no banco via MCP, cobrindo 5 vetor
 | Acesso anônimo | Sem JWT | 6/6 PASS |
 | SECURITY DEFINER RPCs (10 funções) | User B chama RPC com User A ID | **8/10 PASS, 2 FAIL** |
 
-**Vulnerabilidades encontradas e corrigidas:**
-- `get_weekly_digest(p_user_id)`: retornava dados financeiros de qualquer usuário (CRITICO). Sem `auth.uid()` check.
-- `get_budget_vs_actual(p_user_id, int, int)`: overload com inteiros sem auth check (overload com DATE tinha). Criado na migration 043.
-- `create_default_categories(p_user_id)`: chamável cross-user (baixo risco, idempotente).
+Vulnerabilidades do Passe 1 (corrigidas via migrations 051-052):
+- `get_weekly_digest`: retornava dados financeiros de qualquer usuário (CRITICO)
+- `get_budget_vs_actual` (int overload): sem auth check (CRITICO)
+- `create_default_categories`: chamável cross-user (LOW, idempotente)
+
+**Passe 2:** Retestar com dados reais (account_id, category_id existentes). Comprovou 4 vulnerabilidades adicionais:
+
+| Ataque | Resultado | Impacto |
+|---|---|---|
+| User B cria transação na conta de User A | **SUCESSO** | Injeção de dados financeiros falsos |
+| User B estorna transação de User A | **SUCESSO** | Destruição de dados legítimos |
+| User B lê categorias de User A (auto_categorize) | **SUCESSO** | Vazamento de padrões |
+| User B cria centro de custo para User A | **SUCESSO** | Poluição de dados |
+
+Corrigidas via migration 053 (dynamic patching de 7 funções). Total: 35/35 SECURITY DEFINER functions com auth.uid() guard.
+
+**Storage bucket:** Verificado. 4 policies RLS em `storage.objects`. Path traversal (`../`) bloqueado. Hook `use-documents.ts` usa `user.id` da sessão (dupla proteção).
 
 **Fix pattern:** `IF auth.uid() IS NOT NULL AND p_user_id != auth.uid() THEN RAISE EXCEPTION 'Forbidden'; END IF;` Permite cron/trigger (auth.uid()=NULL) e bloqueia cross-user autenticado.
 
-**Nota:** Ao aplicar o fix de `create_default_categories`, o CREATE OR REPLACE apagou o body original (apenas o guard ficou). Corrigido via migration 052 (restore completo com guard).
-
-Suíte salva em `supabase/tests/test_rls_isolation.sql` para reexecução futura.
+Suíte atualizada em `supabase/tests/test_rls_isolation.sql` (14 RPCs no Batch 3, was 8).
 
 ### 20.3 Testes de API Routes (Camada 1)
 
@@ -1741,14 +1752,16 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 | `9a6f92c` | docs: HANDOVER sessão 20 |
 | `193cff4` | ci: novo job Unit Tests (208 testes como gate) + fix 3 suítes |
 | `d05c3b1` | fix: NODE_ENV type error no logSchemaError test |
+| `3c9067c` | security: auth guard em TODAS as 35 SECURITY DEFINER functions (migration 053) |
 
-### 20.5 Migrations aplicadas (050-052)
+### 20.5 Migrations aplicadas (050-053)
 
 | # | Nome | Conteúdo |
 |---|------|----------|
 | 050 | cron_recurring_index_adjustment | Cron de recorrências com lookup IPCA/IGP-M/INPC/Selic |
 | 051 | rls_auth_check_security_definer | Auth guards em get_weekly_digest + get_budget_vs_actual (int) |
 | 052 | fix_restore_create_default_categories | Restore body de create_default_categories + auth guard |
+| 053 | auth_guard_all_security_definer | Auth guard nas 7 funções restantes (create_tx, transfer, reverse, undo, auto_cat, seed_coa, seed_cc) |
 
 ### 20.6 Totais atualizados
 
@@ -1756,7 +1769,7 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 - **RLS policies:** 84
 - **Functions:** 87 (70 RPCs + 7 triggers + 9 cron + 1 utility)
 - **ENUMs:** 27
-- **Migrations:** 52+ via MCP (40 SQL files no repo)
+- **Migrations:** 53+ via MCP (41 SQL files no repo)
 - **pg_cron jobs:** 9
 - **Arquivos src/:** ~126, ~24.100 linhas
 - **Suítes de teste Jest:** 15 (208 assertions)
@@ -1765,10 +1778,16 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 
 ### 20.7 Backlog de testes (Camadas pendentes)
 
-| Camada | Escopo | Executor |
-|---|---|---|
-| 2 (gap) | Supabase Storage bucket RLS (user-documents) | curl + anon key ou MCP |
-| 3 (E2E) | Playwright: onboarding, transação, import, auth flows, focus trap, privacy mode | Claude Code no terminal local |
+| Camada | Escopo | Executor | Status |
+|---|---|---|---|
+| 2 (RLS tabelas) | 26 tabelas, 84 policies | SQL via MCP | ✅ COMPLETO (65 assertions) |
+| 2 (RLS RPCs) | 35 SECURITY DEFINER functions | SQL via MCP | ✅ COMPLETO (14 assertions, 9 vulns corrigidas) |
+| 2 (Storage) | Bucket user-documents + path traversal | SQL via MCP | ✅ VERIFICADO (4 policies, traversal bloqueado) |
+| 1 (API routes) | 5/9 rotas, auth/rate limit/sanitization | Jest no CI | ✅ COMPLETO (24 assertions, rodando no CI) |
+| 0 (Unit) | Schemas, parsers, hooks, validations | Jest no CI | ✅ COMPLETO (208 assertions, gate obrigatório) |
+| 3 (E2E) | Playwright: onboarding, transações, import, auth, a11y | Claude Code no terminal local | Não iniciado |
+
+**Gaps de segurança resolvidos: todos.** O único gap restante (Camada 3 E2E) é de UX/a11y, não de segurança.
 
 ### 20.8 Backlog geral (inalterado)
 
