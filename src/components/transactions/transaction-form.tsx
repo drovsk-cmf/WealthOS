@@ -16,12 +16,13 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Sparkles, Camera } from "lucide-react";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useAutoCategory } from "@/lib/hooks/use-auto-category";
 import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
+import { useOcrReceipt } from "@/lib/services/ocr-service";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -83,7 +84,9 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const createTransfer = useCreateTransfer();
   const editTransaction = useEditTransaction();
   const editTransferMutation = useEditTransfer();
+  const ocrReceipt = useOcrReceipt();
   const loading = createTransaction.isPending || createTransfer.isPending || editTransaction.isPending || editTransferMutation.isPending;
+  const scanning = ocrReceipt.isPending;
 
   // UX-H2-01: Auto-categorization
   const [manualCategory, setManualCategory] = useState(false);
@@ -228,6 +231,47 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
 
       <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-lg border bg-card p-6 shadow-lg">
         <h2 className="text-lg font-semibold">{editTransactionId ? "Editar transação" : "Nova transação"}</h2>
+
+        {/* FIN-17: OCR scan button (new transactions only) */}
+        {!editTransactionId && type !== "transfer" && (
+          <div className="mt-2">
+            <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent ${scanning ? "opacity-60" : ""}`}>
+              <Camera className="h-3.5 w-3.5" />
+              {scanning ? "Escaneando..." : "Preencher por foto de recibo"}
+              <input
+                type="file"
+                accept="image/jpeg,image/png"
+                className="hidden"
+                disabled={scanning}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  e.target.value = "";
+                  try {
+                    const result = await ocrReceipt.mutateAsync(file);
+                    if (result.parsed.amount) {
+                      setAmount(result.parsed.amount.toFixed(2).replace(".", ","));
+                    }
+                    if (result.parsed.date) {
+                      setDate(result.parsed.date);
+                    }
+                    if (result.parsed.description) {
+                      setDescription(result.parsed.description);
+                      setShowMore(true);
+                    }
+                    toast.success(
+                      `OCR: confiança ${result.confidence.toFixed(0)}%` +
+                      (result.parsed.amount ? ` · ${formatCurrency(result.parsed.amount)}` : "") +
+                      (result.parsed.date ? ` · ${result.parsed.date}` : "")
+                    );
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : "Erro no OCR.");
+                  }
+                }}
+              />
+            </label>
+          </div>
+        )}
 
         {error && (
           <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
