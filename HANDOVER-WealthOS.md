@@ -1569,3 +1569,103 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
 - **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
 - **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` já configurado
+
+## 19. Sessão 17/03/2026 - Backlog PENDENCIAS-DECISAO completo (17/17 itens)
+
+**Objetivo:** Executar todos os 17 itens FAZER do PENDENCIAS-DECISAO.md (Grupos 1-6).
+
+### Commits desta sessão
+
+| SHA | Conteúdo |
+|-----|----------|
+| `a1ec136` | feat(2.2): focus-trap-react em 6 inline dialogs |
+| `53fcdaa` | fix(3.1/DT-007): remove unsafe type casts em 10 list-query hooks |
+| `64a89f4` | test(3.2): 13 schema tests para RPCs novas |
+| `230c2f9` | feat(3.3): sparkline trends no SolvencyPanel |
+| `1f0e20a` | feat(3.4): edit transfers (reverse pair + re-create) |
+| `a630f14` | feat(3.5): overhead distribution UI (CEN-03) |
+| `7f028ad` | feat(4.1): reajuste automático IPCA/IGP-M/INPC/Selic |
+| `df40323` | feat(4.2): document upload WKF-03 (Supabase Storage) |
+| `6f4ae54` | feat(4.3/PAT-06): attach documents to assets |
+| `54858bb` | feat(1.5): access_logs + DROP tax_records |
+| `4a5ed44` | feat(1.4): encrypted export AES-256-GCM |
+| `ed1545c` | feat(1.3/CAP-05): calendar view for pending bills |
+| `bb8ad6e` | feat(5.1/FIN-17): OCR receipt scanning Tesseract.js |
+| `9494aff` | feat(5.2/CFG-04): Web Push notifications |
+| `15241b0` | fix(ci): move service role client to admin.ts |
+
+### Migrations aplicadas (042-049)
+
+| # | Nome | Conteúdo |
+|---|------|----------|
+| 042 | budget_approval_status | Enum + colunas aprovação em budgets |
+| 043 | budget_approval_filter_old_rpc | Patch get_budget_vs_actual |
+| 044 | edit_transfer_rpc | Edição de transferências (reverse pair) |
+| 045 | distribute_overhead_rpc | Rateio proporcional de overhead |
+| 046 | automatic_index_adjustment | Rewrite generate_next_recurrence com lookup de índices |
+| 047 | drop_tax_records | DROP TABLE depreciada |
+| 048 | access_logs | Tabela + RLS + cron limpeza 90 dias |
+| 049 | notification_tokens_web_push | subscription_data JSONB + unique index |
+
+### Novos arquivos criados
+
+| Arquivo | Função |
+|---------|--------|
+| `src/lib/hooks/use-documents.ts` | Upload/list/delete documentos (Supabase Storage) |
+| `src/lib/hooks/use-access-logs.ts` | Log de acesso (fire-and-forget) + query para settings |
+| `src/lib/hooks/use-push-notifications.ts` | Subscribe/unsubscribe Web Push |
+| `src/lib/services/ocr-service.ts` | OCR Tesseract.js (parsing recibos brasileiros) |
+| `src/lib/supabase/admin.ts` | Admin client (service role, server-side only) |
+| `src/app/api/push/test/route.ts` | Envio de push de teste |
+| `src/app/api/push/send/route.ts` | Envio de push para contas vencidas (cron) |
+| `src/app/(app)/settings/notifications/page.tsx` | UI toggle push + teste |
+| `src/__tests__/rpc-new-schemas.test.ts` | 13 testes Zod para RPCs novas |
+
+### Totais atualizados
+
+- **Migrations:** 49+ aplicadas via MCP
+- **pg_cron jobs:** 9 ativos (+ cleanup-access-logs)
+- **RLS policies:** 88 (+ 2 em access_logs)
+- **Arquivos src/:** ~140, ~27.000 linhas
+- **Testes Jest:** 13 novos (rpc-new-schemas.test.ts)
+- **NPM deps adicionados:** tesseract.js, web-push, @types/web-push
+
+### Backlog restante (pós-sessão)
+
+Todos os 17 itens FAZER do PENDENCIAS-DECISAO estão concluídos.
+Itens pendentes são do Grupo 7 (longo prazo), 9 (requer Mac) e 10 (investimento):
+
+**Grupo 7 (longo prazo, gatilhos futuros):**
+- 7.1 Testes e2e Playwright (quando pipeline madura)
+- 7.2 i18n (quando landing page)
+- 7.3 Feature flags (quando multi-tenant)
+- 7.4 Monitoramento Sentry (quando produção)
+- 7.5 Rate limiting por IP no edge (quando Vercel deploy)
+- 7.6 Backup automatizado Storage (quando dados reais)
+
+**Grupo 9 (requer Mac com Xcode 15+):**
+- iOS App Store submission
+- Screenshot prevention (Capacitor plugin)
+- Jailbreak detection
+- Certificate pinning
+- Biometric auth (Face ID / Touch ID)
+
+**Grupo 10 (investimento):**
+- Supabase Pro upgrade (~US$25/mês, para Leaked Password Protection)
+- Apple Developer Account (US$99/ano)
+
+### Ações para ativar Web Push em produção
+
+1. Adicionar ao `.env.local`:
+   ```
+   NEXT_PUBLIC_VAPID_PUBLIC_KEY=BKkwuc0_QqHEgiJis-u5v1bw0xA9HHUqTyzAiiaHKF60PgcW_ClnlRiMfzB76cG-24OR_bQ5lL0sPzB6qRsn53c
+   VAPID_PRIVATE_KEY=_4WeEDusx7Jyz5bBCC_bQe2ECTVCAD49dhMB8t_sAvY
+   VAPID_EMAIL=mailto:admin@oniefy.com
+   CRON_SECRET=<gerar_valor_aleatório>
+   ```
+2. Configurar cron externo para `POST /api/push/send` com header `Authorization: Bearer <CRON_SECRET>`
+3. Ou usar Vercel Cron (`vercel.json`: `{ "crons": [{ "path": "/api/push/send", "schedule": "0 8 * * *" }] }`)
+
+### CI
+
+- **Último commit verde:** `15241b0` (3/3 jobs: Security + Lint + Build)
