@@ -10,11 +10,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, FileJson, FileSpreadsheet, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, AlertTriangle, FileJson, FileSpreadsheet, Loader2, Shield, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
 
-type ExportFormat = "json" | "csv";
+type ExportFormat = "json" | "csv" | "encrypted";
 
 interface ExportProgress {
   step: string;
@@ -59,6 +59,43 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+// ─── AES-256-GCM encryption (Spec v1 §3.6) ─────────────────────
+
+const MAGIC = new Uint8Array([0x4F, 0x4E, 0x49, 0x45]); // "ONIE"
+const FORMAT_VERSION = 1;
+const PBKDF2_ITERATIONS = 200_000;
+
+async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: salt.buffer as ArrayBuffer, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+    keyMaterial,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt"]
+  );
+}
+
+/** Encrypt payload → Uint8Array [MAGIC(4) | VERSION(1) | SALT(32) | IV(12) | CIPHERTEXT(...)] */
+async function encryptPayload(plaintext: string, password: string): Promise<ArrayBuffer> {
+  const salt = crypto.getRandomValues(new Uint8Array(32));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv.buffer as ArrayBuffer }, key, enc.encode(plaintext));
+
+  // Pack: MAGIC + VERSION + SALT + IV + CIPHERTEXT
+  const result = new Uint8Array(MAGIC.length + 1 + salt.length + iv.length + ciphertext.byteLength);
+  let offset = 0;
+  result.set(MAGIC, offset); offset += MAGIC.length;
+  result[offset] = FORMAT_VERSION; offset += 1;
+  result.set(salt, offset); offset += salt.length;
+  result.set(iv, offset); offset += iv.length;
+  result.set(new Uint8Array(ciphertext), offset);
+  return result.buffer as ArrayBuffer;
+}
+
 function toCsv(rows: Record<string, unknown>[]): string {
   if (rows.length === 0) return "";
   const headers = Object.keys(rows[0]);
@@ -87,6 +124,8 @@ export default function DataSettingsPage() {
   const [progress, setProgress] = useState<ExportProgress[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<ExportWarnings>({ truncated: [], failed: [] });
+  const [showEncForm, setShowEncForm] = useState(false);
+  const [encPassword, setEncPassword] = useState("");
 
   async function handleExport(format: ExportFormat) {
     setExporting(true);
@@ -165,6 +204,19 @@ export default function DataSettingsPage() {
         );
         const blob = new Blob([json], { type: "application/json" });
         downloadBlob(blob, `oniefy-backup-${timestamp}.json`);
+      } else if (format === "encrypted") {
+        // Spec v1 §3.6: encrypted export
+        const json = JSON.stringify({
+          exported_at: new Date().toISOString(),
+          app: "Oniefy",
+          user_id: user.id,
+          data: allData,
+        });
+        const encrypted = await encryptPayload(json, encPassword);
+        const blob = new Blob([encrypted], { type: "application/octet-stream" });
+        downloadBlob(blob, `oniefy-backup-${timestamp}.oniefy.enc`);
+        setEncPassword("");
+        setShowEncForm(false);
       } else {
         // CSV: create one file per table, pack into a combined download
         // For simplicity, export the largest table (transactions) as CSV
@@ -286,7 +338,44 @@ export default function DataSettingsPage() {
             )}
             Exportar CSV + JSON
           </button>
+
+          <button type="button"
+            onClick={() => setShowEncForm(!showEncForm)}
+            disabled={exporting}
+            className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
+          >
+            <Lock className="h-4 w-4" />
+            Exportar criptografado
+          </button>
         </div>
+
+        {/* Password form for encrypted export */}
+        {showEncForm && (
+          <div className="rounded-md border bg-muted/30 p-4 space-y-3">
+            <p className="text-sm font-medium">Defina uma senha para o arquivo criptografado</p>
+            <p className="text-xs text-muted-foreground">
+              AES-256-GCM com chave derivada por PBKDF2 (200.000 iterações).
+              Guarde a senha: sem ela, o arquivo não pode ser descriptografado.
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                value={encPassword}
+                onChange={(e) => setEncPassword(e.target.value)}
+                placeholder="Senha (mín. 8 caracteres)"
+                className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                minLength={8}
+              />
+              <button type="button"
+                onClick={() => handleExport("encrypted")}
+                disabled={exporting || encPassword.length < 8}
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              >
+                {exporting ? "Cifrando" : "Exportar"}
+              </button>
+            </div>
+          </div>
+        )}
 
         <p className="text-[11px] text-muted-foreground">
           Dados sensíveis (CPF, notas criptografadas) permanecem cifrados no export.
