@@ -195,7 +195,7 @@ src/
 - `public/manifest.json` - PWA manifest
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
-- `.github/workflows/ci.yml` - 3 jobs: Security + Lint/TypeCheck + Build
+- `.github/workflows/ci.yml` - 4 jobs: Security + Lint/TypeCheck + Unit Tests + Build
 - `supabase/migrations/` - 40 SQL files (001 a 052, com gaps)
 - `supabase/tests/test_rls_isolation.sql` - Suíte de testes RLS (50 assertions, 4 batches)
 - `docs/audit/` - 9 arquivos de relatório + DIVIDA-TECNICA.md
@@ -1671,7 +1671,7 @@ Itens pendentes são do Grupo 7 (longo prazo), 9 (requer Mac) e 10 (investimento
 
 ### CI
 
-- **Último commit verde:** `6b1cf50` (3/3 jobs: Security + Lint + Build)
+- **Último commit verde:** `d05c3b1` (4/4 jobs: Security + Lint + Unit Tests + Build)
 
 ---
 
@@ -1738,6 +1738,9 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 | `085507e` | fix: 4 defeitos de validação DT (encryption re-init, push auth bypass, cron routes, index adjustment) |
 | `5c59af5` | security: 2 vulnerabilidades RLS + suíte de testes SQL (50 assertions) |
 | `6b1cf50` | test: suíte de segurança API routes (30+ assertions) |
+| `9a6f92c` | docs: HANDOVER sessão 20 |
+| `193cff4` | ci: novo job Unit Tests (208 testes como gate) + fix 3 suítes |
+| `d05c3b1` | fix: NODE_ENV type error no logSchemaError test |
 
 ### 20.5 Migrations aplicadas (050-052)
 
@@ -1756,15 +1759,15 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 - **Migrations:** 52+ via MCP (40 SQL files no repo)
 - **pg_cron jobs:** 9
 - **Arquivos src/:** ~126, ~24.100 linhas
-- **Suítes de teste Jest:** 15
+- **Suítes de teste Jest:** 15 (208 assertions)
 - **Testes SQL (RLS):** 50 assertions (supabase/tests/test_rls_isolation.sql)
-- **CI:** 3/3 verde nos 3 commits
+- **CI:** 4/4 verde (Security + Lint/TypeCheck + **Unit Tests** + Build). Testes são gate obrigatório.
 
 ### 20.7 Backlog de testes (Camadas pendentes)
 
 | Camada | Escopo | Executor |
 |---|---|---|
-| 1 (restante) | Rodar `npx jest api-routes-security` no Windows | Claudio ou Claude Code |
+| 2 (gap) | Supabase Storage bucket RLS (user-documents) | curl + anon key ou MCP |
 | 3 (E2E) | Playwright: onboarding, transação, import, auth flows, focus trap, privacy mode | Claude Code no terminal local |
 
 ### 20.8 Backlog geral (inalterado)
