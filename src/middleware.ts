@@ -198,6 +198,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Authenticated user on protected route: check onboarding completion
+  if (user && !isPublicRoute && !isAuthFlowRoute) {
+    const { data: profile } = await supabase
+      .from("users_profile")
+      .select("onboarding_completed")
+      .eq("id", user.id)
+      .single();
+
+    if (profile && !profile.onboarding_completed) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Authenticated user on public auth pages (but not auth flow pages)
   if (user && isPublicRoute && !isAuthFlowRoute) {
     // Check onboarding status to decide where to redirect
