@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 import webpush from "web-push";
 
 /**
@@ -19,8 +19,6 @@ const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY ?? "";
 const VAPID_EMAIL = process.env.VAPID_EMAIL ?? "mailto:admin@oniefy.com";
 const CRON_SECRET = process.env.CRON_SECRET ?? "";
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {
   webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
@@ -33,13 +31,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!VAPID_PUBLIC || !VAPID_PRIVATE || !SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-    return NextResponse.json({ error: "Missing configuration" }, { status: 500 });
+  if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
+    return NextResponse.json({ error: "Missing VAPID configuration" }, { status: 500 });
   }
 
   try {
-    // Use service role (server-side, no user context)
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const supabase = createAdminClient();
     const today = new Date().toISOString().split("T")[0];
     const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
 
@@ -134,7 +131,7 @@ export async function POST(request: NextRequest) {
       // Log notification
       await supabase.from("notification_log").insert({
         user_id: userId,
-        type: "due_bill",
+        type: "bill_due",
         title: overdue.length > 0 ? "Contas vencidas" : "Contas a pagar",
         body: body.trim(),
         status: "sent",
