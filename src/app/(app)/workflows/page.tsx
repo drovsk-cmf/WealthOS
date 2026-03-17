@@ -7,7 +7,7 @@ import { toast } from "sonner";
  *
  * WKF-01: Auto-create workflows (integrated into account creation hook)
  * WKF-02: Pending tasks as checklist, grouped by workflow
- * WKF-03: Upload document in task (DT-009: manual verification only, upload not implemented)
+ * WKF-03: Upload document in task (4.2: real upload to Supabase Storage + manual fallback)
  * WKF-04: Update balance directly in task
  *
  * Two tabs: "Tarefas" (pending checklist) + "Workflows" (manage rules)
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 import { useState } from "react";
 import { ClipboardList, Workflow } from "lucide-react";
+import { useUploadDocument } from "@/lib/hooks/use-documents";
 import {
   useWorkflows,
   usePendingTasks,
@@ -45,10 +46,12 @@ type WorkflowPeriodicity = Database["public"]["Enums"]["workflow_periodicity"];
 function TaskAction({
   task,
   onComplete,
+  onUpload,
   isPending,
 }: {
   task: TaskWithWorkflow;
   onComplete: (taskId: string, status: "completed" | "skipped", resultData?: Record<string, unknown>) => void;
+  onUpload?: (taskId: string, file: File) => void;
   isPending: boolean;
 }) {
   const [balanceValue, setBalanceValue] = useState("");
@@ -97,12 +100,27 @@ function TaskAction({
   }
 
   if (task.task_type === "upload_document") {
-    // DT-009: Upload not implemented. User can mark as manually verified.
+    // WKF-03: Real file upload (4.2) + manual fallback
     return (
       <div className="flex items-center gap-1">
-        <span className="text-[10px] text-muted-foreground">Sem upload</span>
+        <label className="cursor-pointer rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20">
+          Enviar arquivo
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf,.xlsx,.csv,.ofx"
+            className="hidden"
+            disabled={isPending}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file && onUpload) {
+                onUpload(task.id, file);
+              }
+              e.target.value = "";
+            }}
+          />
+        </label>
         <button type="button"
-          onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente (upload indisponível)" })}
+          onClick={() => onComplete(task.id, "completed", { note: "Documento conferido manualmente" })}
           disabled={isPending}
           className="rounded-md bg-burnished/15 px-2.5 py-1 text-xs font-medium text-burnished hover:bg-burnished/20">
           Conferido
@@ -154,6 +172,7 @@ export default function WorkflowsPage() {
   const { data: accounts } = useAccounts();
   const generateTasks = useGenerateTasks();
   const completeTask = useCompleteTask();
+  const uploadDocument = useUploadDocument();
   const createWorkflow = useCreateWorkflow();
   const deactivateWorkflow = useDeactivateWorkflow();
 
@@ -174,6 +193,25 @@ export default function WorkflowsPage() {
     resultData?: Record<string, unknown>
   ) {
     completeTask.mutate({ taskId, status, resultData });
+  }
+
+  async function handleUploadDocument(taskId: string, file: File) {
+    try {
+      await uploadDocument.mutateAsync({
+        file,
+        relatedTable: "workflow_tasks",
+        relatedId: taskId,
+      });
+      // Auto-complete the task after successful upload
+      completeTask.mutate({
+        taskId,
+        status: "completed",
+        resultData: { note: `Documento enviado: ${file.name}` },
+      });
+      toast.success(`"${file.name}" enviado com sucesso.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro no upload.");
+    }
   }
 
   async function handleGenerateTasks() {
@@ -308,7 +346,8 @@ export default function WorkflowsPage() {
                         <TaskAction
                           task={task}
                           onComplete={handleCompleteTask}
-                          isPending={completeTask.isPending}
+                          onUpload={handleUploadDocument}
+                          isPending={completeTask.isPending || uploadDocument.isPending}
                         />
                       </div>
                     ))}
