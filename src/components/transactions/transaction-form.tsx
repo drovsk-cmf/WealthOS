@@ -21,7 +21,7 @@ import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useAutoCategory } from "@/lib/hooks/use-auto-category";
-import { useCreateTransaction, useCreateTransfer, useEditTransaction } from "@/lib/services/transaction-engine";
+import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -43,6 +43,7 @@ interface TransactionFormProps {
     categoryId?: string;
     familyMemberId?: string;
     notes?: string;
+    toAccountId?: string; // for transfer editing
   } | null;
   /** When set, form submits as edit (reverse + re-create) instead of create */
   editTransactionId?: string | null;
@@ -81,7 +82,8 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
 
   const createTransfer = useCreateTransfer();
   const editTransaction = useEditTransaction();
-  const loading = createTransaction.isPending || createTransfer.isPending || editTransaction.isPending;
+  const editTransferMutation = useEditTransfer();
+  const loading = createTransaction.isPending || createTransfer.isPending || editTransaction.isPending || editTransferMutation.isPending;
 
   // UX-H2-01: Auto-categorization
   const [manualCategory, setManualCategory] = useState(false);
@@ -102,7 +104,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     if (open) {
       setType(prefill?.type ?? defaultType);
       setAccountId(prefill?.accountId ?? accounts?.[0]?.id ?? "");
-      setToAccountId("");
+      setToAccountId(prefill?.toAccountId ?? "");
       setCategoryId(prefill?.categoryId ?? "");
       setFamilyMemberId(prefill?.familyMemberId ?? "");
       setAmount(prefill?.amount ?? "");
@@ -154,7 +156,19 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     }
 
     try {
-      if (editTransactionId && type !== "transfer") {
+      if (editTransactionId && type === "transfer") {
+        // 3.4: Edit transfer (atomic reverse pair + re-create)
+        await editTransferMutation.mutateAsync({
+          original_transaction_id: editTransactionId,
+          from_account_id: accountId,
+          to_account_id: toAccountId,
+          amount: parsedAmount,
+          description: description || null,
+          date,
+          is_paid: isPaid,
+        });
+        toast.success("Transferência editada.");
+      } else if (editTransactionId && type !== "transfer") {
         // DT-012: Edit mode (atomic reverse + re-create)
         await editTransaction.mutateAsync({
           original_transaction_id: editTransactionId,

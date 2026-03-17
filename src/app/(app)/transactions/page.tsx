@@ -33,6 +33,7 @@ export default function TransactionsPage() {
     description?: string;
     accountId?: string;
     categoryId?: string;
+    toAccountId?: string; // for transfer editing
   } | null>(null);
   const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
   const [filters, setFilters] = useState<TransactionFilters>({});
@@ -362,18 +363,30 @@ export default function TransactionsPage() {
                   </>
                 )}
 
-                {/* DT-012: Edit button */}
-                {!tx.is_deleted && tx.type !== "transfer" && (
+                {/* DT-012 + 3.4: Edit button (all types) */}
+                {!tx.is_deleted && (
                   <button type="button"
                     onClick={() => {
                       setEditingTransactionId(tx.id);
-                      setDuplicateData({
-                        type: tx.type as "expense" | "income",
-                        amount: String(tx.amount),
-                        description: tx.description ?? "",
-                        accountId: tx.account_id,
-                        categoryId: tx.category_id ?? undefined,
-                      });
+                      if (tx.type === "transfer") {
+                        // Find paired transaction to get the other account
+                        const pair = transactions?.find(t => t.id === tx.transfer_pair_id);
+                        setDuplicateData({
+                          type: "transfer",
+                          amount: String(tx.amount),
+                          description: tx.description ?? "",
+                          accountId: tx.account_id,
+                          toAccountId: pair?.account_id ?? "",
+                        });
+                      } else {
+                        setDuplicateData({
+                          type: tx.type as "expense" | "income",
+                          amount: String(tx.amount),
+                          description: tx.description ?? "",
+                          accountId: tx.account_id,
+                          categoryId: tx.category_id ?? undefined,
+                        });
+                      }
                       setFormOpen(true);
                     }}
                     className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"

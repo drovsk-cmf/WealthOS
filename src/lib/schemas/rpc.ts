@@ -263,6 +263,14 @@ export const editTransactionResultSchema = z.object({
   reversal_journal_id: z.string().uuid().nullable(),
 });
 
+export const editTransferResultSchema = z.object({
+  original_id: z.string().uuid(),
+  original_pair_id: z.string().uuid().nullable(),
+  new_from_transaction_id: z.string().uuid(),
+  new_to_transaction_id: z.string().uuid(),
+  new_journal_entry_id: z.string().uuid().nullable(),
+});
+
 // ─── Table query schemas ─────────────────────────────────────
 
 export const taxParameterSchema = z.object({

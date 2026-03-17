@@ -14,7 +14,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
-import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema, editTransactionResultSchema } from "@/lib/schemas/rpc";
+import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema, editTransactionResultSchema, editTransferResultSchema } from "@/lib/schemas/rpc";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -72,6 +72,24 @@ export interface EditTransactionResult {
   new_transaction_id: string;
   new_journal_entry_id: string | null;
   reversal_journal_id: string | null;
+}
+
+export interface EditTransferInput {
+  original_transaction_id: string;
+  from_account_id: string;
+  to_account_id: string;
+  amount: number;
+  description?: string | null;
+  date: string;
+  is_paid: boolean;
+}
+
+export interface EditTransferResult {
+  original_id: string;
+  original_pair_id: string | null;
+  new_from_transaction_id: string;
+  new_to_transaction_id: string;
+  new_journal_entry_id: string | null;
 }
 
 // ─── Service functions ──────────────────────────────────────
@@ -253,6 +271,50 @@ export function useEditTransaction() {
 
   return useMutation({
     mutationFn: editTransaction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+  });
+}
+
+/**
+ * Edit a transfer (atomic reverse pair + re-create).
+ * 3.4: Reverses both transactions in the pair and creates a new transfer.
+ */
+export async function editTransfer(
+  input: EditTransferInput
+): Promise<EditTransferResult> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sessão expirada.");
+
+  const { data, error } = await supabase.rpc("edit_transfer", {
+    p_user_id: user.id,
+    p_transaction_id: input.original_transaction_id,
+    p_from_account_id: input.from_account_id,
+    p_to_account_id: input.to_account_id,
+    p_amount: input.amount,
+    p_description: input.description ?? undefined,
+    p_date: input.date,
+    p_is_paid: input.is_paid,
+  });
+
+  if (error) throw new Error(error.message);
+  const parsed = editTransferResultSchema.safeParse(data);
+  if (!parsed.success) {
+    logSchemaError("edit_transfer", parsed);
+    throw new Error("Resposta inválida ao editar transferência.");
+  }
+  return parsed.data;
+}
+
+export function useEditTransfer() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: editTransfer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
