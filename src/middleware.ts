@@ -80,6 +80,8 @@ const PUBLIC_ROUTES = [
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/forgot-password",
+  "/api/push/send",    // Cron endpoint (auth via CRON_SECRET, not session)
+  "/api/digest/send",  // Cron endpoint (auth via DIGEST_CRON_SECRET, not session)
   "/privacy",
 ];
 

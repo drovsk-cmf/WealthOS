@@ -119,17 +119,18 @@ export async function loadEncryptionKey(
       // User hasn't completed onboarding yet - encryption not set up, skip silently
       return;
     }
-    // Onboarding completed but kek_material missing - anomaly
+    // Onboarding completed but kek_material missing - anomaly.
+    // DO NOT call initializeEncryption here: it would overwrite the DB row,
+    // making any previously encrypted fields (cpf, notes) permanently irrecoverable.
+    // Let the caller decide whether to re-initialize after informing the user.
     if (process.env.NODE_ENV === "development") console.error("[Oniefy] ANOMALY: kek_material missing for completed profile. Encrypted fields are irrecoverable.");
-    // Re-initialize to allow user to continue, but flag it
-    await initializeEncryption(supabase);
     throw new EncryptionKeyMissingError("kek_material");
   }
 
   // Case 2: DEK missing (shouldn't happen after onboarding)
   if (!profile.encryption_key_encrypted || !profile.encryption_key_iv) {
+    // DO NOT call initializeEncryption here: same rationale as Case 1.
     if (process.env.NODE_ENV === "development") console.error("[Oniefy] ANOMALY: DEK missing for profile with kek_material.");
-    await initializeEncryption(supabase);
     throw new EncryptionKeyMissingError("dek");
   }
 

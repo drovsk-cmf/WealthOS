@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { timingSafeCompare } from "@/lib/auth/timing-safe";
 import webpush from "web-push";
 
 /**
@@ -18,17 +19,21 @@ import webpush from "web-push";
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? "";
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY ?? "";
 const VAPID_EMAIL = process.env.VAPID_EMAIL ?? "mailto:admin@oniefy.com";
-const CRON_SECRET = process.env.CRON_SECRET ?? "";
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {
   webpush.setVapidDetails(VAPID_EMAIL, VAPID_PUBLIC, VAPID_PRIVATE);
 }
 
 export async function POST(request: NextRequest) {
-  // Auth: verify cron secret
+  // Auth: verify cron secret (fail-closed: block if not configured)
+  const cronSecret = process.env.CRON_SECRET;
+  if (!cronSecret) {
+    return NextResponse.json({ error: "Erro de configuração do servidor" }, { status: 500 });
+  }
   const authHeader = request.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const expected = `Bearer ${cronSecret}`;
+  if (!authHeader || !timingSafeCompare(authHeader, expected)) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
   if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
