@@ -31,6 +31,7 @@ import {
   QuickEntryFab,
   NarrativeCard,
   AttentionQueue,
+  SetupJourneyCard,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -83,6 +84,9 @@ export default function DashboardPage() {
           </button>
         </div>
       )}
+
+      {/* ═══ SEÇÃO 0: Setup Journey (oculto após conclusão) ═══ */}
+      <SetupJourneyCard />
 
       {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06 + UX-H2-03) ═══ */}
       <NarrativeCard

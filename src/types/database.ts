@@ -423,6 +423,18 @@ export type Database = {
         Update: { avatar_emoji?: string | null; birth_date?: string | null; cost_center_id?: string | null; cpf_encrypted?: string | null; created_at?: string; id?: string; is_active?: boolean; is_tax_dependent?: boolean; name?: string; relationship?: Database["public"]["Enums"]["family_relationship"]; role?: Database["public"]["Enums"]["family_role"]; updated_at?: string; user_id?: string }
         Relationships: [{ foreignKeyName: "family_members_cost_center_id_fkey"; columns: ["cost_center_id"]; isOneToOne: false; referencedRelation: "cost_centers"; referencedColumns: ["id"] }]
       }
+      setup_journey: {
+        Row: { id: string; user_id: string; step_key: string; step_order: number; title: string; description: string; status: string; completed_at: string | null; metadata: Json; created_at: string; updated_at: string }
+        Insert: { id?: string; user_id: string; step_key: string; step_order: number; title: string; description: string; status?: string; completed_at?: string | null; metadata?: Json; created_at?: string; updated_at?: string }
+        Update: { id?: string; user_id?: string; step_key?: string; step_order?: number; title?: string; description?: string; status?: string; completed_at?: string | null; metadata?: Json; created_at?: string; updated_at?: string }
+        Relationships: []
+      }
+      description_aliases: {
+        Row: { id: string; user_id: string; original_description: string; custom_description: string; category_id: string | null; usage_count: number; last_used_at: string; created_at: string; updated_at: string }
+        Insert: { id?: string; user_id: string; original_description: string; custom_description: string; category_id?: string | null; usage_count?: number; last_used_at?: string; created_at?: string; updated_at?: string }
+        Update: { id?: string; user_id?: string; original_description?: string; custom_description?: string; category_id?: string | null; usage_count?: number; last_used_at?: string; created_at?: string; updated_at?: string }
+        Relationships: [{ foreignKeyName: "description_aliases_category_id_fkey"; columns: ["category_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] }]
+      }
       journal_entries: {
         Row: { created_at: string; description: string | null; document_url: string | null; entry_date: string; id: string; is_reversal: boolean; notes_encrypted: string | null; occurred_at: string | null; posted_at: string | null; reversed_entry_id: string | null; source: Database["public"]["Enums"]["entry_source"]; transaction_id: string | null; user_date: string | null; user_id: string; workflow_task_id: string | null }
         Insert: { created_at?: string; description?: string | null; document_url?: string | null; entry_date: string; id?: string; is_reversal?: boolean; notes_encrypted?: string | null; occurred_at?: string | null; posted_at?: string | null; reversed_entry_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; transaction_id?: string | null; user_date?: string | null; user_id: string; workflow_task_id?: string | null }
@@ -490,9 +502,9 @@ export type Database = {
         ]
       }
       users_profile: {
-        Row: { cpf_encrypted: string | null; created_at: string; default_currency: string; deletion_requested_at: string | null; encryption_key_encrypted: string | null; encryption_key_iv: string | null; full_name: string | null; id: string; kek_material: string | null; onboarding_completed: boolean; updated_at: string }
-        Insert: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
-        Update: { cpf_encrypted?: string | null; created_at?: string; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id?: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
+        Row: { cpf_encrypted: string | null; created_at: string; cutoff_date: string | null; default_currency: string; deletion_requested_at: string | null; encryption_key_encrypted: string | null; encryption_key_iv: string | null; full_name: string | null; id: string; kek_material: string | null; onboarding_completed: boolean; updated_at: string }
+        Insert: { cpf_encrypted?: string | null; created_at?: string; cutoff_date?: string | null; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
+        Update: { cpf_encrypted?: string | null; created_at?: string; cutoff_date?: string | null; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id?: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
         Relationships: []
       }
       workflow_tasks: {
@@ -558,8 +570,13 @@ export type Database = {
       get_fiscal_projection: { Args: { p_user_id: string; p_year?: number }; Returns: Json }
       get_fiscal_report: { Args: { p_user_id: string; p_year?: number }; Returns: Json }
       get_index_latest: { Args: Record<string, never>; Returns: Json }
+      get_setup_journey: { Args: { p_user_id: string }; Returns: Json }
       get_solvency_metrics: { Args: { p_user_id: string }; Returns: Json }
       get_top_categories: { Args: { p_limit?: number; p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
+      advance_setup_journey: { Args: { p_user_id: string; p_step_key: string; p_metadata?: Json }; Returns: Json }
+      initialize_setup_journey: { Args: { p_user_id: string }; Returns: undefined }
+      lookup_description_alias: { Args: { p_user_id: string; p_original: string }; Returns: Json }
+      upsert_description_alias: { Args: { p_user_id: string; p_original: string; p_custom: string; p_category_id?: string }; Returns: Json }
       import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id: string; p_transactions: Json; p_user_id: string }; Returns: Json }
       match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
       recalculate_account_balance_for: { Args: { p_account_id: string }; Returns: undefined }
