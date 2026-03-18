@@ -9,15 +9,12 @@ import React from "react";
  * Seção 1: Card narrativo (P0-P5: empty, post-import, budget, end-of-month, inactive, neutral)
  * Seção 2: Fila de atenção (até 5 pendências)
  * Seção 3: Resumo financeiro (conteúdo original, abaixo da dobra)
+ *
+ * Performance: single RPC get_dashboard_all (1 roundtrip instead of 9+)
  */
 
 import {
-  useDashboardSummary,
-  useBalanceSheet,
-  useSolvencyMetrics,
-  useTopCategories,
-  useBalanceEvolution,
-  useBudgetVsActual,
+  useDashboardAll,
   useMonthlySnapshots,
 } from "@/lib/hooks/use-dashboard";
 import { useAnalytics } from "@/lib/hooks/use-analytics";
@@ -34,7 +31,6 @@ import {
   QuickEntryFab,
   NarrativeCard,
   AttentionQueue,
-  useAttentionItems,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -44,26 +40,21 @@ export default function DashboardPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => { trackDashboardView(); }, []);
 
-  const summary = useDashboardSummary();
-  const balanceSheet = useBalanceSheet();
-  const solvency = useSolvencyMetrics();
+  // Single RPC: all dashboard data in 1 roundtrip
+  const dash = useDashboardAll();
+  // Snapshots kept separate (10min staleTime, only for sparklines)
   const snapshots = useMonthlySnapshots(12);
-  const topCategories = useTopCategories();
-  const evolution = useBalanceEvolution(6);
-  const budgetVsActual = useBudgetVsActual();
-  const attention = useAttentionItems();
   const disclosure = useProgressiveDisclosure();
 
-  const hasError =
-    summary.error || balanceSheet.error || solvency.error;
+  const d = dash.data;
 
   // Derive narrative state from attention data
   const hasTransactions =
-    (summary.data?.month_income ?? 0) > 0 ||
-    (summary.data?.month_expense ?? 0) > 0 ||
-    (attention.data?.uncategorized ?? 0) > 0 ||
-    (attention.data?.overdue ?? 0) > 0;
-  const hasRecentImport = (attention.data?.recentImportCount ?? 0) > 0;
+    (d?.summary.month_income ?? 0) > 0 ||
+    (d?.summary.month_expense ?? 0) > 0 ||
+    (d?.attention.uncategorized ?? 0) > 0 ||
+    (d?.attention.overdue ?? 0) > 0;
+  const hasRecentImport = (d?.attention.recentImportCount ?? 0) > 0;
 
   return (
     <div className="space-y-8 pb-20">
@@ -76,20 +67,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Error banner */}
-      {hasError && (
+      {dash.error && (
         <div className="rounded-lg border border-terracotta/20 bg-terracotta/10 p-4">
           <p className="text-sm font-medium text-terracotta">
             Erro ao carregar dados do dashboard
           </p>
           <p className="mt-1 text-xs text-terracotta">
-            {(summary.error || balanceSheet.error || solvency.error)?.message}
+            {dash.error?.message}
           </p>
           <button type="button"
-            onClick={() => {
-              summary.refetch();
-              balanceSheet.refetch();
-              solvency.refetch();
-            }}
+            onClick={() => dash.refetch()}
             className="mt-2 rounded bg-terracotta/15 px-3 py-1 text-xs font-medium text-terracotta hover:bg-terracotta/20"
           >
             Tentar novamente
@@ -99,32 +86,34 @@ export default function DashboardPage() {
 
       {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06 + UX-H2-03) ═══ */}
       <NarrativeCard
-        summary={summary.data}
+        summary={d?.summary}
         hasTransactions={hasTransactions}
         hasRecentImport={hasRecentImport}
-        recentImportCount={attention.data?.recentImportCount}
-        budgetData={budgetVsActual.data}
-        lastTransactionDaysAgo={attention.data?.lastTransactionDaysAgo}
-        isLoading={summary.isLoading || attention.isLoading}
+        recentImportCount={d?.attention.recentImportCount}
+        budgetData={d?.budget}
+        lastTransactionDaysAgo={d?.attention.lastTransactionDaysAgo}
+        isLoading={dash.isLoading}
       />
 
       {/* ═══ SEÇÃO 2: Fila de Atenção (UX-H1-06) ═══ */}
       <AttentionQueue
-        budgetData={budgetVsActual.data}
+        budgetData={d?.budget}
+        attentionData={d?.attention ? { ...d.attention, staleAccounts: 0 } : undefined}
+        isLoading={dash.isLoading}
         showFiscalTrigger={disclosure.data?.showFiscalTrigger}
       />
 
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 
       {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
-      <SummaryCards data={summary.data} isLoading={summary.isLoading} />
+      <SummaryCards data={d?.summary} isLoading={dash.isLoading} />
 
       {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento */}
       <div className="grid gap-4 lg:grid-cols-3">
         {/* DASH-03: Top categorias */}
         <TopCategoriesCard
-          data={topCategories.data}
-          isLoading={topCategories.isLoading}
+          data={d?.topCategories}
+          isLoading={dash.isLoading}
         />
 
         {/* DASH-04: Próximas contas a vencer */}
@@ -132,36 +121,36 @@ export default function DashboardPage() {
 
         {/* DASH-05: Resumo do orçamento */}
         <BudgetSummaryCard
-          data={budgetVsActual.data}
-          isLoading={budgetVsActual.isLoading}
+          data={d?.budget}
+          isLoading={dash.isLoading}
         />
       </div>
 
       {/* CTB-05: Balanço Patrimonial + DASH-07: Evolução */}
       <div className="grid gap-4 lg:grid-cols-2">
         <BalanceSheetCard
-          data={balanceSheet.data}
-          isLoading={balanceSheet.isLoading}
+          data={d?.balanceSheet}
+          isLoading={dash.isLoading}
         />
         <BalanceEvolutionChart
-          data={evolution.data}
-          isLoading={evolution.isLoading}
+          data={d?.evolution}
+          isLoading={dash.isLoading}
         />
       </div>
 
       {/* ═══ Cockpit de Solvência ═══ */}
 
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Tiers */}
-      <SolvencyPanel data={solvency.data} isLoading={solvency.isLoading} snapshots={snapshots.data} />
+      <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
 
       {/* DASH-08: FAB lançamento rápido */}
       <QuickEntryFab />
 
       {/* D7.11: Sync indicator */}
-      {summary.dataUpdatedAt > 0 && (
+      {dash.dataUpdatedAt > 0 && (
         <p className="text-center text-[11px] text-muted-foreground/60">
           Atualizado há{" "}
-          {Math.max(1, Math.round((Date.now() - summary.dataUpdatedAt) / 60000))} min
+          {Math.max(1, Math.round((Date.now() - dash.dataUpdatedAt) / 60000))} min
         </p>
       )}
     </div>

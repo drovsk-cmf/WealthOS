@@ -39,6 +39,16 @@ interface AttentionItem {
 interface AttentionQueueProps {
   budgetData?: BudgetVsActualResult;
   showFiscalTrigger?: boolean;
+  /** Pre-fetched attention data from get_dashboard_all (skips internal query) */
+  attentionData?: {
+    uncategorized: number;
+    overdue: number;
+    dueSoon: number;
+    staleAccounts?: number;
+    recentImportCount: number;
+    lastTransactionDaysAgo: number | undefined;
+  };
+  isLoading?: boolean;
 }
 
 function useAttentionItems() {
@@ -134,8 +144,11 @@ function useAttentionItems() {
   });
 }
 
-export function AttentionQueue({ budgetData, showFiscalTrigger }: AttentionQueueProps) {
-  const { data, isLoading } = useAttentionItems();
+export function AttentionQueue({ budgetData, showFiscalTrigger, attentionData, isLoading: externalLoading }: AttentionQueueProps) {
+  // Use internal hook only when no pre-fetched data is provided
+  const internalQuery = useAttentionItems();
+  const data = attentionData ?? internalQuery.data;
+  const isLoading = attentionData ? (externalLoading ?? false) : internalQuery.isLoading;
 
   if (isLoading) {
     return (
@@ -202,11 +215,12 @@ export function AttentionQueue({ budgetData, showFiscalTrigger }: AttentionQueue
   }
 
   // 5. Stale accounts
-  if (data && data.staleAccounts > 0) {
+  if (data && (data.staleAccounts ?? 0) > 0) {
+    const stale = data.staleAccounts!;
     items.push({
       id: "stale",
       icon: RefreshCw,
-      label: `${data.staleAccounts} conta${data.staleAccounts > 1 ? "s" : ""} desatualizada${data.staleAccounts > 1 ? "s" : ""}`,
+      label: `${stale} conta${stale > 1 ? "s" : ""} desatualizada${stale > 1 ? "s" : ""}`,
       detail: "Saldo não atualizado há mais de 7 dias",
       href: "/accounts",
       urgency: "low",

@@ -16,6 +16,7 @@ import {
   balanceEvolutionResultSchema,
   budgetVsActualResultSchema,
   dashboardSummarySchema,
+  dashboardAllSchema,
   logSchemaError,
   solvencyMetricsSchema,
   topCategoriesResultSchema,
@@ -313,6 +314,71 @@ export function useMonthlySnapshots(months: number = 12) {
 
       if (error) throw error;
       return (data ?? []) as MonthlySnapshot[];
+    },
+  });
+}
+
+// ─── ALL-IN-ONE (single roundtrip) ────────────────────────────
+
+export interface DashboardAllData {
+  summary: DashboardSummary;
+  balanceSheet: BalanceSheet;
+  solvency: SolvencyMetrics;
+  topCategories: TopCategoriesResult;
+  evolution: BalanceEvolutionResult;
+  budget: BudgetVsActualResult;
+  attention: {
+    uncategorized: number;
+    overdue: number;
+    dueSoon: number;
+    recentImportCount: number;
+    lastTransactionDaysAgo: number | undefined;
+  };
+}
+
+/**
+ * Single RPC that returns all dashboard data in one roundtrip.
+ * Replaces 7+ parallel HTTP calls to Supabase.
+ */
+export function useDashboardAll() {
+  return useQuery({
+    queryKey: ["dashboard", "all"],
+    staleTime: STALE_TIME,
+    queryFn: async (): Promise<DashboardAllData> => {
+      const { supabase, userId } = await getUserId();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await supabase.rpc("get_dashboard_all" as any, {
+        p_user_id: userId,
+      });
+      if (error) throw error;
+
+      // Loose validation (budget items have flexible shape)
+      const raw = data as Record<string, unknown>;
+
+      const summary = dashboardSummarySchema.safeParse(raw.summary);
+      const balanceSheet = balanceSheetSchema.safeParse(raw.balance_sheet);
+      const solvency = solvencyMetricsSchema.safeParse(raw.solvency);
+      const topCategories = topCategoriesResultSchema.safeParse(raw.top_categories);
+      const evolution = balanceEvolutionResultSchema.safeParse(raw.evolution);
+
+      if (!summary.success) logSchemaError("dashboard_all.summary", summary);
+      if (!balanceSheet.success) logSchemaError("dashboard_all.balance_sheet", balanceSheet);
+      if (!solvency.success) logSchemaError("dashboard_all.solvency", solvency);
+      if (!topCategories.success) logSchemaError("dashboard_all.top_categories", topCategories);
+      if (!evolution.success) logSchemaError("dashboard_all.evolution", evolution);
+
+      const budget = raw.budget as BudgetVsActualResult;
+      const attention = raw.attention as DashboardAllData["attention"];
+
+      return {
+        summary: summary.success ? summary.data : { total_current_balance: 0, total_projected_balance: 0, active_accounts: 0, month_income: 0, month_expense: 0, month_start: "", month_end: "" },
+        balanceSheet: balanceSheet.success ? balanceSheet.data : { liquid_assets: 0, illiquid_assets: 0, total_assets: 0, total_liabilities: 0, net_worth: 0 },
+        solvency: solvency.success ? solvency.data : { tier1_total: 0, tier2_total: 0, tier3_total: 0, tier4_total: 0, total_patrimony: 0, burn_rate: 0, runway_months: 0, lcr: 0, months_analyzed: 0 },
+        topCategories: topCategories.success ? topCategories.data : { categories: [], total_expense: 0, month: "" },
+        evolution: evolution.success ? evolution.data : { data: [], source: "calculated" as const, months_requested: 6 },
+        budget: budget ?? { items: [], total_planned: 0, total_actual: 0, total_remaining: 0, pct_used: 0, month: "", budget_count: 0 },
+        attention: attention ?? { uncategorized: 0, overdue: 0, dueSoon: 0, recentImportCount: 0, lastTransactionDaysAgo: undefined },
+      };
     },
   });
 }

@@ -359,6 +359,26 @@ export const budgetVsActualResultSchema = z.object({
   budget_count: z.number(),
 });
 
+export const attentionQueueSchema = z.object({
+  uncategorized: z.number(),
+  overdue: z.number(),
+  dueSoon: z.number(),
+  recentImportCount: z.number(),
+  lastTransactionDaysAgo: z.number().nullable(),
+});
+
+export const dashboardAllSchema = z.object({
+  summary: dashboardSummarySchema,
+  balance_sheet: balanceSheetSchema,
+  solvency: solvencyMetricsSchema,
+  top_categories: topCategoriesResultSchema,
+  evolution: balanceEvolutionResultSchema,
+  budget: budgetVsActualResultSchema.omit({ items: true }).extend({
+    items: z.array(z.any()),
+  }),
+  attention: attentionQueueSchema,
+});
+
 export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown>) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
