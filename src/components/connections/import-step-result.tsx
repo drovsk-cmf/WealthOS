@@ -10,6 +10,7 @@ interface Props {
   categorized?: number;
   matched?: number;
   batchId?: string | null;
+  onImportComplete?: (stats: { imported: number; categorized: number }) => void;
   onReset: () => void;
 }
 
@@ -23,7 +24,7 @@ interface Props {
  * - Actionable CTAs: review uncategorized, view transactions, import another
  * - UX-H2-05: Undo import (soft-delete batch within 72h)
  */
-export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, batchId, onReset }: Props) {
+export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, batchId, onImportComplete, onReset }: Props) {
   const uncategorized = Math.max(0, imported - categorized);
   const hasUncategorized = uncategorized > 0;
 
@@ -122,19 +123,39 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
 
       {/* CTAs */}
       <div className="flex flex-wrap items-center justify-center gap-3 border-t px-6 py-5">
-        <a
-          href="/transactions"
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Ver transações
-          <ArrowRight className="h-4 w-4" />
-        </a>
-        <button type="button"
-          onClick={onReset}
-          className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
-        >
-          Importar outro arquivo
-        </button>
+        {onImportComplete ? (
+          <>
+            <button type="button"
+              onClick={() => onImportComplete({ imported, categorized })}
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Continuar
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <button type="button"
+              onClick={onReset}
+              className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Importar outro arquivo
+            </button>
+          </>
+        ) : (
+          <>
+            <a
+              href="/transactions"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Ver transações
+              <ArrowRight className="h-4 w-4" />
+            </a>
+            <button type="button"
+              onClick={onReset}
+              className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Importar outro arquivo
+            </button>
+          </>
+        )}
       </div>
 
       {/* UX-H2-05: Undo import */}

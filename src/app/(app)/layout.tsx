@@ -130,13 +130,13 @@ export default function AppLayout({
         }`}
       >
         {/* Header: brand + user + logout */}
-        <div className="flex-shrink-0 border-b px-6 py-4">
+        <div className="flex-shrink-0 border-b px-4 py-5">
           <Image
             src="/brand/lockup-h-plum-transparent.svg"
             alt="Oniefy"
             width={1588}
             height={617}
-            className="h-8 w-auto dark:hidden"
+            className="h-auto w-full dark:hidden"
             priority
             unoptimized
           />
@@ -145,7 +145,7 @@ export default function AppLayout({
             alt="Oniefy"
             width={1588}
             height={617}
-            className="hidden h-8 w-auto dark:block"
+            className="hidden h-auto w-full dark:block"
             priority
             unoptimized
           />

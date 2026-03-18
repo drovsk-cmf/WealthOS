@@ -11,6 +11,7 @@ import { useAnalytics } from "@/lib/hooks/use-analytics";
 import {
   RouteChoiceStep,
   RouteManualStep,
+  RouteImportStep,
   RouteSnapshotStep,
   CelebrationStep,
 } from "@/components/onboarding";
@@ -247,14 +248,7 @@ export default function OnboardingPage() {
       device: isMobile ? "mobile" : "desktop",
     });
 
-    if (route === "import") {
-      // Route B: redirect to connections page (onboarding_completed is already true)
-      track("onboarding_completed", { route: "import", skipped_execution: false });
-      sessionStorage.removeItem("onboarding_step");
-      router.push("/connections");
-      return;
-    }
-
+    // All routes now stay inside the wizard (including import)
     setStep("route_execution");
   }
 
@@ -279,6 +273,15 @@ export default function OnboardingPage() {
   function handleRouteSnapshotComplete(stats: { assets: number }) {
     setRouteStats(stats);
     track("onboarding_completed", { route: "snapshot", ...stats });
+    setStep("celebration");
+  }
+
+  function handleRouteImportComplete(stats: { imported: number; categorized: number }) {
+    setRouteStats({ transactions: stats.imported });
+    track("onboarding_completed", { route: "import", ...stats });
+    if (stats.imported > 0) {
+      track("first_transaction");
+    }
     setStep("celebration");
   }
 
@@ -594,6 +597,10 @@ export default function OnboardingPage() {
 
       {step === "route_execution" && selectedRoute === "snapshot" && (
         <RouteSnapshotStep onComplete={handleRouteSnapshotComplete} currencySymbol={CURRENCY_SYMBOLS[currency] ?? "R$"} />
+      )}
+
+      {step === "route_execution" && selectedRoute === "import" && (
+        <RouteImportStep onComplete={handleRouteImportComplete} />
       )}
 
       {/* ─── Step 10: Celebration (UX-H1-02) ─────── */}

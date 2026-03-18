@@ -15,7 +15,7 @@ import { ImportStepUpload } from "./import-step-upload";
 
 type ImportStep = "upload" | "mapping" | "preview" | "result";
 
-export function ImportWizard() {
+export function ImportWizard({ onImportComplete }: { onImportComplete?: (stats: { imported: number; categorized: number }) => void } = {}) {
   const [step, setStep] = useState<ImportStep>("upload");
   const [fileType, setFileType] = useState<"csv" | "ofx" | "xlsx">("csv");
   const [isParsing, setIsParsing] = useState(false);
@@ -192,6 +192,7 @@ export function ImportWizard() {
       categorized={importBatch.data?.categorized}
       matched={importBatch.data?.matched}
       batchId={importBatch.data?.batch_id}
+      onImportComplete={onImportComplete}
       onReset={() => {
         setStep("upload");
         setTransactions([]);
