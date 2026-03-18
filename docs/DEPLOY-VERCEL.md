@@ -77,7 +77,7 @@ No Supabase Dashboard > Authentication > URL Configuration:
    - `https://oniefy.com/reset-password`
 
 No Supabase Dashboard > Authentication > Providers:
-- Google: atualize Authorized redirect URI para `https://hmwdfcsxtmbzlslxgqus.supabase.co/auth/v1/callback`
+- Google: atualize Authorized redirect URI para `https://mngjbrbxapazdddzgoje.supabase.co/auth/v1/callback`
   (provavelmente já está correto)
 
 ## Passo 6: Verificar

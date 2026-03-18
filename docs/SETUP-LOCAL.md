@@ -163,7 +163,7 @@ O app precisa de duas chaves para se conectar ao Supabase:
 1. Abra o navegador (Chrome, Edge, etc.)
 2. Cole na barra de endereço e pressione Enter:
    ```
-   https://supabase.com/dashboard/project/hmwdfcsxtmbzlslxgqus/settings/api
+   https://supabase.com/dashboard/project/mngjbrbxapazdddzgoje/settings/api
    ```
 3. Se pedir login, entre com a conta que você usou para criar o projeto Supabase
 
@@ -247,14 +247,14 @@ Selecione tudo (Ctrl+A) e apague. Depois cole o seguinte texto:
 # ============================================
 
 # --- Supabase ---
-NEXT_PUBLIC_SUPABASE_URL=https://hmwdfcsxtmbzlslxgqus.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhtd2RmY3N4dG1iemxzbHhncXVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzNzUzMDUsImV4cCI6MjA4Nzk1MTMwNX0.iPnPfcKziaFzLjeNKkCo5px0NyuaeHToOoVyvWcicSE
+NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=COLE_A_ANON_KEY_DO_PROJETO_SP_AQUI
 
 # ATENCAO: cole a service_role key na linha abaixo
 SUPABASE_SERVICE_ROLE_KEY=COLE_A_SERVICE_ROLE_KEY_AQUI
 
 # --- Supabase Project ID ---
-SUPABASE_PROJECT_ID=hmwdfcsxtmbzlslxgqus
+SUPABASE_PROJECT_ID=mngjbrbxapazdddzgoje
 
 # --- App ---
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -333,14 +333,14 @@ Se quiser configurar o Google agora:
 6. Name: `WealthOS Supabase`
 7. Em **"Authorized redirect URIs"**, clique **"+ ADD URI"** e cole:
    ```
-   https://hmwdfcsxtmbzlslxgqus.supabase.co/auth/v1/callback
+   https://mngjbrbxapazdddzgoje.supabase.co/auth/v1/callback
    ```
 8. Clique **"CREATE"**
 9. Copie o **Client ID** e o **Client Secret** que aparecem no modal
 
 ### 4.2 Configurar no Supabase
 
-10. Acesse: https://supabase.com/dashboard/project/hmwdfcsxtmbzlslxgqus/auth/providers
+10. Acesse: https://supabase.com/dashboard/project/mngjbrbxapazdddzgoje/auth/providers
 11. Clique em **"Google"** para expandir
 12. Ative o toggle **"Enable Sign in with Google"**
 13. Cole o **Client ID** no campo correspondente
