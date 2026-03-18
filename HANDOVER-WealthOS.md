@@ -1887,6 +1887,8 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 | `b623564` | fix(ci): Jest roots restrito a src/ (excluir e2e/) |
 | `2a34441` | perf: get_dashboard_all RPC + useDashboardAll hook (9+ calls → 1) |
 
+| `6d04685` | chore: add get_dashboard_all to database types, remove as-any cast |
+
 ### 21.5 Migrations aplicadas (054-055)
 
 | # | Nome | Conteúdo |

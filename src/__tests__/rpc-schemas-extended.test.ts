@@ -18,6 +18,8 @@ import {
   reconciliationCandidateSchema,
   matchTransactionsResultSchema,
   importBatchResultSchema,
+  dashboardAllSchema,
+  attentionQueueSchema,
   logSchemaError,
 } from "@/lib/schemas/rpc";
 
@@ -479,6 +481,110 @@ describe("RPC schemas (extended)", () => {
       if (result.success) {
         expect(result.data.matched).toBe(0);
       }
+    });
+  });
+
+  // ─── Attention Queue ─────────────────────────────────
+  describe("attentionQueueSchema", () => {
+    it("valida attention queue completa", () => {
+      expect(
+        attentionQueueSchema.safeParse({
+          uncategorized: 3,
+          overdue: 1,
+          dueSoon: 2,
+          recentImportCount: 5,
+          lastTransactionDaysAgo: 2,
+        }).success
+      ).toBe(true);
+    });
+
+    it("aceita lastTransactionDaysAgo null", () => {
+      expect(
+        attentionQueueSchema.safeParse({
+          uncategorized: 0,
+          overdue: 0,
+          dueSoon: 0,
+          recentImportCount: 0,
+          lastTransactionDaysAgo: null,
+        }).success
+      ).toBe(true);
+    });
+  });
+
+  // ─── Dashboard All ───────────────────────────────────
+  describe("dashboardAllSchema", () => {
+    it("valida resposta completa do get_dashboard_all", () => {
+      const result = dashboardAllSchema.safeParse({
+        summary: {
+          total_current_balance: 1000,
+          total_projected_balance: 1200,
+          active_accounts: 2,
+          month_income: 5000,
+          month_expense: 3000,
+          month_start: "2026-03-01",
+          month_end: "2026-04-01",
+        },
+        balance_sheet: {
+          liquid_assets: 8000,
+          illiquid_assets: 50000,
+          total_assets: 58000,
+          total_liabilities: 10000,
+          net_worth: 48000,
+        },
+        solvency: {
+          tier1_total: 5000,
+          tier2_total: 3000,
+          tier3_total: 50000,
+          tier4_total: 0,
+          total_patrimony: 58000,
+          burn_rate: 3000,
+          runway_months: 2.7,
+          lcr: 0.44,
+          months_analyzed: 3,
+        },
+        top_categories: {
+          categories: [
+            { category_name: "Alimentação", icon: null, color: "#E07A5F", total: 1500, percentage: 50 },
+          ],
+          total_expense: 3000,
+          month: "2026-03-01",
+        },
+        evolution: {
+          data: [{ month: "2026-02-01", balance: 900, projected: 1000, income: 5000, expense: 4100 }],
+          source: "calculated",
+          months_requested: 6,
+        },
+        budget: {
+          items: [],
+          total_planned: 0,
+          total_actual: 0,
+          total_remaining: 0,
+          pct_used: 0,
+          month: "2026-03-01",
+          budget_count: 0,
+        },
+        attention: {
+          uncategorized: 0,
+          overdue: 0,
+          dueSoon: 0,
+          recentImportCount: 0,
+          lastTransactionDaysAgo: null,
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejeita se summary ausente", () => {
+      expect(
+        dashboardAllSchema.safeParse({
+          balance_sheet: {},
+          solvency: {},
+          top_categories: {},
+          evolution: {},
+          budget: {},
+          attention: {},
+        }).success
+      ).toBe(false);
     });
   });
 });
