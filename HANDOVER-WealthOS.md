@@ -2154,9 +2154,19 @@ Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corri
 | `b72dd87` | chore: remove dead journey-auto-advance (remote uses tryAdvanceStep) |
 | `50fc020` | docs: update project refs to SP + fix stale anon key in SETUP-LOCAL |
 | `9d1b83f` | test: oniefy template parser (23 assertions: detect, standard, card) |
+| `3472ef0` | fix: STEP_ROUTES /recurrences → /bills (rota inexistente) |
+| `ad77314` | test: expand utils coverage (+21: multi-currency, monthShort, colorName, translateError) |
+
+#### SP Migrations adicionais
+
+| Migration | Conteúdo |
+|-----------|----------|
+| `fix_dashboard_all_multicurrency` | `get_dashboard_all` com `get_rate_to_brl(currency)` em todos os valores monetários |
 
 #### Totais atualizados
 
-- **Suítes de teste Jest:** 16 (235 assertions, era 212)
+- **Suítes de teste Jest:** 16 (256 assertions, era 212)
 - **Lint warnings:** 0
 - **CI:** 4/4 verde
+- **SP migrations:** 32 total
+- **Último commit verde:** `ad77314`
