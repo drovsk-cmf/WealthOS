@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type AccountInsert = Database["public"]["Tables"]["accounts"]["Insert"];
@@ -189,6 +190,7 @@ export function useCreateAccount() {
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
       await queryClient.invalidateQueries({ queryKey: ["workflows"] });
       await queryClient.invalidateQueries({ queryKey: ["chart_of_accounts"] });
+      tryAdvanceJourney(queryClient, "create_accounts");
     },
   });
 }

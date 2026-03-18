@@ -1886,8 +1886,9 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 | `824d903` | fix: logo sidebar w-full + onboarding import inline (6 arquivos) |
 | `b623564` | fix(ci): Jest roots restrito a src/ (excluir e2e/) |
 | `2a34441` | perf: get_dashboard_all RPC + useDashboardAll hook (9+ calls → 1) |
-
 | `6d04685` | chore: add get_dashboard_all to database types, remove as-any cast |
+| `ef196d9` | test: dashboardAllSchema + attentionQueueSchema (4 assertions) |
+| `537b37c` | chore: zero lint warnings (12 fixes across 13 files) |
 
 ### 21.5 Migrations aplicadas (054-055)
 
@@ -1901,22 +1902,31 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 - **Functions:** 88 (71 RPCs + 7 triggers + 9 cron + 1 utility)
 - **Migrations:** 55+ via MCP
 - **Arquivos src/:** ~128
-- **Suítes de teste Jest:** 15 (208 assertions)
+- **Suítes de teste Jest:** 15 (212 assertions)
+- **Lint warnings:** 0
 - **CI:** 4/4 verde
 
 ### 21.7 Nota: Supabase generated types
 
-`get_dashboard_all` não está nos generated types (`database.types.ts`). O hook usa `as any` cast no nome do RPC. Para resolver: `npx supabase gen types typescript --project-id hmwdfcsxtmbzlslxgqus > src/lib/supabase/database.types.ts` (requer Supabase CLI + acesso local).
+`get_dashboard_all` adicionado manualmente a `src/types/database.ts`. Types gerados via CLI (`npx supabase gen types`) produzem discrepâncias com o schema manual (campos como `currency` em accounts ausentes). Manter types manuais até estabilização completa do schema.
 
 ### 21.8 Próximos passos (prioridade)
 
 1. **Deploy Vercel** (Claudio, 30 min) - seguir docs/DEPLOY-VERCEL.md
 2. **Migrar Supabase para São Paulo** (Claudio cria projeto, Claude aplica migrations) - seguir docs/MIGRATE-SUPABASE-SP.md
-3. **Regenerar Supabase types** (incluir get_dashboard_all)
-4. **Usar o app por 1 semana** com dados reais
-5. **Convidar 2-3 testers** para beta fechado
+3. **Usar o app por 1 semana** com dados reais
+4. **Convidar 2-3 testers** para beta fechado
+5. **UX-H2-02: Push notification triggers** (Edge Function para vencimentos/inatividade - melhor com dados reais)
 
-- **Último commit verde:** `2b8f9a0` (4/4 jobs: Security + Lint + Unit Tests + Build)
+### 21.9 Stories pendentes (3/90)
+
+| Story | Descrição | Bloqueio |
+|-------|-----------|----------|
+| P1 | Deploy Vercel + domínio oniefy.com | Ação Claudio |
+| UX-H2-02 | Push notifications (triggers de vencimento/inatividade) | Melhor com deploy + dados reais |
+| UX-H3-05 | Teste de corredor com 3 pessoas | Ação Claudio |
+
+- **Último commit verde:** `537b37c` (4/4 jobs: Security + Lint + Unit Tests + Build)
 
 ## 22. Sessão 17-18/03/2026 - Migração SP + 3 Features (Moedas, Template, Coach)
 

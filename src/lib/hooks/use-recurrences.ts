@@ -15,6 +15,7 @@ import { createClient } from "@/lib/supabase/client";
 import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
 
 type Recurrence = Database["public"]["Tables"]["recurrences"]["Row"];
 type RecurrenceInsert = Database["public"]["Tables"]["recurrences"]["Insert"];
@@ -236,6 +237,7 @@ export function useCreateRecurrence() {
       await queryClient.invalidateQueries({ queryKey: ["bills"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      tryAdvanceJourney(queryClient, "recurring_expenses");
     },
   });
 }

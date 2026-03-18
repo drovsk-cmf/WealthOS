@@ -15,6 +15,7 @@ import { budgetWithCategorySchema, logSchemaError } from "@/lib/schemas/rpc";
 import { z } from "zod";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
 
 type Budget = Database["public"]["Tables"]["budgets"]["Row"];
 type BudgetInsert = Database["public"]["Tables"]["budgets"]["Insert"];
@@ -238,6 +239,7 @@ export function useCreateBudget() {
       await queryClient.invalidateQueries({
         queryKey: ["dashboard", "budget-vs-actual"],
       });
+      tryAdvanceJourney(queryClient, "create_budget");
     },
   });
 }

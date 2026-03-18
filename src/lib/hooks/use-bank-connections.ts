@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { importBatchResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
 
 type BankConnection = Database["public"]["Tables"]["bank_connections"]["Row"];
 
@@ -147,6 +148,7 @@ export function useImportBatch() {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
       await queryClient.invalidateQueries({ queryKey: ["bank_connections"] });
+      tryAdvanceJourney(queryClient, "import_statements");
     },
   });
 }
