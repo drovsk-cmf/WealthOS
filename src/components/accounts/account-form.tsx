@@ -11,7 +11,7 @@ import {
   LIQUIDITY_TIER_OPTIONS,
   COA_PARENT_MAP,
 } from "@/lib/hooks/use-accounts";
-import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
+import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
 import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
@@ -34,8 +34,11 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [initialBalance, setInitialBalance] = useState("");
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [liquidityTier, setLiquidityTier] = useState("T1");
-  const { symbol: currSymbol } = useCurrencyLabel();
+  const [currency, setCurrency] = useState("BRL");
   const [error, setError] = useState<string | null>(null);
+
+  const { data: supportedCurrencies } = useSupportedCurrencies();
+  const currencyGroups = supportedCurrencies ? groupCurrenciesByTier(supportedCurrencies) : [];
 
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
@@ -49,6 +52,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInitialBalance(String(account.initial_balance));
       setColor(account.color || PRESET_COLORS[0]);
       setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
+      setCurrency(account.currency || "BRL");
     } else {
       setName("");
       setType("checking");
@@ -56,6 +60,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInitialBalance("");
       setColor(PRESET_COLORS[0]);
       setLiquidityTier("T1");
+      setCurrency("BRL");
     }
     setError(null);
   }, [account, open]);
@@ -79,6 +84,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           type,
           color,
           liquidity_tier: liquidityTier,
+          currency,
         });
       } else {
         await createAccount.mutateAsync({
@@ -87,6 +93,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           initial_balance: balance,
           color,
           liquidity_tier: liquidityTier,
+          currency,
           ...(type === "financing" && { coaParentCode: financingSubtype }),
         });
       }
@@ -169,6 +176,38 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             )}
           </div>
 
+          {/* Currency */}
+          <div className="space-y-1.5">
+            <label htmlFor="acc-currency" className="text-sm font-medium">
+              Moeda
+            </label>
+            <select
+              id="acc-currency"
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {currencyGroups.length > 0 ? (
+                currencyGroups.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.currencies.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.code} - {c.name} ({c.symbol})
+                      </option>
+                    ))}
+                  </optgroup>
+                ))
+              ) : (
+                <option value="BRL">BRL - Real brasileiro (R$)</option>
+              )}
+            </select>
+            {currency !== "BRL" && (
+              <p className="text-xs text-muted-foreground">
+                Saldos serão convertidos para BRL pela cotação do dia.
+              </p>
+            )}
+          </div>
+
           {/* Financing sub-type */}
           {!isEdit && type === "financing" && (
             <div className="space-y-1.5">
@@ -195,8 +234,8 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             <div className="space-y-1.5">
               <label htmlFor="acc-balance" className="text-sm font-medium">
                 {type === "credit_card" || type === "loan" || type === "financing"
-                  ? `Saldo devedor atual (${currSymbol})`
-                  : `Saldo inicial (${currSymbol})`}
+                  ? `Saldo devedor atual (${currency})`
+                  : `Saldo inicial (${currency})`}
               </label>
               <input
                 id="acc-balance"

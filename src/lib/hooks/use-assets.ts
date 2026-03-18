@@ -34,6 +34,7 @@ export interface CreateAssetInput {
   insurance_policy?: string | null;
   insurance_expiry?: string | null;
   notes_encrypted?: string | null;
+  currency?: string;
 }
 
 export interface UpdateAssetInput {
@@ -45,6 +46,7 @@ export interface UpdateAssetInput {
   insurance_policy?: string | null;
   insurance_expiry?: string | null;
   notes_encrypted?: string | null;
+  currency?: string;
 }
 
 // ─── Labels ─────────────────────────────────────────────────────

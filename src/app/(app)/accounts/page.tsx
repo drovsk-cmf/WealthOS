@@ -169,6 +169,11 @@ export default function AccountsPage() {
                 <p className="font-medium">{account.name}</p>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span>{ACCOUNT_TYPE_LABELS[account.type]}</span>
+                  {account.currency && account.currency !== "BRL" && (
+                    <span className="rounded bg-primary/10 px-1 py-0.5 text-[9px] font-medium text-primary">
+                      {account.currency}
+                    </span>
+                  )}
                   {(() => {
                     const days = Math.floor(
                       (Date.now() - new Date(account.updated_at).getTime()) /

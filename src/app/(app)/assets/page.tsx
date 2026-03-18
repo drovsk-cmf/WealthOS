@@ -45,6 +45,7 @@ interface EditData {
   depreciation_rate: number;
   insurance_policy: string | null;
   insurance_expiry: string | null;
+  currency?: string;
 }
 
 function ValueHistory({ assetId }: { assetId: string }) {
@@ -176,6 +177,7 @@ export default function AssetsPage() {
       depreciation_rate: Number(asset.depreciation_rate),
       insurance_policy: asset.insurance_policy,
       insurance_expiry: asset.insurance_expiry,
+      currency: asset.currency ?? "BRL",
     });
     setFormOpen(true);
   }

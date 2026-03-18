@@ -15,7 +15,7 @@ import {
   useUpdateAsset,
   ASSET_CATEGORY_OPTIONS,
 } from "@/lib/hooks/use-assets";
-import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
+import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 
@@ -34,6 +34,7 @@ interface AssetFormProps {
     depreciation_rate: number;
     insurance_policy: string | null;
     insurance_expiry: string | null;
+    currency?: string;
   } | null;
 }
 
@@ -48,8 +49,11 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
   const [depreciationRate, setDepreciationRate] = useState("0");
   const [insurancePolicy, setInsurancePolicy] = useState("");
   const [insuranceExpiry, setInsuranceExpiry] = useState("");
-  const { symbol: currSymbol } = useCurrencyLabel();
+  const [currency, setCurrency] = useState("BRL");
   const [error, setError] = useState("");
+
+  const { data: supportedCurrencies } = useSupportedCurrencies();
+  const currencyGroups = supportedCurrencies ? groupCurrenciesByTier(supportedCurrencies) : [];
 
   const createAsset = useCreateAsset();
   const updateAsset = useUpdateAsset();
@@ -64,6 +68,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
       setDepreciationRate(String(editData.depreciation_rate));
       setInsurancePolicy(editData.insurance_policy ?? "");
       setInsuranceExpiry(editData.insurance_expiry ?? "");
+      setCurrency(editData.currency ?? "BRL");
     } else {
       setName("");
       setCategory("other");
@@ -73,6 +78,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
       setDepreciationRate("0");
       setInsurancePolicy("");
       setInsuranceExpiry("");
+      setCurrency("BRL");
     }
     setError("");
   }, [editData, open]);
@@ -99,6 +105,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           depreciation_rate: isNaN(depRate) ? 0 : depRate,
           insurance_policy: insurancePolicy || null,
           insurance_expiry: insuranceExpiry || null,
+          currency,
         });
       } else {
         if (!acquisitionDate) { setError("Informe a data de aquisição."); return; }
@@ -111,6 +118,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           depreciation_rate: isNaN(depRate) ? 0 : depRate,
           insurance_policy: insurancePolicy || null,
           insurance_expiry: insuranceExpiry || null,
+          currency,
         });
       }
       toast.success(isEditing ? "Bem atualizado." : "Bem cadastrado com sucesso.");
@@ -153,17 +161,36 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
             </select>
           </div>
 
+          {/* Currency */}
+          <div>
+            <label htmlFor="asset-currency" className="text-sm font-medium">Moeda</label>
+            <select id="asset-currency" value={currency} onChange={(e) => setCurrency(e.target.value)}
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+              {currencyGroups.length > 0 ? (
+                currencyGroups.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.currencies.map((c) => (
+                      <option key={c.code} value={c.code}>{c.code} - {c.name} ({c.symbol})</option>
+                    ))}
+                  </optgroup>
+                ))
+              ) : (
+                <option value="BRL">BRL - Real brasileiro (R$)</option>
+              )}
+            </select>
+          </div>
+
           {/* Values */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição ({currSymbol})</label>
+              <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição ({currency})</label>
               <input id="asset-acq-value" type="text" inputMode="decimal" value={acquisitionValue}
                 onChange={(e) => { setAcquisitionValue(e.target.value); if (!isEditing && !currentValue) setCurrentValue(e.target.value); }}
                 placeholder="0,00" required={!isEditing} aria-required={!isEditing} disabled={isEditing}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50" />
             </div>
             <div>
-              <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual ({currSymbol})</label>
+              <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual ({currency})</label>
               <input id="asset-cur-value" type="text" inputMode="decimal" value={currentValue}
                 onChange={(e) => setCurrentValue(e.target.value)} placeholder="0,00" required aria-required="true"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
