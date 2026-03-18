@@ -563,6 +563,7 @@ export type Database = {
       get_center_export: { Args: { p_center_id: string; p_user_id: string }; Returns: Json }
       get_center_pnl: { Args: { p_center_id: string; p_date_from?: string; p_date_to?: string; p_user_id: string }; Returns: Json }
       get_dashboard_summary: { Args: { p_user_id: string }; Returns: Json }
+      get_dashboard_all: { Args: { p_user_id: string }; Returns: Json }
       get_economic_indices: { Args: { p_date_from?: string; p_date_to?: string; p_index_type?: string; p_limit?: number }; Returns: Json }
       get_currency_rates: { Args: Record<string, never>; Returns: Json }
       get_supported_currencies: { Args: Record<string, never>; Returns: Json }

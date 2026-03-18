@@ -346,8 +346,7 @@ export function useDashboardAll() {
     staleTime: STALE_TIME,
     queryFn: async (): Promise<DashboardAllData> => {
       const { supabase, userId } = await getUserId();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await supabase.rpc("get_dashboard_all" as any, {
+      const { data, error } = await supabase.rpc("get_dashboard_all", {
         p_user_id: userId,
       });
       if (error) throw error;
