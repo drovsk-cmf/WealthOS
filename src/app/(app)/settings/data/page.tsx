@@ -239,7 +239,9 @@ export default function DataSettingsPage() {
         user_id: user.id,
         action: "export_data",
         metadata: { format, tables: Object.keys(allData).length },
-      }).then(() => {}, () => {}); // fire-and-forget
+      }).then(() => {}, (err: unknown) => {
+        console.error("[Oniefy] export access_log insert failed:", (err as Error)?.message);
+      }); // fire-and-forget
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao exportar dados.");
     } finally {

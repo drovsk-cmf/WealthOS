@@ -83,7 +83,7 @@ describe("transaction engine: invalidação de cache (Auditoria P0)", () => {
   });
 
   describe("useCreateTransaction", () => {
-    it("deve invalidar transactions e accounts após sucesso", async () => {
+    it("deve invalidar transactions, accounts E dashboard após sucesso", async () => {
       mockRpc.mockResolvedValue({
         data: { transaction_id: VALID_UUID, journal_entry_id: null },
         error: null,
@@ -112,11 +112,12 @@ describe("transaction engine: invalidação de cache (Auditoria P0)", () => {
 
       expect(invalidatedKeys).toContainEqual(["transactions"]);
       expect(invalidatedKeys).toContainEqual(["accounts"]);
+      expect(invalidatedKeys).toContainEqual(["dashboard"]);
     });
   });
 
   describe("useCreateTransfer", () => {
-    it("deve invalidar transactions e accounts após sucesso", async () => {
+    it("deve invalidar transactions, accounts E dashboard após sucesso", async () => {
       mockRpc.mockResolvedValue({
         data: {
           from_transaction_id: VALID_UUID,
@@ -150,11 +151,12 @@ describe("transaction engine: invalidação de cache (Auditoria P0)", () => {
 
       expect(invalidatedKeys).toContainEqual(["transactions"]);
       expect(invalidatedKeys).toContainEqual(["accounts"]);
+      expect(invalidatedKeys).toContainEqual(["dashboard"]);
     });
   });
 
   describe("useReverseTransaction", () => {
-    it("deve invalidar transactions e accounts após sucesso", async () => {
+    it("deve invalidar transactions, accounts E dashboard após sucesso", async () => {
       mockRpc.mockResolvedValue({
         data: {
           reversed_transaction_id: VALID_UUID,
@@ -180,6 +182,7 @@ describe("transaction engine: invalidação de cache (Auditoria P0)", () => {
 
       expect(invalidatedKeys).toContainEqual(["transactions"]);
       expect(invalidatedKeys).toContainEqual(["accounts"]);
+      expect(invalidatedKeys).toContainEqual(["dashboard"]);
     });
   });
 

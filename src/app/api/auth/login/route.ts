@@ -78,7 +78,9 @@ export async function POST(request: NextRequest) {
     action: "login",
     ip_address: ip,
     user_agent: ua,
-  }).then(() => {}, () => {}); // fire-and-forget, never block login
+  }).then(() => {}, (err: unknown) => {
+    console.error("[Oniefy] access_log insert failed:", (err as Error)?.message);
+  }); // fire-and-forget, never block login
 
   // ── Success: return user info (session cookies set automatically) ──
   return NextResponse.json(

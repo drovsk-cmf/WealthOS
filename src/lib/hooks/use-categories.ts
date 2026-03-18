@@ -130,6 +130,8 @@ export function useDeleteCategory() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["categories"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 }

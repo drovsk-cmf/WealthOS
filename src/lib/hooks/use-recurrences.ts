@@ -14,6 +14,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import { tryAdvanceStep } from "@/lib/hooks/use-setup-journey";
+import { mapTransactionRelations } from "@/lib/utils/map-relations";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
@@ -155,11 +156,7 @@ export function usePendingBills() {
         is_paid: row.is_paid as boolean,
         payment_status: row.payment_status as string,
         recurrence_id: row.recurrence_id as string,
-        account_name: (row.accounts as Record<string, unknown>)?.name as string ?? "",
-        account_color: (row.accounts as Record<string, unknown>)?.color as string | null ?? null,
-        category_name: (row.categories as Record<string, unknown>)?.name as string | null ?? null,
-        category_icon: (row.categories as Record<string, unknown>)?.icon as string | null ?? null,
-        category_color: (row.categories as Record<string, unknown>)?.color as string | null ?? null,
+        ...mapTransactionRelations(row),
       }));
     },
   });

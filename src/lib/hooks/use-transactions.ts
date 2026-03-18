@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { mapTransactionRelations } from "@/lib/utils/map-relations";
 
 type Transaction = Database["public"]["Tables"]["transactions"]["Row"];
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
@@ -83,19 +84,11 @@ export function useTransactions(filters: TransactionFilters = {}) {
       if (!txs || txs.length === 0) return [] as TransactionWithRelations[];
 
       // D6.02: Relations already fetched via inline JOIN
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return txs.map((tx: any) => {
-        const account = tx.accounts as { name: string; color: string | null } | null;
-        const category = tx.categories as { name: string; icon: string | null; color: string | null } | null;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      return txs.map((tx: Record<string, unknown>) => {
         const { accounts: _a, categories: _c, ...rest } = tx;
         return {
           ...rest,
-          account_name: account?.name ?? "?",
-          account_color: account?.color ?? null,
-          category_name: category?.name ?? null,
-          category_icon: category?.icon ?? null,
-          category_color: category?.color ?? null,
+          ...mapTransactionRelations(tx),
         } as TransactionWithRelations;
       });
     },

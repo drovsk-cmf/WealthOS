@@ -140,7 +140,9 @@ export async function POST(request: NextRequest) {
         title: overdue.length > 0 ? "Contas vencidas" : "Contas a pagar",
         body: body.trim(),
         status: "sent",
-      }).then(() => {}, () => {}); // fire-and-forget
+      }).then(() => {}, (err: unknown) => {
+        console.error("[Oniefy] notification_log insert failed:", (err as Error)?.message);
+      }); // fire-and-forget
     }
 
     return NextResponse.json({ sent: totalSent, errors: totalErrors, users: byUser.size });

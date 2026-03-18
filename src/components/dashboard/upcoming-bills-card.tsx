@@ -14,6 +14,7 @@ import { CircleCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
+import { mapAccountRelation, mapCategoryRelation } from "@/lib/utils/map-relations";
 
 interface UpcomingBill {
   id: string;
@@ -55,8 +56,8 @@ function useUpcomingBills(limit: number = 5) {
         amount: row.amount as number,
         date: row.date as string,
         type: row.type as string,
-        account_name: (row.accounts as Record<string, unknown>)?.name as string | null ?? null,
-        category_name: (row.categories as Record<string, unknown>)?.name as string | null ?? null,
+        account_name: mapAccountRelation(row).account_name,
+        category_name: mapCategoryRelation(row).category_name,
       }));
     },
   });
