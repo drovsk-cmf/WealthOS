@@ -9,7 +9,6 @@
  * 3. TypeScript types align with schema shapes
  */
 
-import { z } from "zod";
 import {
   editTransactionResultSchema,
   budgetVsActualResultSchema,
@@ -45,6 +44,7 @@ describe("editTransactionResultSchema", () => {
   });
 
   test("rejects missing original_id", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { original_id, ...rest } = validResult;
     const result = editTransactionResultSchema.safeParse(rest);
     expect(result.success).toBe(false);
@@ -123,6 +123,7 @@ describe("budgetWithCategorySchema", () => {
   });
 
   test("rejects missing categories relation", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { categories, ...rest } = validBudget;
     const result = budgetWithCategorySchema.safeParse(rest);
     expect(result.success).toBe(false);

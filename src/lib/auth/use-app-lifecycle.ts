@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Oniefy - App Lifecycle Hook
  *

@@ -16,12 +16,6 @@ interface CelebrationStepProps {
   onGoToApp: () => void;
 }
 
-const ROUTE_LABELS: Record<OnboardingRoute, string> = {
-  manual: "Lançamento rápido",
-  import: "Importação de extrato",
-  snapshot: "Fotografia patrimonial",
-};
-
 export function CelebrationStep({
   route,
   stats,

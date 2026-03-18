@@ -14,7 +14,6 @@ import {
   Laptop,
   Package,
   Plus,
-  Check,
   Loader2,
   X,
 } from "lucide-react";

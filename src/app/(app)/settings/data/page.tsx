@@ -12,7 +12,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, AlertTriangle, FileJson, FileSpreadsheet, Loader2, Shield, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { formatDate } from "@/lib/utils";
 
 type ExportFormat = "json" | "csv" | "encrypted";
 

@@ -35,7 +35,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
   async function handleUndo() {
     if (!batchId) return;
     try {
-      const result = await undoImport.mutateAsync(batchId);
+      await undoImport.mutateAsync(batchId);
       setUndone(true);
       setConfirmUndo(false);
       // result.undone_count is available if needed

@@ -59,6 +59,7 @@ export function useServiceWorker() {
             newWorker.addEventListener("statechange", () => {
               if (newWorker.state === "activated") {
                 // New version activated, could notify user
+                // eslint-disable-next-line no-console
                 if (process.env.NODE_ENV === "development") console.log("[Oniefy] Service Worker atualizado.");
               }
             });

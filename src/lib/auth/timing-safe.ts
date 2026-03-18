@@ -12,10 +12,11 @@ export function timingSafeCompare(a: string, b: string): boolean {
     // leaking length info via early return timing
     const dummy = a.padEnd(Math.max(a.length, b.length), "\0");
     const dummyB = b.padEnd(Math.max(a.length, b.length), "\0");
-    let result = 0;
+    let _result = 0;
     for (let i = 0; i < dummy.length; i++) {
-      result |= dummy.charCodeAt(i) ^ dummyB.charCodeAt(i);
+      _result |= dummy.charCodeAt(i) ^ dummyB.charCodeAt(i);
     }
+    void _result; // intentional: constant-time comparison prevents timing attacks
     // Always false when lengths differ
     return false;
   }

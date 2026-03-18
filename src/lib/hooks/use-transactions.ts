@@ -87,6 +87,7 @@ export function useTransactions(filters: TransactionFilters = {}) {
       return txs.map((tx: any) => {
         const account = tx.accounts as { name: string; color: string | null } | null;
         const category = tx.categories as { name: string; icon: string | null; color: string | null } | null;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { accounts: _a, categories: _c, ...rest } = tx;
         return {
           ...rest,

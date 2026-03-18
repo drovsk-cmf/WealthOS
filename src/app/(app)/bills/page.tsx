@@ -410,7 +410,7 @@ export default function BillsPage() {
                 {cells.map((day, i) => {
                   const bills = day ? billsByDay.get(day) : undefined;
                   const isToday = isCurrentMonth && day === today.getDate();
-                  const hasOverdue = bills?.some(b => b.isOverdue);
+                  
 
                   return (
                     <div key={i} className={`min-h-[4rem] border-b border-r p-1.5 ${

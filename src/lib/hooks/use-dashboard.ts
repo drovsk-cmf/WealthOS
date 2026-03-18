@@ -16,7 +16,6 @@ import {
   balanceEvolutionResultSchema,
   budgetVsActualResultSchema,
   dashboardSummarySchema,
-  dashboardAllSchema,
   logSchemaError,
   solvencyMetricsSchema,
   topCategoriesResultSchema,
