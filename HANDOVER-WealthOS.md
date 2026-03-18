@@ -2169,4 +2169,67 @@ Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corri
 - **Lint warnings:** 0
 - **CI:** 4/4 verde
 - **SP migrations:** 32 total
-- **Último commit verde:** `ad77314`
+- **Último commit verde:** `fd4c713`
+
+---
+
+## Auditoria Técnica - Sessões Paralelas (18 março 2026)
+
+Auditoria sobre o trabalho realizado na sessão 21 (esta sessão) e na sessão "Retomada Oniefy sessão 20" (commit `955d734`), que funcionaram em paralelo.
+
+### Escopo auditado
+
+~30 commits entre `2b8f9a0` e `fd4c713`, cobrindo:
+- Dashboard RPC consolidado (`get_dashboard_all`)
+- Multi-currency support (contas, ativos, dashboard)
+- Setup journey coach (7 steps, auto-advance, cutoff date UI)
+- Oniefy import template (detect, parse standard/card)
+- Description aliases no import flow
+- Onboarding import inline (sem redirect)
+- Security hardening SP (auth guards, search_path)
+
+### Resultado
+
+| # | Check | Resultado |
+|---|-------|-----------|
+| 1 | TypeScript (`tsc --noEmit`) | **0 erros** |
+| 2 | ESLint (`next lint`) | **0 warnings** |
+| 3 | Jest (16 suites) | **256/256 passando** |
+| 4 | Conflict markers (`<<<<<<`) | **0** |
+| 5 | Dead code | **Limpo** (`journey-auto-advance.ts` removido) |
+| 6 | Frontend RPCs (41) vs SP RPCs | **100% match** |
+| 7 | Database types vs SP functions | **100% match** (10 RPCs novas verificadas) |
+| 8 | Security: UUID param sem `auth.uid()` | **0 vulnerabilidades** |
+| 9 | Security: sem `SET search_path` | **0 vulnerabilidades** |
+| 10 | Onboarding import flow (3 níveis de props) | **Intacto** |
+| 11 | Dashboard single RPC + multicurrency | **Correto** |
+| 12 | Setup journey auto-advance (7 steps) | **Todos wired** |
+| 13 | `STEP_ROUTES` vs rotas existentes | **100% match** |
+| 14 | Individual hooks preservados para outras páginas | **Correto** (budgets usa granular) |
+
+### Colisões entre sessões (resolvidas)
+
+| Área | O que aconteceu | Resolução |
+|------|----------------|-----------|
+| `tryAdvanceStep` vs `tryAdvanceJourney` | Duas implementações paralelas | `journey-auto-advance.ts` deletado, consolidado em `tryAdvanceStep` |
+| `SetupJourneyCard` cutoff date | Inline picker vs modal | Remote venceu via merge |
+| `get_dashboard_all` sem multi-currency | Criada antes da feature de moedas | Atualizada com `get_rate_to_brl()` via migration SP |
+
+### Correções aplicadas durante a auditoria
+
+| Fix | Tipo |
+|-----|------|
+| `STEP_ROUTES` `/recurrences` → `/bills` | Bug funcional (rota inexistente) |
+| Docs "WealthOS" → "Oniefy" (11 refs) | Cosmético |
+| `get_dashboard_all` multicurrency (migration SP) | Bug funcional (valores sem conversão) |
+
+### Achados não-bloqueantes (pré-existentes)
+
+| Achado | Nota |
+|--------|------|
+| `find_reconciliation_candidates` sem frontend | Design gap da fase 9B, não regressão |
+| `useReconciliationCandidates` mencionado no header mas não implementado | Idem |
+
+### Veredicto
+
+**Nenhuma regressão funcional ou de segurança.** O código está em estado íntegro para deploy.
