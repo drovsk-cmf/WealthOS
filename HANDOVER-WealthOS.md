@@ -2122,4 +2122,41 @@ Infraestrutura habilitada (Ethereum SIWE + Solana SIWS), mas sem UI no app ainda
 5. **Web3 login UI** (baixa prioridade, aguardar demanda de beta testers)
 6. **Corridor usability test** com 3 pessoas (UX-H3-05)
 
-- **Último commit verde:** `f80d09f` (4/4 jobs: Security + Lint + Unit Tests + Build)
+- **Último commit verde:** `9d1b83f` (4/4 jobs: Security + Lint + Unit Tests + Build)
+
+---
+
+## Sessão 21 (continuação) - 18 março 2026
+
+### Trabalho adicional pós-merge
+
+#### Security Hardening SP (4 migrations)
+
+Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corrigiu:
+
+| Migration | Vulnerabilidade | Fix |
+|-----------|----------------|-----|
+| `auth_guard_lookup_alias_and_retention` | `lookup_description_alias`: cross-user read; `get_retention_metrics`: sem auth | Auth guards adicionados |
+| `fix_retention_metrics_allow_authenticated` | Fix anterior bloqueava analytics page do próprio usuário | Permite authenticated, bloqueia anon |
+| `fix_search_path_three_triggers` | 3 triggers sem `SET search_path` (vetor de injection) | `activate_account_on_use`, `handle_new_user`, `recalculate_account_balance` corrigidos |
+| `auth_guard_initialize_setup_journey` | `initialize_setup_journey`: cross-user sem auth | Auth guard adicionado |
+| `auth_guard_recalculate_balance_for` | `recalculate_account_balance_for`: sem ownership check | Verifica `accounts.user_id = auth.uid()` |
+
+**Resultado final de segurança SP:**
+- 62/62 SECURITY DEFINER functions com `SET search_path` (100%)
+- 0 functions com UUID param sem `auth.uid()` guard
+- 31 migrations no projeto SP total
+
+#### Outros commits
+
+| SHA | Conteúdo |
+|-----|----------|
+| `b72dd87` | chore: remove dead journey-auto-advance (remote uses tryAdvanceStep) |
+| `50fc020` | docs: update project refs to SP + fix stale anon key in SETUP-LOCAL |
+| `9d1b83f` | test: oniefy template parser (23 assertions: detect, standard, card) |
+
+#### Totais atualizados
+
+- **Suítes de teste Jest:** 16 (235 assertions, era 212)
+- **Lint warnings:** 0
+- **CI:** 4/4 verde
