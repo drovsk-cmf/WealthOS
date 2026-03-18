@@ -2051,13 +2051,64 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 | economic_indices | 0 registros | 76 registros | +76 cotações ao vivo |
 | economic_indices_sources | 0 fontes | 51 fontes | +51 fontes configuradas |
 
-### 22.6 Pendências para próxima sessão
+### 22.6 Auth Configuration (projeto SP - mngjbrbxapazdddzgoje)
+
+Configurado via Dashboard + Management API:
+
+| Item | Status |
+|---|---|
+| Email/Password | Habilitado, min 8 chars, autoconfirm=false |
+| Google OAuth | Habilitado (Client ID: 458121785240-...) |
+| SMTP Resend | smtp.resend.com:465, sender oniefy@oniefy.com |
+| Manual Linking | Habilitado (linkIdentity/unlinkIdentity) |
+| Web3 Ethereum (SIWE) | Habilitado (rate_limit_web3: 30/h) |
+| Web3 Solana (SIWS) | Habilitado (rate_limit_web3: 30/h) |
+| Reauthentication p/ troca de senha | Habilitado |
+| CAPTCHA | Desabilitado (habilitar antes de produção) |
+| Leaked Password Protection | Requer Supabase Pro ($25/mês) |
+
+**Email Templates PT-BR customizados (Plum Ledger design):**
+- Confirmação de email (2.721 chars)
+- Redefinição de senha (2.764 chars)
+- Confirmação de novo email (2.355 chars)
+- Subjects PT-BR para: confirmação, recovery, magic link, invite, email change
+
+**Rate Limits (todos padrão Supabase, OK para beta):**
+- email_sent: 30/h | otp: 30/h | verify: 30/h | token_refresh: 150/h | web3: 30/h
+- smtp_max_frequency: 60s entre emails por usuário
+
+### 22.7 Roadmap: Web3 Wallet Login
+
+Infraestrutura habilitada (Ethereum SIWE + Solana SIWS), mas sem UI no app ainda.
+
+**Para implementar (futuro):**
+1. Botão "Entrar com Ethereum" + "Entrar com Solana" na tela de login (`src/app/(auth)/login/page.tsx`)
+2. Usar `supabase.auth.signInWithOAuth({ provider: 'ethereum' })` / `solana`
+3. Tela de vinculação em Configurações: `supabase.auth.linkIdentity({ provider: 'ethereum' })` (manual linking já habilitado)
+4. Tela de desvinculação: `supabase.auth.unlinkIdentity(identity)` (requer ≥2 identidades)
+5. Habilitar CAPTCHA (Cloudflare Turnstile recomendado) antes de produção para proteger endpoints Web3
+
+**Prioridade:** Baixa. Implementar após validação do beta com email + Google. Se um tester crypto pedir, a infraestrutura está pronta.
+
+### 22.8 Items concluídos nesta sessão (continuação)
+
+| Item | Status |
+|---|---|
+| Auto-advance steps (5 hooks wired) | ✅ Commit `c7bf95c` |
+| Cutoff date modal (step 1 UI) | ✅ Commit `db90d64` |
+| Description aliases no import | ✅ Migration 025 + UI |
+| Email templates PT-BR (3 HTML + 5 subjects) | ✅ Via Management API |
+| Security hardening (password_min=8, reauth) | ✅ Via Management API |
+| Web3 Ethereum + Solana habilitados | ✅ Via Dashboard |
+| Manual Linking habilitado | ✅ Via Dashboard |
+
+### 22.9 Pendências para próxima sessão
 
 1. **Testar app no projeto SP:** `npm run dev` → criar conta → onboarding → dashboard → verificar SetupJourneyCard
-2. **Auto-advance steps:** integrar completion automática nos hooks existentes (ex: createAccount success → advance step 2)
-3. **Cutoff date UI:** modal/input no step 1 do journey
-4. **Integrar description_aliases no import_transactions_batch:** lookup alias → auto-apply custom_description + category
-5. **Configurar Auth providers** no Dashboard do novo projeto SP (Google OAuth)
-6. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
-7. **Supabase Pro** ($25/mês) para Leaked Password Protection
+2. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
+3. **Supabase Pro** ($25/mês) para Leaked Password Protection + CAPTCHA
+4. **Habilitar CAPTCHA** (Cloudflare Turnstile) antes de produção
+5. **Web3 login UI** (baixa prioridade, aguardar demanda de beta testers)
+6. **Corridor usability test** com 3 pessoas (UX-H3-05)
+
 
