@@ -6,6 +6,7 @@ import { useBankConnections, useImportBatch } from "@/lib/hooks/use-bank-connect
 import { mapToTransactions, parseCSVRaw, suggestMapping } from "@/lib/parsers/csv-parser";
 import { parseOFX } from "@/lib/parsers/ofx-parser";
 import { parseXLSX } from "@/lib/parsers/xlsx-parser";
+import { detectOniefyTemplate, parseStandardTemplate, parseCardTemplate } from "@/lib/parsers/oniefy-template";
 import type { CSVColumnMapping, CSVTransaction } from "@/lib/parsers/csv-parser";
 import type { OFXTransaction } from "@/lib/parsers/ofx-parser";
 import { ImportStepMapping } from "./import-step-mapping";
@@ -56,6 +57,23 @@ export function ImportWizard({ onImportComplete }: { onImportComplete?: (stats: 
           setIsParsing(false);
           return;
         }
+
+        // Detect Oniefy template → skip mapping
+        const templateType = detectOniefyTemplate(result.headers);
+        if (templateType) {
+          const parsed =
+            templateType === "card"
+              ? parseCardTemplate(result.headers, result.rows)
+              : parseStandardTemplate(result.headers, result.rows);
+          setFileType("xlsx");
+          setTransactions(parsed.transactions);
+          setParseErrors(parsed.errors);
+          setSelected(new Set(parsed.transactions.map((_, i) => i)));
+          setIsParsing(false);
+          setStep("preview");
+          return;
+        }
+
         setFileType("xlsx");
         setCsvHeaders(result.headers);
         setCsvRows(result.rows);

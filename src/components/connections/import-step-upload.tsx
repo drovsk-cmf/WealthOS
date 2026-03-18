@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
-import { Upload } from "lucide-react";
+import { Upload, Download } from "lucide-react";
+import { downloadImportTemplate } from "@/lib/parsers/oniefy-template";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
@@ -143,6 +144,32 @@ export function ImportStepUpload({
           className="hidden"
         />
         {!accountId && <p className="mt-2 text-xs text-terracotta">Selecione uma conta primeiro.</p>}
+      </div>
+
+      {/* Template download */}
+      <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
+        <div>
+          <p className="text-sm font-medium">Não tem um extrato?</p>
+          <p className="text-xs text-muted-foreground">Baixe nosso template e preencha manualmente.</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => downloadImportTemplate("standard")}
+            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Transações
+          </button>
+          <button
+            type="button"
+            onClick={() => downloadImportTemplate("card")}
+            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Fatura cartão
+          </button>
+        </div>
       </div>
     </div>
   );
