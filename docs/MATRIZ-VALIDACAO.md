@@ -1,8 +1,9 @@
 # Oniefy - Matriz de Validação
 
-**Versão:** 1.0
+**Versão:** 2.0
 **Data:** 18 de março de 2026
 **Projeto:** Oniefy (WealthOS)
+**Changelog v2.0:** Incorpora análise externa (Perplexity, 2026-03-18). Adicionadas camadas 8 (Dependências), 9 (Infraestrutura/Runtime), 10 (Conformidade/Governança). Camada 6 expandida com testes dinâmicos. Pacote security-focused adicionado. Anexo A mapeia para ISO/IEC 25010 e OWASP ASVS. Total: 34 auditorias em 10 camadas.
 
 ---
 
@@ -26,9 +27,9 @@ Prioridade: corrigir antes de qualquer merge ou deploy.
 
 ### 1.2 Vulnerabilidade
 
-Vetor de ataque explorável. O fluxo feliz funciona normalmente, mas um atacante pode explorar o comportamento para causar dano (acesso indevido, exfiltração de dados, negação de serviço).
+Vetor de ataque explorável. O fluxo feliz funciona normalmente, mas um atacante pode explorar o comportamento para causar dano (acesso indevido, exfiltração de dados, negação de serviço). Inclui riscos legais (licenciamento, LGPD).
 
-Exemplo: função PostgreSQL sem `SET search_path` permite search_path hijacking; regex sem proteção contra ReDoS; SSRF por fetch a host não-allowlisted.
+Exemplo: função PostgreSQL sem `SET search_path` permite search_path hijacking; regex sem proteção contra ReDoS; SSRF por fetch a host não-allowlisted; dependência npm com CVE conhecida; licença GPL em projeto proprietário.
 
 Prioridade: corrigir antes de qualquer deploy público.
 
@@ -44,7 +45,7 @@ Prioridade: corrigir quando impacta UX perceptivelmente (>300ms) ou custo de inf
 
 O código funciona hoje mas quebra facilmente com mudança futura, refatoração, ou condição de borda não testada. Indica acoplamento frágil ou dependência de comportamento acidental.
 
-Exemplo: `useEffect` com `eslint-disable` que depende de ordem de execução; regex com flag `g` desnecessário que funciona por acidente do early return; `onSuccess` síncrono que funciona porque o React Query não garante ordem.
+Exemplo: `useEffect` com `eslint-disable` que depende de ordem de execução; regex com flag `g` desnecessário que funciona por acidente do early return; `onSuccess` síncrono que funciona porque o React Query não garante ordem; dependência npm 3 major versions atrás.
 
 Prioridade: corrigir junto com a próxima mudança na área afetada.
 
@@ -52,7 +53,7 @@ Prioridade: corrigir junto com a próxima mudança na área afetada.
 
 Decisão de implementação subótima (consciente ou inconsciente) onde o código funciona corretamente mas cria custo de manutenção, extensão ou diagnóstico no futuro.
 
-Exemplo: rate limiter in-memory (funciona em single instance, não escala para multi-região); fire-and-forget sem logging (funciona, mas sabota diagnóstico); `useBudgetMonths` fazendo over-fetch de 500 rows para extrair 12 (funciona, mas desperdiça rede).
+Exemplo: rate limiter in-memory (funciona em single instance, não escala para multi-região); fire-and-forget sem logging (funciona, mas sabota diagnóstico); `useBudgetMonths` fazendo over-fetch de 500 rows para extrair 12 (funciona, mas desperdiça rede); ausência de logging centralizado em produção.
 
 Prioridade: pagar quando o custo acumulado justifica o investimento, ou quando tocar na área afetada.
 
@@ -68,7 +69,7 @@ Prioridade: limpar oportunisticamente. Nunca justifica commit dedicado.
 
 ## 2. Tipos de auditoria
 
-Organizados por camada do sistema. Cada tipo verifica uma preocupação específica e pode produzir achados de qualquer categoria da taxonomia acima.
+Organizados por camada do sistema. Cada tipo verifica uma preocupação específica e pode produzir achados de qualquer categoria da taxonomia acima. 34 auditorias em 10 camadas.
 
 ### Camada 1 - Repositório e Processo
 
@@ -95,7 +96,7 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 |---|---|---|---|---|
 | 3.1 | Consistência frontend/backend | Hooks chamam RPCs existentes, parâmetros batem com assinaturas Postgres, ENUMs sincronizados | Tipos gerados vs `use-*.ts` vs Supabase MCP | Defeito |
 | 3.2 | Schema types vs banco real | `database.ts` reflete o schema atual do Supabase (tabelas, colunas, enums, functions) | `npx supabase gen types` vs arquivo atual | Defeito, Fragilidade |
-| 3.3 | Acoplamento e dependências | Imports circulares, módulos que sabem demais sobre outros, violações de camada | `madge`, análise de imports | Débito |
+| 3.3 | Acoplamento e dependências internas | Imports circulares, módulos que sabem demais sobre outros, violações de camada | `madge`, análise de imports | Débito |
 | 3.4 | Cache invalidation | Toda mutation invalida as queryKeys que dependem dos dados alterados; consistência entre hooks | grep de `invalidateQueries` cruzado com fluxo de dados | Defeito |
 | 3.5 | Error handling | Erros propagados, tratados ou silenciados; observabilidade preservada em todas as camadas | grep de `catch`, `.then`, `console.error` | Débito (se silenciado), Defeito (se engolido e causa comportamento errado) |
 
@@ -123,9 +124,12 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 
 | # | Tipo de auditoria | O que verifica | Ferramentas | Achados típicos |
 |---|---|---|---|---|
-| 6.1 | Cobertura de testes | RPCs, hooks, parsers, utils têm testes; edge cases cobertos; cobertura quantitativa | `jest --coverage` | Fragilidade (se não coberto) |
+| 6.1 | Cobertura de testes unitários | RPCs, hooks, parsers, utils têm testes; edge cases cobertos; cobertura quantitativa | `jest --coverage` | Fragilidade |
 | 6.2 | Testes vs spec | Stories do funcional (AUTH-01 a WKF-04) têm validação automatizada correspondente | Cruzamento stories vs `__tests__/` | Fragilidade |
 | 6.3 | Testes de regressão | Bugs corrigidos têm teste que impede recorrência | Leitura dos testes vs histórico de bugs | Fragilidade |
+| 6.4 | Testes de integração e E2E | Fluxos multi-página (onboarding, transação completa, reconciliação) validados end-to-end; falhas de rede simuladas | Playwright (`e2e/`), MSW para mocks de rede | Defeito, Fragilidade |
+| 6.5 | Testes de carga e resiliência | Comportamento sob picos de uso, degradação graciosa, timeouts respeitados, recovery após falha de Supabase | k6, Artillery, ou scripts ad hoc contra staging | Performance, Fragilidade |
+| 6.6 | Testes de segurança dinâmicos (DAST) | Fuzzing de inputs, scan de endpoints expostos, tentativas de bypass de auth em runtime | OWASP ZAP, nuclei, scripts manuais de pen test | Vulnerabilidade |
 
 ### Camada 7 - UX e Acessibilidade
 
@@ -135,11 +139,34 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 | 7.2 | Estados vazios e erros | Todas as páginas tratam loading, empty state, error state com feedback visual | Leitura dos componentes | Defeito |
 | 7.3 | Acessibilidade | `aria-label`, contraste WCAG AA, keyboard navigation, focus traps, Dynamic Type | Playwright a11y tests, leitura manual | Defeito, Vulnerabilidade (se legal compliance) |
 
+### Camada 8 - Dependências e Supply Chain
+
+| # | Tipo de auditoria | O que verifica | Ferramentas | Achados típicos |
+|---|---|---|---|---|
+| 8.1 | Vulnerabilidades em dependências (SCA) | CVEs conhecidas em pacotes npm diretos e transitivos; severidade CVSS | `npm audit`, Dependabot/Snyk, GitHub Security Advisories | Vulnerabilidade |
+| 8.2 | Versionamento e obsolescência | Pacotes desatualizados (major versions atrás), pacotes sem manutenção (>1 ano sem commit), pacotes deprecated | `npm outdated`, verificação manual de repos upstream | Fragilidade, Débito |
+| 8.3 | Licenciamento | Licenças incompatíveis com uso comercial (GPL em projeto proprietário), licenças ausentes, licenças ambíguas | `license-checker`, `npx license-checker --summary` | Vulnerabilidade (risco legal) |
+
+### Camada 9 - Infraestrutura e Runtime
+
+| # | Tipo de auditoria | O que verifica | Ferramentas | Achados típicos |
+|---|---|---|---|---|
+| 9.1 | Configuração de ambientes | Segregação dev/staging/produção; variáveis de ambiente corretas por ambiente; secrets não compartilhados entre ambientes | Vercel dashboard, `.env` files, Supabase project settings | Vulnerabilidade, Débito |
+| 9.2 | Observabilidade e logging | Logs estruturados em produção; erros capturados (não silenciados); métricas de saúde acessíveis; alertas configurados | Vercel logs, Supabase logs, grep de `console.error`, Sentry/equivalente | Débito, Fragilidade |
+| 9.3 | Resiliência operacional | Comportamento quando Supabase fica indisponível; retry com backoff em falhas transitórias; graceful degradation no client; plano de backup/restore do banco | Teste manual de indisponibilidade, Supabase backup settings | Fragilidade, Defeito |
+
+### Camada 10 - Conformidade e Governança
+
+| # | Tipo de auditoria | O que verifica | Ferramentas | Achados típicos |
+|---|---|---|---|---|
+| 10.1 | Proteção de dados (LGPD) | Dados pessoais identificados e mapeados; base legal para cada tratamento; mecanismo de exclusão funcional (direito ao esquecimento); política de privacidade acessível e atualizada; consentimento quando aplicável | Leitura do schema + privacy policy + endpoint de exclusão | Vulnerabilidade (risco regulatório), Defeito |
+| 10.2 | Rastreabilidade requisitos-código-teste | Cada story (AUTH-01 a WKF-04) tem implementação identificável e teste correspondente; mudanças de spec refletidas no código | Cruzamento funcional → `src/` → `__tests__/` | Fragilidade, Sujeira |
+
 ---
 
 ## 3. Pacotes de execução
 
-Nem toda sessão requer as 23 auditorias. Três pacotes pré-definidos por contexto de uso.
+Nem toda sessão requer as 34 auditorias. Quatro pacotes pré-definidos por contexto de uso.
 
 ### 3.1 Pré-commit (rápido, ~5 min)
 
@@ -166,17 +193,31 @@ Executar ao final de cada sprint ou sessão significativa. Objetivo: garantir qu
 | Schema types vs banco real | 3.2 |
 | Cache invalidation | 3.4 |
 | Error handling | 3.5 |
-| Cobertura de testes | 6.1 |
+| Cobertura de testes unitários | 6.1 |
+| Vulnerabilidades em dependências | 8.1 |
 
-### 3.3 Release gate (completo, ~2h)
+### 3.3 Release gate (completo, ~2-3h)
 
 Executar antes de deploy para produção. Objetivo: validação exaustiva.
 
 | Auditorias | IDs |
 |---|---|
-| Todas as 23 | 1.1 a 7.3 |
+| Todas as 34 | 1.1 a 10.2 |
 
-Ordem recomendada: Segurança (camada 4) primeiro, depois Funcional (6), Arquitetura (3), Performance (5), Código (2), Repositório (1), UX (7).
+Ordem recomendada: Segurança (4) → Dependências (8) → Conformidade (10) → Funcional (6) → Arquitetura (3) → Performance (5) → Infraestrutura (9) → Código (2) → Repositório (1) → UX (7).
+
+### 3.4 Security-focused (direcionado, ~1h)
+
+Executar antes de expor o sistema a usuários externos ou após mudança em auth/RLS/APIs. Objetivo: superfície de ataque verificada.
+
+| Auditorias | IDs |
+|---|---|
+| Segurança completa | 4.1 a 4.6 |
+| Dependências (SCA) | 8.1 |
+| Licenciamento | 8.3 |
+| DAST | 6.6 |
+| Configuração de ambientes | 9.1 |
+| LGPD | 10.1 |
 
 ---
 
@@ -184,7 +225,7 @@ Ordem recomendada: Segurança (camada 4) primeiro, depois Funcional (6), Arquite
 
 Cada célula indica a probabilidade de encontrar aquele tipo de achado naquela auditoria.
 
-|  | Defeito | Vulnerabilidade | Performance | Fragilidade | Débito | Sujeira |
+|  | Defeito | Vulnerab. | Performance | Fragilidade | Débito | Sujeira |
 |---|---|---|---|---|---|---|
 | **1.1 Commits** | - | - | - | - | Baixa | Média |
 | **1.2 HANDOVER** | Média | - | - | - | - | Alta |
@@ -210,12 +251,23 @@ Cada célula indica a probabilidade de encontrar aquele tipo de achado naquela a
 | **5.2 Roundtrips** | - | - | Alta | - | Média | - |
 | **5.3 Bundle size** | - | - | Alta | - | Média | - |
 | **5.4 Índices DB** | - | - | Alta | - | - | - |
-| **6.1 Cobertura** | - | - | - | Alta | - | - |
+| **6.1 Cobertura unit** | - | - | - | Alta | - | - |
 | **6.2 Testes vs spec** | - | - | - | Alta | - | - |
 | **6.3 Regressão** | - | - | - | Alta | - | - |
+| **6.4 E2E/integração** | Alta | - | - | Média | - | - |
+| **6.5 Carga/resiliência** | - | - | Alta | Média | - | - |
+| **6.6 DAST** | - | Alta | - | - | - | - |
 | **7.1 Design system** | Baixa | - | - | - | - | Alta |
 | **7.2 Estados vazios** | Média | - | - | - | - | - |
 | **7.3 Acessibilidade** | Média | Baixa | - | - | - | - |
+| **8.1 SCA (CVEs)** | - | Alta | - | - | - | - |
+| **8.2 Obsolescência** | - | - | - | Média | Alta | - |
+| **8.3 Licenciamento** | - | Alta | - | - | - | - |
+| **9.1 Config ambientes** | - | Alta | - | - | Média | - |
+| **9.2 Observabilidade** | - | - | - | Média | Alta | - |
+| **9.3 Resiliência op.** | Média | - | Média | Alta | - | - |
+| **10.1 LGPD** | Média | Alta | - | - | - | - |
+| **10.2 Rastreabilidade** | - | - | - | Média | - | Média |
 
 ---
 
@@ -227,3 +279,60 @@ Ao executar uma auditoria, registrar nesta seção:
 |---|---|---|---|---|
 | 2026-03-18 | Ad hoc (loops/redundância/ineficiência) | 2.4, 3.4, 3.5, 5.1, 5.2, 6.1 | 2 defeitos, 3 performance, 3 fragilidades, 2 débitos, 1 sujeira | AUDITORIA-CODIGO-WEALTHOS.md |
 | | | | | |
+
+---
+
+## Anexo A - Mapeamento para modelos de referência
+
+Para fins de due diligence externa ou auditoria por terceiros, este anexo mapeia as auditorias e categorias da matriz para dois modelos consolidados: ISO/IEC 25010 (qualidade de produto de software) e OWASP ASVS (segurança de aplicações).
+
+### A.1 ISO/IEC 25010
+
+A ISO/IEC 25010 define 8 características de qualidade de produto. A tabela abaixo indica quais auditorias da matriz cobrem cada uma.
+
+| Característica ISO 25010 | Subcaracterísticas relevantes | Auditorias que cobrem |
+|---|---|---|
+| Adequação funcional | Completude, correção, pertinência | 2.1, 3.1, 3.4, 6.1, 6.2, 6.4 |
+| Eficiência de desempenho | Tempo de resposta, uso de recursos, capacidade | 5.1, 5.2, 5.3, 5.4, 6.5 |
+| Compatibilidade | Coexistência, interoperabilidade | 3.1, 3.2, 7.3 (parcial) |
+| Usabilidade | Reconhecibilidade, aprendizagem, operabilidade, proteção contra erro, estética, acessibilidade | 2.6, 7.1, 7.2, 7.3 |
+| Confiabilidade | Maturidade, disponibilidade, tolerância a falhas, recuperabilidade | 3.5, 6.3, 6.4, 6.5, 9.3 |
+| Segurança | Confidencialidade, integridade, não-repúdio, responsabilização, autenticidade | 4.1 a 4.6, 6.6, 8.1, 8.3, 9.1, 10.1 |
+| Manutenibilidade | Modularidade, reusabilidade, analisabilidade, modificabilidade, testabilidade | 2.2 a 2.5, 3.3, 6.1, 6.2, 10.2 |
+| Portabilidade | Adaptabilidade, instalabilidade, substituibilidade | 1.3, 9.1 (parcial) |
+
+Lacunas reconhecidas: compatibilidade cross-browser/device e portabilidade multi-cloud não são cobertas em profundidade. São tratáveis na Fase 10 (Polish + App Store) do plano de fases do Oniefy.
+
+### A.2 OWASP ASVS v4.0
+
+O ASVS define 14 capítulos de verificação de segurança. A tabela abaixo indica a cobertura da matriz.
+
+| Capítulo ASVS | Descrição | Auditorias que cobrem | Cobertura |
+|---|---|---|---|
+| V1 | Arquitetura, design, modelagem de ameaças | 3.1, 3.3, 3.5 | Parcial |
+| V2 | Autenticação | 4.2 | Boa |
+| V3 | Gerenciamento de sessão | 4.2 (middleware session refresh) | Parcial |
+| V4 | Controle de acesso | 4.1 (RLS), 4.2 | Boa |
+| V5 | Validação, sanitização, codificação | 4.5 | Boa |
+| V6 | Criptografia | 4.4 (secrets), auditoria ad hoc de E2E keys | Parcial |
+| V7 | Tratamento de erros e logging | 3.5, 9.2 | Boa |
+| V8 | Proteção de dados | 10.1 (LGPD), 4.4 | Parcial |
+| V9 | Comunicação | 4.6 (SSRF), 9.1 (TLS config) | Parcial |
+| V10 | Código malicioso | 8.1 (SCA) | Parcial |
+| V11 | Lógica de negócio | 3.4, 6.2, 6.4 | Parcial |
+| V12 | Arquivos e recursos | 4.5 (path traversal, upload) | Parcial |
+| V13 | API e web services | 4.2, 4.5, 4.6 | Boa |
+| V14 | Configuração | 9.1, 4.4, 1.3 | Parcial |
+
+Cobertura geral estimada: nível L1 (oportunista) do ASVS para a maioria dos capítulos; nível L2 (padrão) para V2, V4, V5, V7, V13. Para atingir L2 completo, expandir V3 (session management), V6 (criptografia), V8 (proteção de dados) e V12 (upload/arquivos) com verificações dedicadas.
+
+### A.3 Categorias de achado vs. modelos
+
+| Categoria da matriz | Correspondência ISO 25010 | Correspondência ASVS |
+|---|---|---|
+| Defeito | Adequação funcional (correção) | V11 (lógica de negócio) |
+| Vulnerabilidade | Segurança (todas subcaracterísticas) | V1 a V14 (depende do vetor) |
+| Performance | Eficiência de desempenho | Fora de escopo ASVS |
+| Fragilidade | Confiabilidade (maturidade), Manutenibilidade (testabilidade) | V1 (design robusto) |
+| Débito técnico | Manutenibilidade (modificabilidade, analisabilidade) | Fora de escopo ASVS |
+| Sujeira | Manutenibilidade (analisabilidade) | Fora de escopo ASVS |
