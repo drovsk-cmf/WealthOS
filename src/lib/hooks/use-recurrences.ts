@@ -13,6 +13,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { tryAdvanceStep } from "@/lib/hooks/use-setup-journey";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
 import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
@@ -237,7 +238,7 @@ export function useCreateRecurrence() {
       await queryClient.invalidateQueries({ queryKey: ["bills"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      tryAdvanceJourney(queryClient, "recurring_expenses");
+      tryAdvanceStep("recurring_expenses", queryClient);
     },
   });
 }

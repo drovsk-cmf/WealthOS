@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, QueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
 import type { Json } from "@/types/database";
@@ -113,3 +113,32 @@ export const STEP_ROUTES: Record<string, string> = {
   categorize: "/transactions",
   create_budget: "/budgets",
 };
+
+/**
+ * Fire-and-forget: advance a setup journey step if it's available.
+ * Safe to call from any hook's onSuccess - never throws, never blocks.
+ * Returns true if the step was advanced, false otherwise.
+ */
+export async function tryAdvanceStep(
+  stepKey: string,
+  queryClient?: QueryClient,
+  metadata?: Record<string, unknown>
+): Promise<boolean> {
+  try {
+    const supabase = createClient();
+    const userId = await getCachedUserId(supabase);
+    const { data, error } = await supabase.rpc("advance_setup_journey", {
+      p_user_id: userId,
+      p_step_key: stepKey,
+      p_metadata: (metadata ?? {}) as unknown as Json,
+    });
+    if (error || !data) return false;
+    const result = data as unknown as { completed_step?: string };
+    if (result.completed_step && queryClient) {
+      queryClient.invalidateQueries({ queryKey: ["setup_journey"] });
+    }
+    return !!result.completed_step;
+  } catch {
+    return false; // never block the main action
+  }
+}

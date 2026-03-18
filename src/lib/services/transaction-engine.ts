@@ -16,6 +16,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 import { logSchemaError, transactionResultSchema, transferResultSchema, reversalResultSchema, editTransactionResultSchema, editTransferResultSchema } from "@/lib/schemas/rpc";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
+import { tryAdvanceStep } from "@/lib/hooks/use-setup-journey";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type EntrySource = Database["public"]["Enums"]["entry_source"];
@@ -268,6 +269,7 @@ export function useEditTransaction() {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      tryAdvanceStep("categorize", queryClient);
     },
   });
 }
