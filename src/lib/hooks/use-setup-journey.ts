@@ -107,7 +107,7 @@ export function useSetCutoffDate() {
 export const STEP_ROUTES: Record<string, string> = {
   cutoff_date: "/settings",
   create_accounts: "/accounts",
-  recurring_expenses: "/recurrences",
+  recurring_expenses: "/bills",
   import_statements: "/connections",
   import_card_bills: "/connections",
   categorize: "/transactions",
