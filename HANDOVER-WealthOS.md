@@ -64,40 +64,42 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 28 (todas com RLS) |
 | Políticas RLS | 91 |
-| Functions (total) | 64 RPCs/triggers no schema public. Todas com `SET search_path = public` e auth.uid() check |
+| Functions (total) | 65 no schema public. Todas com `SET search_path = public` e auth.uid() check |
 | Triggers | 21 |
 | ENUMs | 27 (index_type agora com 46 valores: 13 originais + 33 moedas) |
-| Migrations aplicadas | 24 no projeto SP (mngjbrbxapazdddzgoje) |
+| Migrations aplicadas | 26 no projeto SP (mngjbrbxapazdddzgoje) |
 | pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
 | Parâmetros fiscais | 9 (IRPF mensal/anual 2025+2026, INSS 2025+2026, salário mínimo 2025+2026, ganho capital) |
-| Índices econômicos | 76 registros (34 moedas + 7 índices macro) |
+| Índices econômicos | 66+ registros (34 moedas + 7 índices macro, atualiza diário) |
 | Fontes de índices | 51 (7 BCB SGS + 10 BCB PTAX + 29 Frankfurter + 5 CoinGecko) |
 | Moedas suportadas | 35: BRL + 10 PTAX (USD,EUR,GBP,CHF,CAD,AUD,JPY,DKK,NOK,SEK) + 19 Frankfurter + 5 crypto (BTC,ETH,SOL,BNB,XRP) |
 | User stories total | 90 |
 | Stories concluídas | 87/90 (ver breakdown abaixo) |
-| Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
+| Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (71 RPCs + 7 triggers + 9 cron + 1 utility = 88)
+### 3.3 Functions (65 no schema public)
 
 | Grupo | Functions |
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member |
 | Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
-| Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
-| Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual, **get_dashboard_all** |
-| Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
+| Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
+| Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual, get_weekly_digest |
+| Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
 | Fiscal | get_fiscal_report, get_fiscal_projection |
-| Índices | get_economic_indices, get_index_latest |
-| Import | import_transactions_batch (v2 com auto-matching), auto_categorize_transaction, **undo_import_batch** |
-| **Reconciliation** | **find_reconciliation_candidates, match_transactions** |
-| **Analytics** | **track_event, get_retention_metrics** |
-| Cron (pg_cron) | cron_generate_workflow_tasks (diário 02h), cron_depreciate_assets (mensal dia 1 03h), cron_balance_integrity_check (semanal dom 04h), cron_fetch_economic_indices (diário 06h UTC), cron_mark_overdue_transactions (diário 01h UTC), **cron_process_account_deletions (diário 03:30 UTC)** |
+| Índices/Moedas | get_economic_indices, get_index_latest, **get_currency_rates, get_supported_currencies, get_rate_to_brl** |
+| Import | import_transactions_batch (v3 com aliases), auto_categorize_transaction, undo_import_batch |
+| Reconciliation | find_reconciliation_candidates, match_transactions |
+| Analytics | track_event, get_retention_metrics |
+| **Setup Journey** | **get_setup_journey, advance_setup_journey, initialize_setup_journey** |
+| **Description Aliases** | **lookup_description_alias, upsert_description_alias** |
+| Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h) |
 
 ### 3.4 Código Fonte (126 arquivos em src/, 15 testes, ~24.100 linhas)
 
@@ -1572,8 +1574,17 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 ## 17. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
-- **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: hmwdfcsxtmbzlslxgqus
-- **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` já configurado
+- **Supabase ATIVO:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo)
+- **Supabase ANTIGO (pausar):** Project ID: `hmwdfcsxtmbzlslxgqus` (us-east-1)
+- **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` apontando para projeto SP
+- **.env.local:**
+  ```
+  NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZ2picmJ4YXBhemRkZHpnb2plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NjM0NDQsImV4cCI6MjA4OTMzOTQ0NH0.uSPQ41vOKV_wnN9Wmenv7uyBphayQ7r013twwWqKBEM
+  SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZ2picmJ4YXBhemRkZHpnb2plIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzc2MzQ0NCwiZXhwIjoyMDg5MzM5NDQ0fQ.eAdrIKnWtRwu75Z4P3taApAWsWByWt_3g5G33YUsaGI
+  SUPABASE_PROJECT_ID=mngjbrbxapazdddzgoje
+  NEXT_PUBLIC_APP_URL=http://localhost:3000
+  ```
 
 ## 19. Sessão 17/03/2026 - Backlog PENDENCIAS-DECISAO completo (17/17 itens)
 
@@ -2039,17 +2050,17 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 
 ### 22.5 Estado consolidado pós-sessão
 
-| Métrica | Antes | Depois | Delta |
+| Métrica | Antes (migração) | Depois (final) | Delta |
 |---|---|---|---|
 | Tabelas | 26 | 28 | +2 (setup_journey, description_aliases) |
-| Functions | 56 | 64 | +8 RPCs |
+| Functions | 56 | 65 | +9 RPCs |
 | Indexes | 110 | 118 | +8 |
 | RLS Policies | 84 | 91 | +7 |
 | Triggers | 19 | 21 | +2 |
-| Migrations (SP) | 17 | 24 | +7 (018-024) |
+| Migrations (SP) | 17 | 26 | +9 (018-025 + dashboard_all do remote) |
 | index_type enum | 13 valores | 46 valores | +33 moedas |
-| economic_indices | 0 registros | 76 registros | +76 cotações ao vivo |
-| economic_indices_sources | 0 fontes | 51 fontes | +51 fontes configuradas |
+| economic_indices | 0 registros | 66+ registros | cotações ao vivo (varia por dia) |
+| economic_indices_sources | 0 fontes | 51 fontes | 4 providers configurados |
 
 ### 22.6 Auth Configuration (projeto SP - mngjbrbxapazdddzgoje)
 
@@ -2111,4 +2122,4 @@ Infraestrutura habilitada (Ethereum SIWE + Solana SIWS), mas sem UI no app ainda
 5. **Web3 login UI** (baixa prioridade, aguardar demanda de beta testers)
 6. **Corridor usability test** com 3 pessoas (UX-H3-05)
 
-
+- **Último commit verde:** `f80d09f` (4/4 jobs: Security + Lint + Unit Tests + Build)
