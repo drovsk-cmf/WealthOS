@@ -38,7 +38,8 @@ const DATE_PATTERNS = [
   /(\d{2})-(\d{2})-(\d{2,4})/g,
 ];
 
-function parseAmount(text: string): number | null {
+/** @internal Exportado para testes unitários */
+export function parseAmount(text: string): number | null {
   // Find all amounts, pick the largest (likely the total)
   const amounts: number[] = [];
 
@@ -58,7 +59,8 @@ function parseAmount(text: string): number | null {
   return Math.max(...amounts); // Largest is likely the total
 }
 
-function parseDate(text: string): string | null {
+/** @internal Exportado para testes unitários */
+export function parseDate(text: string): string | null {
   for (const pattern of DATE_PATTERNS) {
     const regex = new RegExp(pattern.source, pattern.flags);
     const match = regex.exec(text);
@@ -76,7 +78,8 @@ function parseDate(text: string): string | null {
   return null;
 }
 
-function parseDescription(text: string): string | null {
+/** @internal Exportado para testes unitários */
+export function parseDescription(text: string): string | null {
   // Try to find establishment name (usually first non-empty line or CNPJ-adjacent line)
   const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
