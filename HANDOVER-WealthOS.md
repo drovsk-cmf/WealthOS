@@ -3,7 +3,8 @@
 **Data:** 18 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
-**Supabase Project ID:** hmwdfcsxtmbzlslxgqus
+**Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) ← MIGRADO da us-east-1
+**Supabase Project ID (antigo):** hmwdfcsxtmbzlslxgqus (us-east-1) ← pausar/desligar
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
 
 ---
@@ -35,7 +36,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Gráficos | Recharts |
 | Validação | Zod |
 | CI/CD | GitHub Actions |
-| APIs externas | BCB SGS (6.922 séries) + IBGE SIDRA (9.029 tabelas) + fallback IPEADATA |
+| APIs externas | BCB SGS + BCB PTAX OData (10 moedas oficiais) + Frankfurter/ECB (20 moedas fiat) + CoinGecko (5 cryptos) + IBGE SIDRA |
 
 ---
 
@@ -61,23 +62,24 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 26 (todas com RLS) |
-| Políticas RLS | 84 |
-| Functions (total) | 88 (71 RPCs + 7 triggers + 9 cron + 1 utility). Todas com `SET search_path = public` e auth.uid() check |
-| Triggers | 22 |
-| ENUMs | 27 |
-| Migrations aplicadas | 55+ via MCP (41 SQL files no repo) |
+| Tabelas | 28 (todas com RLS) |
+| Políticas RLS | 91 |
+| Functions (total) | 64 RPCs/triggers no schema public. Todas com `SET search_path = public` e auth.uid() check |
+| Triggers | 21 |
+| ENUMs | 27 (index_type agora com 46 valores: 13 originais + 33 moedas) |
+| Migrations aplicadas | 24 no projeto SP (mngjbrbxapazdddzgoje) |
 | pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
 | Parâmetros fiscais | 9 (IRPF mensal/anual 2025+2026, INSS 2025+2026, salário mínimo 2025+2026, ganho capital) |
-| Índices econômicos | ~60 registros (8 tipos: IPCA, INPC, IGP-M, Selic, CDI, TR, USD/BRL, salário mínimo) |
-| Fontes de índices | 15 (BCB SGS + IBGE SIDRA configuradas) |
+| Índices econômicos | 76 registros (34 moedas + 7 índices macro) |
+| Fontes de índices | 51 (7 BCB SGS + 10 BCB PTAX + 29 Frankfurter + 5 CoinGecko) |
+| Moedas suportadas | 35: BRL + 10 PTAX (USD,EUR,GBP,CHF,CAD,AUD,JPY,DKK,NOK,SEK) + 19 Frankfurter + 5 crypto (BTC,ETH,SOL,BNB,XRP) |
 | User stories total | 90 |
 | Stories concluídas | 87/90 (ver breakdown abaixo) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
-| Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
+| Supabase perf advisories | 0 WARN |
 
 ### 3.3 Functions (71 RPCs + 7 triggers + 9 cron + 1 utility = 88)
 
@@ -1828,7 +1830,7 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 **Grupo 10 (investimento):**
 - Supabase Pro (~US$25/mês), Apple Developer Account (US$99/ano)
 
-- **Último commit verde:** `2a34441` (4/4 jobs: Security + Lint + Unit Tests + Build)
+- **Último commit verde:** `71ddaa7` (4/4 jobs: Security + Lint + Unit Tests + Build)
 
 ---
 
@@ -1911,3 +1913,139 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 3. **Regenerar Supabase types** (incluir get_dashboard_all)
 4. **Usar o app por 1 semana** com dados reais
 5. **Convidar 2-3 testers** para beta fechado
+
+- **Último commit verde:** `2b8f9a0` (4/4 jobs: Security + Lint + Unit Tests + Build)
+
+## 22. Sessão 17-18/03/2026 - Migração SP + 3 Features (Moedas, Template, Coach)
+
+### 22.1 Migração Supabase us-east-1 → sa-east-1 (São Paulo)
+
+**Novo projeto:** `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo)
+**Antigo projeto:** `hmwdfcsxtmbzlslxgqus` (us-east-1) - pausar após validação
+
+**17 migrations aplicadas (001-017):** schema completo replicado do antigo para o novo.
+
+**Auditoria lado-a-lado (pós-migração):**
+
+| Item | Antigo | Novo | Resultado |
+|---|---|---|---|
+| Tabelas | 26 | 26 | Idêntico |
+| Colunas | 26 tabelas | 26 tabelas | Idêntico |
+| ENUMs | 27 | 27 | Idêntico |
+| Functions (56) | 56 | 56 | Idêntico (1:1 nome+args+retorno) |
+| Indexes | 111 | 110 | Novo correto (antigo tem 2 duplicatas) |
+| RLS Policies | 84 | 84 | Mesma cobertura |
+| Storage | 4 policies, 1 bucket | 4 policies, 1 bucket | Idêntico |
+| Triggers | 19 | 19 | Idêntico |
+| Cron Jobs | 9 | 9 | Idêntico |
+| Extensões | 10 | 10 | Idêntico |
+
+**1 bug encontrado e corrigido:** `notification_tokens.subscription_data` (JSONB) faltava (migration 017).
+
+### 22.2 Feature 1: Cotação de Moedas e Crypto (migrations 018-023)
+
+**Objetivo:** Consolidar patrimônio multi-moeda em BRL. Contas em USD, EUR, BTC, etc. convertidas automaticamente.
+
+**35 moedas suportadas:**
+- Tier 1 (PTAX oficial): USD, EUR, GBP, CHF, CAD, AUD, JPY, DKK, NOK, SEK
+- Tier 2 (Frankfurter/ECB): CNY, NZD, MXN, HKD, SGD, KRW, INR, TRY, ZAR, PLN, CZK, HUF, ILS, MYR, PHP, THB, IDR, RON, ISK
+- Tier 3 (CoinGecko): BTC, ETH, SOL, BNB, XRP
+
+**4 providers no cron:**
+1. BCB SGS (7 séries: IPCA, INPC, IGP-M, Selic, CDI, TR, salário mínimo)
+2. BCB PTAX OData (10 moedas oficiais - fonte fiscal obrigatória)
+3. Frankfurter/ECB (1 HTTP call → 29 moedas fiat, fallback para PTAX)
+4. CoinGecko Demo (1 HTTP call → 5 cryptos, 30 req/min, 10k/mês)
+
+**76 cotações carregadas na primeira execução, zero erros.**
+
+**Schema:**
+- `accounts.currency TEXT DEFAULT 'BRL'`
+- `assets.currency TEXT DEFAULT 'BRL'`
+- 33 novos valores em `index_type` enum
+- 51 fontes em `economic_indices_sources`
+
+**RPCs novas:** `get_rate_to_brl(currency)`, `get_currency_rates()`, `get_supported_currencies()`
+
+**RPCs atualizadas (conversão multi-moeda):** `get_dashboard_summary`, `get_balance_sheet`, `get_solvency_metrics`, `cron_generate_monthly_snapshots`
+
+**Frontend:** seletor de 35 moedas em 3 optgroups nos forms de contas e ativos, badge na lista de contas.
+
+**Commit:** `6a7f370` | CI: 4/4 green
+
+### 22.3 Feature 2: Template Padrão de Importação
+
+**Objetivo:** Arquivo XLSX pré-formatado para input em massa. Auto-detectado pelo import wizard (pula mapeamento manual).
+
+**2 variantes:**
+- Standard: Data, Tipo, Valor, Descrição, Categoria, Notas, Tags (7 colunas)
+- Fatura de cartão: Data, Descrição Original, Descrição Personalizada, Valor, Parcela, Categoria (6 colunas)
+
+**Implementação:**
+- `src/lib/parsers/oniefy-template.ts`: gerador client-side (SheetJS), detector de template, parsers dedicados
+- `detectOniefyTemplate(headers)`: retorna 'standard' | 'card' | null
+- Import wizard: auto-detecta template Oniefy → pula step de mapping → direto para preview
+- Botões "Baixar template" na tela de upload (Transações + Fatura cartão)
+- Cada template inclui aba "Instruções" com documentação dos campos
+
+**Commit:** `a585fe2` | CI: 4/4 green
+
+### 22.4 Feature 3: Coach de Onboarding (migration 024)
+
+**Objetivo:** Guiar o usuário nos primeiros passos pós-onboarding com checklist persistente no dashboard.
+
+**7 etapas ordenadas:**
+1. Definir data de corte (cutoff_date em users_profile)
+2. Cadastrar contas (≥1 conta)
+3. Levantar despesas recorrentes (≥3 recorrências)
+4. Subir extratos bancários (≥1 import batch)
+5. Subir faturas de cartão (≥1 fatura importada)
+6. Categorizar transações pendentes (<10% sem categoria)
+7. Definir orçamento do mês (≥3 budgets)
+
+**Schema:**
+- `setup_journey` (11 cols: user_id, step_key, step_order, title, description, status, completed_at, metadata, timestamps)
+- `description_aliases` (9 cols: user_id, original_description, custom_description, category_id, usage_count, timestamps)
+- `users_profile.cutoff_date DATE`
+- RLS: 3 policies setup_journey + 4 policies description_aliases
+- 2 triggers (updated_at)
+
+**RPCs novas:**
+- `get_setup_journey(user_id)`: retorna steps + progresso + current_step + all_done (auto-inicializa)
+- `advance_setup_journey(user_id, step_key, metadata)`: completa step, desbloqueia próximo
+- `initialize_setup_journey(user_id)`: cria os 7 steps (chamada interna)
+- `lookup_description_alias(user_id, original)`: busca alias existente para descrição de cartão
+- `upsert_description_alias(user_id, original, custom, category_id)`: cria/atualiza alias
+
+**Frontend:**
+- `src/lib/hooks/use-setup-journey.ts`: useSetupJourney, useAdvanceStep, useSetCutoffDate
+- `src/components/dashboard/setup-journey-card.tsx`: card com barra de progresso, 7 steps com ícones (completed/available/locked), CTA, navegação por rota
+- Integrado no Dashboard como Seção 0 (antes do NarrativeCard)
+- Auto-hide quando `all_done = true`
+
+**Commit:** `71ddaa7` | CI: 4/4 green
+
+### 22.5 Estado consolidado pós-sessão
+
+| Métrica | Antes | Depois | Delta |
+|---|---|---|---|
+| Tabelas | 26 | 28 | +2 (setup_journey, description_aliases) |
+| Functions | 56 | 64 | +8 RPCs |
+| Indexes | 110 | 118 | +8 |
+| RLS Policies | 84 | 91 | +7 |
+| Triggers | 19 | 21 | +2 |
+| Migrations (SP) | 17 | 24 | +7 (018-024) |
+| index_type enum | 13 valores | 46 valores | +33 moedas |
+| economic_indices | 0 registros | 76 registros | +76 cotações ao vivo |
+| economic_indices_sources | 0 fontes | 51 fontes | +51 fontes configuradas |
+
+### 22.6 Pendências para próxima sessão
+
+1. **Testar app no projeto SP:** `npm run dev` → criar conta → onboarding → dashboard → verificar SetupJourneyCard
+2. **Auto-advance steps:** integrar completion automática nos hooks existentes (ex: createAccount success → advance step 2)
+3. **Cutoff date UI:** modal/input no step 1 do journey
+4. **Integrar description_aliases no import_transactions_batch:** lookup alias → auto-apply custom_description + category
+5. **Configurar Auth providers** no Dashboard do novo projeto SP (Google OAuth)
+6. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
+7. **Supabase Pro** ($25/mês) para Leaked Password Protection
+
