@@ -9,6 +9,7 @@ interface Props {
   skipped?: number;
   categorized?: number;
   matched?: number;
+  aliased?: number;
   batchId?: string | null;
   onImportComplete?: (stats: { imported: number; categorized: number }) => void;
   onReset: () => void;
@@ -24,8 +25,8 @@ interface Props {
  * - Actionable CTAs: review uncategorized, view transactions, import another
  * - UX-H2-05: Undo import (soft-delete batch within 72h)
  */
-export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, batchId, onImportComplete, onReset }: Props) {
-  const uncategorized = Math.max(0, imported - categorized);
+export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, matched = 0, aliased = 0, batchId, onImportComplete, onReset }: Props) {
+  const uncategorized = Math.max(0, imported - categorized - aliased);
   const hasUncategorized = uncategorized > 0;
 
   const undoImport = useUndoImportBatch();
@@ -111,6 +112,12 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           <div className="flex items-start gap-2 rounded-lg bg-info-slate/10 px-3 py-2.5 text-sm text-info-slate">
             <Link className="mt-0.5 h-4 w-4 flex-shrink-0" />
             <span>{matched} {matched === 1 ? "transação conciliada" : "transações conciliadas"} automaticamente com pendentes existentes.</span>
+          </div>
+        )}
+        {aliased > 0 && (
+          <div className="flex items-start gap-2 rounded-lg bg-primary/10 px-3 py-2.5 text-sm text-primary">
+            <CircleCheck className="mt-0.5 h-4 w-4 flex-shrink-0" />
+            <span>{aliased} {aliased === 1 ? "descrição renomeada" : "descrições renomeadas"} automaticamente (aliases salvos anteriormente).</span>
           </div>
         )}
         {hasUncategorized && (

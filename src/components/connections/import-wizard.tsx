@@ -209,6 +209,7 @@ export function ImportWizard({ onImportComplete }: { onImportComplete?: (stats: 
       skipped={importBatch.data?.skipped}
       categorized={importBatch.data?.categorized}
       matched={importBatch.data?.matched}
+      aliased={importBatch.data?.aliased}
       batchId={importBatch.data?.batch_id}
       onImportComplete={onImportComplete}
       onReset={() => {

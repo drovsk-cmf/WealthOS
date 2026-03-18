@@ -99,6 +99,7 @@ export const importBatchResultSchema = z.object({
   skipped: z.number(),
   categorized: z.number(),
   matched: z.number().optional().default(0),
+  aliased: z.number().optional().default(0),
   batch_id: z.string().uuid(),
 });
 
