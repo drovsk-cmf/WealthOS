@@ -1,13 +1,13 @@
-# WealthOS - Guia de Setup Local (Windows)
+# Oniefy (WealthOS) - Guia de Setup Local (Windows)
 
 **Data:** 07 de março de 2026
-**Objetivo:** Colocar o WealthOS rodando no seu computador pela primeira vez.
+**Objetivo:** Colocar o Oniefy rodando no seu computador pela primeira vez.
 
 ---
 
 ## Contexto: como o projeto funciona
 
-O WealthOS é um aplicativo web. Para desenvolvê-lo, você precisa de três coisas
+O Oniefy é um aplicativo web. Para desenvolvê-lo, você precisa de três coisas
 funcionando juntas:
 
 1. **O código-fonte** - São os arquivos do projeto (TypeScript, CSS, etc.). Eles
@@ -243,7 +243,7 @@ Selecione tudo (Ctrl+A) e apague. Depois cole o seguinte texto:
 
 ```
 # ============================================
-# WealthOS - Environment Variables
+# Oniefy - Environment Variables
 # ============================================
 
 # --- Supabase ---
@@ -316,13 +316,13 @@ Se quiser configurar o Google agora:
 1. Acesse: https://console.cloud.google.com/apis/credentials
 2. Se não tiver um projeto Google Cloud:
    - Clique em **"Select a project"** (barra azul no topo) > **"New Project"**
-   - Nome: `WealthOS` > clique **"Create"** > aguarde > selecione o projeto
+   - Nome: `Oniefy` > clique **"Create"** > aguarde > selecione o projeto
 3. Clique **"+ CREATE CREDENTIALS"** > **"OAuth client ID"**
 4. Se pedir para configurar a tela de consentimento:
    a. Clique **"Configure consent screen"**
    b. Selecione **"External"** > **"Create"**
    c. Preencha:
-      - App name: `WealthOS`
+      - App name: `Oniefy`
       - User support email: seu email
       - Developer contact: seu email
    d. Clique **"Save and Continue"** (3 vezes seguidas)
@@ -330,7 +330,7 @@ Se quiser configurar o Google agora:
    f. Volte para https://console.cloud.google.com/apis/credentials
    g. Clique **"+ CREATE CREDENTIALS"** > **"OAuth client ID"** novamente
 5. Application type: **"Web application"**
-6. Name: `WealthOS Supabase`
+6. Name: `Oniefy Supabase`
 7. Em **"Authorized redirect URIs"**, clique **"+ ADD URI"** e cole:
    ```
    https://mngjbrbxapazdddzgoje.supabase.co/auth/v1/callback
@@ -407,8 +407,8 @@ para a pasta do projeto (`cd C:\Projetos\WealthOS`).
 
 **O que esperar:**
 - O navegador redireciona para `http://localhost:3000/login`
-- Aparece a tela de login do WealthOS com:
-  - Título "WealthOS"
+- Aparece a tela de login do Oniefy com:
+  - Título "Oniefy"
   - Subtítulo "Gestão financeira e patrimonial inteligente"
   - Botão "Continuar com Google"
   - Botão "Continuar com Apple"
@@ -439,7 +439,7 @@ para a pasta do projeto (`cd C:\Projetos\WealthOS`).
 
 **O que esperar:**
 - Redirecionamento para `/onboarding`
-- Mensagem "Bem-vindo ao WealthOS"
+- Mensagem "Bem-vindo ao Oniefy"
 
 4. Clique **"Ir para o Dashboard (provisório)"**
 
@@ -456,7 +456,7 @@ para a pasta do projeto (`cd C:\Projetos\WealthOS`).
 
 ## Resumo: como voltar a rodar o projeto no futuro
 
-Sempre que quiser abrir o WealthOS de novo:
+Sempre que quiser abrir o Oniefy de novo:
 
 ```powershell
 # 1. Abra o PowerShell (Win + R > powershell > Enter)
