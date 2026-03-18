@@ -16,7 +16,6 @@ import { transactionResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import { tryAdvanceStep } from "@/lib/hooks/use-setup-journey";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
-import { tryAdvanceJourney } from "@/lib/services/journey-auto-advance";
 
 type Recurrence = Database["public"]["Tables"]["recurrences"]["Row"];
 type RecurrenceInsert = Database["public"]["Tables"]["recurrences"]["Insert"];
