@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 17 de março de 2026
+**Data:** 18 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** hmwdfcsxtmbzlslxgqus
@@ -63,10 +63,10 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 26 (todas com RLS) |
 | Políticas RLS | 84 |
-| Functions (total) | 87 (70 RPCs + 7 triggers + 9 cron + 1 utility). Todas com `SET search_path = public` e auth.uid() check |
+| Functions (total) | 88 (71 RPCs + 7 triggers + 9 cron + 1 utility). Todas com `SET search_path = public` e auth.uid() check |
 | Triggers | 22 |
 | ENUMs | 27 |
-| Migrations aplicadas | 53+ via MCP (41 SQL files no repo) |
+| Migrations aplicadas | 55+ via MCP (41 SQL files no repo) |
 | pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -79,14 +79,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection) |
 | Supabase perf advisories | 0 WARN (unused_index INFO apenas, esperado sem dados) |
 
-### 3.3 Functions (70 RPCs + 7 triggers + 9 cron + 1 utility = 87)
+### 3.3 Functions (71 RPCs + 7 triggers + 9 cron + 1 utility = 88)
 
 | Grupo | Functions |
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member |
 | Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction |
-| Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual |
+| Dashboard | get_dashboard_summary, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual, **get_dashboard_all** |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -1828,4 +1828,86 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 **Grupo 10 (investimento):**
 - Supabase Pro (~US$25/mês), Apple Developer Account (US$99/ano)
 
-- **Último commit verde:** `2b8f9a0` (4/4 jobs: Security + Lint + Unit Tests + Build)
+- **Último commit verde:** `2a34441` (4/4 jobs: Security + Lint + Unit Tests + Build)
+
+---
+
+## Sessão 21 (18 março 2026)
+
+### 21.1 Correções de UX
+
+| Item | Problema | Fix |
+|------|----------|-----|
+| React 19 key warning | Overlay condicional em `AppLayout` sem `key` | `key="sidebar-overlay"` no `<div>` do overlay |
+| Logo sidebar muito pequena | `h-8` (32px) insuficiente | `h-auto w-full` (preenche sidebar w-64, ~3x maior) |
+| Onboarding import abandona wizard | `router.push("/connections")` redirecionava para página padrão | `ImportWizard` recebe `onImportComplete` callback; `RouteImportStep` embarca wizard no onboarding; `ImportStepResult` mostra "Continuar" em contexto onboarding |
+
+### 21.2 CI Fix
+
+Jest pegava `e2e/*.spec.ts` (Playwright) causando `TypeError: Class extends value undefined`. Fix: `roots: ['<rootDir>/src']` no `jest.config.js`.
+
+### 21.3 Performance: Dashboard RPC Consolidado
+
+**Diagnóstico:**
+
+| RPC | Média (ms) | Máximo (ms) |
+|-----|-----------|----------|
+| get_solvency_metrics | 173 | 2.337 |
+| get_top_categories | 161 | 2.152 |
+| get_dashboard_summary | 157 | 3.223 |
+| get_balance_evolution | 146 | 1.493 |
+| get_balance_sheet | 93 | 1.264 |
+| get_budget_vs_actual | 40-108 | 155 |
+
+Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bills), cada uma pagando ~100-200ms de latência rede (BR → Supabase). Máximos de 2-3s refletem cold starts do Free tier. Volume de dados não é o problema (tabelas praticamente vazias).
+
+**Solução:**
+
+`get_dashboard_all(p_user_id)` - single RPC retornando JSON com 7 seções: `summary`, `balance_sheet`, `solvency`, `top_categories`, `evolution`, `budget`, `attention`.
+
+| Antes | Depois |
+|-------|--------|
+| 14+ HTTP calls | 3 calls (all + snapshots + upcoming_bills) |
+| ~1.5-3s latência | ~200-400ms estimado |
+
+- Migration 054+055: função SQL com auth guard
+- `useDashboardAll()` hook com validação Zod por seção
+- Dashboard page refatorada para single query
+- `AttentionQueue` aceita dados via props (bypass da query interna)
+- RPCs individuais preservados para refetch granular em outras páginas
+
+### 21.4 Commits
+
+| SHA | Conteúdo |
+|-----|----------|
+| `ecb6c56` | fix: key no overlay condicional AppLayout (React 19) |
+| `824d903` | fix: logo sidebar w-full + onboarding import inline (6 arquivos) |
+| `b623564` | fix(ci): Jest roots restrito a src/ (excluir e2e/) |
+| `2a34441` | perf: get_dashboard_all RPC + useDashboardAll hook (9+ calls → 1) |
+
+### 21.5 Migrations aplicadas (054-055)
+
+| # | Nome | Conteúdo |
+|---|------|----------|
+| 054 | add_get_dashboard_all_rpc | Primeira versão (bug: `b.amount` em vez de `b.planned_amount`) |
+| 055 | fix_get_dashboard_all_budget_column | Versão corrigida com `planned_amount` |
+
+### 21.6 Totais atualizados
+
+- **Functions:** 88 (71 RPCs + 7 triggers + 9 cron + 1 utility)
+- **Migrations:** 55+ via MCP
+- **Arquivos src/:** ~128
+- **Suítes de teste Jest:** 15 (208 assertions)
+- **CI:** 4/4 verde
+
+### 21.7 Nota: Supabase generated types
+
+`get_dashboard_all` não está nos generated types (`database.types.ts`). O hook usa `as any` cast no nome do RPC. Para resolver: `npx supabase gen types typescript --project-id hmwdfcsxtmbzlslxgqus > src/lib/supabase/database.types.ts` (requer Supabase CLI + acesso local).
+
+### 21.8 Próximos passos (prioridade)
+
+1. **Deploy Vercel** (Claudio, 30 min) - seguir docs/DEPLOY-VERCEL.md
+2. **Migrar Supabase para São Paulo** (Claudio cria projeto, Claude aplica migrations) - seguir docs/MIGRATE-SUPABASE-SP.md
+3. **Regenerar Supabase types** (incluir get_dashboard_all)
+4. **Usar o app por 1 semana** com dados reais
+5. **Convidar 2-3 testers** para beta fechado
