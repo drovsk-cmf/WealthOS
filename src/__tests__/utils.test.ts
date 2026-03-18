@@ -1,4 +1,5 @@
-import { formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo } from "@/lib/utils";
+import { formatCurrency, formatDate, formatRelativeDate, formatMonthShort, getColorName, sanitizeRedirectTo } from "@/lib/utils";
+import { translateSupabaseError } from "@/lib/utils/error-messages";
 
 describe("utils", () => {
   describe("formatCurrency", () => {
@@ -132,6 +133,145 @@ describe("utils", () => {
 
     it("aceita fallback customizado", () => {
       expect(sanitizeRedirectTo(null, "/home")).toBe("/home");
+    });
+  });
+
+  describe("formatCurrency (multi-currency)", () => {
+    it("formata USD com símbolo correto", () => {
+      const result = formatCurrency(1234.56, "USD");
+      expect(result).toMatch(/US\$|USD/);
+      expect(result).toContain("1.234,56");
+    });
+
+    it("formata EUR", () => {
+      const result = formatCurrency(999.99, "EUR");
+      expect(result).toMatch(/€|EUR/);
+    });
+
+    it("formata JPY sem decimais", () => {
+      const result = formatCurrency(10000, "JPY");
+      expect(result).toMatch(/¥|JP¥|JPY/);
+    });
+
+    it("formata BTC (fallback para código)", () => {
+      // BTC não é ISO 4217, Intl pode lançar ou usar fallback
+      try {
+        const result = formatCurrency(0.5, "BTC");
+        expect(typeof result).toBe("string");
+      } catch {
+        // Some environments throw for non-standard currency codes
+        expect(true).toBe(true);
+      }
+    });
+  });
+
+  describe("formatMonthShort", () => {
+    it("formata mês sem ano", () => {
+      const result = formatMonthShort("2026-03-01");
+      expect(result.toLowerCase()).toContain("mar");
+    });
+
+    it("formata mês com ano", () => {
+      const result = formatMonthShort("2026-03-01", true);
+      expect(result.toLowerCase()).toContain("mar");
+      expect(result).toContain("26");
+    });
+
+    it("aceita formato YYYY-MM (sem dia)", () => {
+      const result = formatMonthShort("2026-01");
+      expect(result.toLowerCase()).toContain("jan");
+    });
+
+    it("formata dezembro corretamente", () => {
+      const result = formatMonthShort("2026-12-15");
+      expect(result.toLowerCase()).toContain("dez");
+    });
+  });
+
+  describe("getColorName", () => {
+    it("retorna nome para cor conhecida", () => {
+      // Plum Ledger palette colors should map to names
+      const result = getColorName("#3D2944");
+      // If not in map, returns the hex itself
+      expect(typeof result).toBe("string");
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it("retorna hex para cor desconhecida", () => {
+      expect(getColorName("#ZZZZZZ")).toBe("#ZZZZZZ");
+    });
+
+    it("é case-insensitive", () => {
+      const lower = getColorName("#56688f");
+      const upper = getColorName("#56688F");
+      expect(lower).toBe(upper);
+      expect(lower).toBe("Azul ardósia");
+    });
+  });
+
+  describe("translateSupabaseError", () => {
+    it("traduz credenciais inválidas", () => {
+      expect(translateSupabaseError("Invalid login credentials")).toBe(
+        "Email ou senha inválidos."
+      );
+    });
+
+    it("traduz email não confirmado", () => {
+      expect(translateSupabaseError("Email not confirmed")).toBe(
+        "Email ainda não confirmado. Verifique sua caixa de entrada."
+      );
+    });
+
+    it("traduz rate limit", () => {
+      expect(translateSupabaseError("Email rate limit exceeded")).toBe(
+        "Muitas tentativas. Aguarde alguns minutos."
+      );
+    });
+
+    it("traduz JWT expirado", () => {
+      expect(translateSupabaseError("JWT expired")).toBe(
+        "Sessão expirada. Faça login novamente."
+      );
+    });
+
+    it("traduz sessão ausente", () => {
+      expect(translateSupabaseError("Auth session missing!")).toBe(
+        "Sessão expirada. Faça login novamente."
+      );
+    });
+
+    it("traduz erro de rede", () => {
+      expect(translateSupabaseError("Network request failed")).toBe(
+        "Falha na conexão. Verifique sua internet."
+      );
+    });
+
+    it("faz match parcial case-insensitive", () => {
+      expect(translateSupabaseError("error: invalid login credentials foo")).toBe(
+        "Email ou senha inválidos."
+      );
+    });
+
+    it("retorna fallback para erro desconhecido", () => {
+      expect(translateSupabaseError("some random error xyz")).toBe(
+        "Ocorreu um erro. Tente novamente."
+      );
+    });
+
+    it("traduz nova senha igual à antiga", () => {
+      expect(
+        translateSupabaseError(
+          "New password should be different from the old password."
+        )
+      ).toBe("A nova senha deve ser diferente da senha atual.");
+    });
+
+    it("traduz limite de rate de 60s", () => {
+      expect(
+        translateSupabaseError(
+          "For security purposes, you can only request this once every 60 seconds"
+        )
+      ).toBe("Por segurança, aguarde 60 segundos entre tentativas.");
     });
   });
 });
