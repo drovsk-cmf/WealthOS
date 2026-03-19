@@ -1,9 +1,13 @@
 # Oniefy - Matriz de Validação
 
-**Versão:** 2.0
-**Data:** 18 de março de 2026
+**Versão:** 2.1
+**Data:** 19 de março de 2026
 **Projeto:** Oniefy (WealthOS)
-**Changelog v2.0:** Incorpora análise externa (Perplexity, 2026-03-18). Adicionadas camadas 8 (Dependências), 9 (Infraestrutura/Runtime), 10 (Conformidade/Governança). Camada 6 expandida com testes dinâmicos. Pacote security-focused adicionado. Anexo A mapeia para ISO/IEC 25010 e OWASP ASVS. Total: 34 auditorias em 10 camadas.
+
+**Changelog:**
+- **v2.1** (2026-03-19): Incorpora análise externa (Gemini, 2026-03-18). Adicionados: 6.7 (mutation testing), 8.4 (SBOM), 10.3 (ISO 27001 readiness). Item 1.3 expandido com nível SLSA. Item 10.2 expandido com risco de requirement drift. Anexo B: roadmap de certificação. Total: 37 auditorias em 10 camadas.
+- **v2.0** (2026-03-18): Incorpora análise externa (Perplexity). Adicionadas camadas 8, 9, 10. Camada 6 expandida. Pacote security-focused. Anexo A (ISO 25010, OWASP ASVS).
+- **v1.0** (2026-03-18): Versão inicial. 23 auditorias em 7 camadas.
 
 ---
 
@@ -69,7 +73,7 @@ Prioridade: limpar oportunisticamente. Nunca justifica commit dedicado.
 
 ## 2. Tipos de auditoria
 
-Organizados por camada do sistema. Cada tipo verifica uma preocupação específica e pode produzir achados de qualquer categoria da taxonomia acima. 34 auditorias em 10 camadas.
+Organizados por camada do sistema. Cada tipo verifica uma preocupação específica e pode produzir achados de qualquer categoria da taxonomia acima. 37 auditorias em 10 camadas.
 
 ### Camada 1 - Repositório e Processo
 
@@ -77,7 +81,7 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 |---|---|---|---|---|
 | 1.1 | Integridade de commits | Commits pendentes, divergência local/remote, stash esquecido, branches órfãs | `git status`, `git log`, `git stash list`, `git branch -a` | Sujeira, Débito |
 | 1.2 | Consistência do HANDOVER | Contagens (migrations, stories, RPCs, arquivos) batem com a realidade do código | HANDOVER vs `find`, `grep`, Supabase MCP | Defeito (se gera decisão errada), Sujeira |
-| 1.3 | CI/CD health | Pipeline verde, jobs configurados, cobertura mínima enforçada | GitHub Actions API, `curl` | Fragilidade, Débito |
+| 1.3 | CI/CD health e integridade de build | Pipeline verde, jobs configurados, cobertura mínima enforçada. Nível SLSA do processo de build documentado (atual: L1 - build scriptado via GitHub Actions; alvo: L2 - procedência assinada) | GitHub Actions API, `curl` | Fragilidade, Débito |
 
 ### Camada 2 - Qualidade de Código (Análise Estática)
 
@@ -130,6 +134,7 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 | 6.4 | Testes de integração e E2E | Fluxos multi-página (onboarding, transação completa, reconciliação) validados end-to-end; falhas de rede simuladas | Playwright (`e2e/`), MSW para mocks de rede | Defeito, Fragilidade |
 | 6.5 | Testes de carga e resiliência | Comportamento sob picos de uso, degradação graciosa, timeouts respeitados, recovery após falha de Supabase | k6, Artillery, ou scripts ad hoc contra staging | Performance, Fragilidade |
 | 6.6 | Testes de segurança dinâmicos (DAST) | Fuzzing de inputs, scan de endpoints expostos, tentativas de bypass de auth em runtime | OWASP ZAP, nuclei, scripts manuais de pen test | Vulnerabilidade |
+| 6.7 | Eficácia de testes (mutation testing) | Mutation score dos módulos críticos (parsers, transaction engine, auth). Line coverage não garante que testes detectam erros; mutantes não-mortos revelam asserções fracas | Stryker (`@stryker-mutator/core`) em módulos selecionados. Alvo: mutation score >80% em módulos críticos | Fragilidade |
 
 ### Camada 7 - UX e Acessibilidade
 
@@ -146,6 +151,7 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 | 8.1 | Vulnerabilidades em dependências (SCA) | CVEs conhecidas em pacotes npm diretos e transitivos; severidade CVSS | `npm audit`, Dependabot/Snyk, GitHub Security Advisories | Vulnerabilidade |
 | 8.2 | Versionamento e obsolescência | Pacotes desatualizados (major versions atrás), pacotes sem manutenção (>1 ano sem commit), pacotes deprecated | `npm outdated`, verificação manual de repos upstream | Fragilidade, Débito |
 | 8.3 | Licenciamento | Licenças incompatíveis com uso comercial (GPL em projeto proprietário), licenças ausentes, licenças ambíguas | `license-checker`, `npx license-checker --summary` | Vulnerabilidade (risco legal) |
+| 8.4 | SBOM (Software Bill of Materials) | Inventário completo e versionado de todas as dependências diretas e transitivas; gerado automaticamente a cada release; armazenado como artefato do build | `npm sbom --sbom-format cyclonedx`, GitHub dependency graph | Débito (se ausente), Vulnerabilidade (se inventário incompleto impede resposta a CVEs) |
 
 ### Camada 9 - Infraestrutura e Runtime
 
@@ -160,13 +166,14 @@ Organizados por camada do sistema. Cada tipo verifica uma preocupação específ
 | # | Tipo de auditoria | O que verifica | Ferramentas | Achados típicos |
 |---|---|---|---|---|
 | 10.1 | Proteção de dados (LGPD) | Dados pessoais identificados e mapeados; base legal para cada tratamento; mecanismo de exclusão funcional (direito ao esquecimento); política de privacidade acessível e atualizada; consentimento quando aplicável | Leitura do schema + privacy policy + endpoint de exclusão | Vulnerabilidade (risco regulatório), Defeito |
-| 10.2 | Rastreabilidade requisitos-código-teste | Cada story (AUTH-01 a WKF-04) tem implementação identificável e teste correspondente; mudanças de spec refletidas no código | Cruzamento funcional → `src/` → `__tests__/` | Fragilidade, Sujeira |
+| 10.2 | Rastreabilidade requisitos-código-teste | Cada story (AUTH-01 a WKF-04) tem implementação identificável e teste correspondente; mudanças de spec refletidas no código. Inclui verificação de requirement drift: specs que evoluíram mas cuja matriz ou testes não acompanharam, gerando validação de funcionalidade obsoleta ou lacuna em lógica nova | Cruzamento funcional → `src/` → `__tests__/`, diff de specs vs último baseline | Fragilidade, Sujeira |
+| 10.3 | Codificação segura (ISO 27001 A.8.28) | Princípios de codificação segura documentados e aplicados: menor privilégio, defesa em profundidade, agilidade criptográfica (sem chaves hardcoded, algoritmos substituíveis), fail-secure defaults. Evidências coletáveis para auditoria externa | Checklist ISO 27001 A.8.28 vs práticas do codebase; leitura de auth, crypto, RLS | Vulnerabilidade, Débito |
 
 ---
 
 ## 3. Pacotes de execução
 
-Nem toda sessão requer as 34 auditorias. Quatro pacotes pré-definidos por contexto de uso.
+Nem toda sessão requer as 37 auditorias. Quatro pacotes pré-definidos por contexto de uso.
 
 ### 3.1 Pré-commit (rápido, ~5 min)
 
@@ -202,7 +209,7 @@ Executar antes de deploy para produção. Objetivo: validação exaustiva.
 
 | Auditorias | IDs |
 |---|---|
-| Todas as 34 | 1.1 a 10.2 |
+| Todas as 37 | 1.1 a 10.3 |
 
 Ordem recomendada: Segurança (4) → Dependências (8) → Conformidade (10) → Funcional (6) → Arquitetura (3) → Performance (5) → Infraestrutura (9) → Código (2) → Repositório (1) → UX (7).
 
@@ -215,8 +222,10 @@ Executar antes de expor o sistema a usuários externos ou após mudança em auth
 | Segurança completa | 4.1 a 4.6 |
 | Dependências (SCA) | 8.1 |
 | Licenciamento | 8.3 |
+| SBOM | 8.4 |
 | DAST | 6.6 |
 | Configuração de ambientes | 9.1 |
+| Codificação segura (ISO 27001) | 10.3 |
 | LGPD | 10.1 |
 
 ---
@@ -229,7 +238,7 @@ Cada célula indica a probabilidade de encontrar aquele tipo de achado naquela a
 |---|---|---|---|---|---|---|
 | **1.1 Commits** | - | - | - | - | Baixa | Média |
 | **1.2 HANDOVER** | Média | - | - | - | - | Alta |
-| **1.3 CI/CD** | - | - | - | Média | Média | - |
+| **1.3 CI/CD + SLSA** | - | - | - | Média | Média | - |
 | **2.1 Compilação** | Alta | - | - | - | - | - |
 | **2.2 Lint** | Baixa | - | - | Média | - | Alta |
 | **2.3 Dead code** | - | - | - | - | Baixa | Alta |
@@ -257,17 +266,20 @@ Cada célula indica a probabilidade de encontrar aquele tipo de achado naquela a
 | **6.4 E2E/integração** | Alta | - | - | Média | - | - |
 | **6.5 Carga/resiliência** | - | - | Alta | Média | - | - |
 | **6.6 DAST** | - | Alta | - | - | - | - |
+| **6.7 Mutation testing** | - | - | - | Alta | - | - |
 | **7.1 Design system** | Baixa | - | - | - | - | Alta |
 | **7.2 Estados vazios** | Média | - | - | - | - | - |
 | **7.3 Acessibilidade** | Média | Baixa | - | - | - | - |
 | **8.1 SCA (CVEs)** | - | Alta | - | - | - | - |
 | **8.2 Obsolescência** | - | - | - | Média | Alta | - |
 | **8.3 Licenciamento** | - | Alta | - | - | - | - |
+| **8.4 SBOM** | - | Média | - | - | Alta | - |
 | **9.1 Config ambientes** | - | Alta | - | - | Média | - |
 | **9.2 Observabilidade** | - | - | - | Média | Alta | - |
 | **9.3 Resiliência op.** | Média | - | Média | Alta | - | - |
 | **10.1 LGPD** | Média | Alta | - | - | - | - |
 | **10.2 Rastreabilidade** | - | - | - | Média | - | Média |
+| **10.3 ISO 27001 A.8.28** | - | Alta | - | - | Média | - |
 
 ---
 
@@ -284,7 +296,7 @@ Ao executar uma auditoria, registrar nesta seção:
 
 ## Anexo A - Mapeamento para modelos de referência
 
-Para fins de due diligence externa ou auditoria por terceiros, este anexo mapeia as auditorias e categorias da matriz para dois modelos consolidados: ISO/IEC 25010 (qualidade de produto de software) e OWASP ASVS (segurança de aplicações).
+Para fins de due diligence externa ou auditoria por terceiros, este anexo mapeia as auditorias e categorias da matriz para modelos consolidados.
 
 ### A.1 ISO/IEC 25010
 
@@ -292,13 +304,13 @@ A ISO/IEC 25010 define 8 características de qualidade de produto. A tabela abai
 
 | Característica ISO 25010 | Subcaracterísticas relevantes | Auditorias que cobrem |
 |---|---|---|
-| Adequação funcional | Completude, correção, pertinência | 2.1, 3.1, 3.4, 6.1, 6.2, 6.4 |
+| Adequação funcional | Completude, correção, pertinência | 2.1, 3.1, 3.4, 6.1, 6.2, 6.4, 6.7 |
 | Eficiência de desempenho | Tempo de resposta, uso de recursos, capacidade | 5.1, 5.2, 5.3, 5.4, 6.5 |
 | Compatibilidade | Coexistência, interoperabilidade | 3.1, 3.2, 7.3 (parcial) |
 | Usabilidade | Reconhecibilidade, aprendizagem, operabilidade, proteção contra erro, estética, acessibilidade | 2.6, 7.1, 7.2, 7.3 |
 | Confiabilidade | Maturidade, disponibilidade, tolerância a falhas, recuperabilidade | 3.5, 6.3, 6.4, 6.5, 9.3 |
-| Segurança | Confidencialidade, integridade, não-repúdio, responsabilização, autenticidade | 4.1 a 4.6, 6.6, 8.1, 8.3, 9.1, 10.1 |
-| Manutenibilidade | Modularidade, reusabilidade, analisabilidade, modificabilidade, testabilidade | 2.2 a 2.5, 3.3, 6.1, 6.2, 10.2 |
+| Segurança | Confidencialidade, integridade, não-repúdio, responsabilização, autenticidade | 4.1 a 4.6, 6.6, 8.1, 8.3, 8.4, 9.1, 10.1, 10.3 |
+| Manutenibilidade | Modularidade, reusabilidade, analisabilidade, modificabilidade, testabilidade | 2.2 a 2.5, 3.3, 6.1, 6.2, 6.7, 10.2 |
 | Portabilidade | Adaptabilidade, instalabilidade, substituibilidade | 1.3, 9.1 (parcial) |
 
 Lacunas reconhecidas: compatibilidade cross-browser/device e portabilidade multi-cloud não são cobertas em profundidade. São tratáveis na Fase 10 (Polish + App Store) do plano de fases do Oniefy.
@@ -309,30 +321,92 @@ O ASVS define 14 capítulos de verificação de segurança. A tabela abaixo indi
 
 | Capítulo ASVS | Descrição | Auditorias que cobrem | Cobertura |
 |---|---|---|---|
-| V1 | Arquitetura, design, modelagem de ameaças | 3.1, 3.3, 3.5 | Parcial |
-| V2 | Autenticação | 4.2 | Boa |
+| V1 | Arquitetura, design, modelagem de ameaças | 3.1, 3.3, 3.5, 10.3 | Parcial |
+| V2 | Autenticação | 4.2, 10.3 | Boa |
 | V3 | Gerenciamento de sessão | 4.2 (middleware session refresh) | Parcial |
 | V4 | Controle de acesso | 4.1 (RLS), 4.2 | Boa |
 | V5 | Validação, sanitização, codificação | 4.5 | Boa |
-| V6 | Criptografia | 4.4 (secrets), auditoria ad hoc de E2E keys | Parcial |
+| V6 | Criptografia | 4.4 (secrets), 10.3 (agilidade criptográfica) | Parcial → Boa |
 | V7 | Tratamento de erros e logging | 3.5, 9.2 | Boa |
 | V8 | Proteção de dados | 10.1 (LGPD), 4.4 | Parcial |
 | V9 | Comunicação | 4.6 (SSRF), 9.1 (TLS config) | Parcial |
-| V10 | Código malicioso | 8.1 (SCA) | Parcial |
-| V11 | Lógica de negócio | 3.4, 6.2, 6.4 | Parcial |
+| V10 | Código malicioso | 8.1 (SCA), 8.4 (SBOM) | Parcial → Boa |
+| V11 | Lógica de negócio | 3.4, 6.2, 6.4, 6.7 | Parcial |
 | V12 | Arquivos e recursos | 4.5 (path traversal, upload) | Parcial |
 | V13 | API e web services | 4.2, 4.5, 4.6 | Boa |
-| V14 | Configuração | 9.1, 4.4, 1.3 | Parcial |
+| V14 | Configuração | 9.1, 4.4, 1.3 (SLSA) | Parcial → Boa |
 
-Cobertura geral estimada: nível L1 (oportunista) do ASVS para a maioria dos capítulos; nível L2 (padrão) para V2, V4, V5, V7, V13. Para atingir L2 completo, expandir V3 (session management), V6 (criptografia), V8 (proteção de dados) e V12 (upload/arquivos) com verificações dedicadas.
+Cobertura geral estimada: nível L1 (oportunista) do ASVS para a maioria dos capítulos; nível L2 (padrão) para V2, V4, V5, V7, V13. A adição de 10.3 (ISO 27001 A.8.28) e 8.4 (SBOM) melhora cobertura de V6, V10 e V14 para próximo de L2.
 
-### A.3 Categorias de achado vs. modelos
+### A.3 IEEE 1012 (Verificação e Validação)
 
-| Categoria da matriz | Correspondência ISO 25010 | Correspondência ASVS |
+O Oniefy opera no nível de integridade 2 da IEEE 1012 (software comercial com impacto financeiro moderado, sem risco a vida). A tabela abaixo mapeia as fases do ciclo de vida IEEE 1012 para auditorias aplicáveis.
+
+| Fase IEEE 1012 | Tarefa de V&V | Auditorias da matriz |
 |---|---|---|
-| Defeito | Adequação funcional (correção) | V11 (lógica de negócio) |
-| Vulnerabilidade | Segurança (todas subcaracterísticas) | V1 a V14 (depende do vetor) |
-| Performance | Eficiência de desempenho | Fora de escopo ASVS |
-| Fragilidade | Confiabilidade (maturidade), Manutenibilidade (testabilidade) | V1 (design robusto) |
-| Débito técnico | Manutenibilidade (modificabilidade, analisabilidade) | Fora de escopo ASVS |
-| Sujeira | Manutenibilidade (analisabilidade) | Fora de escopo ASVS |
+| Conceito | Análise de risco e hazard | 10.1 (LGPD), 10.3 (codificação segura) |
+| Requisitos | Avaliação de rastreabilidade | 10.2, 6.2 |
+| Design | Análise de fluxo de controle e interfaces | 3.1, 3.3, 3.4 |
+| Implementação | Auditoria de código e conformidade | Camadas 2 e 4 inteiras |
+| Teste | Teste de sistema e aceitação | 6.1 a 6.7 |
+| Operação | Métricas reais e monitoramento | 9.2, 9.3, 5.4 |
+
+### A.4 Categorias de achado vs. modelos
+
+| Categoria da matriz | Correspondência ISO 25010 | Correspondência ASVS | IEEE 1012 |
+|---|---|---|---|
+| Defeito | Adequação funcional (correção) | V11 (lógica de negócio) | Anomalia de implementação |
+| Vulnerabilidade | Segurança (todas subcaracterísticas) | V1 a V14 (depende do vetor) | Hazard de segurança |
+| Performance | Eficiência de desempenho | Fora de escopo ASVS | Anomalia de desempenho |
+| Fragilidade | Confiabilidade (maturidade), Manutenibilidade (testabilidade) | V1 (design robusto) | Risco de manutenção |
+| Débito técnico | Manutenibilidade (modificabilidade, analisabilidade) | Fora de escopo ASVS | Risco de manutenção |
+| Sujeira | Manutenibilidade (analisabilidade) | Fora de escopo ASVS | Fora de escopo |
+
+---
+
+## Anexo B - Roadmap de certificação
+
+O Oniefy é um SaaS financeiro que lida com dados patrimoniais sensíveis. Mesmo antes de buscar certificação formal, construir com mentalidade de compliance desde o início reduz custo de adequação futura e aumenta confiança de usuários e parceiros.
+
+### B.1 Posicionamento atual
+
+| Norma/Framework | Relevância para Oniefy | Estado atual | Próximo passo |
+|---|---|---|---|
+| LGPD (Lei 13.709/2018) | Obrigatória. Dados pessoais e financeiros de residentes BR | Parcial: privacy policy existe, RLS implementado, endpoint de exclusão funcional. Falta: mapeamento formal de dados pessoais, registro de operações de tratamento, relatório de impacto (RIPD) | Produzir mapeamento de dados pessoais por tabela (auditoria 10.1) |
+| ISO 27001 (SGSI) | Altamente recomendada para SaaS financeiro. Diferencial competitivo e requisito de parceiros enterprise | Parcial: muitos controles do Anexo A já implementados organicamente (A.8.28 codificação segura, A.8.9 gestão de config, A.8.24 criptografia). Falta: documentação formal de políticas, análise de riscos estruturada, ciclo PDCA | Documentar controles existentes como evidências. Iniciar gap analysis contra Anexo A |
+| OWASP ASVS | Melhor prática de AppSec. Não é certificação, mas fundamenta a postura de segurança | L1 para maioria dos capítulos, L2 para V2/V4/V5/V7/V13 (ver A.2) | Fechar gaps de V3, V6, V8, V12 para atingir L2 completo |
+| SOC 2 Type II | Requisito de clientes enterprise nos EUA; pode ser relevante se expandir | Não iniciado | Avaliar quando houver demanda de mercado |
+
+### B.2 Controles ISO 27001 Anexo A já presentes no codebase
+
+A tabela abaixo documenta controles do Anexo A que já existem no Oniefy de forma orgânica, servindo como evidência para futura auditoria.
+
+| Controle Anexo A | Descrição | Evidência no Oniefy |
+|---|---|---|
+| A.5.15 | Controle de acesso | RLS com `(select auth.uid())` em todas as tabelas; middleware de auth; rate limiting |
+| A.8.3 | Restrição de acesso à informação | Service role key isolada em `admin.ts`; CI grep proíbe exposição |
+| A.8.5 | Autenticação segura | MFA TOTP obrigatório; login social (Google, Apple); Supabase GoTrue |
+| A.8.9 | Gestão de configuração | `.env` por ambiente; `validateEnv()` fail-fast no middleware; CI verifica variáveis |
+| A.8.24 | Uso de criptografia | E2E encryption com HKDF do JWT; TLS em trânsito; AES-256 em repouso (Supabase) |
+| A.8.25 | Ciclo de vida de desenvolvimento seguro | CI com 3 jobs (security, lint, build); testes automatizados; revisão por Claude |
+| A.8.28 | Codificação segura | `search_path` em todas as functions; Zod validation; CSP nonce-based; SSRF allowlist; CSV injection sanitization |
+| A.8.33 | Informação de teste | Test user ID dedicado; dados de teste separados de produção |
+
+### B.3 Ações de compliance por horizonte
+
+**Curto prazo (próximas 4 sprints):**
+- Produzir mapeamento LGPD: tabela → dados pessoais → base legal → finalidade
+- Gerar SBOM automaticamente no CI (item 8.4)
+- Documentar controles A.8.28 como checklist executável (item 10.3)
+- Registrar nível SLSA atual (L1) e planejar L2
+
+**Médio prazo (antes do lançamento público):**
+- Gap analysis ISO 27001 Anexo A completo
+- RIPD (Relatório de Impacto à Proteção de Dados) para o módulo fiscal
+- ASVS L2 completo (fechar V3, V6, V8, V12)
+- Política de retenção e descarte de dados documentada
+
+**Longo prazo (pós-lançamento, conforme demanda):**
+- Certificação ISO 27001 formal (se parceiros enterprise exigirem)
+- SOC 2 Type II (se expansão para mercado americano)
+- Pentest externo anual por empresa independente
