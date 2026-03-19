@@ -2414,7 +2414,7 @@ Verificação exaustiva via SQL direto em ambos os projetos:
 - **Fontes de índices:** 51
 - **Suítes de teste Jest:** 22 (341 assertions)
 - **CI:** 4/4 verde
-- **Último commit verde:** `affb535`
+- **Último commit verde:** `de0036b`
 
 ---
 
@@ -2432,6 +2432,9 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 | `fb9f257` | feat: integrar Sentry para error tracking em produção |
 | `53a0897` | docs: mapeamento LGPD + migration de retenção de dados |
 | `affb535` | chore: next.js 15.5.12 → 15.5.14 (patch segurança) |
+| `d3ec091` | fix: eliminar 2 lint warnings em use-transactions.ts |
+| `2e30c5a` | chore: database.ts atualizado com 3 functions LGPD + HANDOVER |
+| `de0036b` | perf: UpcomingBillsCard consome dados de useDashboardAll (-1 query) |
 
 ### Entregas
 
@@ -2447,12 +2450,36 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 
 **6. Divergência database.ts/SP:** falso positivo confirmado. Auditoria rodou contra projeto errado.
 
+**7. Lint zero warnings:** varsIgnorePattern adicionado ao ESLint. Destructuring em use-transactions.ts corrigido.
+
+**8. database.ts sincronizado:** 3 functions LGPD (cron_cleanup_*) adicionadas ao tipo.
+
+**9. UpcomingBillsCard consolidado na RPC (P2 perf):**
+- Migration 058: get_dashboard_all agora retorna upcoming_bills (top 5 pendentes com JOIN)
+- UpcomingBillsCard reescrito como props-based (não faz mais query própria)
+- use-dashboard.ts: UpcomingBill type + upcomingBills no DashboardAllData
+- Impacto: -1 HTTP call no dashboard load (~150ms)
+
+**10. Migration 057 aplicada no SP:**
+- 3 functions de cleanup + 2 pg_cron jobs (weekly-cleanup-analytics, weekly-cleanup-notifications)
+- 11 pg_cron jobs ativos no total
+
 ### Pendências
 
-1. Aplicar migration 057 no Supabase SP
-2. Deploy Vercel
-3. Projeto Sentry + DSN
-4. Consentimento CPF na UI (L3)
-5. Termos de Uso (L7)
-6. iOS build chain
-7. Teste de corredor (UX-H3-05)
+1. Deploy Vercel (doc pronto em `docs/DEPLOY-VERCEL.md`)
+2. Projeto Sentry (free tier) + DSN no Vercel
+3. Supabase Pro ($25/mês) + CAPTCHA
+4. Termos de Uso (L7 LGPD)
+5. iOS build chain (Xcode Cloud ou Mac)
+6. Teste de corredor (UX-H3-05)
+
+### Totais atualizados
+
+- **Suítes de teste Jest:** 22 (341 assertions)
+- **Lint warnings:** 0
+- **tsc errors:** 0
+- **Documentos novos:** 1 (MAPEAMENTO-LGPD.md)
+- **Migrations novas:** 2 (057 LGPD retention, 058 dashboard upcoming_bills)
+- **pg_cron jobs SP:** 11
+- **CI:** 4/4 verde (todos os 7 commits)
+- **Último commit verde:** `de0036b`
