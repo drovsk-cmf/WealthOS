@@ -85,7 +85,7 @@ export function useTransactions(filters: TransactionFilters = {}) {
 
       // D6.02: Relations already fetched via inline JOIN
       return txs.map((tx: Record<string, unknown>) => {
-        const { accounts: _a, categories: _c, ...rest } = tx;
+        const { accounts: _accounts, categories: _categories, ...rest } = tx;
         return {
           ...rest,
           ...mapTransactionRelations(tx),

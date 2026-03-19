@@ -2414,4 +2414,45 @@ Verificação exaustiva via SQL direto em ambos os projetos:
 - **Fontes de índices:** 51
 - **Suítes de teste Jest:** 22 (341 assertions)
 - **CI:** 4/4 verde
-- **Último commit verde:** `0dd6351`
+- **Último commit verde:** `affb535`
+
+---
+
+## Sessão 23 - 19 março 2026 (Claude Opus, Projeto Claude)
+
+### Escopo
+
+Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segurança. Identificados via cruzamento Matriz de Validação v2.1 + HANDOVER + repositório.
+
+### Commits
+
+| SHA | Mensagem |
+|---|---|
+| `374f065` | chore: SBOM no CI + eliminar any em onboarding-seeds |
+| `fb9f257` | feat: integrar Sentry para error tracking em produção |
+| `53a0897` | docs: mapeamento LGPD + migration de retenção de dados |
+| `affb535` | chore: next.js 15.5.12 → 15.5.14 (patch segurança) |
+
+### Entregas
+
+**1. SBOM no CI (item 8.4 da Matriz):** CycloneDX JSON a cada push/PR, artefato retido 90 dias. npm audit no security-check.
+
+**2. Eliminação de `: any`:** onboarding-seeds.ts tipado com `SupabaseClient<Database>`. Zero `: any` fora de database.ts.
+
+**3. Sentry (débito P1):** @sentry/nextjs, 3 configs, opt-in via DSN, error boundaries com captureException.
+
+**4. Mapeamento LGPD (item 10.1):** 28 tabelas classificadas, base legal por tabela, 5 fluxos externos, 7 lacunas (L1-L7), migration 057 (retenção de dados).
+
+**5. Next.js 15.5.14:** patch de segurança. CVE disk cache (Next 16+) aceita. Vulnerabilidades tar (CLI tools) aceitas.
+
+**6. Divergência database.ts/SP:** falso positivo confirmado. Auditoria rodou contra projeto errado.
+
+### Pendências
+
+1. Aplicar migration 057 no Supabase SP
+2. Deploy Vercel
+3. Projeto Sentry + DSN
+4. Consentimento CPF na UI (L3)
+5. Termos de Uso (L7)
+6. iOS build chain
+7. Teste de corredor (UX-H3-05)
