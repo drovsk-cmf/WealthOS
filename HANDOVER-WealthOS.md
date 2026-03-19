@@ -2414,7 +2414,7 @@ Verificação exaustiva via SQL direto em ambos os projetos:
 - **Fontes de índices:** 51
 - **Suítes de teste Jest:** 22 (341 assertions)
 - **CI:** 4/4 verde
-- **Último commit verde:** `de0036b`
+- **Último commit verde:** `df1185f`
 
 ---
 
@@ -2435,6 +2435,9 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 | `d3ec091` | fix: eliminar 2 lint warnings em use-transactions.ts |
 | `2e30c5a` | chore: database.ts atualizado com 3 functions LGPD + HANDOVER |
 | `de0036b` | perf: UpcomingBillsCard consome dados de useDashboardAll (-1 query) |
+| `ea095fd` | docs: HANDOVER sessão 23 completa |
+| `fd1f692` | feat: Termos de Uso (/terms) - lacuna L7 do mapeamento LGPD |
+| `df1185f` | docs: MAPEAMENTO-LGPD L7 resolvida |
 
 ### Entregas
 
@@ -2464,14 +2467,21 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 - 3 functions de cleanup + 2 pg_cron jobs (weekly-cleanup-analytics, weekly-cleanup-notifications)
 - 11 pg_cron jobs ativos no total
 
+**11. Termos de Uso (lacuna L7 LGPD):**
+- /terms com 16 seções: descrição, elegibilidade, conta, uso permitido/proibido, dados do usuário, isenção financeira/fiscal, não é IF, PI, disponibilidade, limitação de responsabilidade, encerramento, legislação (Goiânia-GO), alterações, disposições gerais, contato
+- Seção 7 (isenção fiscal): explicita que projeções IRPF são estimativas, não consultoria
+- Seção 8: Oniefy não é banco/corretora/CVM/SUSEP
+- Integrado: middleware (PUBLIC_ROUTES), robots.txt, register (consentimento), privacy (link cruzado)
+
+**12. Projeto Supabase antigo (us-east-1):** confirmado como INACTIVE (já pausado).
+
 ### Pendências
 
 1. Deploy Vercel (doc pronto em `docs/DEPLOY-VERCEL.md`)
 2. Projeto Sentry (free tier) + DSN no Vercel
 3. Supabase Pro ($25/mês) + CAPTCHA
-4. Termos de Uso (L7 LGPD)
-5. iOS build chain (Xcode Cloud ou Mac)
-6. Teste de corredor (UX-H3-05)
+4. iOS build chain (Xcode Cloud ou Mac)
+5. Teste de corredor (UX-H3-05)
 
 ### Totais atualizados
 
@@ -2479,7 +2489,10 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 - **Lint warnings:** 0
 - **tsc errors:** 0
 - **Documentos novos:** 1 (MAPEAMENTO-LGPD.md)
+- **Páginas novas:** 1 (/terms - Termos de Uso)
 - **Migrations novas:** 2 (057 LGPD retention, 058 dashboard upcoming_bills)
+- **Ambas aplicadas no SP:** sim (+ 2 pg_cron jobs)
 - **pg_cron jobs SP:** 11
-- **CI:** 4/4 verde (todos os 7 commits)
-- **Último commit verde:** `de0036b`
+- **Lacunas LGPD resolvidas:** L1, L2, L7 (de 7 identificadas)
+- **CI:** 4/4 verde (todos os 10 commits)
+- **Último commit verde:** `df1185f`
