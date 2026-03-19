@@ -542,6 +542,9 @@ export type Database = {
       create_transaction_with_journal: { Args: { p_account_id: string; p_amount?: number; p_category_id?: string; p_category_source?: Database["public"]["Enums"]["category_assignment_source"]; p_counterpart_coa_id?: string; p_date?: string; p_description?: string; p_family_member_id?: string; p_is_paid?: boolean; p_notes?: string; p_source?: Database["public"]["Enums"]["entry_source"]; p_tags?: string[]; p_type?: Database["public"]["Enums"]["transaction_type"]; p_user_id: string }; Returns: Json }
       create_transfer_with_journal: { Args: { p_amount: number; p_date?: string; p_description?: string; p_from_account_id: string; p_is_paid?: boolean; p_source?: Database["public"]["Enums"]["entry_source"]; p_to_account_id: string; p_user_id: string }; Returns: Json }
       cron_balance_integrity_check: { Args: Record<string, never>; Returns: undefined }
+      cron_cleanup_access_logs: { Args: Record<string, never>; Returns: undefined }
+      cron_cleanup_analytics_events: { Args: Record<string, never>; Returns: undefined }
+      cron_cleanup_notification_log: { Args: Record<string, never>; Returns: undefined }
       cron_depreciate_assets: { Args: Record<string, never>; Returns: undefined }
       cron_fetch_economic_indices: { Args: Record<string, never>; Returns: Json }
       cron_generate_workflow_tasks: { Args: Record<string, never>; Returns: undefined }
