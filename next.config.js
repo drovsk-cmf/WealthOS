@@ -1,3 +1,5 @@
+const { withSentryConfig } = require("@sentry/nextjs");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Security headers
@@ -37,4 +39,15 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+// Sentry is opt-in: only active when NEXT_PUBLIC_SENTRY_DSN is set.
+// Without DSN, the app runs identically to before (zero overhead).
+module.exports = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      silent: true,
+      widenClientFileUpload: true,
+      disableLogger: true,
+      hideSourceMaps: true,
+    })
+  : nextConfig;

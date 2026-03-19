@@ -13,6 +13,7 @@ export default function AuthError({
 }) {
   useEffect(() => {
     console.error("[Oniefy] Auth error:", error);
+    import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error)).catch(() => {});
   }, [error]);
 
   return (

@@ -13,6 +13,7 @@ export default function AppError({
 }) {
   useEffect(() => {
     console.error("[Oniefy] App error:", error);
+    import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error)).catch(() => {});
   }, [error]);
 
   return (

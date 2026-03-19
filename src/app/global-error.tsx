@@ -12,6 +12,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("[Oniefy] Unhandled error:", error);
+    import("@sentry/nextjs").then((Sentry) => Sentry.captureException(error)).catch(() => {});
   }, [error]);
 
   return (
