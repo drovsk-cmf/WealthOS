@@ -3,65 +3,16 @@
 /**
  * UpcomingBillsCard - DASH-04
  *
- * Próximas contas a vencer: transações pendentes (is_paid=false)
- * ordenadas por data, limite 5.
- * Queried diretamente (sem RPC dedicada).
+ * Próximas contas a vencer. Dados fornecidos por useDashboardAll
+ * (seção upcoming_bills da RPC get_dashboard_all), eliminando a
+ * query independente anterior (-150ms no dashboard load).
  */
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { CircleCheck } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
-import { mapAccountRelation, mapCategoryRelation } from "@/lib/utils/map-relations";
-
-interface UpcomingBill {
-  id: string;
-  description: string | null;
-  amount: number;
-  date: string;
-  type: string;
-  account_name: string | null;
-  category_name: string | null;
-}
-
-function useUpcomingBills(limit: number = 5) {
-  const supabase = createClient();
-
-  return useQuery({
-    queryKey: ["dashboard", "upcoming-bills", limit],
-    staleTime: 2 * 60 * 1000,
-    queryFn: async (): Promise<UpcomingBill[]> => {
-      const { data, error } = await supabase
-        .from("transactions")
-        .select(
-          `
-          id, description, amount, date, type,
-          accounts!inner(name),
-          categories(name)
-        `
-        )
-        .eq("is_paid", false)
-        .eq("is_deleted", false)
-        .gte("date", new Date().toISOString().slice(0, 10))
-        .order("date", { ascending: true })
-        .limit(limit);
-
-      if (error) throw error;
-
-      return (data ?? []).map((row: Record<string, unknown>) => ({
-        id: row.id as string,
-        description: row.description as string | null,
-        amount: row.amount as number,
-        date: row.date as string,
-        type: row.type as string,
-        account_name: mapAccountRelation(row).account_name,
-        category_name: mapCategoryRelation(row).category_name,
-      }));
-    },
-  });
-}
+import type { UpcomingBill } from "@/lib/hooks/use-dashboard";
 
 function daysUntil(dateStr: string): number {
   const today = new Date();
@@ -72,7 +23,6 @@ function daysUntil(dateStr: string): number {
 
 function urgencyColor(days: number): string {
   if (days <= 0) return "text-terracotta bg-terracotta/10";
-  if (days <= 3) return "text-burnished bg-burnished/10";
   if (days <= 7) return "text-burnished bg-burnished/10";
   return "text-muted-foreground bg-muted";
 }
@@ -84,9 +34,12 @@ function urgencyLabel(days: number): string {
   return `${days}d`;
 }
 
-export function UpcomingBillsCard() {
-  const { data: bills, isLoading } = useUpcomingBills();
+interface UpcomingBillsCardProps {
+  bills: UpcomingBill[];
+  isLoading?: boolean;
+}
 
+export function UpcomingBillsCard({ bills, isLoading }: UpcomingBillsCardProps) {
   if (isLoading) {
     return (
       <div className="rounded-lg border bg-card p-5 shadow-sm">
@@ -114,7 +67,7 @@ export function UpcomingBillsCard() {
 
       {(!bills || bills.length === 0) ? (
         <div className="mt-6 text-center">
-          <CircleCheck className="h-6 w-6 text-muted-foreground" />
+          <CircleCheck className="mx-auto h-6 w-6 text-muted-foreground" />
           <p className="mt-1 text-sm text-muted-foreground">
             Nenhuma conta pendente
           </p>

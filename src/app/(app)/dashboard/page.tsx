@@ -121,7 +121,7 @@ export default function DashboardPage() {
         />
 
         {/* DASH-04: Próximas contas a vencer */}
-        <UpcomingBillsCard />
+        <UpcomingBillsCard bills={dash.data?.upcomingBills ?? []} isLoading={dash.isLoading} />
 
         {/* DASH-05: Resumo do orçamento */}
         <BudgetSummaryCard

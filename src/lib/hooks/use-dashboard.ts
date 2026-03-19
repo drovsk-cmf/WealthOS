@@ -319,6 +319,16 @@ export function useMonthlySnapshots(months: number = 12) {
 
 // ─── ALL-IN-ONE (single roundtrip) ────────────────────────────
 
+export interface UpcomingBill {
+  id: string;
+  description: string | null;
+  amount: number;
+  date: string;
+  type: string;
+  account_name: string | null;
+  category_name: string | null;
+}
+
 export interface DashboardAllData {
   summary: DashboardSummary;
   balanceSheet: BalanceSheet;
@@ -333,6 +343,7 @@ export interface DashboardAllData {
     recentImportCount: number;
     lastTransactionDaysAgo: number | undefined;
   };
+  upcomingBills: UpcomingBill[];
 }
 
 /**
@@ -367,6 +378,7 @@ export function useDashboardAll() {
 
       const budget = raw.budget as BudgetVsActualResult;
       const attention = raw.attention as DashboardAllData["attention"];
+      const upcomingBills = (raw.upcoming_bills ?? []) as UpcomingBill[];
 
       return {
         summary: summary.success ? summary.data : { total_current_balance: 0, total_projected_balance: 0, active_accounts: 0, month_income: 0, month_expense: 0, month_start: "", month_end: "" },
@@ -376,6 +388,7 @@ export function useDashboardAll() {
         evolution: evolution.success ? evolution.data : { data: [], source: "calculated" as const, months_requested: 6 },
         budget: budget ?? { items: [], total_planned: 0, total_actual: 0, total_remaining: 0, pct_used: 0, month: "", budget_count: 0 },
         attention: attention ?? { uncategorized: 0, overdue: 0, dueSoon: 0, recentImportCount: 0, lastTransactionDaysAgo: undefined },
+        upcomingBills,
       };
     },
   });
