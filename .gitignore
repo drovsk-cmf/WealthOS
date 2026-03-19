@@ -57,3 +57,4 @@ e2e/.auth/
 
 # OS
 Thumbs.db
+coverage/

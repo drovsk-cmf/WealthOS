@@ -1,8 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
-import { validateEnv, validateServerEnv } from "@/lib/config/env";
+import { validateEnv } from "@/lib/config/env";
 
 // Fail fast if env vars are missing
 validateEnv();
@@ -10,6 +9,8 @@ validateEnv();
 /**
  * Supabase client for Server Components and Route Handlers.
  * Uses cookies for session management (RLS-aware).
+ *
+ * For admin operations (bypass RLS), use createAdminClient from "@/lib/supabase/admin".
  */
 export async function createClient() {
   const cookieStore = await cookies();
@@ -32,25 +33,6 @@ export async function createClient() {
             // This can be ignored if you have middleware refreshing sessions.
           }
         },
-      },
-    }
-  );
-}
-
-/**
- * Admin client using service_role key.
- * NEVER import this in frontend/client components.
- * Used only in API routes for operations that bypass RLS.
- */
-export function createAdminClient() {
-  validateServerEnv();
-  return createSupabaseClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
       },
     }
   );
