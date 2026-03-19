@@ -8,9 +8,11 @@
  * restriction on extra exports from page files, and to enable unit testing.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
+
 export async function completeOnboardingSeeds(
-  supabase: any,
+  supabase: SupabaseClient<Database>,
   userId: string
 ): Promise<void> {
   const { error: catError } = await supabase.rpc("create_default_categories", {

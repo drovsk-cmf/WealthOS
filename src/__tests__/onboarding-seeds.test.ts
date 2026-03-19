@@ -1,4 +1,6 @@
 import { completeOnboardingSeeds } from "@/lib/services/onboarding-seeds";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
 
 describe("onboarding seeds", () => {
   it("não marca onboarding_completed quando seed falha", async () => {
@@ -13,7 +15,7 @@ describe("onboarding seeds", () => {
       from: jest.fn().mockReturnValue({
         update: jest.fn().mockReturnValue({ eq: updateEq }),
       }),
-    };
+    } as unknown as SupabaseClient<Database>;
 
     await expect(completeOnboardingSeeds(supabase, "user-1")).rejects.toThrow("Erro ao criar categorias padrão");
     expect(updateEq).not.toHaveBeenCalled();
@@ -26,7 +28,7 @@ describe("onboarding seeds", () => {
       from: jest.fn().mockReturnValue({
         update: jest.fn().mockReturnValue({ eq: updateEq }),
       }),
-    };
+    } as unknown as SupabaseClient<Database>;
 
     await expect(completeOnboardingSeeds(supabase, "user-2")).resolves.toBeUndefined();
     expect(updateEq).toHaveBeenCalledWith("id", "user-2");
