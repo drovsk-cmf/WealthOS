@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import { mapToTransactions, parseCSVRaw, suggestMapping } from "@/lib/parsers/csv-parser";
 import { parseOFX } from "@/lib/parsers/ofx-parser";
 import { parseXLSX } from "@/lib/parsers/xlsx-parser";
@@ -51,45 +51,49 @@ describe("parsers", () => {
   });
 
   describe("xlsx-parser", () => {
-    function workbookBuffer(data: unknown[][], sheetName = "Extrato") {
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
-      const out = XLSX.write(wb, { type: "array", bookType: "xlsx" });
-      return out as ArrayBuffer;
+    async function workbookBuffer(data: unknown[][], sheetName = "Extrato"): Promise<ArrayBuffer> {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet(sheetName);
+      data.forEach((row) => ws.addRow(row));
+      const nodeBuffer = await wb.xlsx.writeBuffer();
+      return nodeBuffer as ArrayBuffer;
     }
 
-    it("parseia planilha válida", () => {
-      const buffer = workbookBuffer([
+    it("parseia planilha válida", async () => {
+      const buffer = await workbookBuffer([
         ["Data", "Descrição", "Valor"],
         ["13/03/2026", "Mercado", "100,00"],
       ]);
-      const result = parseXLSX(buffer);
+      const result = await parseXLSX(buffer);
       expect(result.headers).toEqual(["Data", "Descrição", "Valor"]);
       expect(result.rows).toHaveLength(1);
       expect(result.activeSheet).toBe("Extrato");
     });
 
-    it("retorna vazio para planilha sem linhas suficientes", () => {
-      const buffer = workbookBuffer([["Data"]]);
-      const result = parseXLSX(buffer);
+    it("retorna vazio para planilha sem linhas suficientes", async () => {
+      const buffer = await workbookBuffer([["Data"]]);
+      const result = await parseXLSX(buffer);
       expect(result.headers).toEqual([]);
       expect(result.rows).toEqual([]);
     });
 
-    it("respeita sheetName quando existe", () => {
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["A"], ["1"]]), "Aba1");
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([["Data", "Valor"], ["13/03/2026", "50"]]), "Aba2");
-      const buffer = XLSX.write(wb, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
-      const result = parseXLSX(buffer, "Aba2");
+    it("respeita sheetName quando existe", async () => {
+      const wb = new ExcelJS.Workbook();
+      const ws1 = wb.addWorksheet("Aba1");
+      ws1.addRow(["A"]);
+      ws1.addRow(["1"]);
+      const ws2 = wb.addWorksheet("Aba2");
+      ws2.addRow(["Data", "Valor"]);
+      ws2.addRow(["13/03/2026", "50"]);
+      const buffer = await wb.xlsx.writeBuffer() as ArrayBuffer;
+      const result = await parseXLSX(buffer, "Aba2");
       expect(result.activeSheet).toBe("Aba2");
       expect(result.headers).toEqual(["Data", "Valor"]);
     });
 
-    it("faz fallback para primeira aba quando sheetName não existe", () => {
-      const buffer = workbookBuffer([["Col1", "Col2"], ["x", "y"]], "Principal");
-      const result = parseXLSX(buffer, "Inexistente");
+    it("faz fallback para primeira aba quando sheetName não existe", async () => {
+      const buffer = await workbookBuffer([["Col1", "Col2"], ["x", "y"]], "Principal");
+      const result = await parseXLSX(buffer, "Inexistente");
       expect(result.activeSheet).toBe("Principal");
     });
   });

@@ -49,9 +49,9 @@ export function ImportWizard({ onImportComplete }: { onImportComplete?: (stats: 
 
     if (ext === "xlsx" || ext === "xls") {
       const reader = new FileReader();
-      reader.onload = (ev) => {
+      reader.onload = async (ev) => {
         const buffer = ev.target?.result as ArrayBuffer;
-        const result = parseXLSX(buffer);
+        const result = await parseXLSX(buffer);
         if (result.error) {
           setParseErrors([result.error]);
           setIsParsing(false);

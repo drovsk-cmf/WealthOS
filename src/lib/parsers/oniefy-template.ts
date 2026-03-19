@@ -5,7 +5,7 @@
  * When detected, the import wizard skips manual column mapping.
  */
 
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import type { CSVTransaction } from "./csv-parser";
 
 // ─── Template constants ──────────────────────────────────────
@@ -207,30 +207,31 @@ export function parseCardTemplate(
 
 // ─── Template generator (client-side download) ───────────────
 
-export function downloadImportTemplate(variant: "standard" | "card" = "standard") {
-  const wb = XLSX.utils.book_new();
+export async function downloadImportTemplate(variant: "standard" | "card" = "standard") {
+  const wb = new ExcelJS.Workbook();
 
   if (variant === "standard") {
     // Sheet 1: Transações (with example rows)
+    const ws = wb.addWorksheet("Transações");
     const wsData = [
       [...ONIEFY_TEMPLATE_HEADERS],
       ["15/03/2026", "Despesa", "150,00", "Supermercado Pão de Açúcar", "Alimentação", "Compras semanais", "mercado"],
       ["15/03/2026", "Receita", "8.500,00", "Salário março", "Salário", "", ""],
       ["16/03/2026", "Despesa", "45,90", "Uber para escritório", "Transporte", "", "uber"],
     ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    ws["!cols"] = [
-      { wch: 12 }, // Data
-      { wch: 10 }, // Tipo
-      { wch: 14 }, // Valor
-      { wch: 35 }, // Descrição
-      { wch: 18 }, // Categoria
-      { wch: 25 }, // Notas
-      { wch: 20 }, // Tags
+    wsData.forEach((row) => ws.addRow(row));
+    ws.columns = [
+      { width: 12 }, // Data
+      { width: 10 }, // Tipo
+      { width: 14 }, // Valor
+      { width: 35 }, // Descrição
+      { width: 18 }, // Categoria
+      { width: 25 }, // Notas
+      { width: 20 }, // Tags
     ];
-    XLSX.utils.book_append_sheet(wb, ws, "Transações");
 
     // Sheet 2: Instruções
+    const wsInstr = wb.addWorksheet("Instruções");
     const instrData = [
       ["Instruções de preenchimento"],
       [""],
@@ -250,28 +251,28 @@ export function downloadImportTemplate(variant: "standard" | "card" = "standard"
       ["- Se Tipo estiver vazio, valores positivos = Receita, negativos = Despesa."],
       ["- Valores podem usar ponto como milhar e vírgula como decimal: 1.500,00"],
     ];
-    const wsInstr = XLSX.utils.aoa_to_sheet(instrData);
-    wsInstr["!cols"] = [{ wch: 35 }, { wch: 14 }, { wch: 35 }, { wch: 30 }];
-    XLSX.utils.book_append_sheet(wb, wsInstr, "Instruções");
+    instrData.forEach((row) => wsInstr.addRow(row));
+    wsInstr.columns = [{ width: 35 }, { width: 14 }, { width: 35 }, { width: 30 }];
   } else {
     // Card variant
+    const ws = wb.addWorksheet("Fatura");
     const wsData = [
       [...ONIEFY_CARD_TEMPLATE_HEADERS],
       ["10/03/2026", "RAPPI*RAPPIBANK", "iFood/Rappi", "45,90", "1/1", "Alimentação"],
       ["12/03/2026", "NETFLIX.COM", "Netflix", "55,90", "1/1", "Lazer"],
       ["15/03/2026", "PAG*CASASBAHIA", "Geladeira Casas Bahia", "350,00", "3/10", "Casa"],
     ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    ws["!cols"] = [
-      { wch: 12 }, // Data
-      { wch: 30 }, // Descrição Original
-      { wch: 30 }, // Descrição Personalizada
-      { wch: 14 }, // Valor
-      { wch: 8 },  // Parcela
-      { wch: 18 }, // Categoria
+    wsData.forEach((row) => ws.addRow(row));
+    ws.columns = [
+      { width: 12 }, // Data
+      { width: 30 }, // Descrição Original
+      { width: 30 }, // Descrição Personalizada
+      { width: 14 }, // Valor
+      { width: 8 },  // Parcela
+      { width: 18 }, // Categoria
     ];
-    XLSX.utils.book_append_sheet(wb, ws, "Fatura");
 
+    const wsInstr = wb.addWorksheet("Instruções");
     const instrData = [
       ["Instruções - Template Fatura de Cartão"],
       [""],
@@ -289,9 +290,8 @@ export function downloadImportTemplate(variant: "standard" | "card" = "standard"
       ["- Nas próximas faturas, o sistema aplica automaticamente sua descrição."],
       ["- Se a Descrição Personalizada estiver vazia, usa a Original."],
     ];
-    const wsInstr = XLSX.utils.aoa_to_sheet(instrData);
-    wsInstr["!cols"] = [{ wch: 35 }, { wch: 14 }, { wch: 40 }, { wch: 30 }];
-    XLSX.utils.book_append_sheet(wb, wsInstr, "Instruções");
+    instrData.forEach((row) => wsInstr.addRow(row));
+    wsInstr.columns = [{ width: 35 }, { width: 14 }, { width: 40 }, { width: 30 }];
   }
 
   const fileName =
@@ -299,5 +299,12 @@ export function downloadImportTemplate(variant: "standard" | "card" = "standard"
       ? "oniefy-template-importacao.xlsx"
       : "oniefy-template-fatura-cartao.xlsx";
 
-  XLSX.writeFile(wb, fileName);
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
 }
