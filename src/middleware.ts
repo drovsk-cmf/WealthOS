@@ -83,6 +83,7 @@ const PUBLIC_ROUTES = [
   "/api/push/send",    // Cron endpoint (auth via CRON_SECRET, not session)
   "/api/digest/send",  // Cron endpoint (auth via DIGEST_CRON_SECRET, not session)
   "/privacy",
+  "/terms",
 ];
 
 // Auth routes that authenticated users CAN access (not redirected away)

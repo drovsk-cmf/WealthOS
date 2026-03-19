@@ -2,7 +2,8 @@
 User-agent: *
 Disallow: /
 
-# Allow privacy page for legal indexing
+# Allow privacy and terms pages for legal indexing
 Allow: /privacy
+Allow: /terms
 
 Sitemap: https://oniefy.com/sitemap.xml

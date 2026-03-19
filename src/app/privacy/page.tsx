@@ -176,7 +176,14 @@ export default function PrivacyPage() {
           <strong>E-mail:</strong> privacidade@oniefy.com
         </p>
 
-        <div className="mt-12 rounded-lg border bg-card p-4 text-center">
+        <div className="mt-12 flex items-center justify-center gap-4 rounded-lg border bg-card p-4">
+          <a
+            href="/terms"
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Termos de Uso
+          </a>
+          <span className="text-muted-foreground">|</span>
           <a
             href="/login"
             className="text-sm font-medium text-primary hover:underline"

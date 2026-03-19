@@ -208,7 +208,8 @@ export default function RegisterPage() {
       </form>
 
       <p className="text-center text-xs text-muted-foreground">
-        Ao criar sua conta, você concorda com nossa{" "}
+        Ao criar sua conta, você concorda com nossos{" "}
+        <Link href="/terms" className="underline">Termos de Uso</Link> e{" "}
         <Link href="/privacy" className="underline">Política de Privacidade</Link>.
       </p>
 
