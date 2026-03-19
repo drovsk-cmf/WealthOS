@@ -232,6 +232,7 @@ export function useCreateTransaction() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
@@ -245,6 +246,7 @@ export function useCreateTransfer() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
@@ -258,6 +260,7 @@ export function useReverseTransaction() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
@@ -271,6 +274,7 @@ export function useEditTransaction() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       tryAdvanceStep("categorize", queryClient);
     },
@@ -314,6 +318,7 @@ export function useEditTransfer() {
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      await queryClient.invalidateQueries({ queryKey: ["budgets"] });
       await queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
