@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 18 de março de 2026
+**Data:** 19 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) ← MIGRADO da us-east-1
@@ -101,17 +101,24 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **Description Aliases** | **lookup_description_alias, upsert_description_alias** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h) |
 
-### 3.4 Código Fonte (126 arquivos em src/, 15 testes, ~24.100 linhas)
+### 3.4 Código Fonte (128 arquivos em src/, 22 testes, ~28.400 linhas)
 
 ```
 src/
-├── __tests__/                    # 15 suítes de teste (Jest + RTL)
+├── __tests__/                    # 22 suítes de teste (Jest + RTL), 341 assertions
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
+│   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
+│   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
+│   ├── audit-map-relations.test.ts    # 11: helper DRY mapTransactionRelations
+│   ├── audit-ocr-parsing.test.ts      # 32: parseAmount/parseDate/parseDescription edge cases
+│   ├── audit-ofx-edge-cases.test.ts   # 12: OFX dedup, MAX_SIZE, formato BR
+│   ├── audit-tx-invalidation.test.tsx # 7: invalidação de cache em todas as 5 mutations
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── onboarding-seeds.test.ts
+│   ├── oniefy-template.test.ts
 │   ├── parsers.test.ts
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
 │   ├── read-hooks.test.tsx
@@ -2165,11 +2172,11 @@ Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corri
 
 #### Totais atualizados
 
-- **Suítes de teste Jest:** 16 (256 assertions, era 212)
+- **Suítes de teste Jest:** 22 (341 assertions, era 256)
 - **Lint warnings:** 0
 - **CI:** 4/4 verde
 - **SP migrations:** 32 total
-- **Último commit verde:** `fd4c713`
+- **Último commit verde:** `0dd6351`
 
 ---
 
@@ -2233,3 +2240,101 @@ Auditoria sobre o trabalho realizado na sessão 21 (esta sessão) e na sessão "
 ### Veredicto
 
 **Nenhuma regressão funcional ou de segurança.** O código está em estado íntegro para deploy.
+
+---
+
+## Sessão 22 - Auditoria de Código e Matriz de Validação (19 março 2026)
+
+### Escopo
+
+Auditoria completa de 28.339 linhas de TypeScript (todos os arquivos em `src/`), com foco em loops problemáticos, código redundante/duplicado e ineficiências. Resultado formalizado em taxonomia de achados e matriz de validação para uso recorrente.
+
+### Entregas
+
+#### 1. Auditoria de código (`AUDITORIA-CODIGO-WEALTHOS.md`)
+
+Varredura linha a linha de hooks, services, parsers, pages, middleware e API routes. Achados:
+
+| Categoria | Qtd | Exemplos |
+|---|---|---|
+| Defeito | 2 | Dashboard não invalidado por `useCreateTransaction`/`Transfer`/`Reverse`; `useDeleteCategory` não invalidava budgets |
+| Performance | 3 | N+1 no push/send, indices/fetch sequencial, UpcomingBillsCard com query separada |
+| Fragilidade | 3 | Onboarding useEffects com eslint-disable, regex flag g inconsistente, onSuccess síncrono |
+| Débito | 2 | Fire-and-forget silencioso (3 ocorrências), over-fetch de budget months |
+| Sujeira | 1 | Import duplicado em indices/fetch |
+
+Loops analisados: 3 `while` + 5 `for` com regex/queries. Nenhum loop infinito encontrado.
+
+#### 2. Testes de auditoria (6 arquivos, 85 testes novos)
+
+| Arquivo | Testes | Cobertura |
+|---|---|---|
+| `audit-map-relations.test.ts` | 11 | Helper DRY `mapTransactionRelations` |
+| `audit-calendar-grid.test.ts` | 8 | While loop do calendário (28 combinações) |
+| `audit-ocr-parsing.test.ts` | 32 | parseAmount, parseDate, parseDescription |
+| `audit-tx-invalidation.test.tsx` | 7 | Cache invalidation das 5 mutations |
+| `audit-ofx-edge-cases.test.ts` | 12 | OFX dedup, MAX_SIZE, CURDEF |
+| `audit-dedup-cleanup.test.ts` | 15 | Budget dedup, rate limiter 1000 IPs |
+
+#### 3. Correções P0/P1/P2 aplicadas
+
+**P0 (defeitos):**
+- `transaction-engine.ts`: `useCreateTransaction`, `useCreateTransfer`, `useReverseTransaction` agora invalidam `["dashboard"]`; todos os 5 hooks usam `async/await` no `onSuccess`
+- `use-categories.ts`: `useDeleteCategory` invalida `["budgets"]` e `["dashboard"]`
+
+**P1 (débitos):**
+- 3 fire-and-forget (login, push, data export) agora logam erros com `console.error`
+- Import duplicado em `indices/fetch/route.ts` unificado
+
+**P2 (refatoração DRY):**
+- Novo utilitário: `src/lib/utils/map-relations.ts` (mapTransactionRelations, mapAccountRelation, mapCategoryRelation)
+- Aplicado em `use-transactions.ts`, `use-recurrences.ts`, `upcoming-bills-card.tsx` (-20 linhas, 2 eslint-disable removidos)
+
+#### 4. Matriz de Validação (`docs/MATRIZ-VALIDACAO.md` v2.1)
+
+Documento de referência para todas as auditorias futuras:
+
+- **6 categorias de achados** com definição, exemplos e prioridade: defeito, vulnerabilidade, performance, fragilidade, débito técnico, sujeira
+- **37 auditorias em 10 camadas**: repositório, código, arquitetura, segurança, performance, testes, UX, dependências, infraestrutura, conformidade
+- **4 pacotes de execução**: pré-commit (5min), sprint review (30min), release gate (2-3h), security-focused (1h)
+- **Matriz cruzada** 37x6 (auditoria x categoria)
+- **Anexo A**: mapeamento ISO/IEC 25010 + OWASP ASVS v4.0 + IEEE 1012
+- **Anexo B**: roadmap de certificação (LGPD, ISO 27001, ASVS L2, SOC 2) com 8 controles do Anexo A já presentes no codebase
+
+Evolução: v1.0 (23 auditorias) → v2.0 (34, +Perplexity) → v2.1 (37, +Gemini: SBOM, mutation testing, SLSA, ISO 27001 A.8.28)
+
+#### 5. Novo utilitário
+
+- `src/lib/utils/map-relations.ts` - funções DRY para extrair account/category de JOINs Supabase
+- `src/lib/services/ocr-service.ts` - parseAmount/parseDate/parseDescription exportados para testabilidade
+
+### Commits desta sessão
+
+| SHA | Mensagem |
+|---|---|
+| `5c2f8ce` | test: testes de auditoria de código (85 testes, 6 arquivos) |
+| `d1aa7e6` | docs: Matriz de Validação v1.0 - taxonomia e 23 tipos de auditoria |
+| `4b15d21` | docs: Matriz de Validação v2.0 - 34 auditorias em 10 camadas |
+| `ab08f57` | fix: correções P0/P1/P2 da auditoria de código |
+| `0dd6351` | docs: Matriz de Validação v2.1 - 37 auditorias, roadmap de certificação |
+
+### Totais atualizados
+
+- **Suítes de teste Jest:** 22 (341 assertions, era 256)
+- **Lint warnings:** 0
+- **tsc errors:** 0
+- **CI:** 4/4 verde (todos os 5 commits)
+- **Documentos novos:** 2 (AUDITORIA-CODIGO-WEALTHOS.md, MATRIZ-VALIDACAO.md)
+- **Último commit verde:** `0dd6351`
+
+### Pendências para próxima sessão
+
+1. **Testar app no projeto SP:** `npm run dev` → criar conta → verificar dashboard atualiza após transação (P0 fix)
+2. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
+3. **Supabase Pro** ($25/mês) para Leaked Password Protection + CAPTCHA
+4. **Logo Oniefy** - Penrose Ribbon (iterações em andamento com ferramentas externas)
+5. **iOS build chain** - Xcode Cloud ou Mac físico
+6. **Corridor usability test** com 3 pessoas (UX-H3-05)
+7. **SBOM no CI** - adicionar `npm sbom --sbom-format cyclonedx` ao workflow (item 8.4 da matriz)
+8. **Mapeamento LGPD** - tabela → dados pessoais → base legal (item 10.1 da matriz, curto prazo do roadmap)
+9. **UpcomingBillsCard** - migrar de query própria para consumir dados de `useDashboardAll` (P2 pendente, -150ms)
