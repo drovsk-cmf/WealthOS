@@ -95,7 +95,7 @@ Dados financeiros isolados não são pessoais. Vinculados a `user_id` (que ident
 | L4 | ROPA (Registro de Operações) não formalizado | Art. 37: controlador deve manter registro | Este documento + formalizar em template ANPD | 2h | Média |
 | L5 | RIPD não produzido | Art. 38: ANPD pode solicitar para tratamento de dados financeiros | Produzir RIPD básico (titular, finalidade, riscos, salvaguardas) | 4-8h | Baixa (produzir quando escalar) |
 | L6 | DPO não designado | Art. 41: controlador deve indicar encarregado | Para uso pessoal/beta, o próprio titular é o controlador. Formalizar quando abrir para terceiros | 0 (por enquanto) | Baixa |
-| L7 | Termos de uso inexistentes | Falta contrato formal com o titular | Produzir Termos de Uso (complementar a Privacy Policy) | 2-4h | Alta (pré-lançamento) |
+| L7 | ~~Termos de uso inexistentes~~ | ~~Falta contrato formal com o titular~~ | ~~Produzir Termos de Uso (complementar a Privacy Policy)~~ | ~~2-4h~~ | ~~FEITO~~ (commit fd1f692, /terms com 16 seções) |
 
 ---
 
