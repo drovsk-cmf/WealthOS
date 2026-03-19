@@ -3,8 +3,8 @@
 **Data:** 19 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
-**Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) ← MIGRADO da us-east-1
-**Supabase Project ID (antigo):** hmwdfcsxtmbzlslxgqus (us-east-1) ← pausar/desligar
+**Supabase Project ID (ativo):** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
+**Supabase Project ID (legado):** hmwdfcsxtmbzlslxgqus (sa-east-1 São Paulo) — "WealthOS Project" — PAUSAR/DESLIGAR
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
 
 ---
@@ -67,7 +67,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Functions (total) | 65 no schema public. Todas com `SET search_path = public` e auth.uid() check |
 | Triggers | 21 |
 | ENUMs | 27 (index_type agora com 46 valores: 13 originais + 33 moedas) |
-| Migrations aplicadas | 26 no projeto SP (mngjbrbxapazdddzgoje) |
+| Migrations aplicadas | 35 no projeto ativo (mngjbrbxapazdddzgoje) |
 | pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
 | Contas no plano-semente | 140 |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -1581,9 +1581,9 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 ## 17. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
-- **Supabase ATIVO:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo)
-- **Supabase ANTIGO (pausar):** Project ID: `hmwdfcsxtmbzlslxgqus` (us-east-1)
-- **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` apontando para projeto SP
+- **Supabase ATIVO:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) — "oniefy-prod"
+- **Supabase LEGADO (pausar/desligar):** Project ID: `hmwdfcsxtmbzlslxgqus` (sa-east-1 São Paulo) — "WealthOS Project". Ambos os projetos SEMPRE estiveram em sa-east-1. A migração de sessão 22 consolidou o schema em oniefy-prod.
+- **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` apontando para oniefy-prod
 - **.env.local:**
   ```
   NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
@@ -1792,7 +1792,7 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 
 | # | Otimização | Status | Ganho |
 |---|---|---|---|
-| 1 | Migrar Supabase para São Paulo (sa-east-1) | Ação Claudio (docs/MIGRATE-SUPABASE-SP.md) | ~150ms → ~30ms por chamada |
+| 1 | ~~Migrar Supabase para São Paulo (sa-east-1)~~ | ~~FEITO (sessão 22)~~ | NOTA: ambos os projetos já estavam em sa-east-1 desde a criação. A "migração" consolidou o schema num projeto limpo mas não alterou a região. Ganho de latência viria do deploy Vercel, não da região. |
 | 2 | Centralizar auth.getUser() em cache compartilhado | ✅ FEITO (20 arquivos, `cached-auth.ts`) | Elimina 10 roundtrips redundantes |
 | 3 | Deploy Vercel (produção) | Ação Claudio (docs/DEPLOY-VERCEL.md + vercel.json) | Elimina 1-3s do dev mode |
 | 4 | Middleware: cache onboarding em cookie | ✅ FEITO (cookie vinculado ao user_id) | Elimina 1 query/navegação |
@@ -1827,7 +1827,7 @@ Rotas pendentes (requerem integração): callback, push/test, digest/preview, in
 ### 20.9 Próximos passos (prioridade)
 
 1. **Deploy Vercel** (Claudio, 30 min) - seguir docs/DEPLOY-VERCEL.md
-2. **Migrar Supabase para São Paulo** (Claudio cria projeto, Claude aplica migrations) - seguir docs/MIGRATE-SUPABASE-SP.md
+2. ~~**Migrar Supabase para São Paulo**~~ — FEITO (sessão 22, consolidação em oniefy-prod)
 3. **Usar o app por 1 semana** com dados reais
 4. **Convidar 2-3 testers** para beta fechado
 5. **E2E Playwright** - em execução via Claude Code
@@ -1879,7 +1879,7 @@ Jest pegava `e2e/*.spec.ts` (Playwright) causando `TypeError: Class extends valu
 | get_balance_sheet | 93 | 1.264 |
 | get_budget_vs_actual | 40-108 | 155 |
 
-Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bills), cada uma pagando ~100-200ms de latência rede (BR → Supabase). Máximos de 2-3s refletem cold starts do Free tier. Volume de dados não é o problema (tabelas praticamente vazias).
+Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bills), cada uma pagando latência de rede. Máximos de 2-3s refletem cold starts do Free tier + overhead HTTP por request. Volume de dados não é o problema (tabelas praticamente vazias). NOTA: o Supabase sempre esteve em sa-east-1 (São Paulo); a latência elevada vinha do número de roundtrips, não da distância geográfica.
 
 **Solução:**
 
@@ -1931,7 +1931,7 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 ### 21.8 Próximos passos (prioridade)
 
 1. **Deploy Vercel** (Claudio, 30 min) - seguir docs/DEPLOY-VERCEL.md
-2. **Migrar Supabase para São Paulo** (Claudio cria projeto, Claude aplica migrations) - seguir docs/MIGRATE-SUPABASE-SP.md
+2. ~~**Migrar Supabase para São Paulo**~~ — FEITO (sessão 22)
 3. **Usar o app por 1 semana** com dados reais
 4. **Convidar 2-3 testers** para beta fechado
 5. **UX-H2-02: Push notification triggers** (Edge Function para vencimentos/inatividade - melhor com dados reais)
@@ -1948,10 +1948,12 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 
 ## 22. Sessão 17-18/03/2026 - Migração SP + 3 Features (Moedas, Template, Coach)
 
-### 22.1 Migração Supabase us-east-1 → sa-east-1 (São Paulo)
+### 22.1 Consolidação de schema em projeto limpo (oniefy-prod)
 
-**Novo projeto:** `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo)
-**Antigo projeto:** `hmwdfcsxtmbzlslxgqus` (us-east-1) - pausar após validação
+**ERRATA (identificada sessão 23):** Esta migração foi motivada por um diagnóstico incorreto de que o projeto original (`hmwdfcsxtmbzlslxgqus`) estava em us-east-1. Na realidade, **ambos os projetos sempre estiveram em sa-east-1 (São Paulo)** desde a criação. O projeto original foi criado em 01/03/2026 em sa-east-1; o documento de especificação mencionava us-east-1 como opção, mas o projeto real nunca usou essa região. A consolidação resultou num schema mais limpo (57 migrations incrementais → 17 consolidadas), mas a motivação de "ganho de latência por região" era falsa.
+
+**Novo projeto:** `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) — criado 17/03/2026
+**Projeto legado:** `hmwdfcsxtmbzlslxgqus` (sa-east-1 São Paulo) — criado 01/03/2026
 
 **17 migrations aplicadas (001-017):** schema completo replicado do antigo para o novo.
 
@@ -2069,7 +2071,7 @@ Causa: 14+ chamadas HTTP paralelas (7 RPCs + 6 attention queries + 1 upcoming_bi
 | economic_indices | 0 registros | 66+ registros | cotações ao vivo (varia por dia) |
 | economic_indices_sources | 0 fontes | 51 fontes | 4 providers configurados |
 
-### 22.6 Auth Configuration (projeto SP - mngjbrbxapazdddzgoje)
+### 22.6 Auth Configuration (oniefy-prod - mngjbrbxapazdddzgoje)
 
 Configurado via Dashboard + Management API:
 
@@ -2122,7 +2124,7 @@ Infraestrutura habilitada (Ethereum SIWE + Solana SIWS), mas sem UI no app ainda
 
 ### 22.9 Pendências para próxima sessão
 
-1. **Testar app no projeto SP:** `npm run dev` → criar conta → onboarding → dashboard → verificar SetupJourneyCard
+1. **Testar app no oniefy-prod:** `npm run dev` → criar conta → onboarding → dashboard → verificar SetupJourneyCard
 2. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
 3. **Supabase Pro** ($25/mês) para Leaked Password Protection + CAPTCHA
 4. **Habilitar CAPTCHA** (Cloudflare Turnstile) antes de produção
@@ -2139,7 +2141,7 @@ Infraestrutura habilitada (Ethereum SIWE + Solana SIWS), mas sem UI no app ainda
 
 #### Security Hardening SP (4 migrations)
 
-Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corrigiu:
+Auditoria de segurança no oniefy-prod (`mngjbrbxapazdddzgoje`) encontrou e corrigiu:
 
 | Migration | Vulnerabilidade | Fix |
 |-----------|----------------|-----|
@@ -2152,7 +2154,7 @@ Auditoria de segurança no projeto SP (`mngjbrbxapazdddzgoje`) encontrou e corri
 **Resultado final de segurança SP:**
 - 62/62 SECURITY DEFINER functions com `SET search_path` (100%)
 - 0 functions com UUID param sem `auth.uid()` guard
-- 31 migrations no projeto SP total
+- 31 migrations no oniefy-prod total
 
 #### Outros commits
 
@@ -2329,12 +2331,87 @@ Evolução: v1.0 (23 auditorias) → v2.0 (34, +Perplexity) → v2.1 (37, +Gemin
 
 ### Pendências para próxima sessão
 
-1. **Testar app no projeto SP:** `npm run dev` → criar conta → verificar dashboard atualiza após transação (P0 fix)
+1. **Testar app no oniefy-prod:** `npm run dev` → criar conta → verificar dashboard atualiza após transação (P0 fix)
 2. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
 3. **Supabase Pro** ($25/mês) para Leaked Password Protection + CAPTCHA
-4. **Logo Oniefy** - Penrose Ribbon (iterações em andamento com ferramentas externas)
-5. **iOS build chain** - Xcode Cloud ou Mac físico
-6. **Corridor usability test** com 3 pessoas (UX-H3-05)
-7. **SBOM no CI** - adicionar `npm sbom --sbom-format cyclonedx` ao workflow (item 8.4 da matriz)
-8. **Mapeamento LGPD** - tabela → dados pessoais → base legal (item 10.1 da matriz, curto prazo do roadmap)
-9. **UpcomingBillsCard** - migrar de query própria para consumir dados de `useDashboardAll` (P2 pendente, -150ms)
+4. **Pausar/deletar projeto legado** (`hmwdfcsxtmbzlslxgqus`) - não tem dados ou features exclusivas
+5. **Logo Oniefy** - Penrose Ribbon (iterações em andamento com ferramentas externas)
+6. **iOS build chain** - Xcode Cloud ou Mac físico
+7. **Corridor usability test** com 3 pessoas (UX-H3-05)
+8. **SBOM no CI** - adicionar `npm sbom --sbom-format cyclonedx` ao workflow (item 8.4 da matriz)
+9. **Mapeamento LGPD** - tabela → dados pessoais → base legal (item 10.1 da matriz, curto prazo do roadmap)
+10. **UpcomingBillsCard** - migrar de query própria para consumir dados de `useDashboardAll` (P2 pendente, -150ms)
+
+---
+
+## Sessão 23 (19 março 2026) - Auditoria de Integridade Inter-Projetos
+
+### 23.1 Problema identificado
+
+Claudio identificou que a "migração de região" descrita na sessão 22 partiu de uma premissa falsa. Claude afirmou que o projeto original (`hmwdfcsxtmbzlslxgqus`) estava em us-east-1, quando na realidade ele **sempre esteve em sa-east-1 (São Paulo)** desde sua criação em 01/03/2026. A confusão veio do documento de especificação v1 (§3.8) que mencionava us-east-1 como região padrão; Claude leu a spec mas não verificou a região real do projeto antes de recomendar a migração.
+
+**Consequência:** um segundo projeto (`mngjbrbxapazdddzgoje`, "oniefy-prod") foi criado desnecessariamente na mesma região, e todo o schema foi replicado. O trabalho de consolidação (17 migrations limpas) não foi inútil, mas a motivação ("ganho de latência ~150ms → ~30ms") era completamente falsa.
+
+### 23.2 Auditoria lado-a-lado (resultado)
+
+Verificação exaustiva via SQL direto em ambos os projetos:
+
+| Item | Legado (`hmwdf...`) | Ativo (`mngjb...`) | Veredicto |
+|---|---|---|---|
+| Região | sa-east-1 | sa-east-1 | **Sempre iguais** |
+| Tabelas | 26 | 28 | oniefy-prod é superset (+setup_journey, +description_aliases) |
+| Functions | 57 | 65 | oniefy-prod é superset (+8 RPCs: currency, setup_journey, aliases) |
+| ENUMs | 27 (mesmos nomes) | 27 | index_type expandido (+33 valores moedas/crypto) |
+| RLS policies | 84 | 91 | +7 (cobertura das novas tabelas) |
+| Triggers | 22 | 24 | +2 (novas tabelas) |
+| Cron jobs | 9 | 9 | Idêntico |
+| Indexes | 111 | 118 | +7 |
+| Extensions | 10 | 10 | Idêntico |
+| Migrations | 57 (incrementais) | 35 (17 consolidadas + 18 novas) | Consolidação limpa |
+| Colunas exclusivas | 0 | 3 | accounts.currency, assets.currency, users_profile.cutoff_date |
+
+**Veredicto: ZERO perda de funcionalidade.** O oniefy-prod contém 100% do schema original + 3 features adicionais (multicurrency, setup_journey, description_aliases). As 57 functions do legado existem no oniefy-prod com assinaturas idênticas.
+
+**analytics_events (138 vs 5):** Dados de telemetria de dev/teste. Descartáveis.
+
+**economic_indices (53 vs 66) e sources (15 vs 51):** O oniefy-prod tem MAIS porque inclui fontes de câmbio (feature multicurrency).
+
+### 23.3 Correções aplicadas ao HANDOVER
+
+1. Região do projeto legado corrigida: "us-east-1" → "sa-east-1 (São Paulo)"
+2. Seção 22.1 renomeada de "Migração us-east-1 → sa-east-1" para "Consolidação de schema em projeto limpo"
+3. Errata adicionada na seção 22.1 explicando o erro
+4. Todas as referências a "projeto SP" substituídas por "oniefy-prod"
+5. Diagnóstico de latência do dashboard corrigido (não era distância geográfica)
+6. Otimização #1 da seção 20.6 marcada com nota explicativa
+7. "Próximos passos" em §§20.9 e 21.8 atualizados (migração marcada como feita)
+8. Migration count atualizado para 35
+
+### 23.4 Lições aprendidas (CRÍTICAS para sessões futuras)
+
+**REGRA 1: Sempre verificar antes de afirmar.** A região do projeto estava a 1 query de distância (`Supabase:get_project`). Claude preferiu assumir com base num texto de spec em vez de checar o fato. Esta falha custou uma sessão inteira de trabalho de migração desnecessário.
+
+**REGRA 2: Spec ≠ Realidade.** O documento de especificação v1 mencionava us-east-1. O projeto real foi criado em sa-east-1. Documentação descreve intenção; o banco de dados descreve realidade. Quando houver divergência, a realidade vence.
+
+**REGRA 3: Não inventar problemas de performance.** O diagnóstico correto (14+ roundtrips HTTP) já apontava a solução real (consolidar em 1 RPC, que foi feita com `get_dashboard_all`). A "migração de região" era uma segunda solução para um problema que não existia.
+
+### 23.5 Ação pendente
+
+- **Pausar ou deletar o projeto legado** (`hmwdfcsxtmbzlslxgqus`): não contém dados exclusivos nem features ausentes do oniefy-prod. Claudio decide quando.
+
+### 23.6 Totais atualizados (oniefy-prod, dados verificados por SQL)
+
+- **Tabelas:** 28 (todas com RLS)
+- **RLS policies:** 91
+- **Functions:** 65 (todas com `SET search_path` e auth.uid() guard)
+- **ENUMs:** 27 (index_type com 46 valores)
+- **Migrations:** 35 aplicadas
+- **Triggers:** 24
+- **pg_cron jobs:** 9
+- **Indexes:** 118
+- **Extensions:** 10
+- **Moedas suportadas:** 35 (BRL + 10 PTAX + 19 Frankfurter + 5 crypto)
+- **Fontes de índices:** 51
+- **Suítes de teste Jest:** 22 (341 assertions)
+- **CI:** 4/4 verde
+- **Último commit verde:** `0dd6351`
