@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1+2 concluídas: P1+P2+P15+P4).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1+2+3 concluídas: P1+P2+P15+P4+P16+P7a).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -983,12 +983,12 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 |---|---|---|---|---|---|
 | P4 | Onboarding simplificado: welcome → pergunta única → setup auto → redirect. MFA diferido para banner no dashboard após 24h. Currency default BRL. | Alto | Médio | Adendo v1.5 §2.1 | ✅ |
 
-**Sprint 3: Schema patrimonial (~1 sessão)**
+**Sprint 3: Schema patrimonial (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P16 | Expansão ENUM asset_category de 5 para 14 valores (vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles, etc.) | Médio | Baixo | Adendo v1.5 §3.4 |
-| P7a | Migration: parent_asset_id (UUID FK NULL) em assets + asset_id (UUID FK NULL) em transactions e journal_entries | Alto | Baixo | Adendo v1.5 §3.1-3.2 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P16 | Expansão ENUM asset_category de 5 para 14 valores (vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles) | Médio | Baixo | Adendo v1.5 §3.4 | ✅ |
+| P7a | Migration: parent_asset_id (UUID FK NULL) em assets + asset_id (UUID FK NULL) em transactions e journal_entries | Alto | Baixo | Adendo v1.5 §3.1-3.2 | ✅ |
 
 **Sprint 4: Navegação + Formulário (~1 sessão)**
 
@@ -2848,3 +2848,36 @@ Os componentes de rota do onboarding antigo (RouteChoiceStep, RouteManualStep, R
 ### 25d.5 Próximo: Sprint 3
 
 P16 (Expansão ENUM asset_category de 5 para 14) + P7a (parent_asset_id + asset_id em transactions/journal_entries).
+
+## Sessão 25e - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 3
+
+### 25e.1 Escopo
+
+Sprint 3 do adendo v1.5: P16 (expansão ENUM asset_category) + P7a (hierarquia de ativos).
+
+### 25e.2 O que foi feito
+
+**P16 - Expansão ENUM asset_category (5 → 14 valores):**
+- Novos: vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles
+- ASSET_CATEGORY_LABELS: 14 labels pt-BR
+- ASSET_CATEGORY_OPTIONS: 14 opções com descrições contextuais
+- ASSET_CATEGORY_COLORS: cores únicas por categoria (Plum Ledger palette)
+- COA_MAP: mapeamento para plano de contas (Grupo 1.2)
+- Zod schema atualizado (rpc.ts)
+- database.ts atualizado
+
+**P7a - Hierarquia de ativos (3 colunas + 3 indexes):**
+- `assets.parent_asset_id` UUID FK NULL → hierarquia pai/filho (até 2 níveis)
+- `transactions.asset_id` UUID FK NULL → "quanto custa meu carro" sem novo centro
+- `journal_entries.asset_id` UUID FK NULL → mesma dimensão no motor contábil
+- Partial indexes: idx_assets_parent, idx_tx_asset, idx_je_asset (WHERE NOT NULL)
+- database.ts atualizado (Row/Insert/Update para assets, transactions, journal_entries)
+
+### 25e.3 Migrations aplicadas (oniefy-prod)
+
+- `p16_p7a_asset_category_expansion_and_hierarchy` (via MCP apply_migration)
+- Arquivo local: `supabase/migrations/061_p16_p7a_asset_hierarchy.sql`
+
+### 25e.4 Próximo: Sprint 4
+
+P3 (Reorganizar Configurações) + P6 (Formulário de transação radical).

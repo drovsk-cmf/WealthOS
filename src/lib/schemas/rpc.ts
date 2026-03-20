@@ -135,7 +135,7 @@ export const assetsSummarySchema = z.object({
   total_acquisition: z.number(),
   asset_count: z.number(),
   by_category: z.array(z.object({
-    category: z.enum(["real_estate", "vehicle", "electronics", "other", "restricted"]),
+    category: z.enum(["real_estate", "vehicle", "vehicle_auto", "vehicle_moto", "vehicle_recreational", "vehicle_aircraft", "electronics", "jewelry", "fashion", "furniture", "sports", "collectibles", "other", "restricted"]),
     count: z.number(),
     total_value: z.number(),
   })),

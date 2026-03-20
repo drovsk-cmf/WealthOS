@@ -191,6 +191,7 @@ export type Database = {
           insurance_policy: string | null
           name: string
           notes_encrypted: string | null
+          parent_asset_id: string | null
           updated_at: string
           user_id: string
         }
@@ -208,6 +209,7 @@ export type Database = {
           insurance_policy?: string | null
           name: string
           notes_encrypted?: string | null
+          parent_asset_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -225,6 +227,7 @@ export type Database = {
           insurance_policy?: string | null
           name?: string
           notes_encrypted?: string | null
+          parent_asset_id?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -436,9 +439,9 @@ export type Database = {
         Relationships: [{ foreignKeyName: "description_aliases_category_id_fkey"; columns: ["category_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] }]
       }
       journal_entries: {
-        Row: { created_at: string; description: string | null; document_url: string | null; entry_date: string; id: string; is_reversal: boolean; notes_encrypted: string | null; occurred_at: string | null; posted_at: string | null; reversed_entry_id: string | null; source: Database["public"]["Enums"]["entry_source"]; transaction_id: string | null; user_date: string | null; user_id: string; workflow_task_id: string | null }
-        Insert: { created_at?: string; description?: string | null; document_url?: string | null; entry_date: string; id?: string; is_reversal?: boolean; notes_encrypted?: string | null; occurred_at?: string | null; posted_at?: string | null; reversed_entry_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; transaction_id?: string | null; user_date?: string | null; user_id: string; workflow_task_id?: string | null }
-        Update: { created_at?: string; description?: string | null; document_url?: string | null; entry_date?: string; id?: string; is_reversal?: boolean; notes_encrypted?: string | null; occurred_at?: string | null; posted_at?: string | null; reversed_entry_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; transaction_id?: string | null; user_date?: string | null; user_id?: string; workflow_task_id?: string | null }
+        Row: { asset_id: string | null; created_at: string; description: string | null; document_url: string | null; entry_date: string; id: string; is_reversal: boolean; notes_encrypted: string | null; occurred_at: string | null; posted_at: string | null; reversed_entry_id: string | null; source: Database["public"]["Enums"]["entry_source"]; transaction_id: string | null; user_date: string | null; user_id: string; workflow_task_id: string | null }
+        Insert: { asset_id?: string | null; created_at?: string; description?: string | null; document_url?: string | null; entry_date: string; id?: string; is_reversal?: boolean; notes_encrypted?: string | null; occurred_at?: string | null; posted_at?: string | null; reversed_entry_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; transaction_id?: string | null; user_date?: string | null; user_id: string; workflow_task_id?: string | null }
+        Update: { asset_id?: string | null; created_at?: string; description?: string | null; document_url?: string | null; entry_date?: string; id?: string; is_reversal?: boolean; notes_encrypted?: string | null; occurred_at?: string | null; posted_at?: string | null; reversed_entry_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; transaction_id?: string | null; user_date?: string | null; user_id?: string; workflow_task_id?: string | null }
         Relationships: [
           { foreignKeyName: "je_workflow_task_fk"; columns: ["workflow_task_id"]; isOneToOne: false; referencedRelation: "workflow_tasks"; referencedColumns: ["id"] },
           { foreignKeyName: "journal_entries_reversed_entry_id_fkey"; columns: ["reversed_entry_id"]; isOneToOne: false; referencedRelation: "journal_entries"; referencedColumns: ["id"] },
@@ -488,9 +491,9 @@ export type Database = {
         Relationships: []
       }
       transactions: {
-        Row: { account_id: string; amount: number; amount_adjustment: number; bank_connection_id: string | null; category_id: string | null; category_source: Database["public"]["Enums"]["category_assignment_source"] | null; created_at: string; date: string; description: string | null; due_date: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; matched_transaction_id: string | null; notes: string | null; occurred_at: string | null; payment_status: Database["public"]["Enums"]["payment_status"]; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
-        Insert: { account_id: string; amount: number; amount_adjustment?: number; bank_connection_id?: string | null; category_id?: string | null; category_source?: Database["public"]["Enums"]["category_assignment_source"] | null; created_at?: string; date: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
-        Update: { account_id?: string; amount?: number; amount_adjustment?: number; bank_connection_id?: string | null; category_id?: string | null; category_source?: Database["public"]["Enums"]["category_assignment_source"] | null; created_at?: string; date?: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
+        Row: { account_id: string; amount: number; amount_adjustment: number; asset_id: string | null; bank_connection_id: string | null; category_id: string | null; category_source: Database["public"]["Enums"]["category_assignment_source"] | null; created_at: string; date: string; description: string | null; due_date: string | null; external_id: string | null; family_member_id: string | null; id: string; import_batch_id: string | null; is_deleted: boolean; is_paid: boolean; journal_entry_id: string | null; matched_transaction_id: string | null; notes: string | null; occurred_at: string | null; payment_status: Database["public"]["Enums"]["payment_status"]; posted_at: string | null; recurrence_id: string | null; source: Database["public"]["Enums"]["entry_source"]; tags: string[] | null; transfer_pair_id: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at: string; user_id: string }
+        Insert: { account_id: string; amount: number; amount_adjustment?: number; asset_id?: string | null; bank_connection_id?: string | null; category_id?: string | null; category_source?: Database["public"]["Enums"]["category_assignment_source"] | null; created_at?: string; date: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id: string }
+        Update: { account_id?: string; amount?: number; amount_adjustment?: number; asset_id?: string | null; bank_connection_id?: string | null; category_id?: string | null; category_source?: Database["public"]["Enums"]["category_assignment_source"] | null; created_at?: string; date?: string; description?: string | null; due_date?: string | null; external_id?: string | null; family_member_id?: string | null; id?: string; import_batch_id?: string | null; is_deleted?: boolean; is_paid?: boolean; journal_entry_id?: string | null; matched_transaction_id?: string | null; notes?: string | null; occurred_at?: string | null; payment_status?: Database["public"]["Enums"]["payment_status"]; posted_at?: string | null; recurrence_id?: string | null; source?: Database["public"]["Enums"]["entry_source"]; tags?: string[] | null; transfer_pair_id?: string | null; type?: Database["public"]["Enums"]["transaction_type"]; updated_at?: string; user_id?: string }
         Relationships: [
           { foreignKeyName: "fk_transactions_recurrence"; columns: ["recurrence_id"]; isOneToOne: false; referencedRelation: "recurrences"; referencedColumns: ["id"] },
           { foreignKeyName: "transactions_account_id_fkey"; columns: ["account_id"]; isOneToOne: false; referencedRelation: "accounts"; referencedColumns: ["id"] },
@@ -594,7 +597,7 @@ export type Database = {
       account_type: "checking" | "savings" | "credit_card" | "cash" | "investment" | "loan" | "financing"
       adjustment_index_type: "ipca" | "igpm" | "inpc" | "selic" | "manual" | "none"
       budget_approval_status: "approved" | "proposed" | "rejected"
-      asset_category: "real_estate" | "vehicle" | "electronics" | "other" | "restricted"
+      asset_category: "real_estate" | "vehicle" | "vehicle_auto" | "vehicle_moto" | "vehicle_recreational" | "vehicle_aircraft" | "electronics" | "jewelry" | "fashion" | "furniture" | "sports" | "collectibles" | "other" | "restricted"
       category_type: "income" | "expense"
       center_type: "cost_center" | "profit_center" | "neutral"
       entry_source: "bank_feed" | "card_feed" | "manual" | "csv_import" | "ofx_import" | "ocr" | "system"
