@@ -2477,22 +2477,36 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 
 ### Pendências
 
-1. Deploy Vercel (doc pronto em `docs/DEPLOY-VERCEL.md`)
-2. Projeto Sentry (free tier) + DSN no Vercel
-3. Supabase Pro ($25/mês) + CAPTCHA
-4. iOS build chain (Xcode Cloud ou Mac)
-5. Teste de corredor (UX-H3-05)
+1. **Deploy Vercel** (doc pronto em `docs/DEPLOY-VERCEL.md`) - requer ação Claudio no painel Vercel + DNS oniefy.com
+2. **Projeto Sentry** (free tier) + configurar DSN nas variáveis Vercel - requer signup em sentry.io
+3. **Supabase Pro** ($25/mês) + habilitar CAPTCHA (Cloudflare Turnstile) - requer decisão de custo
+4. **iOS build chain** - Apple Developer Account ($99/ano) + Xcode Cloud (25h/mês grátis)
+5. **3 stories bloqueadas por Mac:** CFG-04 (push notifications), FIN-17 (OCR), FIN-18 (câmera)
+6. **Teste de corredor** com 3 pessoas (UX-H3-05) - ação Claudio, sem código
+7. **Lacunas LGPD abertas:** L3 (consentimento CPF, não aplicável até campo existir na UI), L4 (ROPA formal), L5 (RIPD), L6 (DPO)
+8. **E2E no CI:** Playwright configurado mas requer Supabase de teste para rodar no GitHub Actions
 
 ### Totais atualizados
 
+- **Stories:** 87/90 concluídas (3 bloqueadas por Mac/Xcode)
+- **Itens UX:** 17/19 concluídos (push notifications + teste de corredor pendentes)
+- **Tabelas SP:** 28 (todas com RLS)
+- **Functions SP:** 68 (65 originais + 3 cleanup LGPD)
+- **RLS Policies SP:** 91
+- **pg_cron jobs SP:** 11
+- **Migrations SP:** 37 aplicadas
 - **Suítes de teste Jest:** 22 (341 assertions)
 - **Lint warnings:** 0
 - **tsc errors:** 0
-- **Documentos novos:** 1 (MAPEAMENTO-LGPD.md)
-- **Páginas novas:** 1 (/terms - Termos de Uso)
-- **Migrations novas:** 2 (057 LGPD retention, 058 dashboard upcoming_bills)
-- **Ambas aplicadas no SP:** sim (+ 2 pg_cron jobs)
-- **pg_cron jobs SP:** 11
-- **Lacunas LGPD resolvidas:** L1, L2, L7 (de 7 identificadas)
-- **CI:** 4/4 verde (todos os 10 commits)
-- **Último commit verde:** `df1185f`
+- **CI:** 4/4 verde
+- **Último commit verde:** `d51a775`
+
+### Instruções para nova sessão
+
+1. Clonar repositório: `git clone https://<PAT>@github.com/drovsk-cmf/WealthOS.git`
+2. Ler este HANDOVER (seções 1-3 para contexto, seção 12 para backlog, sessão 23 para estado mais recente)
+3. `npm install && npx tsc --noEmit && npm run lint && npm test` para validar estado
+4. Supabase SP: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) via MCP OAuth
+5. Supabase antigo: `hmwdfcsxtmbzlslxgqus` - INACTIVE, ignorar
+6. Seguir backlog da seção 12 ou instruções do Claudio
+7. Ao final: atualizar este HANDOVER com log da sessão, commits, e último commit verde
