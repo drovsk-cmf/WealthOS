@@ -2715,7 +2715,7 @@ Commit: `7745c69` | 4/4 jobs green (Lint, Security, Tests, Build)
 
 ### 25.4 Migrations aplicadas
 
-- `setup_journey_5_week_plan` (via MCP apply_migration)
+- `setup_journey_5_week_plan` — **ERRO: aplicada no projeto LEGADO (hmwdfcsxtmbzlslxgqus) em vez do oniefy-prod (mngjbrbxapazdddzgoje)**. Corrigido na sessão 25b.
 
 ### 25.5 Arquivos criados
 
@@ -2724,9 +2724,30 @@ Commit: `7745c69` | 4/4 jobs green (Lint, Security, Tests, Build)
 
 ### 25.6 Nota sobre Supabase
 
-Projeto estava INACTIVE (pausado por inatividade). Restaurado via Management API durante a sessão.
+**ERRO GRAVE:** Projeto legado (`hmwdfcsxtmbzlslxgqus`) estava INACTIVE (pausado deliberadamente na sessão 22). Claude reativou o projeto legado sem consultar o HANDOVER (linhas 6-7 dizem explicitamente "PAUSAR/DESLIGAR") e aplicou a migration nele. O projeto correto é `mngjbrbxapazdddzgoje` (oniefy-prod).
 
 ### 25.7 Próximo: Sprint 2
 
 P4 - Onboarding simplificado (conta → email → pergunta única → importação → valor em <2min).
+
+
+## Sessão 25b - 20 março 2026 (Claude Opus, Projeto Claude) — CORREÇÃO
+
+### 25b.1 Escopo
+
+Corrigir o erro da sessão 25: migration P15 aplicada no projeto legado em vez do oniefy-prod.
+
+### 25b.2 O que foi feito
+
+1. **Projeto legado re-pausado:** `hmwdfcsxtmbzlslxgqus` restaurado para INACTIVE via Management API
+2. **Migration P15 aplicada no projeto correto** (`mngjbrbxapazdddzgoje`):
+   - ALTER TABLE setup_journey ADD COLUMN week_number (tabela já existia no oniefy-prod)
+   - Backfill week_number nos steps existentes
+   - RPCs initialize_setup_journey e get_setup_journey atualizadas para incluir week_number
+   - Nome no Supabase: `p15_setup_journey_week_number`
+3. **Arquivo local 059 reescrito** para refletir o ALTER TABLE (não CREATE TABLE)
+
+### 25b.3 Lição aprendida
+
+**Ler o HANDOVER INTEIRO antes de qualquer operação de infraestrutura.** As linhas 6-7 do HANDOVER identificam explicitamente qual é o projeto ativo e qual é o legado. Reativar um projeto pausado sem verificar o HANDOVER é um erro grave que pode causar divergência de estado entre projetos.
 
