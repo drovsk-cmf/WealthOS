@@ -2785,9 +2785,9 @@ Auditoria completa do oniefy-prod (`mngjbrbxapazdddzgoje`) para identificar gaps
 | **tax_parameters seed** | **9 registros** | **0 registros** | **❌ CORRIGIDO** |
 | setup_journey.week_number | Coluna requerida | Presente (sessão 25b) | ✅ OK |
 
-### 25c.4 Gap encontrado e corrigido
+### 25c.4 Gaps encontrados e corrigidos
 
-**`tax_parameters` vazia no oniefy-prod.** A consolidação da sessão 22 migrou toda a estrutura DDL (tabelas, funções, indexes, RLS), mas não incluiu os dados de seed da tabela `tax_parameters`. Estes 9 registros são necessários para o módulo Fiscal/IR funcionar:
+**1. `tax_parameters` vazia no oniefy-prod.** A consolidação da sessão 22 migrou toda a estrutura DDL (tabelas, funções, indexes, RLS), mas não incluiu os dados de seed da tabela `tax_parameters`. Estes 9 registros são necessários para o módulo de IR funcionar:
 
 - IRPF Monthly 2025 + 2026
 - IRPF Annual 2025 + 2026
@@ -2795,9 +2795,11 @@ Auditoria completa do oniefy-prod (`mngjbrbxapazdddzgoje`) para identificar gaps
 - Minimum Wage 2025 + 2026
 - Capital Gains (desde 2016)
 
-Migration `seed_tax_parameters_fiscal` aplicada no oniefy-prod. Arquivo local: `060_seed_tax_parameters_fiscal.sql`.
+Migration `seed_tax_parameters_all` aplicada no oniefy-prod. Houve duplicação (a tabela já tinha os 9 registros de uma tentativa anterior durante a consolidação, resultando em 18 linhas). Deduplicadas via `ctid`. Unique index `idx_tax_params_unique` criado em `(parameter_type, valid_from)` para prevenir recorrência.
+
+**2. `setup_journey.week_number` (P15)** foi aplicada no projeto ERRADO na sessão 25. Corrigido na sessão 25b com migration `p15_setup_journey_week_number` no oniefy-prod.
 
 ### 25c.5 Conclusão
 
-Com exceção do seed fiscal (corrigido agora), o oniefy-prod está **100% alinhado** com o código local. Nenhuma RPC, tabela, coluna, trigger, cron job ou policy está faltando.
+Com exceção do seed fiscal e do week_number (ambos corrigidos), o oniefy-prod está **100% alinhado** com o código local. Nenhuma RPC, tabela, coluna, trigger, cron job ou policy está faltando.
 

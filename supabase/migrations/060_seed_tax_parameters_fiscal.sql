@@ -1,7 +1,8 @@
 -- Seed tax_parameters: 9 registros fiscais faltantes no oniefy-prod
 -- Origem: migrations 008_fiscal_module + 024_tax_params_2026 (projeto legado)
 -- Consolidação da sessão 22 não incluiu dados de seed, apenas DDL.
--- Applied to oniefy-prod (mngjbrbxapazdddzgoje) as 'seed_tax_parameters_fiscal'
+-- Applied to oniefy-prod (mngjbrbxapazdddzgoje) as 'seed_tax_parameters_all'
+-- Post-apply: deduplicação via ctid + unique index idx_tax_params_unique
 
 -- IRPF Monthly 2025
 INSERT INTO tax_parameters (parameter_type, valid_from, valid_until, brackets, limits, source_references, updated_by)
@@ -90,3 +91,7 @@ VALUES (
   '{"value":1621.00}'::jsonb,
   '[{"source":"Decreto Presidencial","url":"https://www.planalto.gov.br","date":"2026-01-01"},{"source":"Portaria MPS/MF 13/2026","url":"https://www.legisweb.com.br/legislacao/?id=489284","date":"2026-01-09"}]'::jsonb
 );
+
+-- Prevent future duplicates
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tax_params_unique
+ON tax_parameters (parameter_type, valid_from);
