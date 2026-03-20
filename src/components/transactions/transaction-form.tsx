@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * TransactionForm (UX-H1-04)
+ * TransactionForm (UX-H1-04 + P6)
  *
- * Quick mode: 3 obligatory decisions in <10 seconds
- *   1. Amount (autofocus, numeric keyboard)
- *   2. Type toggle (expense default, covers 80% of cases)
- *   3. Account (pre-selected to first/primary account)
+ * Quick mode (P6): valor + descrição + conta
+ *   - Tipo default: despesa (80% dos casos)
+ *   - Data default: hoje
+ *   - Status default: pago
+ *   - Categoria: inferida automaticamente pela descrição
  *
- * Everything else behind "Mais opções":
- *   - Description, category, date, paid/pending, family member, notes
+ * Expanded ("Mais opções"):
+ *   - Tipo, categoria, data, pago/pendente, membro, asset, notas
  *
  * Transfer mode shows destination account instead of category.
  */
@@ -20,6 +21,7 @@ import { ChevronDown, ChevronUp, Sparkles, Camera } from "lucide-react";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
+import { useAssets } from "@/lib/hooks/use-assets";
 import { useAutoCategory } from "@/lib/hooks/use-auto-category";
 import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
 import { useOcrReceipt } from "@/lib/services/ocr-service";
@@ -64,6 +66,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
   const { data: familyMembers } = useFamilyMembers();
+  const { data: assets } = useAssets();
   const createTransaction = useCreateTransaction();
 
   // Form state
@@ -72,6 +75,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const [toAccountId, setToAccountId] = useState("");
   const [categoryId, setCategoryId] = useState(prefill?.categoryId ?? "");
   const [familyMemberId, setFamilyMemberId] = useState(prefill?.familyMemberId ?? "");
+  const [assetId, setAssetId] = useState("");
   const [amount, setAmount] = useState(prefill?.amount ?? "");
   const [description, setDescription] = useState(prefill?.description ?? "");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -115,6 +119,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
       setDate(new Date().toISOString().split("T")[0]);
       setIsPaid(true);
       setNotes(prefill?.notes ?? "");
+      setAssetId("");
       setError(null);
       setShowMore(!!prefill);
       setManualCategory(!!prefill?.categoryId);
@@ -280,7 +285,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
         )}
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          {/* ═══ QUICK MODE: 3 decisions ═══ */}
+          {/* ═══ QUICK MODE: valor + descrição + conta (P6) ═══ */}
 
           {/* Decision 1: Amount (autofocus) */}
           <div className="space-y-1.5">
@@ -305,24 +310,19 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
             )}
           </div>
 
-          {/* Decision 2: Type toggle (default: expense) */}
-          <div role="radiogroup" aria-label="Tipo de transação" className="flex gap-1 rounded-lg border bg-muted p-1">
-            {(["expense", "income", "transfer"] as TransactionType[]).map((t) => (
-              <button
-                key={t}
-                type="button"
-                role="radio"
-                aria-checked={type === t}
-                onClick={() => setType(t)}
-                className={`flex-1 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
-                  type === t
-                    ? `${TYPE_CONFIG[t].bgColor} ${TYPE_CONFIG[t].color}`
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {TYPE_CONFIG[t].label}
-              </button>
-            ))}
+          {/* Decision 2: Description (quick, triggers auto-categorization) */}
+          <div className="space-y-1.5">
+            <label htmlFor="tx-desc-quick" className="text-sm font-medium">
+              Descrição
+            </label>
+            <input
+              id="tx-desc-quick"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ex: Supermercado, Uber, Aluguel"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
           </div>
 
           {/* Decision 3: Account (only shown as dropdown if >1 account) */}
@@ -375,24 +375,32 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
             className="flex w-full items-center justify-center gap-1.5 rounded-md py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {showMore ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            {showMore ? "Menos opções" : "Mais opções (descrição, categoria, data)"}
+            {showMore ? "Menos opções" : "Mais opções (tipo, categoria, data)"}
           </button>
 
           {showMore && (
             <div className="space-y-4 rounded-lg border bg-muted/30 p-4">
-              {/* Description */}
+              {/* Type toggle (moved from quick mode in P6) */}
               <div className="space-y-1.5">
-                <label htmlFor="tx-desc" className="text-sm font-medium">
-                  Descrição
-                </label>
-                <input
-                  id="tx-desc"
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Ex: Supermercado, Uber, Aluguel"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
+                <label className="text-sm font-medium">Tipo</label>
+                <div role="radiogroup" aria-label="Tipo de transação" className="flex gap-1 rounded-lg border bg-muted p-1">
+                  {(["expense", "income", "transfer"] as TransactionType[]).map((t) => (
+                    <button
+                      key={t}
+                      type="button"
+                      role="radio"
+                      aria-checked={type === t}
+                      onClick={() => setType(t)}
+                      className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                        type === t
+                          ? `${TYPE_CONFIG[t].bgColor} ${TYPE_CONFIG[t].color}`
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {TYPE_CONFIG[t].label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Category (not for transfers) */}
@@ -509,6 +517,31 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
                     placeholder="Observações adicionais"
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
+                </div>
+              )}
+
+              {/* Asset (P6/P7a: vincular despesa a um bem) */}
+              {type === "expense" && assets && assets.length > 0 && (
+                <div className="space-y-1.5">
+                  <label htmlFor="tx-asset" className="text-sm font-medium">
+                    Bem relacionado
+                  </label>
+                  <select
+                    id="tx-asset"
+                    value={assetId}
+                    onChange={(e) => setAssetId(e.target.value)}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <option value="">Nenhum</option>
+                    {assets.map((a) => (
+                      <option key={a.id} value={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-[11px] text-muted-foreground">
+                    Vincule esta despesa a um bem para rastrear custos acumulados.
+                  </p>
                 </div>
               )}
             </div>

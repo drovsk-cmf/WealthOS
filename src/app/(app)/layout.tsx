@@ -43,7 +43,7 @@ const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
 /** Routes that belong to Settings (highlight Settings icon when active) */
 const SETTINGS_ROUTES = [
   "/settings", "/categories", "/chart-of-accounts", "/cost-centers",
-  "/family", "/bills", "/workflows", "/tax", "/indices",
+  "/family", "/bills", "/tax", "/indices",
 ];
 
 export default function AppLayout({

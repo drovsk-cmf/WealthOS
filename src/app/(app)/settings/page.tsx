@@ -1,14 +1,18 @@
 "use client";
 
 /**
- * Oniefy - Settings Hub (UX-H1-01)
+ * Oniefy - Settings Hub (UX-H1-01 + P3)
  *
- * 5 subcategories:
- * - Pessoal: perfil, moeda, notificações
+ * 5 subcategories (reorganizadas adendo v1.5 §2.2):
+ * - Pessoal: perfil, notificações
  * - Estrutura e Cadastros: categorias, divisões, família
- * - Dados e Importação: importação, exportação, contas a pagar
- * - Avançado: plano de contas, índices, fiscal, tarefas
+ * - Finanças: contas a pagar, imposto de renda
+ * - Dados: exportação e privacidade
+ * - Avançado: plano de contas, índices, métricas
  * - Segurança: MFA, sessões, exclusão de conta
+ *
+ * Importação removida (promovida à sidebar em P2).
+ * Tarefas removidas (acessível via /workflows e dashboard).
  */
 
 import Link from "next/link";
@@ -23,8 +27,6 @@ import {
   BookOpen,
   TrendingUp,
   FileText,
-  Download,
-  CheckSquare,
   Calendar,
   BarChart3,
 } from "lucide-react";
@@ -60,11 +62,16 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
-    title: "Dados e Importação",
+    title: "Finanças",
     items: [
-      { href: "/connections", icon: Download, label: "Importação", description: "Importar extratos CSV, OFX, XLSX", ready: true },
-      { href: "/settings/data", icon: Database, label: "Dados e Privacidade", description: "Exportar dados, política de privacidade", ready: true },
       { href: "/bills", icon: Calendar, label: "Contas a Pagar", description: "Gerenciar pendências e vencimentos", ready: true },
+      { href: "/tax", icon: FileText, label: "Imposto de Renda", description: "Consolidação fiscal e provisionamento IR", ready: true },
+    ],
+  },
+  {
+    title: "Dados",
+    items: [
+      { href: "/settings/data", icon: Database, label: "Dados e Privacidade", description: "Exportar dados, política de privacidade", ready: true },
     ],
   },
   {
@@ -72,8 +79,6 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     items: [
       { href: "/chart-of-accounts", icon: BookOpen, label: "Plano de Contas", description: "Estrutura contábil (uso avançado)", ready: true },
       { href: "/indices", icon: TrendingUp, label: "Índices Econômicos", description: "IPCA, Selic, CDI, câmbio", ready: true },
-      { href: "/tax", icon: FileText, label: "Imposto de Renda", description: "Visão fiscal e provisionamento IR", ready: true },
-      { href: "/workflows", icon: CheckSquare, label: "Tarefas", description: "Workflows e rituais periódicos", ready: true },
       { href: "/settings/analytics", icon: BarChart3, label: "Métricas", description: "Retenção, eventos e volume de dados", ready: true },
     ],
   },

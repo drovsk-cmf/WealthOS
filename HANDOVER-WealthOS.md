@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1+2+3 concluídas: P1+P2+P15+P4+P16+P7a).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-4 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -990,12 +990,12 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P16 | Expansão ENUM asset_category de 5 para 14 valores (vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles) | Médio | Baixo | Adendo v1.5 §3.4 | ✅ |
 | P7a | Migration: parent_asset_id (UUID FK NULL) em assets + asset_id (UUID FK NULL) em transactions e journal_entries | Alto | Baixo | Adendo v1.5 §3.1-3.2 | ✅ |
 
-**Sprint 4: Navegação + Formulário (~1 sessão)**
+**Sprint 4: Navegação + Formulário (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P3 | Reorganizar Configurações: mover Fiscal → sidebar ("Imposto de Renda"), Tarefas → dashboard, Plano de Contas → camada avançada, Centros → renomear "Divisões/Projetos" | Alto | Médio | Adendo v1.5 §2.2 |
-| P6 | Formulário de transação radical: modo rápido = valor + descrição + conta (sistema infere tipo, data, status, categoria). Campo asset_id no modo expandido | Médio | Baixo | Adendo v1.5 §2.5 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P3 | Reorganizar Configurações: Importação removida (sidebar P2), IR promovido para grupo "Finanças", Tarefas removida (acessível via /workflows) | Alto | Médio | Adendo v1.5 §2.2 | ✅ |
+| P6 | Formulário de transação radical: modo rápido = valor + descrição + conta. Tipo, categoria, data, status, membro, asset no modo expandido. | Médio | Baixo | Adendo v1.5 §2.5 | ✅ |
 
 **Sprint 5: Categorização determinística (~1 sessão)**
 
@@ -2881,3 +2881,34 @@ Sprint 3 do adendo v1.5: P16 (expansão ENUM asset_category) + P7a (hierarquia d
 ### 25e.4 Próximo: Sprint 4
 
 P3 (Reorganizar Configurações) + P6 (Formulário de transação radical).
+
+## Sessão 25f - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 4
+
+### 25f.1 Escopo
+
+Sprint 4 do adendo v1.5: P3 (Reorganizar Configurações) + P6 (Formulário de transação radical).
+
+### 25f.2 O que foi feito
+
+**P3 - Reorganizar Configurações (adendo v1.5 §2.2):**
+- Grupo "Dados e Importação" eliminado: Importação já na sidebar (P2), Contas a Pagar + IR promovidos
+- Novo grupo "Finanças": Contas a Pagar + Imposto de Renda (visibilidade de primeiro nível)
+- Grupo "Dados": apenas Dados e Privacidade (exportação, LGPD)
+- Grupo "Avançado": Plano de Contas + Índices + Métricas (Tarefas removida)
+- /workflows removido de SETTINGS_ROUTES no layout (acessível direto via URL ou dashboard)
+- Imports limpos: Download e CheckSquare removidos (não usados)
+
+**P6 - Formulário de transação radical (adendo v1.5 §2.5):**
+- Quick mode reduzido: valor (autofocus) → descrição (trigger auto-categorização) → conta
+- Type toggle movido para modo expandido (default expense cobre 80% dos casos)
+- Campo asset_id ("Bem relacionado") adicionado no expanded, visível apenas para despesas com bens cadastrados
+- useAssets importado no form para popular o select
+- State assetId com reset no open
+
+### 25f.3 CI
+
+Commit: pendente (será pushado junto com este log)
+
+### 25f.4 Próximo: Sprint 5
+
+P10 (Pipeline de categorização determinística: categorization_rules + merchant_patterns).
