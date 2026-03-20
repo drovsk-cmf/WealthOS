@@ -381,6 +381,12 @@ export type Database = {
         Update: { color?: string | null; created_at?: string; icon?: string | null; id?: string; is_system?: boolean; name?: string; parent_id?: string | null; type?: Database["public"]["Enums"]["category_type"]; updated_at?: string; user_id?: string }
         Relationships: [{ foreignKeyName: "categories_parent_id_fkey"; columns: ["parent_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] }]
       }
+      categorization_rules: {
+        Row: { id: string; pattern: string; category_name: string; priority: number; is_active: boolean; created_at: string }
+        Insert: { id?: string; pattern: string; category_name: string; priority?: number; is_active?: boolean; created_at?: string }
+        Update: { id?: string; pattern?: string; category_name?: string; priority?: number; is_active?: boolean; created_at?: string }
+        Relationships: []
+      }
       center_allocations: {
         Row: { amount: number; cost_center_id: string; id: string; journal_line_id: string; percentage: number }
         Insert: { amount: number; cost_center_id: string; id?: string; journal_line_id: string; percentage: number }
@@ -455,6 +461,14 @@ export type Database = {
         Relationships: [
           { foreignKeyName: "journal_lines_account_id_fkey"; columns: ["account_id"]; isOneToOne: false; referencedRelation: "chart_of_accounts"; referencedColumns: ["id"] },
           { foreignKeyName: "journal_lines_journal_entry_id_fkey"; columns: ["journal_entry_id"]; isOneToOne: false; referencedRelation: "journal_entries"; referencedColumns: ["id"] },
+        ]
+      }
+      merchant_patterns: {
+        Row: { id: string; user_id: string; pattern: string; category_id: string; usage_count: number; last_used_at: string; created_at: string }
+        Insert: { id?: string; user_id: string; pattern: string; category_id: string; usage_count?: number; last_used_at?: string; created_at?: string }
+        Update: { id?: string; user_id?: string; pattern?: string; category_id?: string; usage_count?: number; last_used_at?: string; created_at?: string }
+        Relationships: [
+          { foreignKeyName: "merchant_patterns_category_id_fkey"; columns: ["category_id"]; isOneToOne: false; referencedRelation: "categories"; referencedColumns: ["id"] },
         ]
       }
       monthly_snapshots: {
@@ -585,6 +599,7 @@ export type Database = {
       lookup_description_alias: { Args: { p_user_id: string; p_original: string }; Returns: Json }
       upsert_description_alias: { Args: { p_user_id: string; p_original: string; p_custom: string; p_category_id?: string }; Returns: Json }
       import_transactions_batch: { Args: { p_account_id: string; p_bank_connection_id?: string; p_batch_id: string; p_transactions: Json; p_user_id: string }; Returns: Json }
+      learn_merchant_pattern: { Args: { p_user_id: string; p_description: string; p_category_id: string }; Returns: undefined }
       match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
       recalculate_account_balance_for: { Args: { p_account_id: string }; Returns: undefined }
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }

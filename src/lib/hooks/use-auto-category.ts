@@ -108,3 +108,32 @@ export function useAutoCategory(
 
   return { suggestedCategoryId, isLoading };
 }
+
+/**
+ * learnCategoryPattern - P10
+ *
+ * Fire-and-forget: when user manually corrects a category,
+ * call learn_merchant_pattern to update merchant_patterns.
+ * Next time the same description appears, the user's choice
+ * takes priority over global rules.
+ */
+export async function learnCategoryPattern(
+  description: string,
+  categoryId: string
+): Promise<void> {
+  if (!description.trim() || !categoryId) return;
+
+  try {
+    const supabase = createClient();
+    const userId = await getCachedUserId(supabase);
+    if (!userId) return;
+
+    await supabase.rpc("learn_merchant_pattern", {
+      p_user_id: userId,
+      p_description: description.trim(),
+      p_category_id: categoryId,
+    });
+  } catch {
+    // Silent fail - learning is non-blocking
+  }
+}

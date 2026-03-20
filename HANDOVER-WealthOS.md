@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-4 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-5 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -997,11 +997,11 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P3 | Reorganizar Configurações: Importação removida (sidebar P2), IR promovido para grupo "Finanças", Tarefas removida (acessível via /workflows) | Alto | Médio | Adendo v1.5 §2.2 | ✅ |
 | P6 | Formulário de transação radical: modo rápido = valor + descrição + conta. Tipo, categoria, data, status, membro, asset no modo expandido. | Médio | Baixo | Adendo v1.5 §2.5 | ✅ |
 
-**Sprint 5: Categorização determinística (~1 sessão)**
+**Sprint 5: Categorização determinística (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P10 | Pipeline de categorização: tabela categorization_rules (regex global) + merchant_patterns (aprendizado do usuário por correção). Sem IA nesta sprint | Alto | Médio | Adendo v1.5 §5.4 etapas 1-2 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P10 | Pipeline de categorização: categorization_rules (26 regex globais BR) + merchant_patterns (aprendizado por correção). auto_categorize reescrita (3 etapas). learn_merchant_pattern RPC. | Alto | Médio | Adendo v1.5 §5.4 etapas 1-2 | ✅ |
 
 **Sprint 6-7: Importação em massa (~2 sessões)**
 
@@ -2912,3 +2912,40 @@ Commit: pendente (será pushado junto com este log)
 ### 25f.4 Próximo: Sprint 5
 
 P10 (Pipeline de categorização determinística: categorization_rules + merchant_patterns).
+
+## Sessão 25g - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 5
+
+### 25g.1 Escopo
+
+Sprint 5 do adendo v1.5: P10 (Pipeline de categorização determinística).
+
+### 25g.2 O que foi feito
+
+**P10 - Pipeline de categorização (adendo v1.5 §5.4 etapas 1-2):**
+
+Schema:
+- Tabela `categorization_rules`: regras globais regex, prioridade, is_active. RLS: SELECT para authenticated.
+- Tabela `merchant_patterns`: padrões por usuário, FK categories, UNIQUE(user_id, pattern). RLS: CRUD por user_id.
+- Indexes: idx_mp_user_pattern, idx_cr_active (partial)
+- 26 regras globais BR seedadas (alimentação, transporte, moradia, saúde, educação, lazer, vestuário, serviços, seguros, impostos, salário, rendimentos, freelance)
+
+RPCs:
+- `auto_categorize_transaction` reescrita: 3 etapas sequenciais:
+  1. merchant_patterns do usuário (exact match, incrementa usage_count)
+  2. categorization_rules globais (regex ~ match, prioridade ASC)
+  3. fallback: nome da categoria = descrição ou LIKE
+- `learn_merchant_pattern` nova: UPSERT em merchant_patterns (ON CONFLICT incrementa usage_count)
+
+Frontend:
+- `learnCategoryPattern()` em use-auto-category.ts (fire-and-forget)
+- TransactionForm: chama learnCategoryPattern no submit quando categoria foi manualmente corrigida
+- database.ts: categorization_rules + merchant_patterns + learn_merchant_pattern adicionados
+
+### 25g.3 Migrations aplicadas (oniefy-prod)
+
+- `p10_categorization_pipeline` (via MCP apply_migration)
+- Arquivo local: `supabase/migrations/062_p10_categorization_pipeline.sql`
+
+### 25g.4 Próximo: Sprint 6-7
+
+P8 (Tabela editável in-app) + P9 (Templates Excel por domínio + upload com preview).

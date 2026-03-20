@@ -22,7 +22,7 @@ import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useCategories } from "@/lib/hooks/use-categories";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { useAssets } from "@/lib/hooks/use-assets";
-import { useAutoCategory } from "@/lib/hooks/use-auto-category";
+import { useAutoCategory, learnCategoryPattern } from "@/lib/hooks/use-auto-category";
 import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
 import { useOcrReceipt } from "@/lib/services/ocr-service";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
@@ -221,6 +221,12 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
         });
         toast.success("Transação criada com sucesso.");
       }
+
+      // P10: Learn from manual category correction (fire-and-forget)
+      if (manualCategory && categoryId && description.trim()) {
+        learnCategoryPattern(description, categoryId);
+      }
+
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");
