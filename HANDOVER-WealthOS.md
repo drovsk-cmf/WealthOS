@@ -76,8 +76,8 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Índices econômicos | 66+ registros (34 moedas + 7 índices macro, atualiza diário) |
 | Fontes de índices | 51 (7 BCB SGS + 10 BCB PTAX + 29 Frankfurter + 5 CoinGecko) |
 | Moedas suportadas | 35: BRL + 10 PTAX (USD,EUR,GBP,CHF,CAD,AUD,JPY,DKK,NOK,SEK) + 19 Frankfurter + 5 crypto (BTC,ETH,SOL,BNB,XRP) |
-| User stories total | 90 |
-| Stories concluídas | 87/90 (ver breakdown abaixo) |
+| User stories total | 108 (90 originais + 18 adendo v1.5: UXR-01..05, PAT-08..11, AI-01..05, IMP-01..04) |
+| Stories concluídas | 87/108 (ver breakdown abaixo) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
@@ -370,7 +370,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 
 ---
 
-## 8. Documentação de Referência (9 documentos no projeto)
+## 8. Documentação de Referência (11 documentos no projeto)
 
 | Doc | Conteúdo chave |
 |---|---|
@@ -383,6 +383,7 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 | wealthos-estudo-contabil-v1.5-final.docx | Modelo contábil partida dobrada, 133 contas, centros, workflows |
 | wealthos-estudo-tecnico-v2.0.docx | Estudo técnico completo, 10 tabelas, triggers, RPCs, fases revisadas |
 | oniefy-estrategia-ux-retencao-v2.docx | **Estratégia consolidada de UX, ativação e retenção.** Consolida 4 auditorias externas (2 Gemini + 2 ChatGPT) + 2 rodadas de revisão crítica cruzada. Define: framework de retenção (4 portões), 2 níveis de valor (operacional + estrutural), navegação 5+1, onboarding redesenhado (3 rotas com default por dispositivo), estados vazios, fricção de input (<10s, 3 decisões), camada de confiança de dados, dashboard como fila de atenção, motor narrativo, revelação progressiva cronológica, reengajamento externo (push + email), métricas e instrumentação. Plano de implementação em 3 horizontes (H1/H2/H3). Delta de escopo estimado: ~12-15 stories novas ou ampliadas. |
+| wealthos-adendo-v1.5.docx | **Camada de experiência, IA e modelo patrimonial.** Feedbacks de usabilidade consolidados (avaliador #1, nota 9/10 proposta, 5/10 clareza). Decisão Caminho B (motor sofisticado, interface simples). Redesenho: onboarding <2min, MFA diferido, navegação reorganizada, dashboard progressivo (4 níveis), nomenclatura pt-BR funcional. Modelo patrimonial: hierarquia de ativos (parent_asset_id), rastreamento de despesas por ativo (asset_id ortogonal a centros), 14 categorias de bens. Importação em massa: tabela editável in-app + Excel + cronograma guiado de setup (5 semanas). Arquitetura de IA: pipeline de categorização (4 etapas, 85% sem IA), cascata de modelos (Gemini Flash-Lite → Flash → Claude Haiku), 5 casos de uso, sanitização PII obrigatória, custo ~US$ 0.02/usuário/mês. +6 tabelas, +18 stories (UXR, PAT, AI, IMP), 17 prioridades mapeadas nas fases existentes. |
 
 ---
 
@@ -853,7 +854,7 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 - QueryProvider: `networkMode: 'offlineFirst'`, `staleTime: 5min`, `gcTime: 30min`
 - Nota: IndexedDB persistence (`tanstack-query-persist`) adiada. SW + React Query in-memory é suficiente para uso de leitura offline
 
-**1 story concluída:** CFG-07. **Total: 87/90.**
+**1 story concluída:** CFG-07. **Total: 87/108 (87 concluídas, 3 bloqueadas por Mac/iOS, 18 novas do adendo v1.5).**
 
 **Verificação da contagem (por módulo):**
 
@@ -871,7 +872,11 @@ Codex descontinuado: a partir desta sessão, todo trabalho passa exclusivamente 
 | CTB | 01..05 | 5 | 0 |
 | CEN | 01..05 | 5 | 0 |
 | WKF | 01..04 | 4 | 0 |
-| **Total** | **90** | **87** | **3** |
+| UXR | 01..05 (adendo v1.5) | 0 | 0 (novas) |
+| PAT (expandido) | 08..11 (adendo v1.5) | 0 | 0 (novas) |
+| AI | 01..05 (adendo v1.5) | 0 | 0 (novas) |
+| IMP | 01..04 (adendo v1.5) | 0 | 0 (novas) |
+| **Total** | **108** | **87** | **3 bloqueadas + 18 novas** |
 
 **Commits:** 9e3407b (testes), 04498b8 (CFG-07)
 
@@ -2504,9 +2509,140 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 ### Instruções para nova sessão
 
 1. Clonar repositório: `git clone https://<PAT>@github.com/drovsk-cmf/WealthOS.git`
-2. Ler este HANDOVER (seções 1-3 para contexto, seção 12 para backlog, sessão 23 para estado mais recente)
+2. Ler este HANDOVER (seções 1-3 para contexto, seção 12 para backlog, sessão mais recente para estado atual)
 3. `npm install && npx tsc --noEmit && npm run lint && npm test` para validar estado
 4. Supabase SP: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) via MCP OAuth
 5. Supabase antigo: `hmwdfcsxtmbzlslxgqus` - INACTIVE, ignorar
 6. Seguir backlog da seção 12 ou instruções do Claudio
 7. Ao final: atualizar este HANDOVER com log da sessão, commits, e último commit verde
+
+---
+
+## Sessão 24 - 19 março 2026 (Claude Opus, Projeto Claude - Feedbacks + Adendo v1.5)
+
+### Escopo
+
+Sessão de produto (não de código). Consolidação de feedbacks de usabilidade de usuários-teste + definição de novas funcionalidades: arquitetura de IA, modelo de dados patrimonial expandido, importação em massa, cronograma guiado de setup. Geração do adendo técnico v1.5.
+
+### 24.1 Feedbacks consolidados (Avaliador #1)
+
+**Notas atribuídas:** Proposta de valor 9/10, clareza para primeira adoção 5/10, arquitetura de informação 6/10. Probabilidade de abandono no onboarding: alta. Potencial de retenção pós-ativação: alto.
+
+**Diagnóstico central:** "O Oniefy parece capaz de encantar quem vence a curva inicial, mas ainda perde gente demais antes disso." Problema de funil, não de proposta.
+
+**5 clusters de feedback:**
+
+| Cluster | Feedbacks | Veredicto |
+|---|---|---|
+| A. Barreira de vocabulário | Termos contábeis (P&L, LCR, tiers, runway) contradizem promessa de simplicidade | Concordo. Mapa de tradução existe no spec, mas não é aplicado com rigor na UI |
+| B. Onboarding / time-to-value | 9 passos com MFA obrigatório antes de qualquer valor entregue | Concordo com ressalva: MFA pode ser diferido, campos E2E bloqueados até ativação |
+| C. Arquitetura de informação | Configurações como "depósito de complexidade", importação enterrada | Concordo integralmente. Maior ROI de correção |
+| D. Dashboard / progressive disclosure | Densidade informacional hostil para iniciante, dashboard do "usuário futuro" | Concordo. Proposta de 4 níveis de maturidade |
+| E. Acertos validados | Posicionamento (9/10), segurança, importação c/ undo, rotinas operacionais | Confirmados. Não mexer |
+
+**Decisão estratégica confirmada: Caminho B.** Motor sofisticado, interface simples. Regra operacional: "Se um rótulo, tooltip ou tela exige que o usuário saiba contabilidade, está errado."
+
+### 24.2 Decisões de produto tomadas
+
+| Decisão | Escolha | Impacto |
+|---|---|---|
+| Hierarquia de ativos | `parent_asset_id` na tabela assets (até 2 níveis) | Valor consolidado pai+filhos, destaque possível |
+| Rastreamento de despesas por ativo | `asset_id` nullable em transactions/journal_entries (dimensão ortogonal ao centro de custo) | "Quanto custa meu carro" sem novo centro |
+| Monitoramento de ativos | Ativado por padrão, silenciosamente. Sem opt-in no cadastro | Reduz decisões no momento errado |
+| Importação em massa | Tabela editável in-app (primária) + Upload Excel (avançada) | 2 interfaces para o mesmo problema, perfis diferentes |
+| Templates por domínio | 5 templates (veículos, imóveis, bens, transações, investimentos) | Tabela in-app e Excel compartilham mesma estrutura |
+| Categorias de ativos | Expansão de 5 para 14 valores no ENUM asset_category | Cobertura: jóias, fashion, esportes, colecionáveis, aeronaves, etc. |
+| Provider primário IA (volume) | Gemini Flash-Lite / Flash (custo 3-10x menor que Claude) | Recomendação, pendente confirmação |
+| Provider para narrativas | Claude Haiku 4.5 (qualidade de texto superior em pt-BR) | Recomendação, pendente confirmação |
+| Assistente conversacional | Postergar para pós-MVP | Complexidade desproporcional para o momento |
+| Sanitização PII | Regex obrigatório antes de toda chamada de API de IA | Incontornável dado posicionamento de privacidade |
+
+### 24.3 Arquitetura de IA definida
+
+**Princípio:** IA é última camada, não primeira. Código determinístico resolve ~85% das operações.
+
+**Pipeline de categorização (4 etapas):**
+1. Regras globais (tabela `categorization_rules`, regex) → ~50%
+2. Regras do usuário (tabela `merchant_patterns`, aprendizado por correção) → ~30%
+3. IA batch (Gemini Flash-Lite, lote único) → ~15%
+4. Intervenção manual (alimenta etapa 2) → ~5%
+
+**Modelo de custo:** ~US$ 0.02/usuário/mês (1.000 usuários = US$ 20/mês). Com Batch API 50%: US$ 12-15/mês.
+
+**5 casos de uso:** categorização de transações, extração de documentos (OCR + parser + IA fallback), cadastro assistido de bens, insights narrativos mensais, assistente conversacional (pós-MVP).
+
+**Infraestrutura:** Edge Function `ai-gateway` + sanitizador PII + cache (`ai_cache`, TTL 30d) + rate limiter + logging (`ai_usage_log`).
+
+### 24.4 Schema changes (adendo v1.5)
+
+**Tabelas novas (6):**
+- `categorization_rules`: regras globais de categorização por estabelecimento
+- `merchant_patterns`: regras aprendidas do usuário por correção
+- `asset_templates`: templates de bens comuns com valor de referência
+- `ai_cache`: cache de respostas da IA (hash prompt → resposta)
+- `ai_usage_log`: log de uso de IA por usuário (monitoramento de custo)
+- `user_insights`: insights narrativos gerados pela IA
+
+**Tabelas modificadas (3):**
+- `assets`: +parent_asset_id (UUID FK NULL)
+- `transactions`: +asset_id (UUID FK NULL)
+- `journal_entries`: +asset_id (UUID FK NULL)
+
+**ENUM expandido:** asset_category de 5 para 14 valores.
+
+### 24.5 User stories novas (18)
+
+| Módulo | Stories | Total |
+|---|---|---|
+| UXR (Experiência) | UXR-01 a UXR-05 | 5 |
+| PAT (Patrimônio expandido) | PAT-08 a PAT-11 | 4 |
+| AI (Inteligência Artificial) | AI-01 a AI-05 | 5 |
+| IMP (Importação em Massa) | IMP-01 a IMP-04 | 4 |
+
+**Totais acumulados:** 90 + 18 = 108 stories especificadas (87 concluídas, 3 bloqueadas por Mac, 18 novas do adendo v1.5).
+
+### 24.6 Documento gerado
+
+`wealthos-adendo-v1_5.docx` - 10 seções, validação PASS. Pronto para upload ao Google Drive (pasta Documentacao/).
+
+**Conteúdo:**
+1. Contexto e motivação
+2. Redesenho da experiência (onboarding, navegação, nomenclatura, dashboard, formulário, importação)
+3. Modelo de dados patrimonial (hierarquia, asset_id, monitoramento, categorias)
+4. Importação em massa (tabela in-app, Excel, cronograma guiado)
+5. Arquitetura de IA (privacidade, modelos, 5 casos de uso, infraestrutura, custos)
+6. Alterações no schema (6 tabelas novas, 3 modificadas)
+7. 18 user stories novas (4 módulos)
+8. Plano de implantação (17 prioridades mapeadas)
+9. Decisões pendentes (6 itens para confirmação)
+10. Totais atualizados
+
+### 24.7 Decisões pendentes (requerem confirmação Claudio)
+
+| # | Decisão | Recomendação |
+|---|---|---|
+| 1 | Provider primário para volume | Gemini (Flash-Lite/Flash) por custo |
+| 2 | Provider para narrativas | Claude Haiku (qualidade texto pt-BR) |
+| 3 | Rate limit free tier IA | 50 chamadas/mês |
+| 4 | Assistente conversacional no MVP | Postergar |
+| 5 | Sanitização PII | Regex obrigatório (incontornável) |
+| 6 | Cache de prompts/respostas | Cache local 30 dias |
+
+### 24.8 Relação com trabalho já feito
+
+Muitas das recomendações do avaliador #1 já foram parcialmente endereçadas pela estratégia UX (seção 12.9) e sessões anteriores:
+
+| Feedback do avaliador | Já implementado | Gap restante |
+|---|---|---|
+| Onboarding longo | UX-H1-02 (3 rotas device-aware) | MFA diferido, pergunta única |
+| Configurações como depósito | UX-H1-01 (navegação 5+1) | Reorganização mais profunda das subpáginas |
+| Dashboard denso | UX-H1-06 (fila de atenção, motor narrativo) | Progressive disclosure por maturidade (4 níveis) |
+| Formulário pesado | UX-H1-04 (modo rápido 3 decisões) | Campo asset_id no modo expandido |
+| Importação enterrada | UX-H1-03 (CTA em empty states) | Sidebar principal + CTA no dashboard |
+| Vocabulário técnico | Microcopy MAN-LNG-CMF-001 | Auditoria completa de renomeações (Cockpit → Fôlego, etc.) |
+
+As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são inteiramente novas e não têm precedente no código atual.
+
+### 24.9 Nota: sem commits nesta sessão
+
+Sessão de produto e documentação. Nenhuma alteração no código. O adendo v1.5 é o entregável principal. A implementação das decisões aqui registradas será executada em sessões futuras seguindo o plano de implantação (seção 8 do adendo).
