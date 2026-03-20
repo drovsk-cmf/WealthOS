@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Oniefy - Fiscal / IRPF (Phase 7)
+ * Oniefy - Imposto de Renda (Phase 7)
  *
  * FIS-01: Rendimentos tributáveis (via tax_treatment automático)
  * FIS-02: Deduções (dedutivel_integral / dedutivel_limitado)
@@ -81,7 +81,7 @@ export default function FiscalPage() {
       {/* Header + Year selector (FIS-06) */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Fiscal / IRPF</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Imposto de Renda</h1>
           <p className="text-sm text-muted-foreground">
             Consolidação fiscal automática via classificação contábil
           </p>
@@ -103,7 +103,7 @@ export default function FiscalPage() {
       {/* D7.10: How it works card */}
       <details className="rounded-lg border bg-card p-4">
         <summary className="cursor-pointer text-sm font-medium text-muted-foreground">
-          Como funciona o módulo fiscal?
+          Como funciona o módulo de IR?
         </summary>
         <p className="mt-2 text-sm text-muted-foreground">
           O relatório fiscal é gerado automaticamente com base na classificação contábil (tax_treatment) de cada conta.
@@ -223,7 +223,7 @@ export default function FiscalPage() {
 
       {/* ═══ RELATÓRIO FISCAL (FIS-01 a FIS-04) ═══ */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold">Relatório Fiscal {selectedYear}</h2>
+        <h2 className="text-lg font-bold">Relatório de IR {selectedYear}</h2>
 
         {/* Totals */}
         {totals && (

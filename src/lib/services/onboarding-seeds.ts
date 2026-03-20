@@ -33,7 +33,7 @@ export async function completeOnboardingSeeds(
     p_user_id: userId,
   });
   if (ccError) {
-    throw new Error(`Erro ao criar centro de custo padrão: ${ccError.message}`);
+    throw new Error(`Erro ao criar divisão padrão: ${ccError.message}`);
   }
 
   const { error: updateError } = await supabase

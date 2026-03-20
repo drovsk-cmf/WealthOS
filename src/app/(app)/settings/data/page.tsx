@@ -33,7 +33,7 @@ const TABLES_TO_EXPORT = [
   { key: "assets", label: "Bens patrimoniais" },
   { key: "recurrences", label: "Recorrências" },
   { key: "family_members", label: "Membros familiares" },
-  { key: "cost_centers", label: "Centros de custo" },
+  { key: "cost_centers", label: "Divisões" },
   { key: "chart_of_accounts", label: "Plano de contas" },
   { key: "journal_entries", label: "Lançamentos contábeis" },
   { key: "journal_lines", label: "Linhas contábeis" },

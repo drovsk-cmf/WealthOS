@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           <li>Dados financeiros inseridos manualmente: contas, transações, orçamentos, patrimônio</li>
           <li>Dados importados via arquivos (CSV, OFX, XLSX)</li>
           <li>Documentos e comprovantes enviados ao aplicativo</li>
-          <li>Preferências de configuração (moeda, categorias, centros de custo)</li>
+          <li>Preferências de configuração (moeda, categorias, divisões)</li>
         </ul>
 
         <h3>1.2 Dados coletados automaticamente</h3>

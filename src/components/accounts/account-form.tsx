@@ -290,7 +290,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
 
           {/* Liquidity Tier */}
           <div className="space-y-1.5">
-            <label htmlFor="acc-tier" className="text-sm font-medium">Tier de liquidez</label>
+            <label htmlFor="acc-tier" className="text-sm font-medium">Nível de liquidez</label>
             <select
               id="acc-tier"
               value={liquidityTier}
@@ -302,7 +302,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              Classificação usada no cálculo de solvência (LCR, Runway)
+              Classificação usada no cálculo de solvência (Índice de liquidez, Fôlego)
             </p>
           </div>
 

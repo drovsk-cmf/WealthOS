@@ -62,10 +62,10 @@ export const LIQUIDITY_TIER_LABELS: Record<string, string> = {
 };
 
 export const LIQUIDITY_TIER_OPTIONS = [
-  { value: "T1", label: "T1 - Liquidez imediata" },
-  { value: "T2", label: "T2 - Investimentos" },
-  { value: "T3", label: "T3 - Bens / financiamentos" },
-  { value: "T4", label: "T4 - Ilíquidos" },
+  { value: "T1", label: "N1 - Liquidez imediata" },
+  { value: "T2", label: "N2 - Investimentos" },
+  { value: "T3", label: "N3 - Bens / financiamentos" },
+  { value: "T4", label: "N4 - Ilíquidos" },
 ];
 
 const PRESET_COLORS = [

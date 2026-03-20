@@ -17,14 +17,14 @@ type CostCenterUpdate = Database["public"]["Tables"]["cost_centers"]["Update"];
 type CenterType = Database["public"]["Enums"]["center_type"];
 
 export const CENTER_TYPE_LABELS: Record<CenterType, string> = {
-  cost_center: "Centro de Custo",
-  profit_center: "Centro de Lucro",
+  cost_center: "Divisão de Custo",
+  profit_center: "Divisão de Lucro",
   neutral: "Neutro",
 };
 
 export const CENTER_TYPE_OPTIONS: { value: CenterType; label: string; desc: string }[] = [
-  { value: "cost_center", label: "Centro de Custo", desc: "Acompanha apenas despesas" },
-  { value: "profit_center", label: "Centro de Lucro", desc: "Acompanha receitas e despesas" },
+  { value: "cost_center", label: "Divisão de Custo", desc: "Acompanha apenas despesas" },
+  { value: "profit_center", label: "Divisão de Lucro", desc: "Acompanha receitas e despesas" },
   { value: "neutral", label: "Neutro", desc: "Agrupamento sem classificação" },
 ];
 

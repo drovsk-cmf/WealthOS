@@ -5,7 +5,7 @@
  *
  * 5 subcategories:
  * - Pessoal: perfil, moeda, notificações
- * - Estrutura e Cadastros: categorias, centros de custo, família
+ * - Estrutura e Cadastros: categorias, divisões, família
  * - Dados e Importação: importação, exportação, contas a pagar
  * - Avançado: plano de contas, índices, fiscal, tarefas
  * - Segurança: MFA, sessões, exclusão de conta
@@ -55,7 +55,7 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     title: "Estrutura e Cadastros",
     items: [
       { href: "/categories", icon: Tag, label: "Categorias", description: "Gerenciar categorias de receita e despesa", ready: true },
-      { href: "/cost-centers", icon: Target, label: "Centros de Custo", description: "Pessoas, projetos e atividades", ready: true },
+      { href: "/cost-centers", icon: Target, label: "Divisões", description: "Pessoas, projetos e atividades", ready: true },
       { href: "/family", icon: Users, label: "Estrutura Familiar", description: "Membros da família e alocações", ready: true },
     ],
   },
@@ -72,7 +72,7 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     items: [
       { href: "/chart-of-accounts", icon: BookOpen, label: "Plano de Contas", description: "Estrutura contábil (uso avançado)", ready: true },
       { href: "/indices", icon: TrendingUp, label: "Índices Econômicos", description: "IPCA, Selic, CDI, câmbio", ready: true },
-      { href: "/tax", icon: FileText, label: "Fiscal", description: "Visão fiscal e provisionamento IR", ready: true },
+      { href: "/tax", icon: FileText, label: "Imposto de Renda", description: "Visão fiscal e provisionamento IR", ready: true },
       { href: "/workflows", icon: CheckSquare, label: "Tarefas", description: "Workflows e rituais periódicos", ready: true },
       { href: "/settings/analytics", icon: BarChart3, label: "Métricas", description: "Retenção, eventos e volume de dados", ready: true },
     ],

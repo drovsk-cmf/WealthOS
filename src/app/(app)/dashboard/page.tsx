@@ -32,6 +32,7 @@ import {
   NarrativeCard,
   AttentionQueue,
   SetupJourneyCard,
+  ImportCTA,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -88,6 +89,12 @@ export default function DashboardPage() {
       {/* ═══ SEÇÃO 0: Setup Journey (oculto após conclusão) ═══ */}
       <SetupJourneyCard />
 
+      {/* ═══ P2: CTA de Importação (oculto após 20 transações) ═══ */}
+      <ImportCTA
+        transactionCount={disclosure.data?.totalTransactions ?? 0}
+        isLoading={disclosure.isLoading}
+      />
+
       {/* ═══ SEÇÃO 1: Card Narrativo (UX-H1-06 + UX-H2-03) ═══ */}
       <NarrativeCard
         summary={d?.summary}
@@ -142,9 +149,9 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ═══ Cockpit de Solvência ═══ */}
+      {/* ═══ Fôlego Financeiro ═══ */}
 
-      {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Tiers */}
+      {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Níveis */}
       <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
 
       {/* DASH-08: FAB lançamento rápido */}

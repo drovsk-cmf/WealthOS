@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 
 /**
- * Oniefy - Centros de Custo (Phase 2 CRUD + Phase 5 Advanced)
+ * Oniefy - Divisões (Phase 2 CRUD + Phase 5 Advanced)
  *
  * CEN-01: Criar centros (from Phase 2, maintained)
  * CEN-02: Atribuir lançamentos (from Phase 2, via transaction form)
@@ -253,7 +253,7 @@ export default function CostCentersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Centros de Custo</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Divisões</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Segmentação de transações por projeto, pessoa ou atividade.
             Clique num centro para ver o P&L.
@@ -281,9 +281,9 @@ export default function CostCentersPage() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <TargetIcon className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">Nenhum centro de custo</h2>
+          <h2 className="text-lg font-semibold">Nenhuma divisão</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Nenhum centro de custo cadastrado.
+            Nenhuma divisão cadastrada.
           </p>
           <button type="button" onClick={handleNew}
             className="mt-3 text-sm font-medium text-primary hover:underline">

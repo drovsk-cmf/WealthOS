@@ -128,7 +128,7 @@ export default function FamilyPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Estrutura Familiar</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {members?.length || 0} membro(s). Cada membro gera automaticamente um centro de custo.
+            {members?.length || 0} membro(s). Cada membro gera automaticamente uma divisão.
           </p>
         </div>
         <button type="button"
@@ -143,8 +143,8 @@ export default function FamilyPage() {
       <div className="rounded-lg border bg-muted/50 p-4 text-xs text-muted-foreground">
         <p className="font-medium text-foreground">Como funciona</p>
         <p className="mt-1">
-          Membros com receita própria (Titular, Cônjuge) são criados como centros de lucro.
-          Dependentes (Filhos, Pets, etc.) são centros de custo. Despesas compartilhadas
+          Membros com receita própria (Titular, Cônjuge) são criados como divisões de lucro.
+          Dependentes (Filhos, Pets, etc.) são divisões de custo. Despesas compartilhadas
           (supermercado, energia) podem ser lançadas em &quot;Família (Geral)&quot; sem atribuir a ninguém.
         </p>
       </div>
@@ -263,7 +263,7 @@ export default function FamilyPage() {
             <p className="mt-1 text-sm text-muted-foreground">
               {editing
                 ? "Atualize os dados do membro."
-                : "Um centro de custo/lucro será criado automaticamente."}
+                : "Uma divisão será criada automaticamente."}
             </p>
 
             {error && (

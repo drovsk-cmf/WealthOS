@@ -10,6 +10,7 @@ import {
   Wallet,
   PieChart,
   Building,
+  Upload,
   Settings,
   LogOut,
   Eye,
@@ -26,13 +27,14 @@ import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status
 import { usePrivacyStore } from "@/lib/stores/privacy";
 
 /**
- * Navigation 5+1 (UX-H1-01)
- * 5 primary items + Settings icon separated at bottom.
- * Routes not in NAV_MAIN are accessible via Settings hub.
+ * Navigation 6+1 (UX-H1-01 + P2)
+ * 6 primary items + Settings icon separated at bottom.
+ * Importar promoted to sidebar per adendo v1.5 §2.6.
  */
 const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Início", icon: Home },
   { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
+  { href: "/connections", label: "Importar", icon: Upload },
   { href: "/accounts", label: "Contas", icon: Wallet },
   { href: "/budgets", label: "Orçamento", icon: PieChart },
   { href: "/assets", label: "Patrimônio", icon: Building },
@@ -41,7 +43,7 @@ const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
 /** Routes that belong to Settings (highlight Settings icon when active) */
 const SETTINGS_ROUTES = [
   "/settings", "/categories", "/chart-of-accounts", "/cost-centers",
-  "/family", "/connections", "/bills", "/workflows", "/tax", "/indices",
+  "/family", "/bills", "/workflows", "/tax", "/indices",
 ];
 
 export default function AppLayout({

@@ -1,15 +1,16 @@
 "use client";
 
 /**
- * SolvencyPanel - DASH-09 (LCR), DASH-10 (Runway), DASH-11 (Burn Rate),
- *                 DASH-12 (Patrimônio por Tiers), DASH-06 (patrimônio total)
+ * SolvencyPanel - DASH-09 (Índice de liquidez), DASH-10 (Fôlego em meses),
+ *                 DASH-11 (Custo mensal médio), DASH-12 (Patrimônio por Níveis),
+ *                 DASH-06 (patrimônio total)
  *
- * Cockpit de Solvência: 4 KPIs + breakdown por tiers.
- * Layout: 2x2 grid de KPIs + barra empilhada de tiers.
+ * Fôlego Financeiro: 4 KPIs + breakdown por níveis de acesso ao dinheiro.
+ * Layout: 2x2 grid de KPIs + barra empilhada de níveis.
  *
- * Referência: adendo v1.4, seção 2.
- * LCR = (T1+T2)/(Burn Rate × 6)
- * Runway = (T1+T2)/Burn Rate em meses
+ * Referência: adendo v1.4 seção 2 + adendo v1.5 §2.3.
+ * Índice de liquidez = (N1+N2)/(Custo mensal médio × 6)
+ * Fôlego em meses = (N1+N2)/Custo mensal médio
  */
 
 import { formatCurrency } from "@/lib/utils";
@@ -87,10 +88,10 @@ function KpiSkeleton() {
 }
 
 const TIER_COLORS = [
-  { key: "tier1_total", label: "T1 Imediato", color: "#2F7A68", desc: "Conta corrente, poupança, carteira digital" },
-  { key: "tier2_total", label: "T2 Líquido", color: "#56688F", desc: "Investimentos com liquidez (CDB, fundos)" },
-  { key: "tier3_total", label: "T3 Ilíquido", color: "#A97824", desc: "Imóveis, veículos, bens" },
-  { key: "tier4_total", label: "T4 Restrito", color: "#6F6678", desc: "FGTS, previdência com carência" },
+  { key: "tier1_total", label: "N1 Imediato", color: "#2F7A68", desc: "Conta corrente, poupança, carteira digital" },
+  { key: "tier2_total", label: "N2 Líquido", color: "#56688F", desc: "Investimentos com liquidez (CDB, fundos)" },
+  { key: "tier3_total", label: "N3 Ilíquido", color: "#A97824", desc: "Imóveis, veículos, bens" },
+  { key: "tier4_total", label: "N4 Restrito", color: "#6F6678", desc: "FGTS, previdência com carência" },
 ] as const;
 
 export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
@@ -133,7 +134,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
       {/* Section title */}
       <div className="flex items-center gap-2">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Cockpit de Solvência
+          Fôlego Financeiro
         </h3>
         {data?.months_analyzed !== undefined && data.months_analyzed < 3 && (
           <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-[10px] font-medium text-burnished">
@@ -162,17 +163,17 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           <p className="mt-1 text-[11px] text-muted-foreground">
             {capped999(lcr)
               ? "Sem despesas recorrentes"
-              : "Liquidez / (Burn × 6)"}
+              : "Liquidez / (Custo × 6)"}
           </p>
           {lcrHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={lcrHistory} color="#2F7A68" /></div>
           )}
         </div>
 
-        {/* DASH-10: Runway */}
+        {/* DASH-10: Fôlego em meses */}
         <div className="rounded-lg border bg-card p-4">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Runway
+            Fôlego em meses
           </p>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-bold tabular-nums">
@@ -193,10 +194,10 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           )}
         </div>
 
-        {/* DASH-11: Burn Rate */}
+        {/* DASH-11: Custo mensal médio */}
         <div className="rounded-lg border bg-card p-4">
           <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Burn Rate
+            Custo mensal médio
           </p>
           <span className="mt-1 block text-2xl font-bold tabular-nums">
             <Mv>{formatCurrency(burnRate)}</Mv>
@@ -218,7 +219,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
             <Mv>{formatCurrency(totalPatrimony)}</Mv>
           </span>
           <p className="mt-1 text-[11px] text-muted-foreground">
-            T1 + T2 + T3 + T4
+            N1 + N2 + N3 + N4
           </p>
           {patrimonyHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={patrimonyHistory} color="#56688F" /></div>
@@ -229,7 +230,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
       {/* DASH-12: Tier breakdown bar */}
       {tierTotal > 0 && (
         <div className="rounded-lg border bg-card p-5 shadow-sm">
-          <h4 className="text-sm font-semibold">Patrimônio por Tiers</h4>
+          <h4 className="text-sm font-semibold">Patrimônio por Níveis</h4>
 
           {/* Stacked bar */}
           <div className="mt-3 flex h-5 w-full overflow-hidden rounded-full bg-muted">

@@ -8,6 +8,7 @@ import type { Json } from "@/types/database";
 export interface SetupStep {
   step_key: string;
   step_order: number;
+  week_number: number;
   title: string;
   description: string;
   status: "locked" | "available" | "in_progress" | "completed";

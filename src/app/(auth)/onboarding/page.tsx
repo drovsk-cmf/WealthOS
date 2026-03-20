@@ -375,7 +375,7 @@ export default function OnboardingPage() {
               {
                 num: "4",
                 title: "Dados iniciais",
-                desc: "Categorias, plano de contas e centro de custo padrão",
+                desc: "Categorias, plano de contas e divisão padrão",
               },
             ].map((item) => (
               <div
@@ -577,7 +577,7 @@ export default function OnboardingPage() {
             Preparando sua conta
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Criando categorias, plano de contas e centro de custo padrão.
+            Criando categorias, plano de contas e divisão padrão.
           </p>
         </div>
       )}
