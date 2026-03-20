@@ -964,6 +964,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, não iniciadas).
 
+
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
 
 Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Origem: `wealthos-adendo-v1_5.docx`. Priorização por impacto × esforço.
@@ -1036,32 +1037,28 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P13 | Insights narrativos mensais (Edge Function + Claude Haiku 4.5, tabela user_insights) | Médio | Médio | Adendo v1.5 §5.7 |
 | P17 | Assistente conversacional (Claude Sonnet, tool calling, NLP → query estruturada) | Alto | Alto | Adendo v1.5 §5.8 |
 
-### 12.2 Deploy web (sem Mac)
 
-| # | Item | Esforço | Status |
-|---|---|---|---|
-| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | Não iniciado (P1 blocker para lançamento) |
-| W2 | Supabase Pro (leaked password protection + limites produção) | 5 min | Requer assinatura Claudio |
+### 12.2 Limitações conhecidas (avaliar antes do deploy)
 
-### 12.3 Stories bloqueadas por Mac/iOS (3/108)
-
-| Story | Descrição | Requisito |
+| Item | Motivo | Mitigação |
 |---|---|---|
-| CFG-04 | Push notifications (APNs) | Xcode + Apple Developer Account |
-| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível |
-| FIN-18 | Câmera comprovante (Capacitor Camera) | Xcode |
+| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware | GoTrue tem rate limiting próprio. WAF em produção |
+| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR | Nonce/hash em produção (já implementado) |
+| Biometria é stub | Capacitor BiometricAuth requer build nativo | Funcional após I3 |
+| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query offlineFirst serve cache in-memory |
 
-### 12.4 iOS / App Store (requer Mac, sequência)
 
-| # | Item | Esforço | Requisito |
-|---|---|---|---|
-| I1 | Apple Developer Account (US$ 99/ano) | 5 min | Decisão Claudio |
-| I2 | Capacitor iOS build + teste (Xcode Cloud 25h grátis/mês) | 2h | I1 |
-| I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4-6h | I2 |
-| I4 | OCR real (Apple Vision nativo + Tesseract.js web + PDF.js) | 4-6h | I2 |
-| I5 | Submissão App Store | 2h | I1, I2, I3 |
+### 12.3 Itens de auditoria deferidos (avaliar antes do deploy)
 
-### 12.5 UX/Retenção pendente (da estratégia oniefy-estrategia-ux-retencao-v2.docx)
+Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
+
+| Item | Gatilho para implementar |
+|---|---|
+| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Usuário reportar travamento na importação |
+| SSR prefetch no Dashboard (Gemini #5) | Escala para 10+ usuários ou TTI > 2s medido |
+
+
+### 12.4 UX/Retenção pendente
 
 Dos 19 itens originais em 3 horizontes (H1/H2/H3), 17 foram concluídos. Restam:
 
@@ -1072,16 +1069,47 @@ Dos 19 itens originais em 3 horizontes (H1/H2/H3), 17 foram concluídos. Restam:
 
 Métricas-alvo: onboarding >70%, time-to-value <5min, D1 >35%, D7 >20%, D30 >12%, tx/semana >5.
 
-### 12.6 Itens de auditoria deferidos
 
-Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
+### 12.5 Ações do Claudio (paralelas, sem sessão Claude)
 
-| Item | Gatilho para implementar |
+| Item | Status |
 |---|---|
-| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Usuário reportar travamento na importação |
-| SSR prefetch no Dashboard (Gemini #5) | Escala para 10+ usuários ou TTI > 2s medido |
+| Supabase Pro (habilitar leaked password protection) | Pendente (decisão de custo) |
+| Validação fiscal periódica (IRPF, INSS, SM: verificar DOU) | Recorrente |
+| Apple Developer Account (US$ 99/ano) | Pendente (decisão Claudio) |
+| Teste de corredor com 3 pessoas (UX-H3-05) | Pendente |
+| Confirmação das 6 decisões pendentes do adendo v1.5 (providers IA, rate limit, cache) | Pendente |
 
-### 12.7 Evolução futura (sem prazo, por gatilho)
+
+### 12.6 Deploy web (após limitações corrigidas + ações Claudio)
+
+| # | Item | Esforço | Status |
+|---|---|---|---|
+| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | Não iniciado (P1 blocker para lançamento) |
+| W2 | Supabase Pro (leaked password protection + limites produção) | 5 min | Requer assinatura Claudio |
+
+
+### 12.7 Stories bloqueadas por Mac/iOS (3/108)
+
+| Story | Descrição | Requisito |
+|---|---|---|
+| CFG-04 | Push notifications (APNs) | Xcode + Apple Developer Account |
+| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível |
+| FIN-18 | Câmera comprovante (Capacitor Camera) | Xcode |
+
+
+### 12.8 iOS / App Store (última etapa, requer Mac)
+
+| # | Item | Esforço | Requisito |
+|---|---|---|---|
+| I1 | Apple Developer Account (US$ 99/ano) | 5 min | Decisão Claudio |
+| I2 | Capacitor iOS build + teste (Xcode Cloud 25h grátis/mês) | 2h | I1 |
+| I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4-6h | I2 |
+| I4 | OCR real (Apple Vision nativo + Tesseract.js web + PDF.js) | 4-6h | I2 |
+| I5 | Submissão App Store | 2h | I1, I2, I3 |
+
+
+### 12.9 Evolução futura (sem prazo, por gatilho)
 
 | Item | Origem | Gatilho |
 |---|---|---|
@@ -1098,26 +1126,8 @@ Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
 | Shadow Ledger + Cofre Digital | Adendo v1.4 | Produto maduro |
 | B2B / Open API / Marketplace de Solvência | Adendo v1.4 | Base de usuários estabelecida |
 
-### 12.8 Limitações conhecidas (informacional)
 
-| Item | Motivo | Mitigação |
-|---|---|---|
-| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware | GoTrue tem rate limiting próprio. WAF em produção |
-| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR | Nonce/hash em produção (já implementado) |
-| Biometria é stub | Capacitor BiometricAuth requer build nativo | Funcional após I3 |
-| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query offlineFirst serve cache in-memory |
-
-### 12.9 Ações do Claudio (paralelas, sem sessão Claude)
-
-| Item | Status |
-|---|---|
-| Supabase Pro (habilitar leaked password protection) | Pendente (decisão de custo) |
-| Validação fiscal periódica (IRPF, INSS, SM: verificar DOU) | Recorrente |
-| Apple Developer Account (US$ 99/ano) | Pendente (decisão Claudio) |
-| Teste de corredor com 3 pessoas (UX-H3-05) | Pendente |
-| Confirmação das 6 decisões pendentes do adendo v1.5 (providers IA, rate limit, cache) | Pendente |
-
-### 12.10 Remediação da auditoria Claude Code (80 achados, docs/audit/)
+### 12.10 Remediação da auditoria Claude Code (histórico, docs/audit/)
 
 Auditoria completa realizada em 16/03/2026 (PR #4). Relatório em `docs/audit/` (9 arquivos). Referências: OWASP ASVS L2, MASVS, Nielsen, WCAG 2.2 AA. Nota: 7/10.
 
@@ -1144,6 +1154,9 @@ Remediação executada em 16/03/2026 via 12 lotes sequenciais (11 commits + 1 mi
 **Achados excluídos (17):** D1.01 (Redis), D1.05 (AAL2 server), D1.06 (password rotation), D4.02-04 (biometric/native), D5.09 (TODO Fase 10), D6.06-08/12-16 (micro-otimizações), D6.15 (trigger O(n²)), D7.03 (edição transações), D8.01 (focus trap)
 
 **Detalhes completos:** ver `docs/audit/01-auth-session.md` a `08-accessibility.md`.
+
+---
+
 
 ---
 
@@ -2663,5 +2676,6 @@ As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são 
 ### 24.10 Nota: sem commits nesta sessão
 
 Sessão de produto e documentação. Nenhuma alteração no código. O adendo v1.5 é o entregável principal. A implementação das decisões aqui registradas será executada em sessões futuras seguindo o plano de implantação (seção 8 do adendo).
+
 
 
