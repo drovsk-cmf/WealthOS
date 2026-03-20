@@ -33,6 +33,7 @@ import {
   AttentionQueue,
   SetupJourneyCard,
   ImportCTA,
+  MfaReminderBanner,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -85,6 +86,9 @@ export default function DashboardPage() {
           </button>
         </div>
       )}
+
+      {/* ═══ P4: MFA Reminder (24h após criação, sem MFA) ═══ */}
+      <MfaReminderBanner />
 
       {/* ═══ SEÇÃO 0: Setup Journey (oculto após conclusão) ═══ */}
       <SetupJourneyCard />

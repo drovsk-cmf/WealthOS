@@ -10,3 +10,4 @@ export { NarrativeCard } from "./narrative-card";
 export { AttentionQueue, useAttentionItems } from "./attention-queue";
 export { SetupJourneyCard } from "./setup-journey-card";
 export { ImportCTA } from "./import-cta";
+export { MfaReminderBanner } from "./mfa-reminder-banner";
