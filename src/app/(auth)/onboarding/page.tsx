@@ -35,7 +35,7 @@ export default function OnboardingPage() {
 
   const [step, setStep] = useState<Step>("welcome");
   const [choice, setChoice] = useState<StartChoice>("import");
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Track start

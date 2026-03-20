@@ -230,7 +230,7 @@ export function BulkImportTab() {
           <h3 className="text-sm font-semibold">Templates Excel</h3>
         </div>
         <p className="mb-3 text-xs text-muted-foreground">
-          Prefere preencher offline? Baixe o template, preencha no Excel e suba na aba "Importar extrato".
+          Prefere preencher offline? Baixe o template, preencha no Excel e suba na aba Importar extrato.
         </p>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(DOMAIN_TEMPLATE_INFO) as DomainTemplate[]).map((tmpl) => (
