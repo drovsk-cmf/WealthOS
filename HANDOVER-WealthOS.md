@@ -962,20 +962,20 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, não iniciadas).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1 concluída: P1+P2+P15).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
 
 Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Origem: `wealthos-adendo-v1_5.docx`. Priorização por impacto × esforço.
 
-**Sprint 1: Quick wins UX (~1 sessão)**
+**Sprint 1: Quick wins UX (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, LCR → Índice de liquidez, Runway → Fôlego em meses, Burn Rate → Custo mensal médio, Tiers → Níveis de acesso ao dinheiro, Fiscal → Imposto de Renda) | Alto | Baixo | Adendo v1.5 §2.3 |
-| P2 | Promover importação para sidebar principal + CTA grande no dashboard + botão em Transações | Alto | Baixo | Adendo v1.5 §2.6 |
-| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário, cada semana com entrega de valor) | Alto | Baixo | Adendo v1.5 §4.4 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, LCR → Índice de liquidez, Runway → Fôlego em meses, Burn Rate → Custo mensal médio, Tiers → Níveis de acesso ao dinheiro, Fiscal → Imposto de Renda) | Alto | Baixo | Adendo v1.5 §2.3 | ✅ |
+| P2 | Promover importação para sidebar principal + CTA grande no dashboard + botão em Transações | Alto | Baixo | Adendo v1.5 §2.6 | ✅ |
+| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário, cada semana com entrega de valor) | Alto | Baixo | Adendo v1.5 §4.4 | ✅ |
 
 **Sprint 2: Onboarding (~1 sessão)**
 
@@ -2661,11 +2661,11 @@ Muitas das recomendações do avaliador #1 já foram parcialmente endereçadas p
 | Feedback do avaliador | Já implementado | Gap restante |
 |---|---|---|
 | Onboarding longo | UX-H1-02 (3 rotas device-aware) | MFA diferido, pergunta única |
-| Configurações como depósito | UX-H1-01 (navegação 5+1) | Reorganização mais profunda das subpáginas |
+| Configurações como depósito | UX-H1-01 (navegação 6+1, P2) | Reorganização mais profunda das subpáginas |
 | Dashboard denso | UX-H1-06 (fila de atenção, motor narrativo) | Progressive disclosure por maturidade (4 níveis) |
 | Formulário pesado | UX-H1-04 (modo rápido 3 decisões) | Campo asset_id no modo expandido |
-| Importação enterrada | UX-H1-03 (CTA em empty states) | Sidebar principal + CTA no dashboard |
-| Vocabulário técnico | Microcopy MAN-LNG-CMF-001 | Auditoria completa de renomeações (Cockpit → Fôlego, etc.) |
+| Importação enterrada | UX-H1-03 (CTA em empty states) | ✅ P2 concluído: Sidebar principal + CTA no dashboard |
+| Vocabulário técnico | Microcopy MAN-LNG-CMF-001 | ✅ P1 concluído: auditoria completa de renomeações |
 
 As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são inteiramente novas e não têm precedente no código atual.
 
@@ -2678,4 +2678,55 @@ As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são 
 Sessão de produto e documentação. Nenhuma alteração no código. O adendo v1.5 é o entregável principal. A implementação das decisões aqui registradas será executada em sessões futuras seguindo o plano de implantação (seção 8 do adendo).
 
 
+
+
+## Sessão 25 - 20 março 2026 (Claude Opus, Projeto Claude)
+
+### 25.1 Escopo
+
+Sprint 1 do adendo v1.5: P1 (auditoria de strings), P2 (importação na sidebar), P15 (cronograma guiado de 5 semanas).
+
+### 25.2 O que foi feito
+
+**P1 - Auditoria de strings e renomeações (18 arquivos modificados):**
+- Cockpit de Solvência → Fôlego Financeiro (solvency-panel, dashboard)
+- LCR → Índice de liquidez (solvency-panel, account-form)
+- Runway → Fôlego em meses (solvency-panel)
+- Burn Rate → Custo mensal médio (solvency-panel)
+- Tiers → Níveis: T1→N1, T2→N2, T3→N3, T4→N4 (solvency-panel, use-accounts, account-form)
+- Centros de Custo → Divisões (settings, cost-centers, family, privacy, onboarding, use-cost-centers, onboarding-seeds, data export)
+- Fiscal → Imposto de Renda (settings, tax page headings)
+- Fórmula hint: "Liquidez / (Burn × 6)" → "Liquidez / (Custo × 6)"
+
+**P2 - Promover importação (3 pontos de contato):**
+- Sidebar: Importar (Upload icon) adicionado como 3o item do NAV_MAIN (layout 6+1), /connections removido de SETTINGS_ROUTES
+- Dashboard: ImportCTA component (link dashed, oculto após 20 transações via useProgressiveDisclosure)
+- Transações: botão "Importar" com Upload icon ao lado de "+ Nova transação"
+
+**P15 - Cronograma guiado de 5 semanas:**
+- Migration 059_setup_journey_5_week_plan.sql: tabela setup_journey com week_number, RLS, RPCs get_setup_journey e advance_setup_journey
+- SetupStep interface atualizada com week_number
+- SetupJourneyCard redesenhado: tabs horizontais por semana, cada uma com título + entrega de valor, auto-expand da semana ativa
+- 7 passos em 5 semanas: (1) Primeiros passos, (2) Despesas fixas, (3) Importação, (4) Organização, (5) Controle
+
+### 25.3 CI
+
+Commit: `7745c69` | 4/4 jobs green (Lint, Security, Tests, Build)
+
+### 25.4 Migrations aplicadas
+
+- `setup_journey_5_week_plan` (via MCP apply_migration)
+
+### 25.5 Arquivos criados
+
+- `src/components/dashboard/import-cta.tsx` (P2)
+- `supabase/migrations/059_setup_journey_5_week_plan.sql` (P15)
+
+### 25.6 Nota sobre Supabase
+
+Projeto estava INACTIVE (pausado por inatividade). Restaurado via Management API durante a sessão.
+
+### 25.7 Próximo: Sprint 2
+
+P4 - Onboarding simplificado (conta → email → pergunta única → importação → valor em <2min).
 
