@@ -344,29 +344,35 @@ Segunda auditoria, mais profunda. Leu o código real. 15 achados, dos quais 8 s�
 
 ---
 
-## 7. Items de Polish (Fase 10 backlog)
+## 7. Histórico de Items de Polish (Fase 10)
 
-| Item | Detalhe |
+Seção mantida como registro histórico. Todos os itens pendentes foram migrados para a **Seção 12 (Backlog Consolidado Único)**. Consulte a Seção 12 para o estado atual de qualquer pendência.
+
+<details>
+<summary>Histórico completo (clique para expandir)</summary>
+
+| Item | Status |
 |---|---|
-| ~~PWA icon 404~~ | FEITO: icon-192, icon-512, favicon.ico, apple-touch-icon |
-| ~~Euro sem símbolo~~ | FEITO: "Euro" → "Euro (€)" no onboarding |
-| ~~Rebranding~~ | FEITO: WealthOS → Oniefy (UI, config, logs, TOTP). Crypto strings preservadas |
-| ~~Next.js upgrade~~ | FEITO: 14.2.14 → 15.5.12, React 18 → 19. Zero breaking changes no nosso código |
-| OCR real | WKF-03 é stub; implementar Apple Vision / Tesseract.js (requer Mac). Formatos: JPG, PNG **e PDF** (renderizar páginas via PDF.js + Canvas antes do OCR web; Vision Framework lê PDF direto no iOS). Corrige inconsistência entre Adendo v1.2 §2.1 (PDF = só anexo) e WKF-03 (PDF = OCR). |
-| Capacitor build | Build iOS, teste em dispositivo, submissão App Store (requer Mac) |
-| Biometria real | Stub → Capacitor BiometricAuth plugin (requer Mac) |
-| ~~Testes~~ | FEITO: Jest + RTL configurados. 12 suítes, 150 testes (schemas Zod 27/27, parsers, hooks leitura/mutação, auth validation completa, rate limiter, utils + sanitizeRedirectTo, dialog helpers, onboarding seeds, reconciliation). Testes SQL: 4 cenários executados no Supabase. |
-| ~~Microcopy~~ | FEITO: 14 violações MAN-LNG-CMF-001 corrigidas em 28 arquivos (reticências, metadiscurso, superlativos, empty states) |
-| ~~Logo + icons~~ | FEITO: Penrose Ribbon integrado. 6 SVGs transparentes (lockup-h/v, logomark, plum/bone) + OG PNG. Favicon, apple-touch-icon, PWA icons substituídos. next/image com unoptimized. Dark mode via dark:hidden/dark:block. Login: lockup-v. Sidebar/mobile: lockup-h. |
-| ~~Edge Functions~~ | FEITO: pg_cron habilitado. 3 jobs: workflow tasks (diário), depreciação (mensal), balance check (semanal) |
-| ~~Search path fix~~ | FEITO: 11 functions com search_path mutable corrigidas (migration 017) |
-| ~~Redirect raiz~~ | CORRIGIDO anteriormente |
-| ~~RLS initplan~~ | FEITO: 77 policies reescritas com `(select auth.uid())`. Migration 018 |
-| ~~Unindexed FKs~~ | FEITO: 14 indexes criados para FK columns. Migration 019 |
-| Leaked password protection | Requer Supabase Pro. Claudio acionará quando assinar a plataforma |
-| ~~Ícones Lucide~~ | FEITO: emojis decorativos (📊🏦📈✓📄💰🏷️📋) substituídos por Lucide React SVG icons em 7 arquivos. Emojis de avatar familiar mantidos (dados persistidos em BD) |
-| ~~Conciliação bancária (3 camadas)~~ | FEITO: **Camada 1:** ENUM `payment_status` (pending/overdue/paid/cancelled), `due_date`, trigger bidirecional `is_paid ↔ payment_status`, pg_cron diário marca vencidas. **Camada 2:** Auto-matching na importação: `import_transactions_batch` reescrita com score (±10% valor, ±7 dias, threshold 25), registra ajuste se valor difere. **Camada 3:** Tela de reconciliação manual na aba "Conciliação" da página de conexões: lado a lado pendentes × importadas, filtro por conta, validação de mesma conta, exibição de ajuste. RPCs: `find_reconciliation_candidates`, `match_transactions`. Migration 028a+028b. |
-| ~~Orçamento delegado por membro~~ | FEITO: Migration 027 (family_member_id em budgets, FK, unique constraint, RPC reescrita). UI com seletor de membro (pill buttons). Hooks e schemas Zod atualizados. Sem membros cadastrados: funciona como antes. |
+| PWA icon 404 | FEITO |
+| Euro sem símbolo | FEITO |
+| Rebranding WealthOS → Oniefy | FEITO |
+| Next.js upgrade 14→15 | FEITO |
+| Testes (22 suítes, 341 assertions) | FEITO |
+| Microcopy MAN-LNG-CMF-001 | FEITO |
+| Logo Penrose Ribbon | FEITO |
+| Edge Functions / pg_cron | FEITO |
+| Search path fix | FEITO |
+| RLS initplan | FEITO |
+| FK indexes | FEITO |
+| Ícones Lucide | FEITO |
+| Conciliação bancária 3 camadas | FEITO |
+| Orçamento delegado por membro | FEITO |
+| OCR real | Migrado → Seção 12 |
+| Capacitor build | Migrado → Seção 12 |
+| Biometria real | Migrado → Seção 12 |
+| Leaked password protection | Migrado → Seção 12 |
+
+</details>
 
 ---
 
@@ -952,157 +958,164 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 ---
 
 
-## 12. Backlog Consolidado
+## 12. Backlog Consolidado Único
 
-Lista canônica de tudo que resta. Atualizada na última sessão; qualquer nova sessão deve verificar se itens foram concluídos e removê-los.
+**Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-### 12.1 Stories restantes (3/90)
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, não iniciadas).
 
-Todas bloqueadas por hardware Apple (Xcode necessário).
+### 12.1 Sequência de execução recomendada (adendo v1.5)
+
+Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Origem: `wealthos-adendo-v1_5.docx`. Priorização por impacto × esforço.
+
+**Sprint 1: Quick wins UX (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, LCR → Índice de liquidez, Runway → Fôlego em meses, Burn Rate → Custo mensal médio, Tiers → Níveis de acesso ao dinheiro, Fiscal → Imposto de Renda) | Alto | Baixo | Adendo v1.5 §2.3 |
+| P2 | Promover importação para sidebar principal + CTA grande no dashboard + botão em Transações | Alto | Baixo | Adendo v1.5 §2.6 |
+| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário, cada semana com entrega de valor) | Alto | Baixo | Adendo v1.5 §4.4 |
+
+**Sprint 2: Onboarding (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P4 | Onboarding simplificado: conta → email → pergunta única → importação como default → valor em <2min. MFA diferido para primeiro acesso a dados E2E ou após 24h | Alto | Médio | Adendo v1.5 §2.1 |
+
+**Sprint 3: Schema patrimonial (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P16 | Expansão ENUM asset_category de 5 para 14 valores (vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles, etc.) | Médio | Baixo | Adendo v1.5 §3.4 |
+| P7a | Migration: parent_asset_id (UUID FK NULL) em assets + asset_id (UUID FK NULL) em transactions e journal_entries | Alto | Baixo | Adendo v1.5 §3.1-3.2 |
+
+**Sprint 4: Navegação + Formulário (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P3 | Reorganizar Configurações: mover Fiscal → sidebar ("Imposto de Renda"), Tarefas → dashboard, Plano de Contas → camada avançada, Centros → renomear "Divisões/Projetos" | Alto | Médio | Adendo v1.5 §2.2 |
+| P6 | Formulário de transação radical: modo rápido = valor + descrição + conta (sistema infere tipo, data, status, categoria). Campo asset_id no modo expandido | Médio | Baixo | Adendo v1.5 §2.5 |
+
+**Sprint 5: Categorização determinística (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P10 | Pipeline de categorização: tabela categorization_rules (regex global) + merchant_patterns (aprendizado do usuário por correção). Sem IA nesta sprint | Alto | Médio | Adendo v1.5 §5.4 etapas 1-2 |
+
+**Sprint 6-7: Importação em massa (~2 sessões)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P8 | Tabela editável in-app (Adicionar linha, validação inline, Salvar tudo) para veículos, imóveis, bens, transações, investimentos | Alto | Médio-alto | Adendo v1.5 §4.2.1 |
+| P9 | Templates Excel por domínio (5 templates) + upload com preview e validação por linha | Médio | Médio | Adendo v1.5 §4.2.2-4.3 |
+
+**Sprint 8: Dashboard progressivo (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P5 | Dashboard com 4 níveis de maturidade (Novo 0-10tx, Ativo 11-50tx, Engajado 51+tx 2+meses, Avançado opt-in). Integrar ao get_dashboard_all com parâmetro de nível | Alto | Médio-alto | Adendo v1.5 §2.4 |
+
+**Sprint 9: Gateway IA (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P11 | Edge Function ai-gateway + sanitizador PII + tabelas ai_cache e ai_usage_log + categorização com fallback Gemini Flash-Lite. Primeira integração de IA no produto | Alto | Médio | Adendo v1.5 §5.3-5.4-5.9 |
+
+**Sprint 10: Hierarquia de ativos na UI (~1 sessão)**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P7b | UI de hierarquia de ativos: ativo pai/filho, aba "Custos" no detalhe do bem, valor consolidado pai+filhos, destaque de filhos | Alto | Médio | Adendo v1.5 §3.1-3.3 |
+| P14 | Cadastro assistido de bens: tabela asset_templates + fallback Gemini Flash para valor/categoria/depreciação | Médio | Médio | Adendo v1.5 §5.6 |
+
+**Pós-MVP (sessões futuras):**
+
+| # | Ação | Impacto | Esforço | Referência |
+|---|---|---|---|---|
+| P12 | Extração de documentos com IA (OCR + parser determinístico + Gemini Flash fallback) | Médio | Médio | Adendo v1.5 §5.5 |
+| P13 | Insights narrativos mensais (Edge Function + Claude Haiku 4.5, tabela user_insights) | Médio | Médio | Adendo v1.5 §5.7 |
+| P17 | Assistente conversacional (Claude Sonnet, tool calling, NLP → query estruturada) | Alto | Alto | Adendo v1.5 §5.8 |
+
+### 12.2 Deploy web (sem Mac)
+
+| # | Item | Esforço | Status |
+|---|---|---|---|
+| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | Não iniciado (P1 blocker para lançamento) |
+| W2 | Supabase Pro (leaked password protection + limites produção) | 5 min | Requer assinatura Claudio |
+
+### 12.3 Stories bloqueadas por Mac/iOS (3/108)
 
 | Story | Descrição | Requisito |
 |---|---|---|
 | CFG-04 | Push notifications (APNs) | Xcode + Apple Developer Account |
-| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível com Tesseract.js puro |
+| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível |
 | FIN-18 | Câmera comprovante (Capacitor Camera) | Xcode |
 
-### 12.2 Pré-produção web (sem Mac)
-
-Itens necessários para colocar o app em produção na web (sem iOS).
-
-| # | Item | Esforço | Status |
-|---|---|---|---|
-| P1 | Deploy Vercel + domínio oniefy.com | 30 min | Não iniciado |
-| P2 | ~~CSP nonce/hash (remover `unsafe-eval` em build de produção)~~ | ~~2h~~ | FEITO (commit 56f6244) |
-| P3 | ~~React Error Boundaries (crash gracioso em todas as rotas)~~ | ~~1h~~ | FEITO (global-error + app/error + auth/error) |
-| P4 | ~~Customizar emails Supabase Auth (confirmação, reset senha)~~ | ~~30 min~~ | FEITO (3 templates HTML + config.toml) |
-| P5 | ~~Página `/privacy` (Privacy Policy, exigida pela Apple e LGPD)~~ | ~~1h~~ | FEITO (11 seções, LGPD + Apple) |
-| P6 | ~~Seed de dados realistas para dev e demo~~ | ~~1h~~ | FEITO (003_demo_data.sql: 5 contas, ~60 tx, 8 budgets, 4 ativos) |
-| P7 | ~~Dark mode: verificação completa em todas as 18 páginas~~ | ~~1h~~ | FEITO (5 correções: tax bg-white→bg-card, bank-connections gray→muted; 2 intencionais preservados) |
-| P8 | Supabase Pro (leaked password protection + limites) | 5 min | Requer assinatura Claudio |
-
-### 12.3 Qualidade e testes (sem Mac)
-
-| # | Item | Esforço | Status |
-|---|---|---|---|
-| Q1 | ~~Expandir testes: CFG pages (profile, export, security)~~ | ~~30 min~~ | FEITO (19 testes: settings index, data export, toCsv) |
-| Q2 | ~~Lighthouse audit + correções (performance, SEO, a11y score)~~ | ~~1-2h~~ | FEITO (commit 150aa14) |
-| Q3 | ~~Proxy server-side para login (corrige rate limiter real)~~ | ~~2h~~ | FEITO (commit 49b7b91) |
-
-### 12.4 iOS / App Store (requer Mac)
-
-Ordem de execução recomendada. Alternativa sem Mac: Xcode Cloud (25h grátis/mês) para build + TestFlight + submit via App Store Connect (acessível do iPad Pro). Requer Apple Developer Account (US$ 99/ano).
+### 12.4 iOS / App Store (requer Mac, sequência)
 
 | # | Item | Esforço | Requisito |
 |---|---|---|---|
 | I1 | Apple Developer Account (US$ 99/ano) | 5 min | Decisão Claudio |
-| I2 | Capacitor iOS build + teste (A1502 Xcode 14.2 ou Xcode Cloud) | 2h | I1 |
+| I2 | Capacitor iOS build + teste (Xcode Cloud 25h grátis/mês) | 2h | I1 |
 | I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4-6h | I2 |
-| I4 | OCR real (WKF-03: Apple Vision nativo + Tesseract.js web + PDF) | 4-6h | I2 |
-| I5 | Submissão App Store (Mac Apple Silicon ou Xcode Cloud) | 2h | I1, I2, I3, P5 |
+| I4 | OCR real (Apple Vision nativo + Tesseract.js web + PDF.js) | 4-6h | I2 |
+| I5 | Submissão App Store | 2h | I1, I2, I3 |
 
-### 12.5 Itens de auditoria deferidos
+### 12.5 UX/Retenção pendente (da estratégia oniefy-estrategia-ux-retencao-v2.docx)
+
+Dos 19 itens originais em 3 horizontes (H1/H2/H3), 17 foram concluídos. Restam:
+
+| # | Item | Esforço | Dependência |
+|---|---|---|---|
+| UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | Médio | CFG-04 (requer Mac) |
+| UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Baixo | Ação Claudio, sem código |
+
+Métricas-alvo: onboarding >70%, time-to-value <5min, D1 >35%, D7 >20%, D30 >12%, tx/semana >5.
+
+### 12.6 Itens de auditoria deferidos
 
 Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
 
-| Item | Motivo do deferimento | Gatilho para implementar |
-|---|---|---|
-| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Extrato pessoal < 5k linhas. Workers exigem bundling separado + config Next.js | Usuário reportar travamento na importação |
-| SSR prefetch no Dashboard (Gemini #5) | 6 queries paralelas, skeletons ~300ms. Refactor pesado, ganho marginal para 1-4 usuários | Escala para 10+ usuários ou TTI > 2s medido |
+| Item | Gatilho para implementar |
+|---|---|
+| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Usuário reportar travamento na importação |
+| SSR prefetch no Dashboard (Gemini #5) | Escala para 10+ usuários ou TTI > 2s medido |
 
-### 12.6 Backlog de evolução futura
-
-Não são bugs nem pré-requisitos. São evoluções que agregam valor a longo prazo.
+### 12.7 Evolução futura (sem prazo, por gatilho)
 
 | Item | Origem | Gatilho |
 |---|---|---|
 | RLS multi-user (workspaces/grupos para login independente de membros) | Gemini audit #1b | Cônjuge ou membro solicitar login próprio |
-| Orçamento delegado com aprovação | Adendo v1.2 | Demanda de família |
-| Rateio automático de overhead por centro | Estudo técnico v2.0 | Volume > 50 transações/mês com centros |
+| Rateio automático de overhead por centro | Estudo técnico v2.0 | Volume > 50 tx/mês com centros |
 | pg_cron para limpeza de soft-deleted (90 dias) | Adendo v1.2 | Volume de dados justificar |
-| Open Finance (Pluggy, Belvo) | Pesquisa paralela | Agregador viável + certificação |
+| Open Finance (Pluggy, Belvo) | Adendo v1.3 | Agregador viável + certificação + budget |
+| Motor CLT (bruto-líquido automático) | Adendo v1.4 | Demanda de usuários CLT |
+| Motor PJ/Simples Nacional | Adendo v1.4 | Demanda de usuários PJ |
+| Motor Investimentos (DARF, isenções) | Adendo v1.4 | Módulo investimentos implementado |
+| Arquitetura Local-First (SQLite + WASM + CRDTs) | Adendo v1.4 | Escala ou requisito de offline total |
+| Zero-Knowledge expandido | Adendo v1.4 | Demanda de privacidade extrema |
+| Capital Humano (DCF da carreira) | Adendo v1.4 | Produto maduro |
+| Shadow Ledger + Cofre Digital | Adendo v1.4 | Produto maduro |
+| B2B / Open API / Marketplace de Solvência | Adendo v1.4 | Base de usuários estabelecida |
 
-### 12.7 Limitações conhecidas
-
-Não corrigíveis sem mudança de arquitetura. Documentadas para consciência.
+### 12.8 Limitações conhecidas (informacional)
 
 | Item | Motivo | Mitigação |
 |---|---|---|
-| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware Next | GoTrue tem rate limiting próprio. WAF em produção. Ou: proxy server-side (Q3) |
-| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR em dev | Nonce/hash em produção (P2) |
+| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware | GoTrue tem rate limiting próprio. WAF em produção |
+| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR | Nonce/hash em produção (já implementado) |
 | Biometria é stub | Capacitor BiometricAuth requer build nativo | Funcional após I3 |
-| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query `offlineFirst` serve cache in-memory durante a sessão |
+| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query offlineFirst serve cache in-memory |
 
-### 12.8 Ações do Claudio (paralelas, não dependem de sessão Claude)
+### 12.9 Ações do Claudio (paralelas, sem sessão Claude)
 
-| Item | Ação | Status |
-|---|---|---|
-| ~~Logo definitivo~~ | Penrose Ribbon integrado (commit dbb5bb6) | FEITO |
-| Supabase Pro | Habilitar: Auth > Settings > HaveIBeenPwned | Pendente (decisão de custo) |
-| Validação fiscal periódica | IRPF, INSS, salário mínimo: verificar DOU | Recorrente |
-| Apple Developer Account | US$ 99/ano, necessário para I1-I5 | Pendente (decisão Claudio) |
-
-### 12.9 UX, Ativação e Retenção (oniefy-estrategia-ux-retencao-v2.0)
-
-Backlog gerado pela estratégia consolidada de UX/Retenção. Documento de referência: `oniefy-estrategia-ux-retencao-v2.docx`. Origem: consolidação de 4 auditorias externas (Gemini x2, ChatGPT x2) + 2 rodadas de revisão crítica cruzada + análise do código real + benchmarks 2025-2026.
-
-**Decisões de produto tomadas:**
-- **Navegação:** de 15 itens para 5+1 (Início, Transações, Contas, Orçamento, Patrimônio + Configurações)
-- **Dois níveis de valor:** Nível 1 operacional (clareza do mês, Semana 1) + Nível 2 estrutural (PL consolidado + fôlego, Mês 1-2)
-- **Onboarding:** rota recomendada por dispositivo (mobile=manual, desktop=importação) + 2 alternativas em texto secundário
-- **Lançamento rápido:** meta reformulada de "3 toques" para "3 decisões obrigatórias em <10 segundos"
-- **Motor narrativo:** escopo reduzido no H1 (apenas P0, P4, P5); P1-P3 entram no H2 após instrumentação
-- **Orçamento:** visível no menu desde Dia 0 com estado vazio educativo (não ocultar módulo)
-- **Fiscal:** revelação por trigger de dados (>=10 tx com tax_treatment tributável), não por calendário
-- **Configurações:** 5 subcategorias internas (Pessoal, Estrutura e Cadastros, Dados e Importação, Avançado, Segurança)
-- **Régua de decisão UX:** (1) Reduz tempo até valor? (2) Cria motivo para voltar? (3) Superfície simples, núcleo robusto? Se "não" para 2/3, prioridade é secundária
-
-**H1: Antes do lançamento (ativação + instrumentação)**
-
-| # | Item | Impacta | Esforço | Status |
-|---|---|---|---|---|
-| UX-H1-01 | ~~Reestruturar layout.tsx: 5+1 itens de navegação~~ | layout.tsx, settings/page.tsx | ~~Médio~~ | FEITO (commit 6bd189e) |
-| UX-H1-02 | ~~Onboarding Steps 8-10: rota recomendada (device-aware) + alternativas~~ | AUTH-05, onboarding/page.tsx | ~~Alto~~ | FEITO (commit 7b3ffdd) |
-| UX-H1-03 | ~~Estados vazios motivacionais (Transações, Contas, Orçamento, Patrimônio)~~ | 4 pages | ~~Médio~~ | FEITO |
-| UX-H1-04 | ~~Formulário rápido: modo default com 3 decisões, <10s. "Mais opções" para expandir~~ | DASH-08, TransactionForm | ~~Médio~~ | FEITO |
-| UX-H1-05 | ~~Resumo pós-importação (total, top categorias, N pendentes, CTA revisar)~~ | FIN-16, import-step-result.tsx | ~~Baixo-Médio~~ | FEITO |
-| UX-H1-06 | ~~Dashboard Início v1: fila de atenção + motor narrativo reduzido (P0, P4, P5)~~ | DASH-01, dashboard/page.tsx | ~~Alto~~ | FEITO (commit 7b3ffdd) |
-| UX-H1-07 | ~~Tabela analytics_events + eventos mínimos de onboarding~~ | Schema (migration 031), hook, dashboard | ~~Baixo~~ | FEITO |
-| UX-H1-08 | ~~Mover Contas a Pagar para filtro "pendentes" em Transações~~ | transactions/page.tsx, use-transactions.ts | ~~Baixo~~ | FEITO |
-
-**H2: Primeiras 2 semanas pós-lançamento (retenção D7)**
-
-| # | Item | Impacta | Esforço | Status |
-|---|---|---|---|---|
-| UX-H2-01 | ~~Auto-categorização no FAB e importação (transaction_classification_rules)~~ | TransactionForm, import-wizard | ~~Médio~~ | FEITO (commit c051aa8) |
-| UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | CFG-04 (infra existe), Edge Function nova | Médio | Não iniciado |
-| UX-H2-03 | ~~Motor narrativo P1-P3 (orçamento pressionado, inatividade, fim de mês)~~ | dashboard/page.tsx | ~~Médio~~ | FEITO (commit c7c2275) |
-| UX-H2-04 | ~~Camada de confiança: badges "sugerida/confirmada", "atualizado em", barra de completude~~ | Múltiplas páginas | ~~Médio~~ | FEITO (commit 64f2117) |
-| UX-H2-05 | ~~Desfazer importação: estorno em lote (72h, append-only)~~ | FIN-16, RPC nova | ~~Médio~~ | FEITO (commit 64f2117) |
-| UX-H2-06 | ~~Indicador confirmado/estimado no saldo consolidado do Dashboard~~ | SummaryCards, hook | ~~Baixo~~ | FEITO (commit c7c2275) |
-
-**H3: Mês 1-3 pós-lançamento (retenção D30)**
-
-| # | Item | Impacta | Esforço | Status |
-|---|---|---|---|---|
-| UX-H3-01 | ~~Revelação progressiva: flags de visibilidade por volume de dados~~ | Múltiplos módulos | ~~Médio~~ | FEITO (commit f6cefec) |
-| UX-H3-02 | ~~Trigger fiscal por dado (>=10 tx tributáveis → "Ver impacto fiscal?")~~ | Motor narrativo + tax/page.tsx | ~~Baixo~~ | FEITO (commit f6cefec) |
-| UX-H3-03 | ~~E-mail resumo semanal (segunda 8h, gastos + top 3 + pendências)~~ | Edge Function nova + template | ~~Médio~~ | FEITO (commit 1d31391) |
-| UX-H3-04 | ~~Dashboard interno de métricas (/settings/analytics)~~ | Página nova | ~~Médio~~ | FEITO (commit f6cefec) |
-| UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Ação Claudio, sem código | Baixo | Não iniciado |
-
-**Totais: 19 itens (8 H1 + 6 H2 + 5 H3). Delta estimado: ~12-15 stories novas ou ampliações substanciais de stories existentes.**
-
-**Métricas-alvo definidas no documento:**
-
-| Métrica | Meta |
+| Item | Status |
 |---|---|
-| Onboarding completion | >70% |
-| Time to first value | <5 min |
-| D1 retention | >35% |
-| D7 retention | >20% |
-| D30 retention | >12% |
-| Transações/semana (sem 2+) | >5 |
+| Supabase Pro (habilitar leaked password protection) | Pendente (decisão de custo) |
+| Validação fiscal periódica (IRPF, INSS, SM: verificar DOU) | Recorrente |
+| Apple Developer Account (US$ 99/ano) | Pendente (decisão Claudio) |
+| Teste de corredor com 3 pessoas (UX-H3-05) | Pendente |
+| Confirmação das 6 decisões pendentes do adendo v1.5 (providers IA, rate limit, cache) | Pendente |
 
 ### 12.10 Remediação da auditoria Claude Code (80 achados, docs/audit/)
 
@@ -2643,55 +2656,12 @@ Muitas das recomendações do avaliador #1 já foram parcialmente endereçadas p
 
 As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são inteiramente novas e não têm precedente no código atual.
 
-### 24.9 Plano de implantação (17 prioridades por fase)
+### 24.9 Plano de implantação
 
-As fases 1-9 já estão concluídas no código. As prioridades abaixo são revisitas e acréscimos dentro das fases existentes. A sequência de execução segue impacto × esforço.
-
-**Quick wins (baixo esforço, alto impacto):**
-
-| # | Ação | Impacto | Esforço | Fase alvo |
-|---|---|---|---|---|
-| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, etc.) | Alto | Baixo | Revisita Fase 1 |
-| P2 | Promover importação para sidebar principal + CTA no dashboard | Alto | Baixo | Revisita Fase 1 |
-| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário) | Alto | Baixo | Revisita Fase 1 |
-| P6 | Formulário de transação radical (modo rápido = valor + descrição + conta, resto inferido) | Médio | Baixo | Revisita Fase 2 |
-| P16 | Expansão ENUM asset_category (5 → 14 valores) | Médio | Baixo | Migration |
-
-**Médio esforço:**
-
-| # | Ação | Impacto | Esforço | Fase alvo |
-|---|---|---|---|---|
-| P4 | Onboarding simplificado com MFA diferido (campos E2E bloqueados até ativação) | Alto | Médio | Revisita Fase 1 |
-| P3 | Reorganizar Configurações (fiscal, tarefas, importação saem de lá) | Alto | Médio | Revisita Fase 2 |
-| P7 | Hierarquia de ativos (parent_asset_id) + asset_id em transactions/journal_entries | Alto | Médio | Migration + Fase 4 UI |
-| P10 | Pipeline de categorização determinística (tabelas categorization_rules + merchant_patterns, sem IA) | Alto | Médio | Revisita Fase 2 |
-| P9 | Templates Excel por domínio + upload com validação | Médio | Médio | Revisita Fase 2 |
-| P14 | Cadastro assistido de bens (tabela asset_templates + Gemini Flash fallback) | Médio | Médio | Fase 4 |
-
-**Maior esforço / valor estratégico:**
-
-| # | Ação | Impacto | Esforço | Fase alvo |
-|---|---|---|---|---|
-| P5 | Dashboard progressivo por maturidade (4 níveis, integrado ao get_dashboard_all) | Alto | Médio-alto | Revisita Fase 3 |
-| P8 | Tabela editável in-app para carga em massa (veículos, imóveis, bens, investimentos) | Alto | Médio-alto | Revisita Fase 2 |
-| P11 | Gateway IA + categorização com fallback Gemini Flash-Lite | Alto | Médio | Fase 3 |
-| P12 | Extração de documentos com IA (OCR + parser determinístico + Gemini Flash fallback) | Médio | Médio | Fase 6 |
-| P13 | Insights narrativos mensais (Edge Function + Claude Haiku 4.5) | Médio | Médio | Fase 8 |
-| P17 | Assistente conversacional (Claude Sonnet, tool calling, NLP → query) | Alto | Alto | Pós-MVP |
-
-**Sequência recomendada para sessões de código:**
-1. P1 + P2 + P15 (quick wins de UX, ~1 sessão)
-2. P4 (onboarding redesenhado, ~1 sessão)
-3. P16 + P7 schema (migration única: ENUM + parent_asset_id + asset_id, ~1 sessão)
-4. P3 + P6 (reorganização de nav + formulário, ~1 sessão)
-5. P10 (pipeline de categorização determinística, ~1 sessão)
-6. P8 + P9 (tabela editável + Excel templates, ~2 sessões)
-7. P5 (dashboard progressivo, ~1 sessão)
-8. P11 (gateway IA, primeira integração Gemini, ~1 sessão)
-9. P7 UI + P14 (hierarquia de ativos na interface + cadastro assistido, ~1 sessão)
-10. P12, P13, P17 (features de IA avançadas, sessões futuras)
+17 prioridades definidas e integradas ao **Backlog Consolidado Único (Seção 12.1)**. Sequência de execução em ~10 sprints, organizada por impacto × esforço. Consultar Seção 12.1 para detalhes completos.
 
 ### 24.10 Nota: sem commits nesta sessão
 
 Sessão de produto e documentação. Nenhuma alteração no código. O adendo v1.5 é o entregável principal. A implementação das decisões aqui registradas será executada em sessões futuras seguindo o plano de implantação (seção 8 do adendo).
+
 
