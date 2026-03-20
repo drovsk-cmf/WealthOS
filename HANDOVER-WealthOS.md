@@ -2643,6 +2643,55 @@ Muitas das recomendações do avaliador #1 já foram parcialmente endereçadas p
 
 As novas funcionalidades (IA, hierarquia de ativos, importação em massa) são inteiramente novas e não têm precedente no código atual.
 
-### 24.9 Nota: sem commits nesta sessão
+### 24.9 Plano de implantação (17 prioridades por fase)
+
+As fases 1-9 já estão concluídas no código. As prioridades abaixo são revisitas e acréscimos dentro das fases existentes. A sequência de execução segue impacto × esforço.
+
+**Quick wins (baixo esforço, alto impacto):**
+
+| # | Ação | Impacto | Esforço | Fase alvo |
+|---|---|---|---|---|
+| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, etc.) | Alto | Baixo | Revisita Fase 1 |
+| P2 | Promover importação para sidebar principal + CTA no dashboard | Alto | Baixo | Revisita Fase 1 |
+| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário) | Alto | Baixo | Revisita Fase 1 |
+| P6 | Formulário de transação radical (modo rápido = valor + descrição + conta, resto inferido) | Médio | Baixo | Revisita Fase 2 |
+| P16 | Expansão ENUM asset_category (5 → 14 valores) | Médio | Baixo | Migration |
+
+**Médio esforço:**
+
+| # | Ação | Impacto | Esforço | Fase alvo |
+|---|---|---|---|---|
+| P4 | Onboarding simplificado com MFA diferido (campos E2E bloqueados até ativação) | Alto | Médio | Revisita Fase 1 |
+| P3 | Reorganizar Configurações (fiscal, tarefas, importação saem de lá) | Alto | Médio | Revisita Fase 2 |
+| P7 | Hierarquia de ativos (parent_asset_id) + asset_id em transactions/journal_entries | Alto | Médio | Migration + Fase 4 UI |
+| P10 | Pipeline de categorização determinística (tabelas categorization_rules + merchant_patterns, sem IA) | Alto | Médio | Revisita Fase 2 |
+| P9 | Templates Excel por domínio + upload com validação | Médio | Médio | Revisita Fase 2 |
+| P14 | Cadastro assistido de bens (tabela asset_templates + Gemini Flash fallback) | Médio | Médio | Fase 4 |
+
+**Maior esforço / valor estratégico:**
+
+| # | Ação | Impacto | Esforço | Fase alvo |
+|---|---|---|---|---|
+| P5 | Dashboard progressivo por maturidade (4 níveis, integrado ao get_dashboard_all) | Alto | Médio-alto | Revisita Fase 3 |
+| P8 | Tabela editável in-app para carga em massa (veículos, imóveis, bens, investimentos) | Alto | Médio-alto | Revisita Fase 2 |
+| P11 | Gateway IA + categorização com fallback Gemini Flash-Lite | Alto | Médio | Fase 3 |
+| P12 | Extração de documentos com IA (OCR + parser determinístico + Gemini Flash fallback) | Médio | Médio | Fase 6 |
+| P13 | Insights narrativos mensais (Edge Function + Claude Haiku 4.5) | Médio | Médio | Fase 8 |
+| P17 | Assistente conversacional (Claude Sonnet, tool calling, NLP → query) | Alto | Alto | Pós-MVP |
+
+**Sequência recomendada para sessões de código:**
+1. P1 + P2 + P15 (quick wins de UX, ~1 sessão)
+2. P4 (onboarding redesenhado, ~1 sessão)
+3. P16 + P7 schema (migration única: ENUM + parent_asset_id + asset_id, ~1 sessão)
+4. P3 + P6 (reorganização de nav + formulário, ~1 sessão)
+5. P10 (pipeline de categorização determinística, ~1 sessão)
+6. P8 + P9 (tabela editável + Excel templates, ~2 sessões)
+7. P5 (dashboard progressivo, ~1 sessão)
+8. P11 (gateway IA, primeira integração Gemini, ~1 sessão)
+9. P7 UI + P14 (hierarquia de ativos na interface + cadastro assistido, ~1 sessão)
+10. P12, P13, P17 (features de IA avançadas, sessões futuras)
+
+### 24.10 Nota: sem commits nesta sessão
 
 Sessão de produto e documentação. Nenhuma alteração no código. O adendo v1.5 é o entregável principal. A implementação das decisões aqui registradas será executada em sessões futuras seguindo o plano de implantação (seção 8 do adendo).
+
