@@ -2751,3 +2751,53 @@ Corrigir o erro da sessão 25: migration P15 aplicada no projeto legado em vez d
 
 **Ler o HANDOVER INTEIRO antes de qualquer operação de infraestrutura.** As linhas 6-7 do HANDOVER identificam explicitamente qual é o projeto ativo e qual é o legado. Reativar um projeto pausado sem verificar o HANDOVER é um erro grave que pode causar divergência de estado entre projetos.
 
+
+## Sessão 25c - 20 março 2026 (Claude Opus, Projeto Claude) — AUDITORIA
+
+### 25c.1 Escopo
+
+Auditoria completa do oniefy-prod (`mngjbrbxapazdddzgoje`) para identificar gaps entre código local, HANDOVER e banco de dados em produção.
+
+### 25c.2 Metodologia
+
+1. Listar todas as RPCs chamadas no código (`supabase.rpc(...)`) e cruzar com RPCs existentes no oniefy-prod
+2. Listar todas as tabelas acessadas no código (`.from(...)`) e cruzar com tabelas no oniefy-prod
+3. Verificar ENUMs, colunas específicas, cron jobs, triggers, indexes, RLS policies, storage, grants, auth trigger
+4. Verificar seed data (tax_parameters, economic_indices_sources)
+
+### 25c.3 Resultado
+
+| Dimensão | Código (local) | oniefy-prod | Status |
+|---|---|---|---|
+| RPCs chamadas no frontend | 41 | 41 presentes + 23 internas (cron, trigger) | ✅ OK |
+| Tabelas acessadas (.from) | 23 | 23 + 5 via RPC (journal_entries, journal_lines, center_allocations, description_aliases, setup_journey) | ✅ OK |
+| ENUMs | 28 tipos | 28 tipos | ✅ OK |
+| Cron jobs | 11 | 11 ativos | ✅ OK |
+| Triggers | 24 | 24 | ✅ OK |
+| Indexes (transactions) | 21 | 21 | ✅ OK |
+| RLS policies | 28 tabelas | 28 tabelas com policies | ✅ OK |
+| Storage bucket | user-documents | user-documents (private) | ✅ OK |
+| Grants revogados (cron) | anon/auth sem acesso | anon/auth sem acesso | ✅ OK |
+| SECURITY DEFINER + search_path | Todos | Todos com search_path | ✅ OK |
+| Auth trigger (handle_new_user) | on_auth_user_created | Presente | ✅ OK |
+| ensure_rls event trigger | Sim | Presente | ✅ OK |
+| economic_indices_sources seed | 51 | 51 | ✅ OK |
+| **tax_parameters seed** | **9 registros** | **0 registros** | **❌ CORRIGIDO** |
+| setup_journey.week_number | Coluna requerida | Presente (sessão 25b) | ✅ OK |
+
+### 25c.4 Gap encontrado e corrigido
+
+**`tax_parameters` vazia no oniefy-prod.** A consolidação da sessão 22 migrou toda a estrutura DDL (tabelas, funções, indexes, RLS), mas não incluiu os dados de seed da tabela `tax_parameters`. Estes 9 registros são necessários para o módulo Fiscal/IR funcionar:
+
+- IRPF Monthly 2025 + 2026
+- IRPF Annual 2025 + 2026
+- INSS Employee 2025 + 2026
+- Minimum Wage 2025 + 2026
+- Capital Gains (desde 2016)
+
+Migration `seed_tax_parameters_fiscal` aplicada no oniefy-prod. Arquivo local: `060_seed_tax_parameters_fiscal.sql`.
+
+### 25c.5 Conclusão
+
+Com exceção do seed fiscal (corrigido agora), o oniefy-prod está **100% alinhado** com o código local. Nenhuma RPC, tabela, coluna, trigger, cron job ou policy está faltando.
+
