@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-5 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-7 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1003,12 +1003,12 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 |---|---|---|---|---|---|
 | P10 | Pipeline de categorização: categorization_rules (26 regex globais BR) + merchant_patterns (aprendizado por correção). auto_categorize reescrita (3 etapas). learn_merchant_pattern RPC. | Alto | Médio | Adendo v1.5 §5.4 etapas 1-2 | ✅ |
 
-**Sprint 6-7: Importação em massa (~2 sessões)**
+**Sprint 6-7: Importação em massa (~2 sessões) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P8 | Tabela editável in-app (Adicionar linha, validação inline, Salvar tudo) para veículos, imóveis, bens, transações, investimentos | Alto | Médio-alto | Adendo v1.5 §4.2.1 |
-| P9 | Templates Excel por domínio (5 templates) + upload com preview e validação por linha | Médio | Médio | Adendo v1.5 §4.2.2-4.3 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P8 | BulkEntryGrid: tabela editável genérica (add row, validação inline, save all). BulkImportTab: 3 domínios (bens, veículos, investimentos) com configs de colunas dedicadas. Integrado em /connections como aba "Cadastro em massa". | Alto | Médio-alto | Adendo v1.5 §4.2.1 | ✅ |
+| P9 | 3 templates Excel por domínio (bens, veículos, investimentos) + download client-side via ExcelJS. Templates com sheet de instruções e exemplos BR. | Médio | Médio | Adendo v1.5 §4.2.2-4.3 | ✅ |
 
 **Sprint 8: Dashboard progressivo (~1 sessão)**
 
@@ -2949,3 +2949,36 @@ Frontend:
 ### 25g.4 Próximo: Sprint 6-7
 
 P8 (Tabela editável in-app) + P9 (Templates Excel por domínio + upload com preview).
+
+## Sessão 25h - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 6-7
+
+### 25h.1 Escopo
+
+Sprint 6-7 do adendo v1.5: P8 (Tabela editável in-app) + P9 (Templates Excel por domínio).
+
+### 25h.2 O que foi feito
+
+**P8 - Tabela editável in-app (adendo v1.5 §4.2.1):**
+- `BulkEntryGrid`: componente genérico (ColumnDef[], onSave, validação inline, add/remove row, save all)
+- `BulkImportTab`: 3 domínios com configs dedicadas:
+  - Bens: nome, categoria (14 opções), valor aquisição/atual, data, notas
+  - Veículos: nome, tipo (5 opções veículo), valores, data, placa, notas
+  - Investimentos: nome, valores, data, moeda (BRL/USD/EUR/BTC/ETH), notas
+- Integrado em /connections como aba "Cadastro em massa" (4 abas total)
+- Save insere diretamente em `assets` via Supabase client
+
+**P9 - Templates Excel por domínio (adendo v1.5 §4.2.2-4.3):**
+- `downloadDomainTemplate()` em oniefy-template.ts: 3 variantes (assets, vehicles, investments)
+- Cada template: sheet de dados com exemplos BR + sheet de instruções
+- Botões de download na BulkImportTab com feedback (toast + loading state)
+- `DOMAIN_TEMPLATE_INFO`: metadata para labels e filenames
+
+**Arquivos:** 4 criados/modificados
+
+### 25h.3 Nota
+
+Templates de transações (standard + card) já existiam. Total: 5 templates (standard, card, assets, vehicles, investments) conforme especificado no adendo.
+
+### 25h.4 Próximo: Sprint 8
+
+P5 (Dashboard com 4 níveis de maturidade progressiva).

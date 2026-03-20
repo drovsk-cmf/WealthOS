@@ -26,9 +26,10 @@ import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
 import { formatDate } from "@/lib/utils";
 import { ImportWizard } from "@/components/connections/import-wizard";
 import { ReconciliationPanel } from "@/components/connections/reconciliation-panel";
+import { BulkImportTab } from "@/components/connections/bulk-import-tab";
 import FocusTrap from "focus-trap-react";
 
-type Tab = "connections" | "import" | "reconciliation";
+type Tab = "connections" | "import" | "bulk" | "reconciliation";
 
 export default function ConnectionsPage() {
   const [tab, setTab] = useState<Tab>("import");
@@ -45,6 +46,7 @@ export default function ConnectionsPage() {
       <div className="flex gap-1 rounded-lg border bg-muted p-1">
         {([
           { key: "import" as const, label: "Importar extrato" },
+          { key: "bulk" as const, label: "Cadastro em massa" },
           { key: "reconciliation" as const, label: "Conciliação" },
           { key: "connections" as const, label: "Conexões" },
         ]).map((t) => (
@@ -61,6 +63,7 @@ export default function ConnectionsPage() {
       </div>
 
       {tab === "import" && <ImportWizard />}
+      {tab === "bulk" && <BulkImportTab />}
       {tab === "reconciliation" && <ReconciliationPanel />}
       {tab === "connections" && <ConnectionsManager />}
     </div>
