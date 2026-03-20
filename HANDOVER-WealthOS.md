@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1 concluída: P1+P2+P15).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1+2 concluídas: P1+P2+P15+P4).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -977,11 +977,11 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P2 | Promover importação para sidebar principal + CTA grande no dashboard + botão em Transações | Alto | Baixo | Adendo v1.5 §2.6 | ✅ |
 | P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário, cada semana com entrega de valor) | Alto | Baixo | Adendo v1.5 §4.4 | ✅ |
 
-**Sprint 2: Onboarding (~1 sessão)**
+**Sprint 2: Onboarding (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P4 | Onboarding simplificado: conta → email → pergunta única → importação como default → valor em <2min. MFA diferido para primeiro acesso a dados E2E ou após 24h | Alto | Médio | Adendo v1.5 §2.1 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P4 | Onboarding simplificado: welcome → pergunta única → setup auto → redirect. MFA diferido para banner no dashboard após 24h. Currency default BRL. | Alto | Médio | Adendo v1.5 §2.1 | ✅ |
 
 **Sprint 3: Schema patrimonial (~1 sessão)**
 
@@ -2803,3 +2803,48 @@ Migration `seed_tax_parameters_all` aplicada no oniefy-prod. Houve duplicação 
 
 Com exceção do seed fiscal e do week_number (ambos corrigidos), o oniefy-prod está **100% alinhado** com o código local. Nenhuma RPC, tabela, coluna, trigger, cron job ou policy está faltando.
 
+
+## Sessão 25d - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 2
+
+### 25d.1 Escopo
+
+Sprint 2 do adendo v1.5: P4 (Onboarding simplificado).
+
+### 25d.2 O que foi feito
+
+**P4 - Onboarding simplificado (adendo v1.5 §2.1):**
+
+Fluxo anterior (9 steps, ~5min):
+welcome → currency → security → mfa_enroll → mfa_verify → categories → route_choice → route_execution → celebration
+
+Fluxo novo (3 steps, <2min):
+welcome → question ("Como quer começar?") → setup automático + redirect
+
+Mudanças:
+- **Pergunta única:** 3 opções (Importar extratos [recomendado], Cadastrar manualmente, Explorar primeiro)
+- **Currency removida:** default BRL, alterável em Configurações (elimina 1 step)
+- **MFA removido do onboarding:** diferido para banner no dashboard
+- **Security (E2E):** executa silenciosamente no step "setup", sem tela dedicada
+- **Seeds:** executam silenciosamente no step "setup"
+- **Redirect:** /connections (importar) ou /dashboard (manual/explorar)
+
+**MFA Reminder Banner:**
+- `src/components/dashboard/mfa-reminder-banner.tsx`
+- Aparece no dashboard após 24h de conta sem MFA configurado
+- Dismissível por sessão (sessionStorage)
+- Link direto para /settings
+- Integrado no dashboard como primeiro elemento (antes do SetupJourneyCard)
+
+**Arquivos:** 4 modificados (onboarding reescrito de 616 → 210 linhas), 1 criado
+
+### 25d.3 CI
+
+Commit: `5016a23` | CI green (Security + Lint + Build + Tests)
+
+### 25d.4 Nota sobre componentes preservados
+
+Os componentes de rota do onboarding antigo (RouteChoiceStep, RouteManualStep, RouteImportStep, RouteSnapshotStep, CelebrationStep) foram mantidos no repo em `src/components/onboarding/`. Não são mais importados pelo onboarding, mas podem ser reutilizados em outros fluxos.
+
+### 25d.5 Próximo: Sprint 3
+
+P16 (Expansão ENUM asset_category de 5 para 14) + P7a (parent_asset_id + asset_id em transactions/journal_entries).
