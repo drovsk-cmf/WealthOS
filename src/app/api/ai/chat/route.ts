@@ -64,9 +64,9 @@ async function executeTool(toolName: string, toolInput: Record<string, unknown>,
         .order("date", { ascending: false })
         .limit(Number(toolInput.limit) || 10);
 
-      if (toolInput.type) query = query.eq("type", toolInput.type);
-      if (toolInput.date_from) query = query.gte("date", toolInput.date_from);
-      if (toolInput.date_to) query = query.lte("date", toolInput.date_to);
+      if (toolInput.type) query = query.eq("type", String(toolInput.type) as "income" | "expense" | "transfer");
+      if (toolInput.date_from) query = query.gte("date", String(toolInput.date_from));
+      if (toolInput.date_to) query = query.lte("date", String(toolInput.date_to));
 
       const { data } = await query;
       return data ?? [];

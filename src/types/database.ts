@@ -536,6 +536,12 @@ export type Database = {
           { foreignKeyName: "transactions_matched_transaction_id_fkey"; columns: ["matched_transaction_id"]; isOneToOne: false; referencedRelation: "transactions"; referencedColumns: ["id"] },
         ]
       }
+      user_insights: {
+        Row: { id: string; user_id: string; month: string; insight_type: string; content: string; data_snapshot: Json | null; model: string; tokens_used: number; created_at: string }
+        Insert: { id?: string; user_id: string; month: string; insight_type?: string; content: string; data_snapshot?: Json | null; model: string; tokens_used?: number; created_at?: string }
+        Update: { id?: string; user_id?: string; month?: string; insight_type?: string; content?: string; data_snapshot?: Json | null; model?: string; tokens_used?: number; created_at?: string }
+        Relationships: []
+      }
       users_profile: {
         Row: { cpf_encrypted: string | null; created_at: string; cutoff_date: string | null; default_currency: string; deletion_requested_at: string | null; encryption_key_encrypted: string | null; encryption_key_iv: string | null; full_name: string | null; id: string; kek_material: string | null; onboarding_completed: boolean; updated_at: string }
         Insert: { cpf_encrypted?: string | null; created_at?: string; cutoff_date?: string | null; default_currency?: string; deletion_requested_at?: string | null; encryption_key_encrypted?: string | null; encryption_key_iv?: string | null; full_name?: string | null; id: string; kek_material?: string | null; onboarding_completed?: boolean; updated_at?: string }
@@ -644,7 +650,7 @@ export type Database = {
       group_type: "asset" | "liability" | "equity" | "revenue" | "expense"
       index_type: "ipca" | "inpc" | "igpm" | "selic" | "cdi" | "tr" | "usd_brl" | "minimum_wage" | "ipca_food" | "ipca_housing" | "ipca_transport" | "ipca_health" | "ipca_education"
       notification_status: "sent" | "failed" | "skipped"
-      notification_type: "bill_due" | "budget_alert" | "insurance_expiry" | "account_deletion"
+      notification_type: "bill_due" | "budget_alert" | "insurance_expiry" | "account_deletion" | "inactivity"
       parameter_type: "irpf_monthly" | "irpf_annual" | "irpf_reduction" | "irpf_min_high_income" | "inss_employee" | "inss_ceiling" | "minimum_wage" | "capital_gains" | "crypto_exemption" | "stock_exemption"
       payment_status: "pending" | "overdue" | "paid" | "cancelled"
       periodicity_type: "daily" | "monthly" | "annual"

@@ -172,9 +172,14 @@ export async function POST(request: NextRequest) {
 
           if (tokens && tokens.length > 0) {
             for (const token of tokens) {
+              const sub = token.subscription_data as Record<string, unknown> | null;
+              if (!sub?.endpoint) continue;
               try {
                 await webpush.sendNotification(
-                  JSON.parse(token.subscription_data),
+                  {
+                    endpoint: sub.endpoint as string,
+                    keys: (sub.keys ?? {}) as { p256dh: string; auth: string },
+                  },
                   JSON.stringify({
                     title: "Oniefy sente sua falta",
                     body: "Faz uma semana sem lançamentos. Registrar suas despesas leva menos de 10 segundos.",
