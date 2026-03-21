@@ -192,6 +192,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           is_paid: isPaid,
           notes: notes || null,
           family_member_id: familyMemberId || null,
+          asset_id: assetId || null,
         });
         toast.success("Transação editada.");
       } else if (type === "transfer") {
@@ -218,6 +219,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           is_paid: isPaid,
           notes: notes || null,
           family_member_id: familyMemberId || null,
+          asset_id: assetId || null,
         });
         toast.success("Transação criada com sucesso.");
       }

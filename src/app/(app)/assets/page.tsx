@@ -308,15 +308,33 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* Asset list */}
-      {assets && assets.length > 0 && (
-        <div className="space-y-2">
-          {assets.filter((a) => !search || a.name.toLowerCase().includes(search.toLowerCase())).map((asset) => {
-            const depPct = Number(asset.acquisition_value) > 0
-              ? ((Number(asset.acquisition_value) - Number(asset.current_value)) / Number(asset.acquisition_value) * 100)
-              : 0;
-            const isExpanded = expandedAsset === asset.id;
-            const color = ASSET_CATEGORY_COLORS[asset.category];
+      {/* Asset list (P7b: hierarchical grouping) */}
+      {assets && assets.length > 0 && (() => {
+        const filtered = assets.filter((a) => !search || a.name.toLowerCase().includes(search.toLowerCase()));
+        // Separate root assets (no parent) and children
+        const roots = filtered.filter((a) => !(a as Record<string, unknown>).parent_asset_id);
+        const childrenMap = new Map<string, typeof filtered>();
+        for (const a of filtered) {
+          const pid = (a as Record<string, unknown>).parent_asset_id as string | null;
+          if (pid) {
+            if (!childrenMap.has(pid)) childrenMap.set(pid, []);
+            childrenMap.get(pid)!.push(a);
+          }
+        }
+        // Orphan children whose parent is filtered out
+        const orphans = filtered.filter((a) => {
+          const pid = (a as Record<string, unknown>).parent_asset_id as string | null;
+          return pid && !roots.some((r) => r.id === pid);
+        });
+
+        const renderAsset = (asset: typeof assets[0], isChild: boolean) => {
+          const depPct = Number(asset.acquisition_value) > 0
+            ? ((Number(asset.acquisition_value) - Number(asset.current_value)) / Number(asset.acquisition_value) * 100)
+            : 0;
+          const isExpanded = expandedAsset === asset.id;
+          const color = ASSET_CATEGORY_COLORS[asset.category];
+          const children = childrenMap.get(asset.id) ?? [];
+          const consolidatedValue = Number(asset.current_value) + children.reduce((s, c) => s + Number(c.current_value), 0);
 
             return (
               <div key={asset.id} className="rounded-lg border bg-card shadow-sm transition-colors hover:bg-accent/30">
@@ -405,11 +423,39 @@ export default function AssetsPage() {
                     <AssetDocuments assetId={asset.id} />
                   </div>
                 )}
+
+                {/* P7b: Consolidated value for parents */}
+                {!isChild && children.length > 0 && (
+                  <div className="border-t px-3 py-2 text-xs text-muted-foreground">
+                    Valor consolidado (com {children.length} acessório{children.length > 1 ? "s" : ""}): {formatCurrency(consolidatedValue)}
+                  </div>
+                )}
               </div>
             );
-          })}
-        </div>
-      )}
+          };
+
+          return (
+            <div className="space-y-2">
+              {roots.map((asset) => (
+                <div key={asset.id}>
+                  {renderAsset(asset, false)}
+                  {/* P7b: Render children indented */}
+                  {(childrenMap.get(asset.id) ?? []).map((child) => (
+                    <div key={child.id} className="ml-8 mt-1">
+                      {renderAsset(child, true)}
+                    </div>
+                  ))}
+                </div>
+              ))}
+              {/* Orphan children (parent filtered out by search) */}
+              {orphans.map((asset) => (
+                <div key={asset.id} className="ml-8">
+                  {renderAsset(asset, true)}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
       {/* Form dialog */}
       <AssetForm open={formOpen} onClose={() => { setFormOpen(false); setEditData(null); }} editData={editData} />

@@ -37,6 +37,7 @@ export interface CreateTransactionInput {
   tags?: string[] | null;
   counterpart_coa_id?: string | null;  // explicit COA override
   family_member_id?: string | null;
+  asset_id?: string | null;
 }
 
 export interface TransferInput {
@@ -130,6 +131,14 @@ export async function createTransaction(
   if (!parsed.success) {
     logSchemaError("create_transaction_with_journal", parsed);
     throw new Error("Resposta inválida ao criar transação.");
+  }
+
+  // P6/P7a: Set asset_id if provided (post-create, column exists but RPC doesn't accept it)
+  if (input.asset_id && parsed.data.transaction_id) {
+    await supabase
+      .from("transactions")
+      .update({ asset_id: input.asset_id })
+      .eq("id", parsed.data.transaction_id);
   }
 
   return parsed.data;
