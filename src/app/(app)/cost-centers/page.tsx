@@ -64,7 +64,7 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
     const data = await centerExport.mutateAsync(centerId);
     downloadFile(
       JSON.stringify(data, null, 2),
-      `centro-${centerName.toLowerCase().replace(/\s+/g, "-")}.json`,
+      `divisao-${centerName.toLowerCase().replace(/\s+/g, "-")}.json`,
       "application/json"
     );
   }
@@ -74,7 +74,7 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
     const csv = exportToCsv(data);
     downloadFile(
       csv,
-      `centro-${centerName.toLowerCase().replace(/\s+/g, "-")}.csv`,
+      `divisao-${centerName.toLowerCase().replace(/\s+/g, "-")}.csv`,
       "text/csv"
     );
   }
@@ -149,7 +149,7 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
 
       {income === 0 && expense === 0 && (
         <p className="text-center text-xs text-muted-foreground">
-          Nenhum lançamento neste período. Atribua transações a este centro ou use o rateio.
+          Nenhum lançamento neste período. Atribua transações a esta divisão ou use o rateio.
         </p>
       )}
 
@@ -222,7 +222,7 @@ export default function CostCentersPage() {
       } else {
         await createCenter.mutateAsync({ name: name.trim(), type, color });
       }
-      toast.success(isEdit ? "Centro atualizado." : "Centro criado com sucesso.");
+      toast.success(isEdit ? "Divisão atualizada." : "Divisão criada com sucesso.");
       setFormOpen(false);
       setEditing(null);
     } catch (err) {
@@ -232,7 +232,7 @@ export default function CostCentersPage() {
 
   async function handleDelete(id: string) {
     await deleteCenter.mutateAsync(id);
-    toast.success("Centro desativado.");
+    toast.success("Divisão desativada.");
     setConfirmDelete(null);
     if (expandedCenter === id) setExpandedCenter(null);
   }
@@ -256,7 +256,7 @@ export default function CostCentersPage() {
           <h1 className="text-2xl font-bold tracking-tight">Divisões</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Segmentação de transações por projeto, pessoa ou atividade.
-            Clique num centro para ver o P&L.
+            Clique numa divisão para ver o P&L.
           </p>
         </div>
         <div className="flex gap-2">
@@ -270,7 +270,7 @@ export default function CostCentersPage() {
           )}
           <button type="button" onClick={handleNew}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-            + Novo centro
+            + Nova divisão
           </button>
         </div>
       </div>
@@ -370,11 +370,11 @@ export default function CostCentersPage() {
 
       {/* Rateio info */}
       <div className="rounded-lg border bg-card p-4 shadow-sm">
-        <h3 className="text-sm font-semibold">Rateio entre centros</h3>
+        <h3 className="text-sm font-semibold">Rateio entre divisões</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Para dividir uma transação entre centros, abra a transação na lista de
-          Transações e use a opção &ldquo;Dividir entre centros&rdquo;. Os percentuais devem somar 100 %.
-          O resultado aparece no P&L de cada centro acima.
+          Para dividir uma transação entre divisões, abra a transação na lista de
+          Transações e use a opção &ldquo;Dividir entre divisões&rdquo;. Os percentuais devem somar 100 %.
+          O resultado aparece no P&L de cada divisão acima.
         </p>
       </div>
 
@@ -384,7 +384,7 @@ export default function CostCentersPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setFormOpen(false); setEditing(null); }} />
           <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
-            <h2 className="text-lg font-semibold">{isEdit ? "Editar centro" : "Novo centro"}</h2>
+            <h2 className="text-lg font-semibold">{isEdit ? "Editar divisão" : "Nova divisão"}</h2>
 
             {error && (
               <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">{error}</div>
@@ -459,7 +459,7 @@ export default function CostCentersPage() {
           <div className="relative z-10 w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg">
             <h3 className="text-lg font-semibold">Ratear Overhead</h3>
             <p className="mt-2 text-sm text-muted-foreground">
-              Distribui as despesas dos centros marcados como overhead para os demais centros,
+              Distribui as despesas das divisões marcadas como overhead para as demais divisões,
               proporcionalmente ao volume de despesas de cada um no mês atual.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
@@ -477,7 +477,7 @@ export default function CostCentersPage() {
                     const currentMonth = new Date().toISOString().split("T")[0].slice(0, 8) + "01";
                     const result = await distributeOverhead.mutateAsync(currentMonth);
                     if (result.status === "no_target") {
-                      toast.error(result.message ?? "Nenhum centro destino com despesas.");
+                      toast.error(result.message ?? "Nenhuma divisão destino com despesas.");
                     } else {
                       toast.success(`Rateio concluído: ${result.allocated} lançamento(s) distribuído(s).`);
                     }
