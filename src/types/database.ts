@@ -123,6 +123,12 @@ export type Database = {
         Update: { id?: string; user_id?: string; use_case?: string; model?: string; tokens_in?: number; tokens_out?: number; cost_usd?: number; cached?: boolean; created_at?: string }
         Relationships: []
       }
+      asset_templates: {
+        Row: { id: string; name: string; category: string; default_depreciation_rate: number; reference_value_brl: number | null; useful_life_years: number | null; tags: string[]; is_active: boolean; created_at: string }
+        Insert: { id?: string; name: string; category: string; default_depreciation_rate?: number; reference_value_brl?: number | null; useful_life_years?: number | null; tags?: string[]; is_active?: boolean; created_at?: string }
+        Update: { id?: string; name?: string; category?: string; default_depreciation_rate?: number; reference_value_brl?: number | null; useful_life_years?: number | null; tags?: string[]; is_active?: boolean; created_at?: string }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           id: string

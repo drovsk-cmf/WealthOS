@@ -11,6 +11,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
+  useAssets,
   useCreateAsset,
   useUpdateAsset,
   ASSET_CATEGORY_OPTIONS,
@@ -24,6 +25,8 @@ type AssetCategory = Database["public"]["Enums"]["asset_category"];
 interface AssetFormProps {
   open: boolean;
   onClose: () => void;
+  /** Pre-set parent for "add child" flow */
+  defaultParentId?: string | null;
   editData?: {
     id: string;
     name: string;
@@ -35,10 +38,11 @@ interface AssetFormProps {
     insurance_policy: string | null;
     insurance_expiry: string | null;
     currency?: string;
+    parent_asset_id?: string | null;
   } | null;
 }
 
-export function AssetForm({ open, onClose, editData }: AssetFormProps) {
+export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFormProps) {
   const isEditing = !!editData;
 
   const [name, setName] = useState("");
@@ -50,7 +54,10 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
   const [insurancePolicy, setInsurancePolicy] = useState("");
   const [insuranceExpiry, setInsuranceExpiry] = useState("");
   const [currency, setCurrency] = useState("BRL");
+  const [parentAssetId, setParentAssetId] = useState<string>("");
   const [error, setError] = useState("");
+
+  const { data: assets } = useAssets();
 
   const { data: supportedCurrencies } = useSupportedCurrencies();
   const currencyGroups = supportedCurrencies ? groupCurrenciesByTier(supportedCurrencies) : [];
@@ -69,6 +76,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
       setInsurancePolicy(editData.insurance_policy ?? "");
       setInsuranceExpiry(editData.insurance_expiry ?? "");
       setCurrency(editData.currency ?? "BRL");
+      setParentAssetId(editData.parent_asset_id ?? "");
     } else {
       setName("");
       setCategory("other");
@@ -79,9 +87,10 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
       setInsurancePolicy("");
       setInsuranceExpiry("");
       setCurrency("BRL");
+      setParentAssetId(defaultParentId ?? "");
     }
     setError("");
-  }, [editData, open]);
+  }, [editData, open, defaultParentId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,6 +128,7 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
           insurance_policy: insurancePolicy || null,
           insurance_expiry: insuranceExpiry || null,
           currency,
+          parent_asset_id: parentAssetId || null,
         });
       }
       toast.success(isEditing ? "Bem atualizado." : "Bem cadastrado com sucesso.");
@@ -160,6 +170,23 @@ export function AssetForm({ open, onClose, editData }: AssetFormProps) {
               ))}
             </select>
           </div>
+
+          {/* Parent asset (P7b: hierarchy) */}
+          {!isEditing && assets && assets.length > 0 && (
+            <div>
+              <label htmlFor="asset-parent" className="text-sm font-medium">Bem pai (opcional)</label>
+              <select id="asset-parent" value={parentAssetId} onChange={(e) => setParentAssetId(e.target.value)}
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="">Nenhum (bem independente)</option>
+                {assets.filter((a) => !(a as Record<string, unknown>).parent_asset_id).map((a) => (
+                  <option key={a.id} value={a.id}>{a.name}</option>
+                ))}
+              </select>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">
+                Vincule como acessório ou componente de outro bem.
+              </p>
+            </div>
+          )}
 
           {/* Currency */}
           <div>
