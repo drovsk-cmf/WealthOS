@@ -145,6 +145,60 @@ export async function POST(request: NextRequest) {
       }); // fire-and-forget
     }
 
+    // ── UX-H2-02: Inactivity trigger (7+ days without transaction) ──
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+    const { data: allUsers } = await supabase
+      .from("users_profile")
+      .select("id");
+
+    if (allUsers) {
+      for (const u of allUsers) {
+        // Skip users already notified above (have due bills)
+        if (byUser.has(u.id)) continue;
+
+        const { count } = await supabase
+          .from("transactions")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", u.id)
+          .eq("is_deleted", false)
+          .gte("created_at", sevenDaysAgo);
+
+        if ((count ?? 0) === 0) {
+          const { data: tokens } = await supabase
+            .from("notification_tokens")
+            .select("device_token, subscription_data")
+            .eq("user_id", u.id)
+            .eq("is_active", true);
+
+          if (tokens && tokens.length > 0) {
+            for (const token of tokens) {
+              try {
+                await webpush.sendNotification(
+                  JSON.parse(token.subscription_data),
+                  JSON.stringify({
+                    title: "Oniefy sente sua falta",
+                    body: "Faz uma semana sem lançamentos. Registrar suas despesas leva menos de 10 segundos.",
+                    url: "/transactions",
+                  })
+                );
+                totalSent++;
+              } catch {
+                totalErrors++;
+              }
+            }
+
+            await supabase.from("notification_log").insert({
+              user_id: u.id,
+              type: "inactivity",
+              title: "Oniefy sente sua falta",
+              body: "7+ dias sem lançamentos",
+              status: "sent",
+            }).then(() => {}, () => {});
+          }
+        }
+      }
+    }
+
     return NextResponse.json({ sent: totalSent, errors: totalErrors, users: byUser.size });
   } catch (err) {
     return NextResponse.json(
