@@ -3115,3 +3115,38 @@ Restam apenas os itens pós-MVP: P12 (extração documentos IA), P13 (insights n
 ### 25k.5 Próximo
 
 Itens pós-MVP ou próximas prioridades definidas por Claudio.
+
+## Sessão 25l - 21 março 2026 (Claude Opus, Projeto Claude) — Jest Tests
+
+### 25l.1 Escopo
+
+Cobertura de testes para as features implementadas nas sprints 1-10 do adendo v1.5.
+
+### 25l.2 O que foi feito
+
+6 novas suítes de teste (57 assertions):
+
+| Suíte | Testes | Cobertura |
+|---|---|---|
+| `pii-sanitizer.test.ts` | 14 | P11: CPF, CNPJ, email, telefone, cartão, conta bancária, preservação de texto normal, múltiplos PIIs |
+| `p16-asset-categories.test.ts` | 11 | P16: 14 categorias com labels/colors/COA, zod schema aceita novas categorias, rejeita inválidas. P1: N1-N4 nomenclatura |
+| `p1-divisoes-rename.test.ts` | 4 | P1: CENTER_TYPE_LABELS usa "Divisão", CENTER_TYPE_OPTIONS usa "Divisão" |
+| `p14-asset-templates.test.ts` | 10 | P14: searchTemplates (nome, tag, case-insensitive, limite 5, sem match), estrutura de template (campos, bounds) |
+| `p9-domain-templates.test.ts` | 7 | P9: DOMAIN_TEMPLATE_INFO (3 domínios, fileNames únicos, padrão .xlsx), detectOniefyTemplate (standard/card/null) |
+| `p11-ai-gateway.test.ts` | 11 | P11: getUncategorizedDescriptions (sem categoria, sem descrição, dedup, trim, vazio), rate limit shape |
+
+Bugs encontrados e corrigidos:
+1. **pii-sanitizer.ts**: regex de cartão de crédito vinha DEPOIS do telefone, causando match incorreto. Reordenado.
+2. **p16 test**: LIQUIDITY_TIER_OPTIONS importada de `use-accounts` (não `use-assets`).
+
+### 25l.3 Totais de teste
+
+| Métrica | Antes | Depois |
+|---|---|---|
+| Suítes | 22 | 28 |
+| Tests | 341 | 398 |
+| Falhas | 0 | 0 |
+
+### 25l.4 CI
+
+Commit: `6ffd47e` | 4/4 green (Security + Lint + Tests + Build)
