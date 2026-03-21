@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/auth/rate-limiter";
 import { loginSchema } from "@/lib/validations/auth";
+import { verifyTurnstile } from "@/lib/auth/turnstile";
 
 /**
  * POST /api/auth/login
@@ -46,6 +47,12 @@ export async function POST(request: NextRequest) {
     }
     email = parsed.data.email;
     password = parsed.data.password;
+
+    // CAPTCHA verification (Turnstile - graceful bypass if not configured)
+    const turnstileOk = await verifyTurnstile(body.turnstile_token ?? "");
+    if (!turnstileOk) {
+      return NextResponse.json({ error: "Verificação CAPTCHA falhou." }, { status: 403 });
+    }
   } catch {
     return NextResponse.json(
       { error: "Corpo da requisição inválido." },

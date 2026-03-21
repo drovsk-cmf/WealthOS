@@ -10,12 +10,14 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Sparkles } from "lucide-react";
 import {
   useAssets,
   useCreateAsset,
   useUpdateAsset,
   ASSET_CATEGORY_OPTIONS,
 } from "@/lib/hooks/use-assets";
+import { useAssetTemplates, searchTemplates } from "@/lib/hooks/use-asset-templates";
 import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
@@ -58,6 +60,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
   const [error, setError] = useState("");
 
   const { data: assets } = useAssets();
+  const { data: templates } = useAssetTemplates();
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { data: supportedCurrencies } = useSupportedCurrencies();
   const currencyGroups = supportedCurrencies ? groupCurrenciesByTier(supportedCurrencies) : [];
@@ -151,12 +155,50 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
         </h2>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          {/* Name */}
-          <div>
+          {/* Name + P14 template suggestions */}
+          <div className="relative">
             <label htmlFor="asset-name" className="text-sm font-medium">Nome do bem</label>
-            <input id="asset-name" type="text" value={name} onChange={(e) => setName(e.target.value)}
+            <input id="asset-name" type="text" value={name}
+              onChange={(e) => { setName(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               placeholder="Ex: Apartamento Centro" required aria-required="true"
+              autoComplete="off"
               className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            {/* P14: Template suggestions */}
+            {!isEditing && showSuggestions && templates && (() => {
+              const matches = searchTemplates(templates, name);
+              if (matches.length === 0) return null;
+              return (
+                <div className="absolute z-20 mt-1 w-full rounded-md border bg-card shadow-lg">
+                  <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                    <Sparkles className="mr-1 inline h-3 w-3" />Sugestões
+                  </div>
+                  {matches.map((t) => (
+                    <button key={t.id} type="button"
+                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-accent"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setName(t.name);
+                        setCategory(t.category as AssetCategory);
+                        setDepreciationRate(String(t.default_depreciation_rate));
+                        if (t.reference_value_brl) {
+                          setAcquisitionValue(String(t.reference_value_brl));
+                          setCurrentValue(String(t.reference_value_brl));
+                        }
+                        setShowSuggestions(false);
+                        toast.success(`Template "${t.name}" aplicado.`);
+                      }}>
+                      <span>{t.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {t.reference_value_brl ? `~R$ ${t.reference_value_brl.toLocaleString("pt-BR")}` : ""}
+                        {t.default_depreciation_rate > 0 ? ` · ${t.default_depreciation_rate}%/ano` : ""}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Category */}
