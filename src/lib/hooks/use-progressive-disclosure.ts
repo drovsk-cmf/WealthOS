@@ -23,6 +23,9 @@ export interface DisclosureFlags {
   hasBudgets: boolean;
   costCenterCount: number;
   activeWorkflowCount: number;
+  /** P5: Dashboard maturity level */
+  maturityLevel: "new" | "active" | "engaged" | "advanced";
+  distinctMonths: number;
 }
 
 export function useProgressiveDisclosure() {
@@ -32,7 +35,7 @@ export function useProgressiveDisclosure() {
     queryKey: ["progressive-disclosure"],
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<DisclosureFlags> => {
-      const [txRes, incomeRes, accountRes, assetRes, budgetRes, ccRes, wfRes] =
+      const [txRes, incomeRes, accountRes, assetRes, budgetRes, ccRes, wfRes, snapshotRes] =
         await Promise.all([
           supabase
             .from("transactions")
@@ -60,19 +63,32 @@ export function useProgressiveDisclosure() {
             .from("workflows")
             .select("id", { count: "exact", head: true })
             .eq("is_active", true),
+          supabase
+            .from("monthly_snapshots")
+            .select("id", { count: "exact", head: true }),
         ]);
 
       const incomeCount = incomeRes.count ?? 0;
+      const totalTx = txRes.count ?? 0;
+      const distinctMonths = snapshotRes.count ?? 0;
+
+      // P5: Maturity level (adendo v1.5 §2.4)
+      // Novo: 0-10 tx | Ativo: 11-50 tx | Engajado: 51+ tx & 2+ meses | Avançado: opt-in (future)
+      let maturityLevel: DisclosureFlags["maturityLevel"] = "new";
+      if (totalTx > 50 && distinctMonths >= 2) maturityLevel = "engaged";
+      else if (totalTx > 10) maturityLevel = "active";
 
       return {
         showFiscalTrigger: incomeCount >= 10,
         incomeTransactionCount: incomeCount,
-        totalTransactions: txRes.count ?? 0,
+        totalTransactions: totalTx,
         totalAccounts: accountRes.count ?? 0,
         totalAssets: assetRes.count ?? 0,
         hasBudgets: (budgetRes.count ?? 0) > 0,
         costCenterCount: ccRes.count ?? 0,
         activeWorkflowCount: wfRes.count ?? 0,
+        maturityLevel,
+        distinctMonths,
       };
     },
   });

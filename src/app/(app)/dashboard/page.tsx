@@ -3,12 +3,13 @@
 import React from "react";
 
 /**
- * Oniefy - Início (Dashboard) - UX-H1-06 + UX-H2-03
+ * Oniefy - Início (Dashboard) - UX-H1-06 + UX-H2-03 + P5
  *
- * 3-section vertical layout:
- * Seção 1: Card narrativo (P0-P5: empty, post-import, budget, end-of-month, inactive, neutral)
- * Seção 2: Fila de atenção (até 5 pendências)
- * Seção 3: Resumo financeiro (conteúdo original, abaixo da dobra)
+ * Progressive dashboard with 4 maturity levels (P5, adendo v1.5 §2.4):
+ * - Novo (0-10 tx): setup, import CTA, narrative, attention, summary
+ * - Ativo (11-50 tx): + top categories, upcoming bills, budget
+ * - Engajado (51+ tx, 2+ meses): + balance sheet, evolution, solvency
+ * - Avançado (opt-in, futuro): tudo
  *
  * Performance: single RPC get_dashboard_all (1 roundtrip instead of 9+)
  */
@@ -50,6 +51,11 @@ export default function DashboardPage() {
   const disclosure = useProgressiveDisclosure();
 
   const d = dash.data;
+
+  // P5: Dashboard maturity level (adendo v1.5 §2.4)
+  const level = disclosure.data?.maturityLevel ?? "new";
+  const showMidTier = level !== "new"; // active, engaged, advanced
+  const showFullTier = level === "engaged" || level === "advanced";
 
   // Derive narrative state from attention data
   const hasTransactions =
@@ -123,40 +129,46 @@ export default function DashboardPage() {
       {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
       <SummaryCards data={d?.summary} isLoading={dash.isLoading} />
 
-      {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* DASH-03: Top categorias */}
-        <TopCategoriesCard
-          data={d?.topCategories}
-          isLoading={dash.isLoading}
-        />
+      {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento (P5: ativo+) */}
+      {showMidTier && (
+        <div className="grid gap-4 lg:grid-cols-3">
+          {/* DASH-03: Top categorias */}
+          <TopCategoriesCard
+            data={d?.topCategories}
+            isLoading={dash.isLoading}
+          />
 
-        {/* DASH-04: Próximas contas a vencer */}
-        <UpcomingBillsCard bills={dash.data?.upcomingBills ?? []} isLoading={dash.isLoading} />
+          {/* DASH-04: Próximas contas a vencer */}
+          <UpcomingBillsCard bills={dash.data?.upcomingBills ?? []} isLoading={dash.isLoading} />
 
-        {/* DASH-05: Resumo do orçamento */}
-        <BudgetSummaryCard
-          data={d?.budget}
-          isLoading={dash.isLoading}
-        />
-      </div>
+          {/* DASH-05: Resumo do orçamento */}
+          <BudgetSummaryCard
+            data={d?.budget}
+            isLoading={dash.isLoading}
+          />
+        </div>
+      )}
 
-      {/* CTB-05: Balanço Patrimonial + DASH-07: Evolução */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <BalanceSheetCard
-          data={d?.balanceSheet}
-          isLoading={dash.isLoading}
-        />
-        <BalanceEvolutionChart
-          data={d?.evolution}
-          isLoading={dash.isLoading}
-        />
-      </div>
+      {/* CTB-05: Balanço Patrimonial + DASH-07: Evolução (P5: engajado+) */}
+      {showFullTier && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <BalanceSheetCard
+            data={d?.balanceSheet}
+            isLoading={dash.isLoading}
+          />
+          <BalanceEvolutionChart
+            data={d?.evolution}
+            isLoading={dash.isLoading}
+          />
+        </div>
+      )}
 
-      {/* ═══ Fôlego Financeiro ═══ */}
+      {/* ═══ Fôlego Financeiro (P5: engajado+) ═══ */}
 
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Níveis */}
-      <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
+      {showFullTier && (
+        <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
+      )}
 
       {/* DASH-08: FAB lançamento rápido */}
       <QuickEntryFab />

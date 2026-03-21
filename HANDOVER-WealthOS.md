@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-7 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-8 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9+P5).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1010,11 +1010,11 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P8 | BulkEntryGrid: tabela editável genérica (add row, validação inline, save all). BulkImportTab: 3 domínios (bens, veículos, investimentos) com configs de colunas dedicadas. Integrado em /connections como aba "Cadastro em massa". | Alto | Médio-alto | Adendo v1.5 §4.2.1 | ✅ |
 | P9 | 3 templates Excel por domínio (bens, veículos, investimentos) + download client-side via ExcelJS. Templates com sheet de instruções e exemplos BR. | Médio | Médio | Adendo v1.5 §4.2.2-4.3 | ✅ |
 
-**Sprint 8: Dashboard progressivo (~1 sessão)**
+**Sprint 8: Dashboard progressivo (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P5 | Dashboard com 4 níveis de maturidade (Novo 0-10tx, Ativo 11-50tx, Engajado 51+tx 2+meses, Avançado opt-in). Integrar ao get_dashboard_all com parâmetro de nível | Alto | Médio-alto | Adendo v1.5 §2.4 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P5 | Dashboard com 4 níveis de maturidade: Novo (0-10tx: setup+import+narrative+summary), Ativo (11-50tx: +categorias+bills+budget), Engajado (51+tx 2+meses: +balanço+evolução+solvência), Avançado (opt-in futuro). | Alto | Médio-alto | Adendo v1.5 §2.4 | ✅ |
 
 **Sprint 9: Gateway IA (~1 sessão)**
 
@@ -2982,3 +2982,37 @@ Templates de transações (standard + card) já existiam. Total: 5 templates (st
 ### 25h.4 Próximo: Sprint 8
 
 P5 (Dashboard com 4 níveis de maturidade progressiva).
+
+## Sessão 25i - 20 março 2026 (Claude Opus, Projeto Claude) — Sprint 8
+
+### 25i.1 Escopo
+
+Sprint 8 do adendo v1.5: P5 (Dashboard com 4 níveis de maturidade progressiva).
+
+### 25i.2 O que foi feito
+
+**P5 - Dashboard progressivo (adendo v1.5 §2.4):**
+
+4 níveis de maturidade baseados em volume de dados:
+- **Novo** (0-10 tx): Setup Journey + Import CTA + Narrativa + Fila de atenção + Resumo (saldo/receita/despesa)
+- **Ativo** (11-50 tx): + Top Categorias + Contas a Vencer + Orçamento
+- **Engajado** (51+ tx, 2+ meses): + Balanço Patrimonial + Evolução + Fôlego Financeiro
+- **Avançado** (opt-in, futuro): reservado
+
+Implementação:
+- `useProgressiveDisclosure`: query de monthly_snapshots (count) + cálculo de maturityLevel
+- `DisclosureFlags`: +maturityLevel, +distinctMonths
+- Dashboard: variáveis `showMidTier` e `showFullTier` controlam renderização condicional
+- Seções ocultas não fazem queries desnecessárias (componentes não montados)
+
+### 25i.3 Nota sobre lint fix (Sprint 6-7)
+
+CI da Sprint 6-7 falhou por 2 problemas:
+1. Aspas não escapadas em JSX (`"Importar extrato"` em `bulk-import-tab.tsx`)
+2. TS7053: acesso dinâmico `row[col.key]` sem index signature resolvida em `bulk-entry-grid.tsx`
+
+Corrigidos em `4624934` (lint) e `606decc` (TS7053 via helper `cell()`).
+
+### 25i.4 Próximo: Sprint 9
+
+P11 (Gateway IA: Edge Function ai-gateway + sanitizador PII + tabelas ai_cache/ai_usage_log + categorização com fallback Gemini Flash-Lite).
