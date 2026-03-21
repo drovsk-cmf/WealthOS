@@ -20,10 +20,10 @@ const PATTERNS: { regex: RegExp; replacement: string }[] = [
   { regex: /\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b/g, replacement: "[CNPJ]" },
   // Email
   { regex: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, replacement: "[EMAIL]" },
+  // Credit card: 4 groups of 4 digits (MUST come before phone to avoid greedy phone match)
+  { regex: /\b\d{4}[\s.-]?\d{4}[\s.-]?\d{4}[\s.-]?\d{2,4}\b/g, replacement: "[CARTAO]" },
   // Phone BR: +55 (62) 99999-9999 or variations
   { regex: /(?:\+?55\s?)?(?:\(?\d{2}\)?[\s.-]?)?\d{4,5}[\s.-]?\d{4}\b/g, replacement: "[TEL]" },
-  // Credit card: 4+ digit groups
-  { regex: /\b\d{4}[\s.-]?\d{4}[\s.-]?\d{4}[\s.-]?\d{2,4}\b/g, replacement: "[CARTAO]" },
   // Bank account patterns: ag XXXX cc XXXXXXX
   { regex: /\b(?:ag|agencia|conta|cc|c\/c)\s*:?\s*\d{3,}/gi, replacement: "[CONTA]" },
 ];
