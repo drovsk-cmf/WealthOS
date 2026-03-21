@@ -40,6 +40,9 @@ export function useSetupJourney() {
       });
       if (error) throw error;
       return data as unknown as SetupJourneyData;
+      // Note: DT-007 accepted. This cast is safe because the RPC
+      // `get_setup_journey` has a fixed return shape matching SetupJourneyData.
+      // See src/lib/utils/type-guards.ts for runtime guard utilities.
     },
     staleTime: 5 * 60 * 1000, // 5 min
   });

@@ -66,15 +66,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 33 (todas com RLS) |
-| Políticas RLS | 100 |
-| Functions (total) | 72 no schema public. Todas com `SET search_path = public`. 69 SECURITY DEFINER com auth.uid() guard |
+| Tabelas | 34 (todas com RLS) |
+| Políticas RLS | 103 |
+| Functions (total) | 73 no schema public. Todas com `SET search_path = public`. 70 SECURITY DEFINER com auth.uid() guard |
 | Triggers | 24 |
 | ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
-| Indexes | 137 |
-| Migrations aplicadas (MCP) | 43 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 52 em supabase/migrations/ |
-| pg_cron jobs | 12: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30) |
+| Indexes | 140 |
+| Migrations aplicadas (MCP) | 46 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 53 em supabase/migrations/ |
+| pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
@@ -83,11 +83,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Fontes de índices | 51 (7 BCB SGS + 10 BCB PTAX + 29 Frankfurter + 5 CoinGecko) |
 | Moedas suportadas | 35: BRL + 10 PTAX (USD,EUR,GBP,CHF,CAD,AUD,JPY,DKK,NOK,SEK) + 19 Frankfurter + 5 crypto (BTC,ETH,SOL,BNB,XRP) |
 | User stories total | 108 (90 originais + 18 adendo v1.5: UXR-01..05, PAT-08..11, AI-01..05, IMP-01..04) |
-| Stories concluídas | 102/108 (87 originais + 15 do adendo v1.5). Restam: 3 bloqueadas por Mac + 3 pós-MVP |
+| Stories concluídas | 105/108 (87 originais + 18 adendo v1.5). Restam: 3 bloqueadas por Mac (CFG-04, FIN-17, FIN-18) |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (72 no schema public)
+### 3.3 Functions (73 no schema public)
 
 | Grupo | Functions |
 |---|---|
@@ -106,7 +106,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Setup Journey | get_setup_journey, advance_setup_journey, initialize_setup_journey |
 | Description Aliases | lookup_description_alias, upsert_description_alias |
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
-| Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30)** |
+| Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
 ### 3.4 Código Fonte (143 arquivos em src/, 28 suítes de teste, 398 assertions)
 
@@ -1068,7 +1068,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **NOTA: Para métricas numéricas (tabelas, functions, tests, etc.), a fonte única é a §3.2.** Os "Totais atualizados" nos logs de sessões históricas abaixo refletem o momento em que foram escritos e podem estar defasados. Sempre consulte §3.2 para números corretos.
 
-**Contagem geral:** 108 stories especificadas. **102 concluídas** (87 originais + 15 adendo v1.5). 3 bloqueadas (requerem Mac). 3 pós-MVP (P12, P13, P17).
+**Contagem geral:** 108 stories especificadas. **105 concluídas** (87 originais + 18 adendo v1.5). 3 bloqueadas (requerem Mac: CFG-04, FIN-17, FIN-18).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1135,13 +1135,13 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | P7b | UI de hierarquia de ativos: parent_asset_id no AssetForm, select de bem pai (filtra bens sem pai), prop defaultParentId para fluxo "adicionar acessório" | Alto | Médio | Adendo v1.5 §3.1-3.3 | ✅ |
 | P14 | Cadastro assistido de bens: tabela asset_templates (27 templates BR com depreciação e valor referência), useAssetTemplates hook, searchTemplates helper | Médio | Médio | Adendo v1.5 §5.6 | ✅ |
 
-**Pós-MVP (sessões futuras):**
+**Pós-MVP: ✅ CONCLUÍDO (21/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P12 | Extração de documentos com IA (OCR + parser determinístico + Gemini Flash fallback) | Médio | Médio | Adendo v1.5 §5.5 |
-| P13 | Insights narrativos mensais (Edge Function + Claude Haiku 4.5, tabela user_insights) | Médio | Médio | Adendo v1.5 §5.7 |
-| P17 | Assistente conversacional (Claude Sonnet, tool calling, NLP → query estruturada) | Alto | Alto | Adendo v1.5 §5.8 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P12 | Extração de documentos: /api/ai/extract (OCR text → regex BR → Gemini Flash fallback). Campos: amount, date, CNPJ, merchant. PII sanitizado. | Médio | Médio | Adendo v1.5 §5.5 | ✅ |
+| P13 | Insights narrativos: /api/ai/insights + tabela user_insights. Claude Haiku primário, Gemini fallback. Cached por mês. | Médio | Médio | Adendo v1.5 §5.7 | ✅ |
+| P17 | Assistente conversacional: /api/ai/chat. Claude Sonnet + tool calling (4 ferramentas: query_transactions, get_summary, get_balance_sheet, get_category_spending). Loop max 3 iterações. | Alto | Alto | Adendo v1.5 §5.8 | ✅ |
 
 
 ### 12.2 Limitações conhecidas (avaliar antes do deploy)
@@ -3256,3 +3256,68 @@ Bugs encontrados e corrigidos:
 ### 25l.4 CI
 
 Commit: `6ffd47e` | 4/4 green (Security + Lint + Tests + Build)
+
+## Sessão 25m - 21 março 2026 (Claude Opus, Projeto Claude) — 12 itens pendentes
+
+### 25m.1 Escopo
+
+Resolução de todos os 12 itens pendentes identificados na varredura de consistência.
+
+### 25m.2 O que foi feito
+
+| # | Item | Tipo | Entrega |
+|---|---|---|---|
+| 1 | P6: asset_id no submit | Fix incompleto | CreateTransactionInput +asset_id, post-create UPDATE, form passa assetId |
+| 2 | P7b: hierarquia visual | Fix incompleto | Roots/children grouping, indentação ml-8, valor consolidado pai+filhos |
+| 3 | P14: template suggestions | Fix incompleto | useAssetTemplates + searchTemplates conectados ao AssetForm, dropdown Sparkles |
+| 4 | CAPTCHA Turnstile | Feature nova | Componente Turnstile (graceful bypass), verifyTurnstile server-side em 3 auth routes |
+| 5 | P12: extração documentos IA | Feature pós-MVP | /api/ai/extract (regex BR → Gemini Flash fallback), PII sanitizado |
+| 6 | P13: insights narrativos | Feature pós-MVP | /api/ai/insights + tabela user_insights, Claude Haiku → Gemini fallback |
+| 7 | P17: assistente conversacional | Feature pós-MVP | /api/ai/chat, Claude Sonnet tool calling (4 tools), loop max 3 |
+| 8 | UX-H2-02: push inatividade | Feature UX | Trigger 7+ dias sem lançamentos no cron push/send |
+| 9 | E2E Playwright no CI | Infra | Job condicional (vars.E2E_ENABLED), Chromium, upload report on failure |
+| 10 | DT-007: type casts | Dívida técnica | 0 'as any', type-guards.ts criado, casts existentes documentados |
+| 11 | DT-014: COA orphan | Dívida técnica | Verificado: 0 órfãos. FK constraint adicionado preventivamente |
+| 12 | DT-015: soft-delete 90d | Dívida técnica | cron_cleanup_soft_deleted (dom 05:30 UTC), migration 065 |
+
+### 25m.3 Migrations aplicadas (oniefy-prod)
+
+- `p13_user_insights` (user_insights table + RLS + index)
+- `dt015_soft_delete_cleanup` (cron + COA FK constraint)
+- Arquivos locais: 065_dt015_soft_delete_cleanup.sql
+
+### 25m.4 Estado final do projeto
+
+| Métrica | Valor |
+|---|---|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 34 |
+| Functions | 73 |
+| RLS policies | 103 |
+| pg_cron jobs | 13 |
+| Indexes | 140 |
+| Suítes Jest | 28 (398 assertions) |
+| Arquivos src/ | ~148 |
+| API routes | 13 (auth: 5, ai: 3, push: 2, digest: 2, indices: 1) |
+| CI jobs | 5 (Security + Lint + Tests + Build + E2E condicional) |
+| Dívida técnica | 0 itens abertos (todos resolvidos ou aceitos com documentação) |
+
+### 25m.5 Env vars necessárias para produção
+
+| Var | Obrigatória? | Onde obter |
+|---|---|---|
+| NEXT_PUBLIC_SUPABASE_URL | Sim | Dashboard Supabase |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Sim | Dashboard Supabase |
+| SUPABASE_SERVICE_ROLE_KEY | Sim | Dashboard Supabase |
+| NEXT_PUBLIC_APP_URL | Sim | URL do deploy Vercel |
+| SENTRY_DSN | Recomendado | sentry.io (free tier) |
+| NEXT_PUBLIC_TURNSTILE_SITE_KEY | Recomendado | Cloudflare Turnstile |
+| TURNSTILE_SECRET_KEY | Recomendado | Cloudflare Turnstile |
+| GEMINI_API_KEY | Opcional | Google AI Studio |
+| ANTHROPIC_API_KEY | Opcional | Anthropic Console |
+| NEXT_PUBLIC_VAPID_PUBLIC_KEY | Opcional | Gerado (já no HANDOVER §19) |
+| VAPID_PRIVATE_KEY | Opcional | Gerado (já no HANDOVER §19) |
+| VAPID_EMAIL | Opcional | mailto:admin@oniefy.com |
+| CRON_SECRET | Opcional | Gerar valor aleatório |
+| RESEND_API_KEY | Opcional | Resend.com |
+| DIGEST_CRON_SECRET | Opcional | Gerar valor aleatório |
