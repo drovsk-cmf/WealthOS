@@ -108,7 +108,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (143 arquivos em src/, 28 suítes de teste, 398 assertions)
+### 3.4 Código Fonte (148 arquivos em src/, 28 suítes de teste, 398 assertions)
 
 ```
 src/
@@ -488,7 +488,7 @@ Referência rápida de todas as decisões arquiteturais, incluindo pivots feitos
 | OCR | **Tesseract.js** (web). Apple Vision Framework planejado para iOS nativo | Adendo v1.2 → sessão 19 | |
 | Offline | SW cacheia assets estáticos. Dados NÃO cacheados offline (decisão deliberada: app financeiro não serve dados stale) | Adendo v1.2 | Sim: IndexedDB planejado → removido |
 | Integração bancária | Import manual CSV/OFX/XLSX (Fase 9). Agregador (Pluggy/Belvo) futuro | Adendo v1.3 | |
-| Jobs de background | **pg_cron** (12 jobs SQL) + Next.js API routes para push/digest | Adendo v1.1 | **Sim: Edge Functions (Supabase) → pg_cron** (sessão 11) |
+| Jobs de background | **pg_cron** (13 jobs SQL) + Next.js API routes para push/digest | Adendo v1.1 | **Sim: Edge Functions (Supabase) → pg_cron** (sessão 11) |
 | Índices econômicos | BCB SGS + BCB PTAX + **Frankfurter/ECB** + **CoinGecko** | Est. Contábil v1.5 → sessão 22 | **Sim: IPEADATA fallback → Frankfurter/ECB + CoinGecko** (sessão 22, multicurrency) |
 | Plano de contas | Híbrido CPC/linguagem natural. **140** contas-semente (5 grupos) | Est. Contábil v1.5 → sessão 22 | Sim: 133 → 140 (expansão multicurrency, sessão 22) |
 | Modelo contábil | Partida dobrada append-only, invisível ao usuário | Estudo Contábil v1.5 | |
