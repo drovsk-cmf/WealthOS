@@ -35,6 +35,7 @@ export interface CreateAssetInput {
   insurance_expiry?: string | null;
   notes_encrypted?: string | null;
   currency?: string;
+  parent_asset_id?: string | null;
 }
 
 export interface UpdateAssetInput {
@@ -47,6 +48,7 @@ export interface UpdateAssetInput {
   insurance_expiry?: string | null;
   notes_encrypted?: string | null;
   currency?: string;
+  parent_asset_id?: string | null;
 }
 
 // ─── Labels ─────────────────────────────────────────────────────

@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-9 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9+P5+P11).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-10 concluídas: todas as 15 prioridades pré-MVP implementadas).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1022,12 +1022,12 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 |---|---|---|---|---|---|
 | P11 | Gateway IA: tabelas ai_cache + ai_usage_log, RPCs (rate limit, cache, save), sanitizador PII, API route /api/ai/categorize (Gemini Flash-Lite), hook useAiCategorize, cron limpeza cache. Ativação requer GEMINI_API_KEY no env. | Alto | Médio | Adendo v1.5 §5.3-5.4-5.9 | ✅ |
 
-**Sprint 10: Hierarquia de ativos na UI (~1 sessão)**
+**Sprint 10: Hierarquia de ativos na UI (~1 sessão) ✅ CONCLUÍDA (21/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P7b | UI de hierarquia de ativos: ativo pai/filho, aba "Custos" no detalhe do bem, valor consolidado pai+filhos, destaque de filhos | Alto | Médio | Adendo v1.5 §3.1-3.3 |
-| P14 | Cadastro assistido de bens: tabela asset_templates + fallback Gemini Flash para valor/categoria/depreciação | Médio | Médio | Adendo v1.5 §5.6 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P7b | UI de hierarquia de ativos: parent_asset_id no AssetForm, select de bem pai (filtra bens sem pai), prop defaultParentId para fluxo "adicionar acessório" | Alto | Médio | Adendo v1.5 §3.1-3.3 | ✅ |
+| P14 | Cadastro assistido de bens: tabela asset_templates (28 templates BR com depreciação e valor referência), useAssetTemplates hook, searchTemplates helper | Médio | Médio | Adendo v1.5 §5.6 | ✅ |
 
 **Pós-MVP (sessões futuras):**
 
@@ -3054,3 +3054,64 @@ Ativação: requer GEMINI_API_KEY no .env. Sem a chave, gateway retorna resultad
 ### 25j.4 Próximo: Sprint 10
 
 P7b (UI hierarquia de ativos) + P14 (cadastro assistido de bens com asset_templates).
+
+## Sessão 25k - 21 março 2026 (Claude Opus, Projeto Claude) — Sprint 10
+
+### 25k.1 Escopo
+
+Sprint 10 do adendo v1.5: P7b (UI hierarquia de ativos) + P14 (cadastro assistido com templates).
+
+### 25k.2 O que foi feito
+
+**P7b - UI hierarquia de ativos (adendo v1.5 §3.1-3.3):**
+- AssetForm: select "Bem pai (opcional)" entre Categoria e Moeda
+- Filtra bens sem parent_asset_id (apenas raízes como opções de pai)
+- Prop `defaultParentId` para fluxo "adicionar acessório a este bem"
+- `createAsset.mutateAsync` agora inclui `parent_asset_id`
+- Reset e useEffect deps atualizados
+
+**P14 - Cadastro assistido de bens (adendo v1.5 §5.6):**
+
+Schema (migration 064):
+- `asset_templates`: name, category, default_depreciation_rate, reference_value_brl, useful_life_years, tags
+- RLS: SELECT para authenticated
+- Indexes: category + GIN full-text search (portuguese)
+- 28 templates BR: imóveis (4), veículos (8), eletrônicos (5), móveis (4), jóias (2), esportes (2), colecionáveis (2)
+
+Frontend:
+- `useAssetTemplates` hook: query com 1h staleTime (dados estáticos)
+- `searchTemplates()`: fuzzy match por nome + tags (top 5)
+- database.ts: asset_templates type
+
+### 25k.3 Migrations aplicadas (oniefy-prod)
+
+- `p14_asset_templates` (via MCP apply_migration)
+- Arquivo local: `supabase/migrations/064_p14_asset_templates.sql`
+
+### 25k.4 Resumo consolidado da sessão
+
+Todas as 15 prioridades pré-MVP do adendo v1.5 foram implementadas nesta sessão:
+
+| # | Item | Sprint |
+|---|---|---|
+| P1 | Auditoria de strings e renomeações | Sprint 1 (sessão anterior) |
+| P2 | Importação na sidebar + CTA dashboard | Sprint 1 (sessão anterior) |
+| P15 | Cronograma guiado de 5 semanas | Sprint 1 (sessão anterior) |
+| P4 | Onboarding simplificado (9→3 steps, MFA diferido) | Sprint 2 |
+| P16 | ENUM asset_category 5→14 | Sprint 3 |
+| P7a | parent_asset_id + asset_id em transactions/journal_entries | Sprint 3 |
+| P3 | Reorganizar Configurações | Sprint 4 |
+| P6 | Formulário de transação radical | Sprint 4 |
+| P10 | Pipeline de categorização determinística | Sprint 5 |
+| P8 | Tabela editável in-app (BulkEntryGrid) | Sprint 6-7 |
+| P9 | Templates Excel por domínio (5 templates) | Sprint 6-7 |
+| P5 | Dashboard progressivo (4 níveis) | Sprint 8 |
+| P11 | Gateway IA (Gemini, cache, rate limit, PII sanitizer) | Sprint 9 |
+| P7b | Hierarquia de ativos na UI | Sprint 10 |
+| P14 | Asset templates (28 templates BR) | Sprint 10 |
+
+Restam apenas os itens pós-MVP: P12 (extração documentos IA), P13 (insights narrativos), P17 (assistente conversacional).
+
+### 25k.5 Próximo
+
+Itens pós-MVP ou próximas prioridades definidas por Claudio.
