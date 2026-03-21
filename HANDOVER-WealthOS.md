@@ -69,11 +69,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Tabelas | 34 (todas com RLS) |
 | Políticas RLS | 103 |
 | Functions (total) | 73 no schema public. Todas com `SET search_path = public`. 70 SECURITY DEFINER com auth.uid() guard |
-| Triggers | 24 |
+| Triggers | 21 |
 | ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
 | Indexes | 140 |
-| Migrations aplicadas (MCP) | 46 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 53 em supabase/migrations/ |
+| Migrations aplicadas (MCP) | 47 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 54 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -3321,3 +3321,38 @@ Resolução de todos os 12 itens pendentes identificados na varredura de consist
 | CRON_SECRET | Opcional | Gerar valor aleatório |
 | RESEND_API_KEY | Opcional | Resend.com |
 | DIGEST_CRON_SECRET | Opcional | Gerar valor aleatório |
+
+## Sessão 26 - 21 março 2026 (Claude Opus, Projeto Claude) — Release Gate Audit
+
+### 26.1 Escopo
+
+Auditoria Release Gate completa (MATRIZ-VALIDACAO-v2_1.md): 37 auditorias em 10 camadas, seguindo ordem recomendada: Segurança → Dependências → Conformidade → Funcional → Arquitetura → Performance → Infraestrutura → Código → Repositório → UX.
+
+### 26.2 Resultado: 31 executadas, 6 não executadas
+
+**PASS (26):** 4.1 (RLS), 4.2 (Auth guards), 4.3 (search_path), 4.4 (Secrets), 4.5 (Input validation), 4.6 (SSRF/CSRF), 8.3 (Licenciamento), 10.3 (ISO A.8.28), 3.1 (Front/back), 3.2 (Schema types), 3.5 (Error handling), 5.4 (Índices DB), 9.1 (Config ambientes), 9.3 (Resiliência), 2.1 (Compilação), 2.2 (Lint), 2.3 (Dead code), 2.5 (Fragilidade estática), 1.1 (Commits), 1.3 (CI/CD).
+
+**Achados (11):**
+
+| # | Camada | Achado | Categoria | Status |
+|---|---|---|---|---|
+| 1 | 10.1 | cron_process_account_deletions era stub (LIMIT 0) | Defeito | **CORRIGIDO** (migration 066) |
+| 2 | 8.2 | 7 pacotes com major nova (Capacitor 2 major atrás) | Fragilidade | Documentado |
+| 3 | 6.1 | Hooks a 26%, cron routes 18-22% cobertura | Fragilidade | Documentado |
+| 4 | 3.4 | Account mutations sem invalidação dashboard | Fragilidade | **CORRIGIDO** |
+| 5 | 8.1 | 3 CVEs high em tar (devDeps only) | Débito | Documentado |
+| 6 | 5.1 | N+1 em push/digest cron routes | Débito | Documentado |
+| 7 | 5.3 | Recharts sem lazy loading | Débito | Documentado |
+| 8 | 9.2 | Sem logging estruturado | Débito | Documentado |
+| 9 | 1.2 | HANDOVER triggers: 24 vs 21 real | Sujeira | **CORRIGIDO** |
+| 10 | 2.6 | Toasts cost-centers: "Centro" legacy | Sujeira | **CORRIGIDO** |
+| 11 | 10.2 | Testes sem naming convention story→teste | Sujeira | Documentado |
+
+**Não executadas (6):** 2.4 (Duplicação), 3.3 (Acoplamento), 6.2-6.7 (testes avançados), 7.1-7.3 (UX visual), 8.4 (SBOM).
+
+### 26.3 Correções aplicadas
+
+1. **migration 066** (`implement_account_deletion_cron`): substitui stub por implementação real de exclusão LGPD. Deleta dados de 25 tabelas + storage + auth.users após grace period de 7 dias. Cada usuário em subtransação isolada. MCP migration #47.
+2. **use-accounts.ts**: useCreateAccount, useUpdateAccount, useDeactivateAccount agora invalidam queryKey `["dashboard"]`.
+3. **cost-centers/page.tsx**: 12 ocorrências de "centro" substituídas por "divisão" (toasts, titles, help text, filenames).
+4. **HANDOVER**: triggers 24→21, migrations 46→47, files 53→54.
