@@ -62,9 +62,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Check rate limit
-    const { data: rateLimit } = await supabase.rpc("check_ai_rate_limit", {
+    const { data: rateLimitRaw } = await supabase.rpc("check_ai_rate_limit", {
       p_user_id: user.id,
     });
+    const rateLimit = rateLimitRaw as { used: number; limit: number; remaining: number; allowed: boolean } | null;
     if (rateLimit && !rateLimit.allowed) {
       return NextResponse.json({
         error: `Limite mensal de IA atingido (${rateLimit.used}/${rateLimit.limit}). Resets no próximo mês.`,
@@ -155,7 +156,7 @@ ${uncached.map((u, i) => `${i}. ${u.desc}`).join("\n")}`;
                 p_model: GEMINI_MODEL,
                 p_use_case: "categorize",
                 p_prompt_sanitized: u.desc,
-                p_response: result as unknown as Record<string, unknown>,
+                p_response: JSON.parse(JSON.stringify(result)),
                 p_tokens_in: Math.ceil(tokensIn / uncached.length),
                 p_tokens_out: Math.ceil(tokensOut / uncached.length),
                 p_cost_usd: costPerItem,
