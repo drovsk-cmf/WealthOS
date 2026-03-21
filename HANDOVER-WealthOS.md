@@ -1,10 +1,10 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 19 de março de 2026
+**Data:** 21 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (privado)
 **Supabase Project ID (ativo):** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
-**Supabase Project ID (legado):** hmwdfcsxtmbzlslxgqus (sa-east-1 São Paulo) — "WealthOS Project" — PAUSAR/DESLIGAR
+**Supabase Project ID (legado):** hmwdfcsxtmbzlslxgqus (sa-east-1 São Paulo) — "WealthOS Project" — INACTIVE (pausado 20/03/2026)
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
 
 ---
@@ -25,18 +25,22 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | Next.js 15.5.12 (App Router) + React 19.2.4 + TypeScript |
+| Frontend | Next.js 15.5.14 (App Router) + React 19.2.4 + TypeScript |
 | UI | shadcn/ui + Tailwind CSS + Plum Ledger design system |
-| Tipografia | DM Sans (corpo) + JetBrains Mono (dados) + Instrument Serif (display, adiado) |
+| Tipografia | DM Sans (corpo) + JetBrains Mono (dados) |
 | Iconografia | Lucide React (SVG) |
-| Backend/BaaS | Supabase (PostgreSQL + Auth + RLS + Storage + Edge Functions) |
+| Backend/BaaS | Supabase (PostgreSQL + Auth + RLS + Storage) |
 | Mobile iOS | Capacitor 6 (empacotamento PWA para App Store) |
 | Hospedagem | Vercel |
 | State Management | React Query + Zustand |
 | Gráficos | Recharts |
 | Validação | Zod |
-| CI/CD | GitHub Actions |
-| APIs externas | BCB SGS + BCB PTAX OData (10 moedas oficiais) + Frankfurter/ECB (20 moedas fiat) + CoinGecko (5 cryptos) + IBGE SIDRA |
+| CI/CD | GitHub Actions (4 jobs: Security + Lint/TypeCheck + Unit Tests + Build) |
+| Error Tracking | Sentry (@sentry/nextjs, opt-in via DSN) |
+| APIs externas | BCB SGS (7 séries macro) + BCB PTAX OData (10 moedas oficiais) + Frankfurter/ECB (20 moedas fiat) + CoinGecko (5 cryptos) + IBGE SIDRA |
+| IA | Gemini Flash-Lite (categorização, via /api/ai/categorize). Requer GEMINI_API_KEY |
+| OCR | Tesseract.js (web). Apple Vision Framework planejado para iOS nativo |
+| Push | Web Push (VAPID). APNs nativo planejado para iOS |
 
 ---
 
@@ -62,14 +66,16 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 28 (todas com RLS) |
-| Políticas RLS | 91 |
-| Functions (total) | 65 no schema public. Todas com `SET search_path = public` e auth.uid() check |
-| Triggers | 21 |
-| ENUMs | 27 (index_type agora com 46 valores: 13 originais + 33 moedas) |
-| Migrations aplicadas | 35 no projeto ativo (mngjbrbxapazdddzgoje) |
-| pg_cron jobs | 9: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h) |
-| Contas no plano-semente | 140 |
+| Tabelas | 33 (todas com RLS) |
+| Políticas RLS | 100 |
+| Functions (total) | 72 no schema public. Todas com `SET search_path = public`. 69 SECURITY DEFINER com auth.uid() guard |
+| Triggers | 24 |
+| ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
+| Indexes | 137 |
+| Migrations aplicadas (MCP) | 43 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 52 em supabase/migrations/ |
+| pg_cron jobs | 12: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30) |
+| Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
 | Categorias | 16 (únicas, cores Plum Ledger) |
 | Parâmetros fiscais | 9 (IRPF mensal/anual 2025+2026, INSS 2025+2026, salário mínimo 2025+2026, ganho capital) |
@@ -77,35 +83,36 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Fontes de índices | 51 (7 BCB SGS + 10 BCB PTAX + 29 Frankfurter + 5 CoinGecko) |
 | Moedas suportadas | 35: BRL + 10 PTAX (USD,EUR,GBP,CHF,CAD,AUD,JPY,DKK,NOK,SEK) + 19 Frankfurter + 5 crypto (BTC,ETH,SOL,BNB,XRP) |
 | User stories total | 108 (90 originais + 18 adendo v1.5: UXR-01..05, PAT-08..11, AI-01..05, IMP-01..04) |
-| Stories concluídas | 87/108 (ver breakdown abaixo) |
+| Stories concluídas | 102/108 (87 originais + 15 do adendo v1.5). Restam: 3 bloqueadas por Mac + 3 pós-MVP |
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (65 no schema public)
+### 3.3 Functions (72 no schema public)
 
 | Grupo | Functions |
 |---|---|
 | Setup/Seed | create_default_categories, create_default_chart_of_accounts, create_default_cost_center, create_coa_child, create_family_member |
-| Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
+| Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, recalculate_account_balance_for, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
-| Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual, get_weekly_digest |
+| Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
 | Fiscal | get_fiscal_report, get_fiscal_projection |
-| Índices/Moedas | get_economic_indices, get_index_latest, **get_currency_rates, get_supported_currencies, get_rate_to_brl** |
-| Import | import_transactions_batch (v3 com aliases), auto_categorize_transaction, undo_import_batch |
+| Índices/Moedas | get_economic_indices, get_index_latest, get_currency_rates, get_supported_currencies, get_rate_to_brl |
+| Import/Categorização | import_transactions_batch (v3 com aliases), auto_categorize_transaction (pipeline 3 etapas), undo_import_batch, **learn_merchant_pattern** |
 | Reconciliation | find_reconciliation_candidates, match_transactions |
 | Analytics | track_event, get_retention_metrics |
-| **Setup Journey** | **get_setup_journey, advance_setup_journey, initialize_setup_journey** |
-| **Description Aliases** | **lookup_description_alias, upsert_description_alias** |
-| Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h) |
+| Setup Journey | get_setup_journey, advance_setup_journey, initialize_setup_journey |
+| Description Aliases | lookup_description_alias, upsert_description_alias |
+| **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
+| Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30)** |
 
-### 3.4 Código Fonte (128 arquivos em src/, 22 testes, ~28.400 linhas)
+### 3.4 Código Fonte (143 arquivos em src/, 28 suítes de teste, 398 assertions)
 
 ```
 src/
-├── __tests__/                    # 22 suítes de teste (Jest + RTL), 341 assertions
+├── __tests__/                    # 28 suítes de teste (Jest + RTL), 398 assertions
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
 │   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
@@ -119,7 +126,13 @@ src/
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── onboarding-seeds.test.ts
 │   ├── oniefy-template.test.ts
+│   ├── p1-divisoes-rename.test.ts     # 4: Centro→Divisão, N1-N4 nomenclatura
+│   ├── p9-domain-templates.test.ts    # 7: metadata templates, fileNames, detecção standard/card
+│   ├── p11-ai-gateway.test.ts         # 11: uncategorized filter, rate limit shape
+│   ├── p14-asset-templates.test.ts    # 10: searchTemplates, estrutura, bounds
+│   ├── p16-asset-categories.test.ts   # 11: 14 categorias, labels, colors, zod
 │   ├── parsers.test.ts
+│   ├── pii-sanitizer.test.ts          # 14: CPF, CNPJ, email, tel, cartão, conta
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
 │   ├── read-hooks.test.tsx
 │   ├── rpc-auto-categorize-schema.test.ts
@@ -378,18 +391,77 @@ Seção mantida como registro histórico. Todos os itens pendentes foram migrado
 
 ## 8. Documentação de Referência (11 documentos no projeto)
 
-| Doc | Conteúdo chave |
-|---|---|
-| wealthos-especificacao-v1.docx | Stack, segurança, modelo de dados original, módulos, fases |
-| wealthos-funcional-v1.docx | 62 user stories MVP com critérios de aceite |
-| wealthos-adendo-v1.1.docx | Decisões (2 saldos, carência 7d, E2E, APNs) |
-| wealthos-adendo-v1.2.docx | Apple App Store, importação, OCR, offline, a11y. **Errata:** §2.1 classifica PDF como "Anexo" sem OCR, mas WKF-03 prevê OCR em PDF. Decisão: PDF é formato OCR (além de anexo). |
-| wealthos-adendo-v1.3.docx | **Integração bancária Open Finance** (Pluggy/Belvo, BANK-01-06, pendências) |
-| wealthos-adendo-v1.4.docx | Solvência (LCR, runway), evoluções futuras (9 items) |
-| wealthos-estudo-contabil-v1.5-final.docx | Modelo contábil partida dobrada, 133 contas, centros, workflows |
-| wealthos-estudo-tecnico-v2.0.docx | Estudo técnico completo, 10 tabelas, triggers, RPCs, fases revisadas |
-| oniefy-estrategia-ux-retencao-v2.docx | **Estratégia consolidada de UX, ativação e retenção.** Consolida 4 auditorias externas (2 Gemini + 2 ChatGPT) + 2 rodadas de revisão crítica cruzada. Define: framework de retenção (4 portões), 2 níveis de valor (operacional + estrutural), navegação 5+1, onboarding redesenhado (3 rotas com default por dispositivo), estados vazios, fricção de input (<10s, 3 decisões), camada de confiança de dados, dashboard como fila de atenção, motor narrativo, revelação progressiva cronológica, reengajamento externo (push + email), métricas e instrumentação. Plano de implementação em 3 horizontes (H1/H2/H3). Delta de escopo estimado: ~12-15 stories novas ou ampliadas. |
-| wealthos-adendo-v1.5.docx | **Camada de experiência, IA e modelo patrimonial.** Feedbacks de usabilidade consolidados (avaliador #1, nota 9/10 proposta, 5/10 clareza). Decisão Caminho B (motor sofisticado, interface simples). Redesenho: onboarding <2min, MFA diferido, navegação reorganizada, dashboard progressivo (4 níveis), nomenclatura pt-BR funcional. Modelo patrimonial: hierarquia de ativos (parent_asset_id), rastreamento de despesas por ativo (asset_id ortogonal a centros), 14 categorias de bens. Importação em massa: tabela editável in-app + Excel + cronograma guiado de setup (5 semanas). Arquitetura de IA: pipeline de categorização (4 etapas, 85% sem IA), cascata de modelos (Gemini Flash-Lite → Flash → Claude Haiku), 5 casos de uso, sanitização PII obrigatória, custo ~US$ 0.02/usuário/mês. +6 tabelas, +18 stories (UXR, PAT, AI, IMP), 17 prioridades mapeadas nas fases existentes. |
+Todos salvos no Google Drive (pasta Documentacao/) e como project knowledge neste projeto Claude.
+
+### 8.1 wealthos-especificacao-v1.docx
+- Visão geral, escopo, premissas, fora do escopo (MVP)
+- Stack tecnológica com justificativas
+- Arquitetura de segurança: Auth (MFA, login social), RLS, criptografia (TLS + AES-256 + E2E seletivo), biometria iOS
+- Modelo de dados original: 9 tabelas (users_profile, accounts, categories, transactions, recurrences, budgets, assets, tax_records, documents)
+- Funcionalidades por módulo (6 módulos), plano de fases (0-8), categorias padrão (seed)
+
+### 8.2 wealthos-funcional-v1.docx
+- 62 user stories com critérios de aceite
+- Módulos: AUTH (8), FIN (15), ORC (6), CAP (6), PAT (7), FIS (6), DASH (8), CFG (6)
+
+### 8.3 wealthos-adendo-v1.1.docx
+- Decisões: dois saldos por conta (atual + previsto), carência 7 dias, fiscal client-side (jsPDF)
+- 4 tabelas novas: asset_value_history, monthly_snapshots, notification_tokens, notification_log
+- Key Management E2E: DEK protegida por KEK derivada do JWT via HKDF
+- Push Notifications: originalmente APNs direto (migrado para Web Push/VAPID na implementação)
+
+### 8.4 wealthos-adendo-v1.2.docx
+- Requisitos Apple App Store: Guidelines 4.2/4.8/5.1.1, Privacy Manifest, Sign in with Apple
+- Importação: 10 formatos (CSV, OFX, XLSX, XLS, PDF, JPG, PNG, DOC, DOCX, TXT)
+- OCR: Apple Vision (iOS) + Tesseract.js (web). **Errata:** §2.1 classifica PDF como "Anexo" sem OCR, mas WKF-03 prevê OCR em PDF. Decisão: PDF é formato OCR.
+- Modo offline: React Query + IndexedDB + Service Worker
+- Acessibilidade: 8 requisitos (VoiceOver, WCAG AA, Dynamic Type)
+- +4 stories: FIN-16, FIN-17, FIN-18, CFG-07
+
+### 8.5 wealthos-adendo-v1.3.docx
+- Integração bancária Open Finance (Fase 2, não MVP)
+- Agregador certificado (Pluggy ou Belvo), arquitetura agnóstica com BankingProvider interface
+- Tabela bank_connections. +6 stories: BANK-01 a BANK-06
+- 3 itens pendentes: cobertura BTG/XP, preço agregador, certificação produção
+
+### 8.6 wealthos-adendo-v1.4.docx
+- Alinhamento com Strategic Memo jan/2026 + Masterplan CFO Pessoal v9
+- Métricas de solvência: LCR, Runway, Burn Rate, Patrimônio por Tiers (T1-T4)
+- 9 evoluções futuras catalogadas (Motor CLT, PJ/Simples, Investimentos, Local-First, Zero-Knowledge, Capital Humano, Shadow Ledger, B2B/API)
+
+### 8.7 wealthos-estudo-contabil-v1.5-final.docx
+- Modelo contábil partida dobrada (motor invisível ao usuário)
+- Plano de contas: 133 contas-semente em 5 grupos (expandido para 140 com multicurrency)
+- Centros de custo/lucro: 3 tipos, rateio percentual, hierarquia até 3 níveis
+- Dimensão fiscal integrada via tax_treatment por conta
+- 7 decisões consolidadas: plano-semente, rateio MVP, lançamentos compostos, reconciliação, Open Finance manual, imutabilidade append-only, PL visível
+
+### 8.8 wealthos-estudo-tecnico-v2.0.docx
+- Estudo técnico completo do modelo contábil
+- 10 tabelas novas: chart_of_accounts, journal_entries, journal_lines, cost_centers, center_allocations, tax_parameters, economic_indices, economic_indices_sources, workflows, workflow_tasks
+- 5 tabelas modificadas (transactions, accounts, budgets, assets, recurrences)
+- 12 ENUMs, 16+ indexes, 20+ RLS, triggers, Edge Functions
+- 14 stories novas: CTB-01..05, CEN-01..05, WKF-01..04
+
+### 8.9 oniefy-estrategia-ux-retencao-v2.docx
+- Estratégia consolidada de UX, ativação e retenção
+- Framework de retenção (4 portões), navegação 5+1, onboarding 3 rotas
+- Dashboard como fila de atenção, motor narrativo, revelação progressiva
+- Implementação em 3 horizontes (H1/H2/H3). Delta: ~12-15 stories
+
+### 8.10 wealthos-adendo-v1.5.docx
+- Camada de experiência, IA e modelo patrimonial
+- Feedbacks avaliador #1 (nota 9/10 proposta, 5/10 clareza). Decisão Caminho B
+- Redesenho: onboarding <2min, MFA diferido, dashboard progressivo (4 níveis), nomenclatura pt-BR
+- Modelo patrimonial: hierarquia de ativos, 14 categorias, asset_id em transactions
+- Importação em massa: tabela editável + Excel + 5 semanas guiadas
+- Arquitetura IA: pipeline 4 etapas (85% sem IA), Gemini Flash-Lite, sanitização PII
+- +6 tabelas, +18 stories (UXR, PAT, AI, IMP), 17 prioridades mapeadas
+
+### 8.11 MATRIZ-VALIDACAO-v2.1.md
+- Taxonomia de achados (6 categorias: defeito, vulnerabilidade, performance, fragilidade, débito, sujeira)
+- 37 auditorias em 10 camadas, 4 pacotes de execução
+- Roadmap de certificação: LGPD, ISO 27001, ASVS L2, SOC 2
 
 ---
 
@@ -398,6 +470,38 @@ Seção mantida como registro histórico. Todos os itens pendentes foram migrado
 Disponíveis como arquivos do projeto:
 - `catalogo_ibge_sidra_filter.xlsx` - 9.029 tabelas IBGE
 - `catalogo_bcb_sgs_filter.xlsx` - 6.922 séries BCB SGS
+
+---
+
+## 9b. Decisões Técnicas Consolidadas
+
+Referência rápida de todas as decisões arquiteturais, incluindo pivots feitos durante a implementação.
+
+| Decisão | Escolha atual | Origem | Pivot? |
+|---|---|---|---|
+| Mobile | PWA + Capacitor iOS | Especificação v1.0 | |
+| Backend | Supabase (free tier, sa-east-1 São Paulo) | Especificação v1.0 | |
+| Saldo de contas | Dois saldos: atual (pagas) + previsto (pagas+pendentes) | Adendo v1.1 | |
+| Exclusão de conta | 7 dias de carência + cron process_account_deletions | Adendo v1.1 | |
+| Chave E2E | DEK aleatória, protegida por KEK derivada via HKDF (material estável, não JWT efêmero) | Adendo v1.1 → DT-001 | Sim: KEK derivada de JWT → material estável (sessão 18) |
+| Push notifications | **Web Push (VAPID)** para web. APNs nativo planejado para iOS | Adendo v1.1 → sessão 19 | **Sim: APNs direto → VAPID** (sessão 19). APNs requer Xcode. |
+| OCR | **Tesseract.js** (web). Apple Vision Framework planejado para iOS nativo | Adendo v1.2 → sessão 19 | |
+| Offline | SW cacheia assets estáticos. Dados NÃO cacheados offline (decisão deliberada: app financeiro não serve dados stale) | Adendo v1.2 | Sim: IndexedDB planejado → removido |
+| Integração bancária | Import manual CSV/OFX/XLSX (Fase 9). Agregador (Pluggy/Belvo) futuro | Adendo v1.3 | |
+| Jobs de background | **pg_cron** (12 jobs SQL) + Next.js API routes para push/digest | Adendo v1.1 | **Sim: Edge Functions (Supabase) → pg_cron** (sessão 11) |
+| Índices econômicos | BCB SGS + BCB PTAX + **Frankfurter/ECB** + **CoinGecko** | Est. Contábil v1.5 → sessão 22 | **Sim: IPEADATA fallback → Frankfurter/ECB + CoinGecko** (sessão 22, multicurrency) |
+| Plano de contas | Híbrido CPC/linguagem natural. **140** contas-semente (5 grupos) | Est. Contábil v1.5 → sessão 22 | Sim: 133 → 140 (expansão multicurrency, sessão 22) |
+| Modelo contábil | Partida dobrada append-only, invisível ao usuário | Estudo Contábil v1.5 | |
+| Imutabilidade | Append-only estrito (estorno obrigatório via reverse_transaction) | Estudo Contábil v1.5 | |
+| Dimensão fiscal | Integrada via tax_treatment nas contas. Fiscal é view, não input | Estudo Contábil v1.5 | |
+| Rateio centros | Disponível no MVP. distribute_overhead RPC | Estudo Contábil v1.5 | |
+| Provider IA (volume) | **Gemini Flash-Lite** (custo ~$0.02/user/mês). Rate limit: 50/mês free tier | Adendo v1.5 | **Pendente confirmação Claudio** |
+| Provider IA (narrativas) | Claude Haiku 4.5 (não implementado, pós-MVP) | Adendo v1.5 | **Pendente confirmação Claudio** |
+| Sanitização PII | Regex obrigatório antes de toda chamada IA. 6 padrões (CPF, CNPJ, email, tel, cartão, conta) | Adendo v1.5 | Implementado (sessão 25) |
+| Cache IA | ai_cache com TTL 30 dias, hash SHA-256 | Adendo v1.5 | **Pendente confirmação Claudio** |
+| Dashboard | **Progressivo** (4 níveis: Novo/Ativo/Engajado/Avançado) | Adendo v1.5 | |
+| Nomenclatura UI | pt-BR funcional. Sem termos contábeis expostos. Agnóstica de marcas | Adendo v1.5 | |
+| Categorização | **Pipeline 3 etapas** determinísticas + IA fallback: merchant_patterns → categorization_rules → nome. IA é etapa 4 via /api/ai/categorize | Adendo v1.5 | |
 
 ---
 
@@ -960,9 +1064,11 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 ## 12. Backlog Consolidado Único
 
-**Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
+**Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-10 concluídas: todas as 15 prioridades pré-MVP implementadas).
+**NOTA: Para métricas numéricas (tabelas, functions, tests, etc.), a fonte única é a §3.2.** Os "Totais atualizados" nos logs de sessões históricas abaixo refletem o momento em que foram escritos e podem estar defasados. Sempre consulte §3.2 para números corretos.
+
+**Contagem geral:** 108 stories especificadas. **102 concluídas** (87 originais + 15 adendo v1.5). 3 bloqueadas (requerem Mac). 3 pós-MVP (P12, P13, P17).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1027,7 +1133,7 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 | # | Ação | Impacto | Esforço | Referência | Status |
 |---|---|---|---|---|---|
 | P7b | UI de hierarquia de ativos: parent_asset_id no AssetForm, select de bem pai (filtra bens sem pai), prop defaultParentId para fluxo "adicionar acessório" | Alto | Médio | Adendo v1.5 §3.1-3.3 | ✅ |
-| P14 | Cadastro assistido de bens: tabela asset_templates (28 templates BR com depreciação e valor referência), useAssetTemplates hook, searchTemplates helper | Médio | Médio | Adendo v1.5 §5.6 | ✅ |
+| P14 | Cadastro assistido de bens: tabela asset_templates (27 templates BR com depreciação e valor referência), useAssetTemplates hook, searchTemplates helper | Médio | Médio | Adendo v1.5 §5.6 | ✅ |
 
 **Pós-MVP (sessões futuras):**
 
@@ -3076,7 +3182,7 @@ Schema (migration 064):
 - `asset_templates`: name, category, default_depreciation_rate, reference_value_brl, useful_life_years, tags
 - RLS: SELECT para authenticated
 - Indexes: category + GIN full-text search (portuguese)
-- 28 templates BR: imóveis (4), veículos (8), eletrônicos (5), móveis (4), jóias (2), esportes (2), colecionáveis (2)
+- 27 templates BR: imóveis (4), veículos (8), eletrônicos (5), móveis (4), jóias (2), esportes (2), colecionáveis (2)
 
 Frontend:
 - `useAssetTemplates` hook: query com 1h staleTime (dados estáticos)
@@ -3108,7 +3214,7 @@ Todas as 15 prioridades pré-MVP do adendo v1.5 foram implementadas nesta sessã
 | P5 | Dashboard progressivo (4 níveis) | Sprint 8 |
 | P11 | Gateway IA (Gemini, cache, rate limit, PII sanitizer) | Sprint 9 |
 | P7b | Hierarquia de ativos na UI | Sprint 10 |
-| P14 | Asset templates (28 templates BR) | Sprint 10 |
+| P14 | Asset templates (27 templates BR) | Sprint 10 |
 
 Restam apenas os itens pós-MVP: P12 (extração documentos IA), P13 (insights narrativos), P17 (assistente conversacional).
 
