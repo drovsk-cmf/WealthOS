@@ -1,3 +1,6 @@
+// Force module scope (avoids TS2451 with other test files declaring same mock names)
+export {};
+
 /**
  * Auditoria: Teste de invalidação de cache no transaction engine
  *

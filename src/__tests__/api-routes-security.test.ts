@@ -2,6 +2,9 @@
  * @jest-environment node
  */
 
+// Force module scope (avoids TS2451 with other test files declaring same mock names)
+export {};
+
 /**
  * Oniefy - API Route Security & UX Tests
  *
