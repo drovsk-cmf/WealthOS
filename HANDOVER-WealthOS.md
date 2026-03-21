@@ -3356,3 +3356,21 @@ Auditoria Release Gate completa (MATRIZ-VALIDACAO-v2_1.md): 37 auditorias em 10 
 2. **use-accounts.ts**: useCreateAccount, useUpdateAccount, useDeactivateAccount agora invalidam queryKey `["dashboard"]`.
 3. **cost-centers/page.tsx**: 12 ocorrências de "centro" substituídas por "divisão" (toasts, titles, help text, filenames).
 4. **HANDOVER**: triggers 24→21, migrations 46→47, files 53→54.
+
+### 26.4 Achados de auditorias externas (ChatGPT + Gemini) — triagem
+
+Recebidas 2 auditorias externas. 15 achados combinados. Após verificação contra código e banco reais:
+
+**3 achados genuínos novos (corrigidos):**
+1. `/api/ai/chat` query_transactions expunha `category_name` e `asset_name` no schema da tool mas executor não aplicava filtros. Defeito corrigido: joins adicionados + filtros funcionais.
+2. Sentry (3 configs) sem `beforeSend` para PII. Corrigido: `scrubEvent()` com `sanitizePII()` em client/server/edge.
+3. Turnstile fail-open quando `TURNSTILE_SECRET_KEY` ausente. Válido, design intencional para dev. Requer env var em produção.
+
+**5 falsos positivos rejeitados:**
+- CSRF/origin: SameSite=Lax + CSP form-action é padrão para SPAs
+- Build Google Fonts: falha no sandbox do ChatGPT sem rede, CI real passa
+- CSV injection: sanitização existe em csv-parser.ts:177
+- search_path ausente: verificado no banco, 0 functions sem search_path
+- OFX timezone: parser extrai string pura YYYYMMDD, sem conversão de timezone
+
+**7 repetições de achados já documentados** (cobertura, rate limiter, E2E, HANDOVER, LGPD, biometria, over-fetch).
