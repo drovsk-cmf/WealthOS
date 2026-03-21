@@ -58,7 +58,7 @@ async function executeTool(toolName: string, toolInput: Record<string, unknown>,
     case "query_transactions": {
       let query = supabase
         .from("transactions")
-        .select("date, type, amount, description, is_paid")
+        .select("date, type, amount, description, is_paid, categories(name), assets(name)")
         .eq("user_id", userId)
         .eq("is_deleted", false)
         .order("date", { ascending: false })
@@ -67,9 +67,17 @@ async function executeTool(toolName: string, toolInput: Record<string, unknown>,
       if (toolInput.type) query = query.eq("type", String(toolInput.type) as "income" | "expense" | "transfer");
       if (toolInput.date_from) query = query.gte("date", String(toolInput.date_from));
       if (toolInput.date_to) query = query.lte("date", String(toolInput.date_to));
+      if (toolInput.category_name) query = query.eq("categories.name", String(toolInput.category_name));
+      if (toolInput.asset_name) query = query.eq("assets.name", String(toolInput.asset_name));
 
       const { data } = await query;
-      return data ?? [];
+      // Filter out rows where the joined relation didn't match (PostgREST returns null joins)
+      const filtered = (data ?? []).filter((row) => {
+        if (toolInput.category_name && !(row as Record<string, unknown>).categories) return false;
+        if (toolInput.asset_name && !(row as Record<string, unknown>).assets) return false;
+        return true;
+      });
+      return filtered;
     }
 
     case "get_summary": {

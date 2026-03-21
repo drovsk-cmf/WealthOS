@@ -1,4 +1,21 @@
 import * as Sentry from "@sentry/nextjs";
+import { sanitizePII } from "@/lib/utils/pii-sanitizer";
+
+function scrubEvent(event: Sentry.ErrorEvent): Sentry.ErrorEvent {
+  // Sanitize exception messages
+  if (event.exception?.values) {
+    for (const ex of event.exception.values) {
+      if (ex.value) ex.value = sanitizePII(ex.value);
+    }
+  }
+  // Sanitize breadcrumb messages
+  if (event.breadcrumbs) {
+    for (const bc of event.breadcrumbs) {
+      if (bc.message) bc.message = sanitizePII(bc.message);
+    }
+  }
+  return event;
+}
 
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
@@ -10,5 +27,6 @@ if (dsn) {
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1.0,
     debug: false,
+    beforeSend: scrubEvent,
   });
 }
