@@ -29,6 +29,11 @@ export interface RowData {
   [key: string]: unknown;
 }
 
+/** Safe accessor for dynamic column keys (avoids TS7053 with index signatures) */
+function cell(row: RowData, key: string): unknown {
+  return (row as Record<string, unknown>)[key];
+}
+
 interface BulkEntryGridProps {
   columns: ColumnDef[];
   onSave: (rows: Record<string, unknown>[]) => Promise<{ saved: number; errors: string[] }>;
@@ -44,7 +49,7 @@ function newRow(columns: ColumnDef[]): RowData {
     _errors: {},
   };
   for (const col of columns) {
-    row[col.key] = col.type === "number" ? "" : col.options?.[0]?.value ?? "";
+    (row as Record<string, unknown>)[col.key] = col.type === "number" ? "" : col.options?.[0]?.value ?? "";
   }
   return row;
 }
@@ -52,7 +57,7 @@ function newRow(columns: ColumnDef[]): RowData {
 function validateRow(row: RowData, columns: ColumnDef[]): Record<string, string> {
   const errors: Record<string, string> = {};
   for (const col of columns) {
-    const val = row[col.key];
+    const val = cell(row, col.key);
     if (col.required && (!val || (typeof val === "string" && val.trim() === ""))) {
       errors[col.key] = "Obrigatório";
     }
@@ -119,7 +124,7 @@ export function BulkEntryGrid({
 
     // Filter out empty rows (no required field filled)
     const nonEmpty = validated.filter((row) =>
-      columns.some((col) => col.required && row[col.key] && String(row[col.key]).trim())
+      columns.some((col) => col.required && cell(row, col.key) && String(cell(row, col.key)).trim())
     );
 
     if (nonEmpty.length === 0) {
@@ -141,7 +146,7 @@ export function BulkEntryGrid({
       const cleanRows = nonEmpty.map((row) => {
         const clean: Record<string, unknown> = {};
         for (const col of columns) {
-          clean[col.key] = row[col.key];
+          clean[col.key] = cell(row, col.key);
         }
         return clean;
       });
@@ -161,7 +166,7 @@ export function BulkEntryGrid({
   }
 
   const filledCount = rows.filter((row) =>
-    columns.some((col) => col.required && row[col.key] && String(row[col.key]).trim())
+    columns.some((col) => col.required && cell(row, col.key) && String(cell(row, col.key)).trim())
   ).length;
 
   return (
@@ -233,7 +238,7 @@ export function BulkEntryGrid({
                   <td key={col.key} className="px-1 py-1">
                     {col.type === "select" ? (
                       <select
-                        value={String(row[col.key] ?? "")}
+                        value={String(cell(row, col.key) ?? "")}
                         onChange={(e) => updateCell(row._id, col.key, e.target.value)}
                         className={`h-8 w-full rounded border bg-background px-2 text-sm ${
                           row._errors[col.key]
@@ -252,7 +257,7 @@ export function BulkEntryGrid({
                       <input
                         type={col.type === "date" ? "date" : "text"}
                         inputMode={col.type === "number" ? "decimal" : undefined}
-                        value={String(row[col.key] ?? "")}
+                        value={String(cell(row, col.key) ?? "")}
                         onChange={(e) => updateCell(row._id, col.key, e.target.value)}
                         placeholder={col.placeholder}
                         className={`h-8 w-full rounded border bg-background px-2 text-sm ${
