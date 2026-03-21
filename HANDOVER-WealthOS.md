@@ -962,7 +962,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 **Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho. Atualizada em 19/03/2026.
 
-**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-8 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9+P5).
+**Contagem geral:** 108 stories especificadas. 87 concluídas. 3 bloqueadas (requerem Mac). 18 novas (adendo v1.5, Sprint 1-9 concluídas: P1+P2+P15+P4+P16+P7a+P3+P6+P10+P8+P9+P5+P11).
 
 
 ### 12.1 Sequência de execução recomendada (adendo v1.5)
@@ -1016,11 +1016,11 @@ Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Orige
 |---|---|---|---|---|---|
 | P5 | Dashboard com 4 níveis de maturidade: Novo (0-10tx: setup+import+narrative+summary), Ativo (11-50tx: +categorias+bills+budget), Engajado (51+tx 2+meses: +balanço+evolução+solvência), Avançado (opt-in futuro). | Alto | Médio-alto | Adendo v1.5 §2.4 | ✅ |
 
-**Sprint 9: Gateway IA (~1 sessão)**
+**Sprint 9: Gateway IA (~1 sessão) ✅ CONCLUÍDA (21/03/2026)**
 
-| # | Ação | Impacto | Esforço | Referência |
-|---|---|---|---|---|
-| P11 | Edge Function ai-gateway + sanitizador PII + tabelas ai_cache e ai_usage_log + categorização com fallback Gemini Flash-Lite. Primeira integração de IA no produto | Alto | Médio | Adendo v1.5 §5.3-5.4-5.9 |
+| # | Ação | Impacto | Esforço | Referência | Status |
+|---|---|---|---|---|---|
+| P11 | Gateway IA: tabelas ai_cache + ai_usage_log, RPCs (rate limit, cache, save), sanitizador PII, API route /api/ai/categorize (Gemini Flash-Lite), hook useAiCategorize, cron limpeza cache. Ativação requer GEMINI_API_KEY no env. | Alto | Médio | Adendo v1.5 §5.3-5.4-5.9 | ✅ |
 
 **Sprint 10: Hierarquia de ativos na UI (~1 sessão)**
 
@@ -3016,3 +3016,41 @@ Corrigidos em `4624934` (lint) e `606decc` (TS7053 via helper `cell()`).
 ### 25i.4 Próximo: Sprint 9
 
 P11 (Gateway IA: Edge Function ai-gateway + sanitizador PII + tabelas ai_cache/ai_usage_log + categorização com fallback Gemini Flash-Lite).
+
+## Sessão 25j - 21 março 2026 (Claude Opus, Projeto Claude) — Sprint 9
+
+### 25j.1 Escopo
+
+Sprint 9 do adendo v1.5: P11 (Gateway IA).
+
+### 25j.2 O que foi feito
+
+**P11 - Gateway IA (adendo v1.5 §5.3-5.4-5.9):**
+
+Schema (migration 063):
+- `ai_cache`: cache de respostas IA (prompt_hash + model + use_case = unique, TTL 30d)
+- `ai_usage_log`: log por usuário (tokens, custo USD, cached flag)
+- RLS: cache SELECT para authenticated, log SELECT+INSERT por user_id
+- RPCs: check_ai_rate_limit (50/mês free tier), get_ai_cache, save_ai_result
+- Cron: weekly-cleanup-ai-cache (domingo 3:30 AM)
+
+Backend:
+- `/api/ai/categorize` (Next.js API route): auth → rate limit → sanitize PII → check cache → Gemini Flash-Lite → save cache+log
+- Batch de até 20 descrições por chamada
+- Custo estimado: ~US$ 0.02/usuário/mês
+
+Frontend:
+- `src/lib/utils/pii-sanitizer.ts`: sanitizePII() + hashPrompt() (regex CPF/CNPJ/email/tel/cartão/conta)
+- `src/lib/hooks/use-ai-categorize.ts`: useAiCategorize() + getUncategorizedDescriptions()
+- database.ts: +ai_cache, +ai_usage_log, +4 functions
+
+Ativação: requer GEMINI_API_KEY no .env. Sem a chave, gateway retorna resultados vazios (graceful degradation).
+
+### 25j.3 Migrations aplicadas (oniefy-prod)
+
+- `p11_ai_gateway_tables` (via MCP apply_migration)
+- Arquivo local: `supabase/migrations/063_p11_ai_gateway.sql`
+
+### 25j.4 Próximo: Sprint 10
+
+P7b (UI hierarquia de ativos) + P14 (cadastro assistido de bens com asset_templates).

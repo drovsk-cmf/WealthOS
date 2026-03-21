@@ -111,6 +111,18 @@ export type Database = {
           },
         ]
       }
+      ai_cache: {
+        Row: { id: string; prompt_hash: string; model: string; use_case: string; prompt_sanitized: string; response: Json; tokens_in: number; tokens_out: number; created_at: string; expires_at: string }
+        Insert: { id?: string; prompt_hash: string; model: string; use_case: string; prompt_sanitized: string; response: Json; tokens_in?: number; tokens_out?: number; created_at?: string; expires_at?: string }
+        Update: { id?: string; prompt_hash?: string; model?: string; use_case?: string; prompt_sanitized?: string; response?: Json; tokens_in?: number; tokens_out?: number; created_at?: string; expires_at?: string }
+        Relationships: []
+      }
+      ai_usage_log: {
+        Row: { id: string; user_id: string; use_case: string; model: string; tokens_in: number; tokens_out: number; cost_usd: number; cached: boolean; created_at: string }
+        Insert: { id?: string; user_id: string; use_case: string; model: string; tokens_in?: number; tokens_out?: number; cost_usd?: number; cached?: boolean; created_at?: string }
+        Update: { id?: string; user_id?: string; use_case?: string; model?: string; tokens_in?: number; tokens_out?: number; cost_usd?: number; cached?: boolean; created_at?: string }
+        Relationships: []
+      }
       analytics_events: {
         Row: {
           id: string
@@ -549,6 +561,8 @@ export type Database = {
     Functions: {
       allocate_to_centers: { Args: { p_allocations: Json; p_transaction_id: string; p_user_id: string }; Returns: Json }
       auto_categorize_transaction: { Args: { p_description: string; p_user_id: string }; Returns: string }
+      check_ai_rate_limit: { Args: { p_user_id: string; p_limit?: number }; Returns: Json }
+      cron_cleanup_ai_cache: { Args: Record<string, never>; Returns: undefined }
       auto_create_workflow_for_account: { Args: { p_account_id: string; p_account_name: string; p_account_type: string; p_user_id: string }; Returns: Json }
       complete_workflow_task: { Args: { p_result_data?: Json; p_status?: string; p_task_id: string; p_user_id: string }; Returns: Json }
       create_coa_child: { Args: { p_account_name?: string; p_display_name?: string; p_parent_code?: string; p_parent_id?: string; p_tax_treatment?: Database["public"]["Enums"]["tax_treatment_type"]; p_user_id: string }; Returns: string }
@@ -576,6 +590,7 @@ export type Database = {
       find_reconciliation_candidates: { Args: { p_account_id: string; p_amount: number; p_date: string; p_tolerance_days?: number; p_tolerance_pct?: number; p_user_id: string }; Returns: Json }
       generate_next_recurrence: { Args: { p_recurrence_id: string; p_user_id: string }; Returns: Json }
       generate_tasks_for_period: { Args: { p_month?: number; p_user_id: string; p_year?: number }; Returns: Json }
+      get_ai_cache: { Args: { p_prompt_hash: string; p_model: string; p_use_case: string }; Returns: Json }
       get_assets_summary: { Args: { p_user_id: string }; Returns: Json }
       get_balance_evolution: { Args: { p_months?: number; p_user_id: string }; Returns: Json }
       get_balance_sheet: { Args: { p_user_id: string }; Returns: Json }
@@ -603,6 +618,7 @@ export type Database = {
       match_transactions: { Args: { p_imported_id: string; p_pending_id: string; p_user_id: string }; Returns: Json }
       recalculate_account_balance_for: { Args: { p_account_id: string }; Returns: undefined }
       reverse_transaction: { Args: { p_transaction_id: string; p_user_id: string }; Returns: Json }
+      save_ai_result: { Args: { p_user_id: string; p_prompt_hash: string; p_model: string; p_use_case: string; p_prompt_sanitized: string; p_response: Json; p_tokens_in?: number; p_tokens_out?: number; p_cost_usd?: number; p_cached?: boolean }; Returns: undefined }
       track_event: { Args: { p_event_name: string; p_properties?: Json }; Returns: string }
       undo_import_batch: { Args: { p_user_id: string; p_batch_id: string }; Returns: Json }
       get_weekly_digest: { Args: { p_user_id: string }; Returns: Json }
