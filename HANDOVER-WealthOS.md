@@ -3375,3 +3375,97 @@ Recebidas 2 auditorias externas. 15 achados combinados. Após verificação cont
 - OFX timezone: parser extrai string pura YYYYMMDD, sem conversão de timezone
 
 **7 repetições de achados já documentados** (cobertura, rate limiter, E2E, HANDOVER, LGPD, biometria, over-fetch).
+
+## Sessão 27 - 22 março 2026 (Claude Opus, Projeto Claude) — Migration Audit + Test Coverage
+
+### 27.1 Verificação de migração Supabase (projeto antigo → oniefy-prod)
+
+Varredura completa do codebase por referências ao projeto antigo (`hmwdfcsxtmbzlslxgqus`).
+
+**Código fonte (ts, tsx, js, json, sql, yml, css):** zero referências. Limpo.
+
+**Docs corrigidos:**
+- `PLANO-REVISAO-ONIEFY.md`: comando `gen types --project-id` apontava para projeto antigo → corrigido para `mngjbrbxapazdddzgoje`
+- `RELATORIO-AUDITORIA-2026-03-19.md`: adicionado aviso de que auditoria foi contra projeto legado
+
+**Test user ID atualizado em 5 arquivos:**
+- HANDOVER §4: `04c41302-...` → `fab01037-a437-4394-9d8f-bd84db9ce418`
+- `docs/PROMPT-CLAUDE-CODE-E2E.md`
+- `supabase/seed/003_demo_data.sql`
+- `supabase/tests/test_rls_isolation.sql`
+
+**MFA factor ID:** `664baa78-...` (antigo) → `97c227e6-...` (oniefy-prod, status: unverified)
+
+**Config Supabase corrigido via API:**
+- `password_min_length`: 8 → 12 (alinhado com Zod frontend)
+
+**Pendências manuais (Dashboard Supabase):**
+1. SMTP sender: definir `noreply@oniefy.com` em Authentication → SMTP Settings
+2. MFA do usuário: fator TOTP como "unverified", reconfigurar pelo app
+3. Apple OAuth: habilitar quando tiver Apple Developer certificate
+
+### 27.2 Elevação de cobertura de testes (32 → 44 suítes, 441 → 622 assertions)
+
+**12 novas suítes criadas:**
+
+| Suíte | Módulo | Testes | Cobertura módulo antes→depois |
+|---|---|---|---|
+| categories-mutations | use-categories | 11 | 40% → 96% |
+| accounts-mutations | use-accounts | 3 | 29% → 83% |
+| budgets-hooks | use-budgets (pure fns) | 17 | 23% → 38% |
+| budgets-mutations-extended | use-budgets (mut) | 5 | 38% → 63% |
+| weekly-digest-template | lib/email | 20 | 6% → 100% |
+| cost-centers-hooks | use-cost-centers | 13 | 14% → 43% |
+| assets-hooks | use-assets | 13 | 16% → 64% |
+| setup-journey-hooks | use-setup-journey | 15 | 18% → 80% |
+| recurrences-hooks | use-recurrences | 7 | 0% → 24% |
+| workflows-hooks | use-workflows | 18 | 0% → 48% |
+| fiscal-timing-safe | use-fiscal + timing-safe | 19 | 0% → 26% / 0% → 100% |
+| hooks-batch-coverage | 10 hooks (family, bank, indices, COA, currencies, docs, reconciliation) | 41 | 0% → 18-61% |
+
+**Cobertura geral:**
+- Statements: 52.6% → 59.5%
+- Functions: 44.6% → 57.7%
+- Lines: 53.6% → 61.6%
+- Hooks testados: 3/29 → 19/29
+
+**Recomendação para próxima sessão:** os 10 hooks restantes a 0% são hooks de query (dashboard, transactions, push, etc.) e hooks de browser lifecycle (online-status, progressive-disclosure). O caminho mais eficiente para 75% é configurar Playwright E2E nos fluxos críticos.
+
+### 27.3 Commits da sessão (7)
+
+| Hash | Descrição |
+|---|---|
+| `c9404c5` | fix: replace old Supabase project ID in docs |
+| `7db9c93` | fix: update test user ID and migration counts for oniefy-prod |
+| `6511c10` | test: 4 suítes coverage boost (36 suítes, 490 assertions) |
+| `c024bcd` | test: 3 suítes hooks (39 suítes, 531 assertions) |
+| `773ac67` | test: 4 suítes adicionais (43 suítes, 581 assertions) |
+| `7f200fe` | test: batch coverage for 10 hooks (44 suítes, 622 assertions) |
+
+### 27.4 Emails do domínio @oniefy.com confirmados
+
+| Email | Onde | Finalidade | Tipo |
+|---|---|---|---|
+| `oniefy@oniefy.com` | SMTP config | Caixa real (recebe tudo via alias) | Caixa real |
+| `noreply@oniefy.com` | digest/send route | Remetente do email semanal | Envio |
+| `privacidade@oniefy.com` | /privacy | Contato LGPD | Alias → oniefy@ |
+| `contato@oniefy.com` | /terms | Contato geral | Alias → oniefy@ |
+| `admin@oniefy.com` | VAPID Web Push | Identificação servidor | Alias → oniefy@ |
+| `e2e-test@oniefy.com` | E2E docs | Teste Playwright | Alias → oniefy@ |
+
+### 27.5 Estado atual do projeto
+
+| Métrica | Valor |
+|---|---|
+| Stories | 105/108 |
+| Tabelas | 34 |
+| Políticas RLS | 103 |
+| Functions | 73 |
+| Triggers | 21 |
+| Indexes | 140 |
+| Migrations MCP | 48 |
+| Migration files repo | 55 (001-067) |
+| pg_cron jobs | 13 |
+| Suítes Jest | 44 (622 assertions) |
+| Cobertura lines | 61.6% |
+| CI | Verde (4/4 jobs) |
