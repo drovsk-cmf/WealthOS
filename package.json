@@ -17,7 +17,9 @@
     "cap:build:ios": "npx cap sync && npx cap open ios",
     "test": "jest",
     "test:e2e": "npx playwright test",
-    "test:e2e:ui": "npx playwright test --ui"
+    "test:e2e:ui": "npx playwright test --ui",
+    "test:smoke": "npx playwright test smoke.spec.ts",
+    "healthcheck": "node scripts/healthcheck.mjs"
   },
   "dependencies": {
     "@capacitor/app": "^6.0.0",
