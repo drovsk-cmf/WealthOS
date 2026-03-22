@@ -16,18 +16,20 @@
 
 // ─── Mocks ──────────────────────────────────────────────────────
 
-const mockGetUser = jest.fn();
-const mockRpc = jest.fn();
-const mockFrom = jest.fn();
-const mockJson = jest.fn();
+const mockChatGetUser = jest.fn();
+const mockChatRpc = jest.fn();
+const mockChatFrom = jest.fn();
 
 jest.mock("@/lib/supabase/server", () => ({
   createClient: jest.fn(() => ({
-    auth: { getUser: mockGetUser },
-    rpc: mockRpc,
-    from: mockFrom,
+    auth: { getUser: mockChatGetUser },
+    rpc: mockChatRpc,
+    from: mockChatFrom,
   })),
 }));
+
+// Ensure this is treated as a module
+export {};
 
 // ─── Module under test ──────────────────────────────────────────
 
@@ -40,8 +42,7 @@ describe("/api/ai/chat", () => {
   });
 
   describe("TOOLS schema", () => {
-    // Import at module level to inspect schema
-    const TOOLS = [
+    const TOOLS: { name: string; input_schema?: { type: string; properties: Record<string, unknown> } }[] = [
       {
         name: "query_transactions",
         input_schema: {
@@ -62,13 +63,15 @@ describe("/api/ai/chat", () => {
     ];
 
     it("query_transactions exposes category_name in schema", () => {
-      const qt = TOOLS.find((t) => t.name === "query_transactions")!;
-      expect(qt.input_schema.properties).toHaveProperty("category_name");
+      const qt = TOOLS.find((t) => t.name === "query_transactions");
+      expect(qt).toBeDefined();
+      expect(qt?.input_schema?.properties).toHaveProperty("category_name");
     });
 
     it("query_transactions exposes asset_name in schema", () => {
-      const qt = TOOLS.find((t) => t.name === "query_transactions")!;
-      expect(qt.input_schema.properties).toHaveProperty("asset_name");
+      const qt = TOOLS.find((t) => t.name === "query_transactions");
+      expect(qt).toBeDefined();
+      expect(qt?.input_schema?.properties).toHaveProperty("asset_name");
     });
 
     it("has 4 tools total", () => {
