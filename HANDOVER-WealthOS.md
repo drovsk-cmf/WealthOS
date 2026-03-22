@@ -108,11 +108,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (148 arquivos em src/, 36 suítes de teste, 490 assertions)
+### 3.4 Código Fonte (148 arquivos em src/, 39 suítes de teste, 531 assertions)
 
 ```
 src/
-├── __tests__/                    # 36 suítes de teste (Jest + RTL), 490 assertions
+├── __tests__/                    # 39 suítes de teste (Jest + RTL), 531 assertions
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
 │   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
@@ -3297,7 +3297,7 @@ Resolução de todos os 12 itens pendentes identificados na varredura de consist
 | RLS policies | 103 |
 | pg_cron jobs | 13 |
 | Indexes | 140 |
-| Suítes Jest | 36 (490 assertions) |
+| Suítes Jest | 39 (531 assertions) |
 | Arquivos src/ | ~148 |
 | API routes | 13 (auth: 5, ai: 3, push: 2, digest: 2, indices: 1) |
 | CI jobs | 5 (Security + Lint + Tests + Build + E2E condicional) |
