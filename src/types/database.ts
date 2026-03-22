@@ -207,11 +207,16 @@ export type Database = {
           id: string
           insurance_expiry: string | null
           insurance_policy: string | null
+          license_plate: string | null
           name: string
           notes_encrypted: string | null
           parent_asset_id: string | null
           updated_at: string
           user_id: string
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_model: string | null
+          vehicle_year: number | null
         }
         Insert: {
           acquisition_date: string
@@ -225,11 +230,16 @@ export type Database = {
           id?: string
           insurance_expiry?: string | null
           insurance_policy?: string | null
+          license_plate?: string | null
           name: string
           notes_encrypted?: string | null
           parent_asset_id?: string | null
           updated_at?: string
           user_id: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
         }
         Update: {
           acquisition_date?: string
@@ -243,11 +253,16 @@ export type Database = {
           id?: string
           insurance_expiry?: string | null
           insurance_policy?: string | null
+          license_plate?: string | null
           name?: string
           notes_encrypted?: string | null
           parent_asset_id?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_model?: string | null
+          vehicle_year?: number | null
         }
         Relationships: [
           {

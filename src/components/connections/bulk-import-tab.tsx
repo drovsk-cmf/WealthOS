@@ -26,6 +26,9 @@ import { ASSET_CATEGORY_OPTIONS } from "@/lib/hooks/use-assets";
 
 // ─── Column configs per domain ───────────────────────────────
 
+// Vehicle categories must be registered via the Veículos tab (which has plate field)
+const VEHICLE_CATEGORY_PREFIXES = ["vehicle"];
+
 const ASSET_COLUMNS: ColumnDef[] = [
   { key: "name", label: "Nome", type: "text", required: true, placeholder: "Ex: Apartamento Centro", width: "180px" },
   {
@@ -34,7 +37,7 @@ const ASSET_COLUMNS: ColumnDef[] = [
     type: "select",
     required: true,
     options: ASSET_CATEGORY_OPTIONS
-      .filter((o) => o.value !== "restricted")
+      .filter((o) => o.value !== "restricted" && !VEHICLE_CATEGORY_PREFIXES.some((p) => o.value.startsWith(p)))
       .map((o) => ({ value: o.value, label: o.label })),
     width: "160px",
   },
@@ -45,7 +48,7 @@ const ASSET_COLUMNS: ColumnDef[] = [
 ];
 
 const VEHICLE_COLUMNS: ColumnDef[] = [
-  { key: "name", label: "Nome", type: "text", required: true, placeholder: "Ex: Honda Civic 2023", width: "180px" },
+  { key: "name", label: "Descrição", type: "text", required: true, placeholder: "Ex: Honda Civic EXL 2023", width: "200px" },
   {
     key: "category",
     label: "Tipo",
@@ -58,13 +61,17 @@ const VEHICLE_COLUMNS: ColumnDef[] = [
       { value: "vehicle_aircraft", label: "Aeronave" },
       { value: "vehicle", label: "Outro veículo" },
     ],
-    width: "160px",
+    width: "150px",
   },
-  { key: "acquisition_value", label: "Valor Aquisição", type: "number", required: true, placeholder: "0,00", width: "140px" },
-  { key: "current_value", label: "Valor Atual", type: "number", required: true, placeholder: "0,00", width: "140px" },
-  { key: "acquisition_date", label: "Data Aquisição", type: "date", required: true, width: "140px" },
-  { key: "insurance_policy", label: "Placa", type: "text", placeholder: "ABC1D23", width: "110px" },
-  { key: "notes", label: "Notas", type: "text", placeholder: "Financiamento, etc.", width: "180px" },
+  { key: "license_plate", label: "Placa", type: "text", placeholder: "ABC1D23", width: "110px" },
+  { key: "vehicle_brand", label: "Marca", type: "text", placeholder: "Honda", width: "110px" },
+  { key: "vehicle_model", label: "Modelo", type: "text", placeholder: "Civic", width: "110px" },
+  { key: "vehicle_year", label: "Ano", type: "number", placeholder: "2023", width: "80px" },
+  { key: "vehicle_color", label: "Cor", type: "text", placeholder: "Prata", width: "90px" },
+  { key: "acquisition_value", label: "Valor Aquisição", type: "number", required: true, placeholder: "0,00", width: "130px" },
+  { key: "current_value", label: "Valor Atual", type: "number", required: true, placeholder: "0,00", width: "130px" },
+  { key: "acquisition_date", label: "Data Aquisição", type: "date", required: true, width: "130px" },
+  { key: "notes", label: "Notas", type: "text", placeholder: "Financiamento, etc.", width: "160px" },
 ];
 
 const INVESTMENT_COLUMNS: ColumnDef[] = [
@@ -150,7 +157,13 @@ export function BulkImportTab() {
       const acqDate = parseDate(row.acquisition_date);
       const currency = String(row.currency ?? "BRL");
       const notes = String(row.notes ?? "").trim() || null;
-      const insurancePolicy = row.insurance_policy ? String(row.insurance_policy).trim() : null;
+
+      // Vehicle-specific fields (only populated from Veículos tab)
+      const licensePlate = row.license_plate ? String(row.license_plate).trim().toUpperCase() : null;
+      const vehicleBrand = row.vehicle_brand ? String(row.vehicle_brand).trim() : null;
+      const vehicleModel = row.vehicle_model ? String(row.vehicle_model).trim() : null;
+      const vehicleYear = row.vehicle_year ? parseInt(String(row.vehicle_year), 10) || null : null;
+      const vehicleColor = row.vehicle_color ? String(row.vehicle_color).trim() : null;
 
       const { error } = await supabase.from("assets").insert({
         user_id: userId,
@@ -161,7 +174,11 @@ export function BulkImportTab() {
         acquisition_date: acqDate,
         currency,
         notes_encrypted: notes,
-        insurance_policy: insurancePolicy,
+        ...(licensePlate && { license_plate: licensePlate }),
+        ...(vehicleBrand && { vehicle_brand: vehicleBrand }),
+        ...(vehicleModel && { vehicle_model: vehicleModel }),
+        ...(vehicleYear && { vehicle_year: vehicleYear }),
+        ...(vehicleColor && { vehicle_color: vehicleColor }),
       });
 
       if (error) {
