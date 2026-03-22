@@ -45,21 +45,26 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       # Determinar URL alvo
+      # NOTA: URLs *.vercel.app têm SSO protection mesmo para deploys de produção.
+      # Para production, sempre usar o domínio custom (oniefy.com).
       - name: Resolve target URL
         id: url
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "target=${{ inputs.target_url }}" >> $GITHUB_OUTPUT
           else
-            # deployment_status event: URL vem do payload da Vercel
-            URL="${{ github.event.deployment_status.environment_url }}"
-            if [ -z "$URL" ]; then
-              URL="${{ github.event.deployment.payload.web_url }}"
+            # deployment_status: usar domínio custom para produção
+            ENV="${{ github.event.deployment_status.environment }}"
+            if [ "$ENV" = "Production" ] || [ "$ENV" = "production" ]; then
+              echo "target=https://www.oniefy.com" >> $GITHUB_OUTPUT
+            else
+              # Preview: usar URL do evento (SSO pode bloquear, aceitável)
+              URL="${{ github.event.deployment_status.environment_url }}"
+              if [ -z "$URL" ]; then
+                URL="https://www.oniefy.com"
+              fi
+              echo "target=$URL" >> $GITHUB_OUTPUT
             fi
-            if [ -z "$URL" ]; then
-              URL="https://oniefy.com"
-            fi
-            echo "target=$URL" >> $GITHUB_OUTPUT
           fi
 
       # Aguardar propagação (Vercel edge pode levar alguns segundos)

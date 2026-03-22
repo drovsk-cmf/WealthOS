@@ -35,7 +35,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | State Management | React Query + Zustand |
 | Gráficos | Recharts |
 | Validação | Zod |
-| CI/CD | GitHub Actions (4 jobs: Security + Lint/TypeCheck + Unit Tests + Build) |
+| CI/CD | GitHub Actions: CI (4 jobs: Security + Lint/TypeCheck + Unit Tests + Build), Post-Deploy Check (health check automático), Uptime Monitor (cada 6h) |
 | Error Tracking | Sentry (@sentry/nextjs, opt-in via DSN) |
 | APIs externas | BCB SGS (7 séries macro) + BCB PTAX OData (10 moedas oficiais) + Frankfurter/ECB (20 moedas fiat) + CoinGecko (5 cryptos) + IBGE SIDRA |
 | IA | Gemini Flash-Lite (categorização, via /api/ai/categorize). Requer GEMINI_API_KEY |
@@ -1192,7 +1192,7 @@ Métricas-alvo: onboarding >70%, time-to-value <5min, D1 >35%, D7 >20%, D30 >12%
 
 | # | Item | Esforço | Status |
 |---|---|---|---|
-| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | Não iniciado (P1 blocker para lançamento) |
+| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | ✅ FEITO (sessão 28). Projeto: prj_MvDXDLlc2xZmcRLuIenCcFdas8mH. URL: www.oniefy.com |
 | W2 | Supabase Pro (leaked password protection + limites produção) | 5 min | Requer assinatura Claudio |
 
 
@@ -3469,3 +3469,86 @@ Varredura completa do codebase por referências ao projeto antigo (`hmwdfcsxtmbz
 | Suítes Jest | 44 (622 assertions) |
 | Cobertura lines | 61.6% |
 | CI | Verde (4/4 jobs) |
+
+## Sessão 28 - 22 março 2026 (Claude Opus, Projeto Claude) — Deploy Vercel + Test Infrastructure
+
+### 28.1 Deploy Vercel (W1 - P1 bloqueador resolvido)
+
+**Projeto Vercel:** `oniefy` (ID: `prj_MvDXDLlc2xZmcRLuIenCcFdas8mH`)
+**URL produção:** `https://www.oniefy.com` (apex `oniefy.com` redireciona 307 → www)
+**URL Vercel:** `oniefy-drovsk-cmfs-projects.vercel.app` (SSO protegido)
+
+**Configuração:**
+- GitHub integration: conectado, deploy automático no push para `main`
+- SSO protection: apenas preview deploys (produção acessível)
+- Env vars: 6 configuradas (SUPABASE_URL, ANON_KEY, SERVICE_ROLE_KEY, PROJECT_ID, APP_URL, VAPID_EMAIL)
+- DNS: A record (apex) + CNAME (www) configurados no UOL Domínios
+- Supabase Auth: redirect URLs atualizados para oniefy.com
+- Crons Vercel (vercel.json): push/send diário 11h UTC, digest/send segunda 12h UTC
+
+**Bug encontrado e corrigido (CSP):**
+O middleware gerava nonce CSP por request, mas Next.js pré-renderiza páginas estaticamente (x-nextjs-prerender: 1). Os `<script>` tags no HTML estático não tinham o atributo nonce. Browser bloqueava todos os scripts → app travado em "Carregando".
+Fix: `script-src 'self' 'unsafe-inline'` em produção (sem nonce). Restante do CSP mantido rígido.
+
+### 28.2 Infraestrutura de testes (3 camadas)
+
+**Camada 1 - Preflight (antes de abrir browser):**
+- `scripts/preflight.ps1`: PowerShell, valida 11 itens (Node, npm, .env.local, projeto ativo vs legado, node_modules, porta 3000, Supabase, TS, ESLint, Jest). Flags: -SkipTests, -SkipBuild, -StartDev.
+
+**Camada 2 - Health Check (servidor rodando, sem browser):**
+- `scripts/healthcheck.mjs`: Node, testa ~25 endpoints em ~10s. Aceita `--base URL` para produção.
+- `npm run healthcheck` (local) ou `npm run healthcheck -- --base https://www.oniefy.com` (produção)
+
+**Camada 3 - Smoke E2E (browser automatizado):**
+- `e2e/smoke.spec.ts`: 10 testes Playwright sequenciais (~2min). Cobre: dashboard, CRUD transação/conta/orçamento/bem, navegação 19 rotas, console.error.
+- `npm run test:smoke` (local) ou `PLAYWRIGHT_BASE_URL=https://www.oniefy.com npx playwright test smoke.spec.ts` (produção)
+- `playwright.config.ts`: aceita `PLAYWRIGHT_BASE_URL` para testar contra URL externa (desabilita webServer local)
+
+**Roteiro manual:**
+- `docs/ROTEIRO-TESTE-MANUAL.md`: 10 blocos, ~30min, com checkboxes. Template de reporte de bug incluso.
+
+### 28.3 CI/CD novos workflows
+
+| Workflow | Trigger | O que faz |
+|---|---|---|
+| `post-deploy.yml` | Vercel deploy concluído (deployment_status) ou manual | Health check contra URL do deploy. Para produção, usa www.oniefy.com. |
+| `uptime.yml` | Cron cada 6h (00/06/12/18 UTC) ou manual | Health check contra www.oniefy.com. Cria GitHub issue em falha. |
+
+**Scripts adicionados ao package.json:**
+- `npm run test:smoke` → Playwright smoke E2E
+- `npm run healthcheck` → health check sem browser
+
+### 28.4 Commits da sessão
+
+| Hash | Descrição |
+|---|---|
+| `9d16a93` | feat: preflight script, health check, smoke E2E test, roteiro manual |
+| `e77254e` | ci: post-deploy health check + uptime monitor + external URL support |
+| `6dc3cfa` | fix: CSP blocking all scripts in production (nonce incompatible with static pre-rendering) |
+
+### 28.5 Pendências manuais (Claudio)
+
+1. SMTP sender: Dashboard Supabase → Auth → SMTP → definir noreply@oniefy.com
+2. MFA: fator TOTP "unverified" no projeto novo — reconfigurar no app
+3. Apple OAuth: habilitar quando tiver Apple Developer certificate
+4. Supabase Pro upgrade (leaked password protection) — decisão de custo
+5. Teste de corredor com 3 pessoas (UX-H3-05)
+
+### 28.6 Estado atual do projeto
+
+| Métrica | Valor |
+|---|---|
+| Stories | 105/108 |
+| Tabelas | 34 |
+| Políticas RLS | 103 |
+| Functions | 73 |
+| Triggers | 21 |
+| Indexes | 140 |
+| Migrations MCP | 48 |
+| Migration files repo | 55 (001-067) |
+| pg_cron jobs | 13 |
+| Suítes Jest | 44 (622 assertions) |
+| Cobertura lines | 61.6% |
+| CI | Verde (CI 4/4 + Post-Deploy + Uptime) |
+| Deploy | Vercel produção em www.oniefy.com |
+| E2E specs | 9 existentes + 1 smoke (10 testes) |

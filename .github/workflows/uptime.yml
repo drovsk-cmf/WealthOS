@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-  PRODUCTION_URL: "https://oniefy.com"
+  PRODUCTION_URL: "https://www.oniefy.com"
 
 jobs:
   monitor:
