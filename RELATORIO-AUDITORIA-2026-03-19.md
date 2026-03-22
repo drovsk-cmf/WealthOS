@@ -3,7 +3,7 @@
 **Data:** 19 de março de 2026
 **Pacote:** Release Gate (completo)
 **Auditorias executadas:** 30 de 37 (7 diferidas conforme acordo)
-**Projeto Supabase auditado:** `hmwdfcsxtmbzlslxgqus` (us-east-1)
+**Projeto Supabase auditado:** `hmwdfcsxtmbzlslxgqus` (sa-east-1) — **ATENÇÃO: projeto LEGADO, pausado em 20/03/2026. Projeto ativo: `mngjbrbxapazdddzgoje` (oniefy-prod)**
 **CI:** Verde em todos os commits da sessão
 
 ---

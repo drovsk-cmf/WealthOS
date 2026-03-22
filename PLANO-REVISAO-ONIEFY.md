@@ -317,7 +317,7 @@ WHERE n.nspname = 'public'
 #### 3.2 Schema types vs banco real
 
 **O que fazer:**
-1. Executar `npx supabase gen types typescript --project-id hmwdfcsxtmbzlslxgqus > /tmp/fresh-types.ts`
+1. Executar `npx supabase gen types typescript --project-id mngjbrbxapazdddzgoje > /tmp/fresh-types.ts`
 2. Diff contra `src/types/database.ts` atual
 3. Qualquer divergência é potencial defeito ou fragilidade
 
