@@ -7,7 +7,7 @@
 
 DO $$
 DECLARE
-  _uid uuid := '04c41302-5429-4f97-9aeb-e21294d014ff';
+  _uid uuid := 'fab01037-a437-4394-9d8f-bd84db9ce418';
   -- Accounts
   _acc_bb uuid := gen_random_uuid();      -- Conta corrente BB
   _acc_nu uuid := gen_random_uuid();      -- Cartão Nubank

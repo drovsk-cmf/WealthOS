@@ -23,7 +23,7 @@ GRANT ALL ON _rls_test_results TO authenticated, anon;
 -- ================================================================
 DO $$
 DECLARE
-  v_user_a UUID := '04c41302-5429-4f97-9aeb-e21294d014ff';
+  v_user_a UUID := 'fab01037-a437-4394-9d8f-bd84db9ce418';
   v_count INT;
 BEGIN
   PERFORM set_config('role', 'authenticated', true);
@@ -138,7 +138,7 @@ $$;
 -- ================================================================
 DO $$
 DECLARE
-  v_user_a UUID := '04c41302-5429-4f97-9aeb-e21294d014ff';
+  v_user_a UUID := 'fab01037-a437-4394-9d8f-bd84db9ce418';
   v_cat_id UUID := '02c820f2-2400-4e61-9b67-fab5d2291487'; -- User A's real category
   v_result_json JSON;
   v_result_jsonb JSONB;

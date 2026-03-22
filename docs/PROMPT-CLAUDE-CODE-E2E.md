@@ -84,7 +84,7 @@ setup("authenticate", async ({ page }) => {
   
   // Preenche credenciais de teste
   // IMPORTANTE: Use as credenciais do .env.local ou crie um usuário de teste
-  // O usuário de teste atual é Google OAuth (04c41302-...) sem senha.
+  // O usuário de teste atual é Google OAuth (fab01037-...) sem senha.
   // Para E2E, é mais prático criar um usuário email/senha no Supabase Dashboard:
   //   Email: e2e-test@oniefy.com
   //   Senha: E2eTest!Secure2026

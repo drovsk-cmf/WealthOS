@@ -72,8 +72,8 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | 21 |
 | ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
 | Indexes | 140 |
-| Migrations aplicadas (MCP) | 47 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 54 em supabase/migrations/ |
+| Migrations aplicadas (MCP) | 48 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 55 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -245,10 +245,11 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 
 ## 4. Dados do Usuário de Teste
 
-- ID: 04c41302-5429-4f97-9aeb-e21294d014ff
+- ID: fab01037-a437-4394-9d8f-bd84db9ce418
 - Nome: Claudio Filho
+- Email: claudiomacedo@gmail.com
 - Provider: Google OAuth
-- MFA: TOTP ativo (fator 664baa78-1060-4b5b-ae78-e4bc2a6e8fe4)
+- MFA: TOTP inscrito (fator 97c227e6-179d-4e6f-b8ba-1804f4273264, status: unverified)
 - onboarding_completed: true
 - Dados seed: 140 contas contábeis, 1 centro (Família Geral), 16 categorias (únicas)
 - Transações: 0 (nenhum dado financeiro de teste ainda)
