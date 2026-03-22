@@ -43,15 +43,25 @@ function generateNonce(): string {
   return btoa(String.fromCharCode(...array));
 }
 
-function buildCsp(nonce: string): string {
+function buildCsp(_nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
 
-  // In dev: unsafe-eval required for Next.js HMR + React Fast Refresh
-  // In prod: no unsafe-eval/unsafe-inline. Uses nonce + strict-dynamic.
-  // strict-dynamic allows scripts loaded by nonce'd scripts to execute.
+  // Next.js pre-renders pages statically (x-nextjs-prerender: 1).
+  // Nonce-based CSP requires nonce attributes on every <script> tag,
+  // but static HTML is generated at build time without per-request nonces.
+  // Result: browser blocks ALL scripts and the page never hydrates.
+  //
+  // Safe approach: 'unsafe-inline' for scripts. This is standard for
+  // Next.js apps using static/ISR rendering. The remaining CSP directives
+  // (frame-ancestors, form-action, connect-src, etc.) still provide
+  // meaningful protection against clickjacking, form hijacking, and
+  // unauthorized API calls.
+  //
+  // TODO: revisit when Next.js supports per-request nonce injection
+  // for statically pre-rendered pages (experimental.cspNonce or similar).
   const scriptSrc = isDev
     ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`;
+    : "script-src 'self' 'unsafe-inline'";
 
   // style-src: unsafe-inline needed for Tailwind inline style attributes
   const styleSrc = "style-src 'self' 'unsafe-inline'";
