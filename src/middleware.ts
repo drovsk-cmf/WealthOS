@@ -102,8 +102,11 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
 
-  // ── Rate Limiting (auth routes only) ──
-  const routeKey = extractRouteKey(pathname);
+  // ── Rate Limiting (auth routes, POST only) ──
+  // Only count form submissions, not page views.
+  // GET /forgot-password = viewing the page (no limit)
+  // POST /api/auth/forgot-password = submitting the form (rate limited)
+  const routeKey = request.method === "POST" ? extractRouteKey(pathname) : null;
   let rlResultForHeaders: RateLimitResult | null = null;
 
   if (routeKey) {
