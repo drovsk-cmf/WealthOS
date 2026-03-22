@@ -21,7 +21,7 @@ validateEnv();
  * 4. Redirect authenticated users away from public auth pages
  * 5. Allow MFA challenge and onboarding pages for authenticated users
  * 6. Add Server-Timing headers for performance monitoring
- * 7. CSP nonce generation (P2: production-safe Content-Security-Policy)
+ * 7. CSP header (Content-Security-Policy)
  *
  * MFA AAL check happens client-side (app layout) because middleware
  * should stay fast - MFA API calls add latency on every route.
@@ -34,16 +34,9 @@ validateEnv();
  * - WAF (Vercel/Cloudflare) recomendado como camada adicional
  */
 
-// ── CSP Nonce (P2) ──
+// ── CSP ──
 
-function generateNonce(): string {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  // btoa is available in edge runtime (Buffer may not be)
-  return btoa(String.fromCharCode(...array));
-}
-
-function buildCsp(_nonce: string): string {
+function buildCsp(): string {
   const isDev = process.env.NODE_ENV === "development";
 
   // Next.js pre-renders pages statically (x-nextjs-prerender: 1).
@@ -57,11 +50,14 @@ function buildCsp(_nonce: string): string {
   // meaningful protection against clickjacking, form hijacking, and
   // unauthorized API calls.
   //
-  // TODO: revisit when Next.js supports per-request nonce injection
-  // for statically pre-rendered pages (experimental.cspNonce or similar).
+  // TODO: revisit nonce-based CSP when Next.js supports nonce injection
+  // for statically pre-rendered pages.
+  //
+  // Turnstile (opt-in via NEXT_PUBLIC_TURNSTILE_SITE_KEY):
+  //   script-src + frame-src + connect-src need challenges.cloudflare.com
   const scriptSrc = isDev
-    ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
-    : "script-src 'self' 'unsafe-inline'";
+    ? "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com"
+    : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com";
 
   // style-src: unsafe-inline needed for Tailwind inline style attributes
   const styleSrc = "style-src 'self' 'unsafe-inline'";
@@ -72,7 +68,8 @@ function buildCsp(_nonce: string): string {
     styleSrc,
     "img-src 'self' data: blob: https://*.supabase.co",
     "font-src 'self'",
-    "connect-src 'self' https://*.supabase.co https://api.bcb.gov.br wss://*.supabase.co",
+    "connect-src 'self' https://*.supabase.co https://api.bcb.gov.br wss://*.supabase.co https://challenges.cloudflare.com",
+    "frame-src https://challenges.cloudflare.com",
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -107,10 +104,7 @@ export async function middleware(request: NextRequest) {
   const startMs = performance.now();
   const { pathname } = request.nextUrl;
 
-  // ── CSP Nonce (P2: nonce-based strict-dynamic in production; unsafe-eval removed) ──
-  const nonce = generateNonce();
   const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
 
   // ── Rate Limiting (auth routes, POST only) ──
   // Only count form submissions, not page views.
@@ -261,7 +255,7 @@ export async function middleware(request: NextRequest) {
   );
 
   // ── CSP header (P2) ──
-  supabaseResponse.headers.set("Content-Security-Policy", buildCsp(nonce));
+  supabaseResponse.headers.set("Content-Security-Policy", buildCsp());
 
   // Rate limit headers on auth routes (reuse result from first check)
   if (rlResultForHeaders) {

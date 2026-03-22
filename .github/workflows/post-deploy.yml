@@ -17,9 +17,9 @@ on:
   workflow_dispatch:
     inputs:
       target_url:
-        description: "URL para testar (ex: https://oniefy.com)"
+        description: "URL para testar (ex: https://www.oniefy.com)"
         required: true
-        default: "https://oniefy.com"
+        default: "https://www.oniefy.com"
       run_e2e:
         description: "Rodar Smoke E2E? (mais lento, ~3min)"
         required: false

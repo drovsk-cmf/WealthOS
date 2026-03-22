@@ -52,21 +52,43 @@ async function fetchWithTimeout(url, opts = {}) {
   }
 }
 
+/** Follow redirects manually up to maxHops, so we can inspect each hop */
+async function fetchFollowRedirects(url, maxHops = 5) {
+  let current = url;
+  for (let i = 0; i < maxHops; i++) {
+    const res = await fetchWithTimeout(current);
+    if (res.status >= 300 && res.status < 400) {
+      const location = res.headers.get("location") || "";
+      // Resolve relative redirects
+      current = location.startsWith("http") ? location : new URL(location, current).toString();
+      continue;
+    }
+    return { res, finalUrl: current, hops: i };
+  }
+  return { res: await fetchWithTimeout(current), finalUrl: current, hops: maxHops };
+}
+
 // ── Page checks (GET, expect HTML without error) ──────────
 
 async function checkPage(path, expectText = null) {
   const url = `${BASE}${path}`;
   try {
-    const res = await fetchWithTimeout(url);
+    const { res, finalUrl, hops } = await fetchFollowRedirects(url);
 
-    // Redirects are OK for auth-protected pages
+    // After following redirects, check if we ended up at /login (auth protected)
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get("location") || "";
       if (location.includes("/login")) {
         log("pass", `GET ${path}`, `redirect → login (protegido)`);
       } else {
-        log("warn", `GET ${path}`, `redirect → ${location}`);
+        log("warn", `GET ${path}`, `redirect → ${location} (após ${hops} hops)`);
       }
+      return;
+    }
+
+    // Final destination was /login (middleware redirect)
+    if (finalUrl.includes("/login") && !path.includes("/login")) {
+      log("pass", `GET ${path}`, `redirect → login (protegido)`);
       return;
     }
 
@@ -83,7 +105,8 @@ async function checkPage(path, expectText = null) {
       return;
     }
 
-    if (html.includes("NEXT_NOT_FOUND") || html.includes("404")) {
+    // Check for real 404 page (not just "404" mentioned anywhere in HTML)
+    if (html.includes("NEXT_NOT_FOUND") || html.includes("This page could not be found")) {
       log("fail", `GET ${path}`, "página não encontrada (404)");
       return;
     }
@@ -94,7 +117,8 @@ async function checkPage(path, expectText = null) {
     }
 
     const sizeKb = (html.length / 1024).toFixed(1);
-    log("pass", `GET ${path}`, `${res.status} OK (${sizeKb} KB)`);
+    const hopNote = hops > 0 ? ` (${hops} redirect${hops > 1 ? "s" : ""})` : "";
+    log("pass", `GET ${path}`, `${res.status} OK (${sizeKb} KB)${hopNote}`);
 
     if (VERBOSE) {
       // Check for common issues in HTML
@@ -125,7 +149,19 @@ async function checkApi(path, method = "GET", body = null) {
       opts.body = JSON.stringify(body);
     }
 
-    const res = await fetchWithTimeout(url, opts);
+    // Follow redirects (apex→www) then check final response
+    let current = url;
+    let res;
+    for (let i = 0; i < 5; i++) {
+      res = await fetchWithTimeout(current, i === 0 ? opts : { method, headers: opts.headers });
+      if (res.status >= 300 && res.status < 400) {
+        const location = res.headers.get("location") || "";
+        current = location.startsWith("http") ? location : new URL(location, current).toString();
+        continue;
+      }
+      break;
+    }
+
     const status = res.status;
 
     // 401/403 = auth required, which is correct behavior
@@ -158,7 +194,7 @@ async function checkApi(path, method = "GET", body = null) {
 
 async function checkHeaders() {
   try {
-    const res = await fetchWithTimeout(BASE);
+    const { res } = await fetchFollowRedirects(BASE);
     const headers = Object.fromEntries(res.headers.entries());
 
     const expected = {
@@ -203,10 +239,10 @@ async function main() {
   // 1. Server alive?
   console.log("\n─── Servidor ───");
   try {
-    await fetchWithTimeout(BASE);
-    log("pass", "Dev server respondendo", BASE);
+    await fetchFollowRedirects(BASE);
+    log("pass", "Servidor respondendo", BASE);
   } catch (err) {
-    log("fail", "Dev server", `não responde em ${BASE}. Está rodando? (npm run dev)`);
+    log("fail", "Servidor", `não responde em ${BASE}. Está rodando?`);
     console.log(`\n  Total: 0 pass, 1 fail\n`);
     process.exit(1);
   }
