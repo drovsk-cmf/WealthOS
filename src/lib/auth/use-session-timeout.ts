@@ -9,7 +9,6 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { createClient } from "@/lib/supabase/client";
 
@@ -19,7 +18,6 @@ const ACTIVITY_EVENTS = ["mousedown", "keydown", "touchstart", "scroll"];
 
 export function useSessionTimeout() {
   const lastActivityRef = useRef<number>(Date.now());
-  const router = useRouter();
 
   const updateActivity = useCallback(() => {
     lastActivityRef.current = Date.now();
@@ -35,8 +33,8 @@ export function useSessionTimeout() {
     }
 
     await supabase.auth.signOut();
-    router.push("/login?reason=timeout");
-  }, [router]);
+    window.location.href = "/login?reason=timeout";
+  }, []);
 
   useEffect(() => {
     // Register activity listeners

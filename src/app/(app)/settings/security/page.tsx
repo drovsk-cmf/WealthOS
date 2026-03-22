@@ -60,7 +60,7 @@ export default function SecuritySettingsPage() {
       if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
       }
-      router.push("/login?reason=logout_all");
+      window.location.href = "/login?reason=logout_all";
     } catch {
       setMessage({ type: "error", text: "Erro ao encerrar sessões. Tente novamente." });
     } finally {

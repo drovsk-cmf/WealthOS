@@ -88,7 +88,9 @@ export default function AppLayout({
       navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
     }
     await supabase.auth.signOut();
-    router.push("/login");
+    // Hard navigation: kills all React hooks immediately.
+    // router.push would keep hooks alive, causing fetch errors with no session.
+    window.location.href = "/login";
   }
 
   // Show nothing until AAL check completes
