@@ -230,7 +230,7 @@ Paleta institucional (`src/app/globals.css` + `tailwind.config.ts`):
 
 | Token | Hex | Tailwind class | Uso |
 |---|---|---|---|
-| Midnight Plum | #2F203B | `plum` / `--plum` | Cor-identidade, sidebar-bg, app icon (calibrado de #241E29 → #2F203B na sessão 29) |
+| Midnight Plum | #241E29 | `plum` / `--plum` | Cor-identidade, sidebar-bg, app icon (revertido para #241E29 na sessão 30; --primary separado resolve o problema original) |
 | Primary (botões) | #4F2F69 | `--primary` | Botões ativos, tabs, CTAs (273 38% 30%, calibrado sessão 29) |
 | Background | #FBF9F5 | `--background` | Fundo geral suave (substituiu Bone #F5F0E8 na sessão 29) |
 | Card | #FFFFFF | `--card` | Cards sobre o fundo (branco puro, sessão 29) |
@@ -241,7 +241,7 @@ Paleta institucional (`src/app/globals.css` + `tailwind.config.ts`):
 | Warm Stone | #CEC4B8 | `stone` | Apoio neutro |
 
 **Tokens de sidebar (adicionados sessão 29):**
-- `--sidebar-bg: 273 30% 18%` (#2F203B) — fundo da sidebar, plum escuro, ancoragem visual
+- `--sidebar-bg: 273 15% 14%` (#241E29) — fundo da sidebar, Midnight Plum original, ancoragem visual
 - `--sidebar-fg: 37 48% 94%` (bone) — texto/ícones sobre sidebar
 - `--sidebar-active-bg: 37 48% 94%` (bone) — item ativo na sidebar
 - `--sidebar-active-fg: 273 30% 18%` (plum) — texto do item ativo
