@@ -1065,207 +1065,23 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 
 ## 12. Backlog Consolidado Único
 
-**Esta é a fonte única de verdade para todo trabalho pendente.** Qualquer nova sessão deve consultar apenas esta seção para montar um plano de trabalho.
+> **Esta seção foi movida para um documento dedicado.**
+>
+> Consulte [](./PENDENCIAS-FUTURAS.md) na raiz do repositório.
+>
+> O documento contém, em formato estruturado e atualizado:
+> - Ações imediatas do Claudio (sem código)
+> - Stories bloqueadas por Mac/Xcode
+> - Sequência iOS e App Store
+> - Backlog de produto em 3 horizontes (H1, H2, H3)
+> - Dívida técnica com gatilhos de implementação
+> - Evoluções estratégicas futuras
+> - Decisões pendentes de confirmação
+> - Limitações conhecidas aceitas por design
+> - Insights de benchmark de mercado
+>
+> **Regra:** ao iniciar qualquer sessão de desenvolvimento, ler  junto com as seções 1–3 deste HANDOVER para ter contexto completo.
 
-**NOTA: Para métricas numéricas (tabelas, functions, tests, etc.), a fonte única é a §3.2.** Os "Totais atualizados" nos logs de sessões históricas abaixo refletem o momento em que foram escritos e podem estar defasados. Sempre consulte §3.2 para números corretos.
-
-**Contagem geral:** 108 stories especificadas. **105 concluídas** (87 originais + 18 adendo v1.5). 3 bloqueadas (requerem Mac: CFG-04, FIN-17, FIN-18).
-
-
-### 12.1 Sequência de execução recomendada (adendo v1.5)
-
-Itens do adendo v1.5 (feedbacks de usabilidade + IA + modelo patrimonial). Origem: `wealthos-adendo-v1_5.docx`. Priorização por impacto × esforço.
-
-**Sprint 1: Quick wins UX (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P1 | Auditoria de strings e renomeações (Cockpit → Fôlego, Centros de Custo → Divisões, LCR → Índice de liquidez, Runway → Fôlego em meses, Burn Rate → Custo mensal médio, Tiers → Níveis de acesso ao dinheiro, Fiscal → Imposto de Renda) | Alto | Baixo | Adendo v1.5 §2.3 | ✅ |
-| P2 | Promover importação para sidebar principal + CTA grande no dashboard + botão em Transações | Alto | Baixo | Adendo v1.5 §2.6 | ✅ |
-| P15 | Cronograma guiado de setup (plano de 5 semanas visível ao usuário, cada semana com entrega de valor) | Alto | Baixo | Adendo v1.5 §4.4 | ✅ |
-
-**Sprint 2: Onboarding (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P4 | Onboarding simplificado: welcome → pergunta única → setup auto → redirect. MFA diferido para banner no dashboard após 24h. Currency default BRL. | Alto | Médio | Adendo v1.5 §2.1 | ✅ |
-
-**Sprint 3: Schema patrimonial (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P16 | Expansão ENUM asset_category de 5 para 14 valores (vehicle_auto, vehicle_moto, vehicle_recreational, vehicle_aircraft, jewelry, fashion, furniture, sports, collectibles) | Médio | Baixo | Adendo v1.5 §3.4 | ✅ |
-| P7a | Migration: parent_asset_id (UUID FK NULL) em assets + asset_id (UUID FK NULL) em transactions e journal_entries | Alto | Baixo | Adendo v1.5 §3.1-3.2 | ✅ |
-
-**Sprint 4: Navegação + Formulário (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P3 | Reorganizar Configurações: Importação removida (sidebar P2), IR promovido para grupo "Finanças", Tarefas removida (acessível via /workflows) | Alto | Médio | Adendo v1.5 §2.2 | ✅ |
-| P6 | Formulário de transação radical: modo rápido = valor + descrição + conta. Tipo, categoria, data, status, membro, asset no modo expandido. | Médio | Baixo | Adendo v1.5 §2.5 | ✅ |
-
-**Sprint 5: Categorização determinística (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P10 | Pipeline de categorização: categorization_rules (26 regex globais BR) + merchant_patterns (aprendizado por correção). auto_categorize reescrita (3 etapas). learn_merchant_pattern RPC. | Alto | Médio | Adendo v1.5 §5.4 etapas 1-2 | ✅ |
-
-**Sprint 6-7: Importação em massa (~2 sessões) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P8 | BulkEntryGrid: tabela editável genérica (add row, validação inline, save all). BulkImportTab: 3 domínios (bens, veículos, investimentos) com configs de colunas dedicadas. Integrado em /connections como aba "Cadastro em massa". | Alto | Médio-alto | Adendo v1.5 §4.2.1 | ✅ |
-| P9 | 3 templates Excel por domínio (bens, veículos, investimentos) + download client-side via ExcelJS. Templates com sheet de instruções e exemplos BR. | Médio | Médio | Adendo v1.5 §4.2.2-4.3 | ✅ |
-
-**Sprint 8: Dashboard progressivo (~1 sessão) ✅ CONCLUÍDA (20/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P5 | Dashboard com 4 níveis de maturidade: Novo (0-10tx: setup+import+narrative+summary), Ativo (11-50tx: +categorias+bills+budget), Engajado (51+tx 2+meses: +balanço+evolução+solvência), Avançado (opt-in futuro). | Alto | Médio-alto | Adendo v1.5 §2.4 | ✅ |
-
-**Sprint 9: Gateway IA (~1 sessão) ✅ CONCLUÍDA (21/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P11 | Gateway IA: tabelas ai_cache + ai_usage_log, RPCs (rate limit, cache, save), sanitizador PII, API route /api/ai/categorize (Gemini Flash-Lite), hook useAiCategorize, cron limpeza cache. Ativação requer GEMINI_API_KEY no env. | Alto | Médio | Adendo v1.5 §5.3-5.4-5.9 | ✅ |
-
-**Sprint 10: Hierarquia de ativos na UI (~1 sessão) ✅ CONCLUÍDA (21/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P7b | UI de hierarquia de ativos: parent_asset_id no AssetForm, select de bem pai (filtra bens sem pai), prop defaultParentId para fluxo "adicionar acessório" | Alto | Médio | Adendo v1.5 §3.1-3.3 | ✅ |
-| P14 | Cadastro assistido de bens: tabela asset_templates (27 templates BR com depreciação e valor referência), useAssetTemplates hook, searchTemplates helper | Médio | Médio | Adendo v1.5 §5.6 | ✅ |
-
-**Pós-MVP: ✅ CONCLUÍDO (21/03/2026)**
-
-| # | Ação | Impacto | Esforço | Referência | Status |
-|---|---|---|---|---|---|
-| P12 | Extração de documentos: /api/ai/extract (OCR text → regex BR → Gemini Flash fallback). Campos: amount, date, CNPJ, merchant. PII sanitizado. | Médio | Médio | Adendo v1.5 §5.5 | ✅ |
-| P13 | Insights narrativos: /api/ai/insights + tabela user_insights. Claude Haiku primário, Gemini fallback. Cached por mês. | Médio | Médio | Adendo v1.5 §5.7 | ✅ |
-| P17 | Assistente conversacional: /api/ai/chat. Claude Sonnet + tool calling (4 ferramentas: query_transactions, get_summary, get_balance_sheet, get_category_spending). Loop max 3 iterações. | Alto | Alto | Adendo v1.5 §5.8 | ✅ |
-
-
-### 12.2 Limitações conhecidas (avaliar antes do deploy)
-
-| Item | Motivo | Mitigação |
-|---|---|---|
-| Rate limiter não protege signInWithPassword | SDK Supabase vai direto ao GoTrue, bypassa middleware | GoTrue tem rate limiting próprio. WAF em produção |
-| CSP requer `unsafe-eval` em dev | Next.js usa eval para HMR | Nonce/hash em produção (já implementado) |
-| Biometria é stub | Capacitor BiometricAuth requer build nativo | Funcional após I3 |
-| SW não cacheia dados offline | Decisão deliberada: app financeiro não deve servir dados stale | React Query offlineFirst serve cache in-memory |
-
-
-### 12.3 Itens de auditoria deferidos (avaliar antes do deploy)
-
-Baixa prioridade. Implementar apenas se o cenário concreto se materializar.
-
-| Item | Gatilho para implementar |
-|---|---|
-| Web Workers para parsers CSV/OFX/XLSX (Gemini #4) | Usuário reportar travamento na importação |
-| SSR prefetch no Dashboard (Gemini #5) | Escala para 10+ usuários ou TTI > 2s medido |
-
-
-### 12.4 UX/Retenção pendente
-
-Dos 19 itens originais em 3 horizontes (H1/H2/H3), 17 foram concluídos. Restam:
-
-| # | Item | Esforço | Dependência |
-|---|---|---|---|
-| UX-H2-02 | Push notifications: vencimentos + inatividade + conta desatualizada (APNs) | Médio | CFG-04 (requer Mac) |
-| UX-H3-05 | Teste de corredor com 3 pessoas (5 tarefas, observar hesitações) | Baixo | Ação Claudio, sem código |
-
-Métricas-alvo: onboarding >70%, time-to-value <5min, D1 >35%, D7 >20%, D30 >12%, tx/semana >5.
-
-
-### 12.5 Ações do Claudio (paralelas, sem sessão Claude)
-
-| Item | Status |
-|---|---|
-| Supabase Pro (habilitar leaked password protection) | Pendente (decisão de custo) |
-| Validação fiscal periódica (IRPF, INSS, SM: verificar DOU) | Recorrente |
-| Apple Developer Account (US$ 99/ano) | Pendente (decisão Claudio) |
-| Teste de corredor com 3 pessoas (UX-H3-05) | Pendente |
-| Confirmação das 6 decisões pendentes do adendo v1.5 (providers IA, rate limit, cache) | Pendente |
-
-
-### 12.6 Deploy web (após limitações corrigidas + ações Claudio)
-
-| # | Item | Esforço | Status |
-|---|---|---|---|
-| W1 | Deploy Vercel + domínio oniefy.com + DNS | 30 min | ✅ FEITO (sessão 28). Projeto: prj_MvDXDLlc2xZmcRLuIenCcFdas8mH. URL: www.oniefy.com |
-| W2 | Supabase Pro (leaked password protection + limites produção) | 5 min | Requer assinatura Claudio |
-
-
-### 12.7 Stories bloqueadas por Mac/iOS (3/108)
-
-| Story | Descrição | Requisito |
-|---|---|---|
-| CFG-04 | Push notifications (APNs) | Xcode + Apple Developer Account |
-| FIN-17 | OCR recibo (Apple Vision + Tesseract.js + PDF.js) | Xcode (Vision Framework nativo); web fallback possível |
-| FIN-18 | Câmera comprovante (Capacitor Camera) | Xcode |
-
-
-### 12.8 iOS / App Store (última etapa, requer Mac)
-
-| # | Item | Esforço | Requisito |
-|---|---|---|---|
-| I1 | Apple Developer Account (US$ 99/ano) | 5 min | Decisão Claudio |
-| I2 | Capacitor iOS build + teste (Xcode Cloud 25h grátis/mês) | 2h | I1 |
-| I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4-6h | I2 |
-| I4 | OCR real (Apple Vision nativo + Tesseract.js web + PDF.js) | 4-6h | I2 |
-| I5 | Submissão App Store | 2h | I1, I2, I3 |
-
-
-### 12.9 Evolução futura (sem prazo, por gatilho)
-
-| Item | Origem | Gatilho |
-|---|---|---|
-| RLS multi-user (workspaces/grupos para login independente de membros) | Gemini audit #1b | Cônjuge ou membro solicitar login próprio |
-| Rateio automático de overhead por centro | Estudo técnico v2.0 | Volume > 50 tx/mês com centros |
-| pg_cron para limpeza de soft-deleted (90 dias) | Adendo v1.2 | Volume de dados justificar |
-| Open Finance (Pluggy, Belvo) | Adendo v1.3 | Agregador viável + certificação + budget |
-| Motor CLT (bruto-líquido automático) | Adendo v1.4 | Demanda de usuários CLT |
-| Motor PJ/Simples Nacional | Adendo v1.4 | Demanda de usuários PJ |
-| Motor Investimentos (DARF, isenções) | Adendo v1.4 | Módulo investimentos implementado |
-| Arquitetura Local-First (SQLite + WASM + CRDTs) | Adendo v1.4 | Escala ou requisito de offline total |
-| Zero-Knowledge expandido | Adendo v1.4 | Demanda de privacidade extrema |
-| Capital Humano (DCF da carreira) | Adendo v1.4 | Produto maduro |
-| Shadow Ledger + Cofre Digital | Adendo v1.4 | Produto maduro |
-| B2B / Open API / Marketplace de Solvência | Adendo v1.4 | Base de usuários estabelecida |
-
-
-### 12.10 Remediação da auditoria Claude Code (histórico, docs/audit/)
-
-Auditoria completa realizada em 16/03/2026 (PR #4). Relatório em `docs/audit/` (9 arquivos). Referências: OWASP ASVS L2, MASVS, Nielsen, WCAG 2.2 AA. Nota: 7/10.
-
-**Totais: 0 CRÍTICO, 15 ALTO, 39 MÉDIO, 26 BAIXO.**
-**Remediação: 63 resolvidos, 17 excluídos (aceitos/adiados).**
-
-Remediação executada em 16/03/2026 via 12 lotes sequenciais (11 commits + 1 migration-only):
-
-| Lote | Commit | Achados | Escopo |
-|------|--------|---------|--------|
-| 1 | 601be41 | D8.02, D8.03, D8.13 | aria-label em 23 botões icon-only + color pickers |
-| 2 | eaea2eb | D8.07, D8.11, D8.14 | scope em tabelas, sidebar a11y, auth main landmark |
-| 3 | 78d8f23 | D8.04-06, D8.08-09, D8.15-16 | htmlFor/aria-required/describedby em 6 forms, radiogroups, password strength |
-| 4 | b5f2fc5 | D8.10, D8.12 | +/- prefixos em valores financeiros, focus rings |
-| 5 | 8bf8b1b | D7.01, D7.02, D7.08, D7.13 | Campo monetário vírgula, Sonner toasts (18 pontos), erros PT-BR |
-| 6 | c79b52c | D1.02-04, D3.02 | Proxies register/forgot-password com rate limit, timing-safe, SW cleanup |
-| 7 | a60667a | D2.01-05, D3.01-06, D1.07-08 | Export sem cpf, user_id filters, error sanitization, CSV injection fix |
-| 8 | c28cd62 | D7.04-06, D7.11, D7.14-15 | formatCurrency dinâmico, busca em 4 páginas, ESC/dialog fixes, sync indicator |
-| 9 | 352ca11 | D6.01-05 | JOIN inline em transações, staleTime, trigram + matched_id indexes |
-| 10 | migration | D6.09-11, D2.04 | Cron duplicate guard, deletion timeout (migration 035+036) |
-| 11 | b1aaad4 | D5.01-08, D4.01 | detectPlatform shared, formatMonthShort, console dev-only, deps cleanup, biometric fix |
-| 12 | c023b92 | D7.07, D7.09-10, D7.12, D7.16 | Duplicar transação, help cards, parsing progress |
-
-**Achados excluídos (17):** D1.01 (Redis), D1.05 (AAL2 server), D1.06 (password rotation), D4.02-04 (biometric/native), D5.09 (TODO Fase 10), D6.06-08/12-16 (micro-otimizações), D6.15 (trigger O(n²)), D7.03 (edição transações), D8.01 (focus trap)
-
-**Detalhes completos:** ver `docs/audit/01-auth-session.md` a `08-accessibility.md`.
-
----
-
-
----
 
 ## 13. Sessão 14/03/2026 (log)
 
