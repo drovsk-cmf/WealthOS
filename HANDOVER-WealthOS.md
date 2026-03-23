@@ -3708,3 +3708,30 @@ Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
 | `127af22` | fix: 5 correções consolidadas - Importar/OAuth/glow/hover/gradients |
 
 **CI verde:** `127af22` (CI + Post-Deploy Check: success)
+
+### 30.7 Fix crítico: cadastro e login por email quebrados em produção
+
+**Problema:** Todos os 3 endpoints de auth (`/api/auth/register`, `/api/auth/login`, `/api/auth/forgot-password`) retornavam "Corpo da requisição inválido" para qualquer request. Primeiro usuário convidado não conseguiu criar conta.
+
+**Causa raiz:** Os 3 Route Handlers importavam `verifyTurnstile` de `turnstile.tsx`, arquivo marcado com `"use client"`. Route Handlers executam server-side. A diretiva `"use client"` causa conflito de módulo na resolução do Next.js, fazendo o bloco `try` falhar antes mesmo de parsear o body. O `catch` genérico engolia o erro real e retornava a mensagem genérica.
+
+**Fix (commit `b556e3f`):**
+- Novo arquivo `src/lib/auth/turnstile-verify.ts` (server-only, sem `"use client"`)
+- 3 routes atualizadas: import de `turnstile.tsx` → `turnstile-verify.ts`
+- `turnstile.tsx` mantém apenas o componente React (client)
+- Catch blocks agora logam `console.error` com o erro real
+
+**Verificação em produção:**
+- `POST /api/auth/register`: `{"message":"Verifique seu email para confirmar o cadastro."}`
+- `POST /api/auth/login` (senha errada): `{"error":"Email ou senha incorretos."}`
+- `POST /api/auth/forgot-password`: `{"message":"Se o email estiver cadastrado..."}`
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `b556e3f` | fix(auth): separar verifyTurnstile de componente 'use client' |
+
+**CI verde:** `b556e3f` (CI + Post-Deploy Check: success)
+
+**Lição aprendida:** Nunca importar função server-side de arquivo com `"use client"`. Componentes React e funções server devem estar em arquivos separados, mesmo que compartilhem lógica. O catch genérico sem logging escondeu esse bug desde o deploy inicial.
