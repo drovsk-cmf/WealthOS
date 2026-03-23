@@ -230,12 +230,21 @@ Paleta institucional (`src/app/globals.css` + `tailwind.config.ts`):
 
 | Token | Hex | Tailwind class | Uso |
 |---|---|---|---|
-| Midnight Plum | #241E29 | `plum` | Cor-identidade, fundo dark, app icon |
-| Bone | #F5F0E8 | `bone` | Off-white quente (nunca branco puro) |
+| Midnight Plum | #2F203B | `plum` / `--plum` | Cor-identidade, sidebar-bg, app icon (calibrado de #241E29 → #2F203B na sessão 29) |
+| Primary (botões) | #4F2F69 | `--primary` | Botões ativos, tabs, CTAs (273 38% 30%, calibrado sessão 29) |
+| Background | #FBF9F5 | `--background` | Fundo geral suave (substituiu Bone #F5F0E8 na sessão 29) |
+| Card | #FFFFFF | `--card` | Cards sobre o fundo (branco puro, sessão 29) |
+| Bone | #F5F0E8 | `bone` | Off-white quente — logo variante bone, primary-foreground |
 | Graphite Ink | #171A1F | (foreground) | Texto principal |
 | Mineral Sage | #7E9487 | `sage` | Acento frio, variante dark mode |
 | Oxide Brass | #A7794E | `brass` | Acento nobre restrito |
 | Warm Stone | #CEC4B8 | `stone` | Apoio neutro |
+
+**Tokens de sidebar (adicionados sessão 29):**
+- `--sidebar-bg: 273 30% 18%` (#2F203B) — fundo da sidebar, plum escuro, ancoragem visual
+- `--sidebar-fg: 37 48% 94%` (bone) — texto/ícones sobre sidebar
+- `--sidebar-active-bg: 37 48% 94%` (bone) — item ativo na sidebar
+- `--sidebar-active-fg: 273 30% 18%` (plum) — texto do item ativo
 
 Semânticas: Verdant #2F7A68 (receitas/positivo), Terracotta #A64A45 (despesas/negativo), Burnished #A97824 (warning), Info Slate #56688F (informativo). Tiers de solvência: T1 #2F7A68, T2 #56688F, T3 #A97824, T4 #6F6678.
 
@@ -604,7 +613,7 @@ Divergências encontradas e corrigidas entre o design system e o código real:
 
 | # | Divergência | Correção |
 |---|---|---|
-| 1 | manifest.json: `#ffffff` / `#0a0a0a` | → `#F5F0E8` (Bone) / `#241E29` (Plum) |
+| 1 | manifest.json: `#ffffff` / `#0a0a0a` | → `#F5F0E8` (Bone) / `#241E29` → `#2F203B` (Plum calibrado) |
 | 2 | auth.ts: password strength bar (red/orange/yellow/green) | → terracotta/burnished/verdant |
 | 3 | bills, budgets, tax, solvency: 9 refs yellow-* | → burnished |
 | 4 | bank connections: status colors (green/blue/red/orange) | → verdant/slate/terracotta/burnished |
