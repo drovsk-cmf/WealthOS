@@ -40,7 +40,7 @@ type CenterType = Database["public"]["Enums"]["center_type"];
 
 const PRESET_COLORS = [
   "#56688F", "#2F7A68", "#A97824", "#A64A45", "#6F6678",
-  "#A7794E", "#7E9487", "#2F203B", "#4A7A6E", "#8B6B4A",
+  "#A7794E", "#7E9487", "#241E29", "#4A7A6E", "#8B6B4A",
 ];
 
 // ─── P&L Panel Component (CEN-04) ──────────────────────────────
@@ -305,7 +305,7 @@ export default function CostCentersPage() {
                   onClick={() => setExpandedCenter(isExpanded ? null : center.id)}
                 >
                   <div className="h-9 w-9 flex-shrink-0 rounded-lg"
-                    style={{ backgroundColor: center.color || "#2F203B" }} />
+                    style={{ backgroundColor: center.color || "#241E29" }} />
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

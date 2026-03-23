@@ -161,7 +161,7 @@ export default function AccountsPage() {
               {/* Color dot */}
               <div
                 className="h-10 w-10 flex-shrink-0 rounded-full"
-                style={{ backgroundColor: account.color || "#2F203B" }}
+                style={{ backgroundColor: account.color || "#241E29" }}
               />
 
               {/* Info */}

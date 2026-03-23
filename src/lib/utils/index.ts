@@ -122,7 +122,7 @@ const COLOR_NAME_MAP: Record<string, string> = {
   "#6F6678": "Lavanda",
   "#A7794E": "Bronze",
   "#7E9487": "Sálvia",
-  "#2F203B": "Grafite",
+  "#241E29": "Grafite",
   "#4A7A6E": "Verde jade",
   "#8B6B4A": "Canela",
   "#CEC4B8": "Areia",
