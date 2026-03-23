@@ -37,13 +37,13 @@ export default function ConnectionsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-12">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Conexões & Importação</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Importar</h1>
         <p className="text-sm text-muted-foreground">
-          Importe extratos bancários (CSV/OFX/XLSX) ou gerencie conexões
+          Importe extratos, faça cadastros em massa e gerencie conexões
         </p>
       </div>
 
-      <div className="flex gap-1 rounded-lg border bg-muted p-1">
+      <div className="flex gap-1 rounded-lg bg-primary/10 p-1">
         {([
           { key: "import" as const, label: "Importar extrato" },
           { key: "bulk" as const, label: "Cadastro em massa" },
@@ -54,7 +54,7 @@ export default function ConnectionsPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
+              tab === t.key ? "bg-primary text-primary-foreground" : "text-primary/60 hover:text-primary hover:bg-primary/20"
             }`}
           >
             {t.label}
