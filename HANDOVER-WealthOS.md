@@ -3673,3 +3673,38 @@ Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
 | `8093e48` | fix(auth): await getSession before MFA/auth checks in useAuthInit |
 
 **CI verde:** `8093e48` (CI + Post-Deploy Check: success)
+
+### 30.6 Fix consolidado: Importar / OAuth / Sidebar glow / Hover / Gradients
+
+**5 correções em um commit** (`127af22`):
+
+**1. Aba Importar desalinhada:**
+- `max-w-4xl` → `max-w-3xl` (padrão de todas as outras páginas)
+- Tabs `bg-primary/10` → `bg-muted` + `bg-card shadow-card` (padrão de bills/workflows)
+
+**2. OAuth double-click (fix definitivo, duas camadas):**
+- `middleware.ts`: criado helper `redirectWithCookies()` que copia cookies de sessão do `supabaseResponse` para o `NextResponse.redirect`. Aplicado nos 3 redirects de usuário autenticado (onboarding, root, auth-pages). Essa era a raiz real: `getUser()` refrescava o token e gravava no `supabaseResponse`, mas `NextResponse.redirect()` criava resposta nova descartando esses cookies.
+- `use-auth-init.ts`: reestruturado com `getUser()` como gate autoritativo (valida token server-side) em vez de `getSession()` (lê cache em memória, pode estar stale após OAuth redirect). MFA check movido para depois da confirmação do user.
+
+**3. Sidebar glow invisível:**
+- Opacidade 0.06 → 0.12, largura 24px → 40px
+- Cor fixa `hsl(273 30% 25%)` em vez de `var(--plum)` (que a 14% luminosidade era invisível a 6% opacidade)
+
+**4. Hover universal (.btn-alive):**
+- Nova classe `.btn-alive` em `globals.css` para botões outline/secondary/ghost
+- Hover lift sutil (`translateY(-0.5px)` + sombra 4px)
+- Aplicado em 24 arquivos (botões de cancelar, outline, secondary)
+- Complementa `.btn-cta` que só cobria CTAs primários
+
+**5. Micro-gradients nas barras:**
+- Novas classes utilitárias: `bar-verdant`, `bar-terracotta`, `bar-burnished`, `bar-primary`
+- Cada uma com `linear-gradient(90deg, tom-escuro, tom-claro)` da mesma família
+- Aplicado em: budget-summary-card, balance-sheet-card, setup-journey-card, budgets/page, settings/data, import-step-upload
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `127af22` | fix: 5 correções consolidadas - Importar/OAuth/glow/hover/gradients |
+
+**CI verde:** `127af22` (CI + Post-Deploy Check: success)
