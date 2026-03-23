@@ -244,7 +244,7 @@ export default function AppLayout({
           />
         </header>
 
-        <div className="p-6">
+        <div className="px-6 pt-10 pb-6">
           {!isOnline && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-burnished/30 bg-burnished/10 px-4 py-2.5 text-sm text-burnished">
               <svg className="h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
