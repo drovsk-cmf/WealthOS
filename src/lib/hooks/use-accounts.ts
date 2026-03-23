@@ -70,7 +70,7 @@ export const LIQUIDITY_TIER_OPTIONS = [
 
 const PRESET_COLORS = [
   "#56688F", "#2F7A68", "#A97824", "#A64A45", "#6F6678",
-  "#A7794E", "#7E9487", "#241E29", "#4A7A6E", "#8B6B4A",
+  "#A7794E", "#7E9487", "#2F203B", "#4A7A6E", "#8B6B4A",
 ];
 
 export { PRESET_COLORS };
