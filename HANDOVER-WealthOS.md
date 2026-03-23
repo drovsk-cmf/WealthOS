@@ -3632,3 +3632,25 @@ Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
 | CI | Verde (Post-Deploy Check) |
 | Deploy | www.oniefy.com |
 | Design System | Plum Ledger v1.2 |
+
+### 30.3 Micro-gradients nos CTAs + Tint plum nos labels
+
+**btn-cta** (commit `e73a7e8`):
+- Classe `.btn-cta` em `globals.css` (`@layer components`): `linear-gradient(135deg, primary→plum-dark)`, warm shadow, hover lift (-0.5px), active press
+- Dark mode: gradient sage (`hsl(var(--primary))→sage-dark`)
+- 41 arquivos: substituição global de `bg-primary hover:bg-primary/90` → `btn-cta` em todos os botões CTA
+- FAB: `btn-cta` + `shadow-elevated` + `hover:scale-105`
+- Indicadores de estado (tabs ativas, pills, marcador de hoje) mantidos como `bg-primary` (não são CTAs)
+
+**Tint plum nos labels** (mesmo commit):
+- `--muted-foreground` light: `270 4% 55%` → `270 10% 48%` (+6% saturação, -7% luminosidade)
+- `--muted-foreground` dark: `30 10% 42%` → `270 8% 50%` (hue 30→270, alinhado à identidade plum)
+- Propagação automática: todas as 100+ ocorrências de `text-muted-foreground` herdaram o tint
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `e73a7e8` | feat(design): btn-cta gradient + muted-foreground plum tint |
+
+**CI verde:** `e73a7e8` (Post-Deploy Check: success)
