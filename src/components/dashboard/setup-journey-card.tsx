@@ -3,15 +3,18 @@
 /**
  * SetupJourneyCard - Cronograma guiado de 5 etapas (P15)
  *
- * Aparece no topo do Dashboard até que todos os 7 passos
- * sejam concluídos. Organiza os passos em 5 semanas, cada
+ * Aparece no topo do Dashboard até que todas as 7 tarefas
+ * sejam concluídas. Organiza as tarefas em 5 etapas, cada
  * uma entregando valor progressivo.
  *
- * Etapa 1: Primeiros passos (data de corte + contas)
- * Etapa 2: Despesas fixas (recorrências)
- * Etapa 3: Importação (extratos + faturas)
- * Etapa 4: Organização (categorização)
- * Etapa 5: Controle (orçamento)
+ * Etapa 1: Primeiros passos (data de corte + contas)     — 2 tarefas
+ * Etapa 2: Despesas fixas (recorrências)                 — 1 tarefa
+ * Etapa 3: Importação (extratos + faturas)               — 2 tarefas
+ * Etapa 4: Organização (categorização)                   — 1 tarefa
+ * Etapa 5: Controle (orçamento)                          — 1 tarefa
+ *
+ * Contador no header mostra "X/5 etapas" (etapas concluídas).
+ * Barra de progresso usa as 7 tarefas individuais para feedback granular.
  *
  * Step 1 (cutoff_date) abre modal inline em vez de navegar.
  * Referência: adendo v1.5 §4.4.
@@ -58,15 +61,22 @@ export function SetupJourneyCard() {
 
   if (isLoading || !data || data.all_done) return null;
 
-  const progress = data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0;
+  // Barra de progresso: baseada em tarefas individuais (7) para feedback granular
+  const taskProgress = data.total > 0 ? Math.round((data.completed / data.total) * 100) : 0;
 
-  // Group steps by week
+  // Group steps by week (etapa)
   const weeks = new Map<number, SetupStep[]>();
   for (const step of data.steps ?? []) {
     const w = step.week_number ?? 1;
     if (!weeks.has(w)) weeks.set(w, []);
     weeks.get(w)!.push(step);
   }
+
+  // Contador do header: etapas concluídas (100% das tarefas da etapa feitas)
+  const completedEtapas = [...weeks.values()].filter(
+    (steps) => weekStatus(steps) === "completed"
+  ).length;
+  const totalEtapas = weeks.size; // 5
 
   // Auto-expand the active week
   const activeWeek = [...weeks.entries()].find(
@@ -94,15 +104,15 @@ export function SetupJourneyCard() {
             <h3 className="font-semibold">Seu plano de 5 etapas</h3>
           </div>
           <span className="text-xs font-medium text-muted-foreground">
-            {data.completed}/{data.total} concluídos
+            {completedEtapas}/{totalEtapas} etapas
           </span>
         </div>
 
-        {/* Progress bar */}
+        {/* Progress bar — usa 7 tarefas para granularidade */}
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-primary transition-all duration-500"
-            style={{ width: `${progress}%` }}
+            style={{ width: `${taskProgress}%` }}
           />
         </div>
 
