@@ -3404,3 +3404,166 @@ Varredura completa de ~360 strings user-facing em 20 páginas e 30+ componentes.
 | CI | Verde (CI 4/4 + Post-Deploy + Uptime) |
 | Deploy | Vercel produção em www.oniefy.com |
 | E2E specs | 9 existentes + 1 smoke (10 testes) |
+
+## Sessão 29 - 23 março 2026 - UX/UI Polish (Cores, Layout, Microcopy)
+
+### 29.1 Contexto
+
+Sessão de polish visual e UX focada exclusivamente na interface de produção (www.oniefy.com). Uso do browser integrado (Claude in Chrome) para verificar o estado real da plataforma antes de qualquer alteração, evitando divergências entre código e deploy.
+
+### 29.2 Análise de Mercado + PENDENCIAS-FUTURAS.md (sessão anterior)
+
+Benchmark completo de concorrentes (Mobills, Organizze, Oinc, YNAB, Empower, Monarch Money). Insights de reviews (Reclame Aqui, Reddit, Trustpilot). Criação do `PENDENCIAS-FUTURAS.md` na raiz do repositório como backlog consolidado de produto. Commits `16abe54` e `11b3d80`.
+
+### 29.3 Correções de UX e Microcopy
+
+| Commit | Fix |
+|--------|-----|
+| `68c1fed` | "5 semanas" → "5 etapas" no SetupJourneyCard (título + comentário) |
+| `3c4adf8` | Fallback "Sem receita no mês" → "—" no card Despesas do Mês |
+| `ea183e0` | Remover botão Importar redundante da página Transações |
+| `40250c6` | "Sem." → "Et." nas abas do SetupJourneyCard (span hidden sm:inline) |
+| `e2bbff5` | Remover abreviação "Et." das tabs — ficam apenas os números (1 · 2 · 3 · 4 · 5) |
+
+### 29.4 Audit e Correção do Design System Plum Ledger
+
+**Problema raiz identificado via browser:** a sidebar nunca tinha recebido `bg-plum` — usava `bg-card` (tom claro). O plum só aparecia nos botões de item ativo (`bg-primary`), que com `hsl(273, 15%, 14%)` renderizavam como preto puro. O usuário não via plum em nenhum lugar.
+
+**Sequência de correções:**
+
+| Commit | Descrição |
+|--------|-----------|
+| `8addd56` | `--plum/--primary/--ring` → `hsl(273,30%,18%)` em globals.css |
+| `bf5e883` | `#241E29` → `#2F203B` em accounts/page.tsx |
+| `1d7681d` | `#241E29` → `#2F203B` em cost-centers/page.tsx |
+| `26aaa26` | `#241E29` → `#2F203B` em PRESET_COLORS (use-accounts.ts) |
+| `effd401` | `#241E29` → `#2F203B` em CATEGORY_COLORS (use-categories.ts) |
+| `5b3edda` | `#241E29` → `#2F203B` em colorName map (utils/index.ts) |
+| `91a2160` | `bg-emerald-700` → `bg-verdant` (balance-sheet-card.tsx) |
+
+### 29.5 Fundo Principal e Sidebar com Plum Real
+
+**Fundo `#FBF9F5`:** `--background: 40 43% 97%`. Cards passaram para branco puro (`0 0% 100%`) para manter contraste visível sobre o fundo levemente bege.
+
+**Sidebar escura em plum:** `bg-card` substituído por `bg-[hsl(var(--sidebar-bg))]`. Novos tokens adicionados ao globals.css: `--sidebar-bg`, `--sidebar-fg`, `--sidebar-active-bg`, `--sidebar-active-fg`, `--sidebar-hover-bg`. Logo na sidebar trocado para variante bone (lê bem sobre fundo escuro).
+
+| Commit | Descrição |
+|--------|-----------|
+| `5203106` | `--background: #FBF9F5` + tokens `--sidebar-*` + `--card: white` |
+| `97cf3dd` | Sidebar lateral com `bg-[hsl(var(--sidebar-bg))]` + cores ajustadas para fundo escuro |
+| `a0b83b1` | `--primary/--ring` revertidos para `273 15% 14%` (sidebar tem plum próprio) |
+
+### 29.6 Calibração de `--primary` para Botões Visíveis
+
+`hsl(273, 15%, 14%)` = `#241E29` rendia preto puro em botões pequenos (luminosidade 14% insuficiente para o roxo aparecer). Iteração de valores:
+
+- `273 30% 18%` (= sidebar-bg): ainda escuro demais em elementos pequenos
+- **`273 38% 30%`** (`#4F2F69`): plum visível em botões, premium, mesma família da sidebar
+
+| Commit | Descrição |
+|--------|-----------|
+| `c0b79c2` | `--primary/--ring` → `273 30% 18%` (alinhado com sidebar-bg) |
+| `b9eee36` | `--primary/--ring` → `273 38% 30%` (plum visível em botões) |
+
+**Estado final da paleta (light mode):**
+
+| Token | Valor | Contexto |
+|-------|-------|----------|
+| `--sidebar-bg` | `273 30% 18%` | Sidebar — plum escuro, ancoragem |
+| `--primary` | `273 38% 30%` | Botões, tabs ativas, CTAs |
+| `--background` | `40 43% 97%` | Fundo geral `#FBF9F5` |
+| `--card` | `0 0% 100%` | Cards sobre o fundo |
+
+### 29.7 Bug OAuth Callback (fix crítico)
+
+**Causa raiz:** `cookies().set()` do `next/headers` e `NextResponse.redirect()` são superfícies independentes no Next.js 15. Os cookies de sessão não chegavam ao browser no redirect OAuth — usuário precisava clicar duas vezes para entrar.
+
+**Fix:** callback reescrito com `createServerClient` próprio que acumula cookies em `pendingCookies[]` e os aplica diretamente no `NextResponse` antes de retornar.
+
+Commit: `9fb3b3f`
+
+### 29.8 Correções na página Importar (/connections)
+
+| Problema | Fix | Commit |
+|----------|-----|--------|
+| Título "Conexões & Importação" (diferente das outras páginas) | → "Importar" | `8715c74` |
+| Abas usavam `bg-card shadow-sm` (sem identidade visual) | → `bg-primary text-primary-foreground` + rail `bg-primary/10` | `8715c74` |
+| Estrutura do header diferente das outras páginas (`h1` + `p` extra) | → `flex items-center justify-between` padrão | `d13486e` |
+
+### 29.9 Alinhamento vertical de títulos
+
+**Problema:** `p-6` no wrapper do conteúdo colocava títulos muito próximos ao topo (24px), desalinhados com o logo "oniefy" na sidebar (~40px).
+
+**Fix:** `px-6 pt-10 pb-6` no `layout.tsx` — todas as páginas se beneficiam automaticamente.
+
+Commit: `e97f4cc`
+
+### 29.10 Estratégia "Suporte Contextual Silencioso" (recebida de terceiro)
+
+Sugestão recebida de um colaborador externo propondo UX Writing e Design Comportamental com 3 nudges:
+
+1. **"Não tem um extrato?"** (Importar) — redução de fricção, mantém usuário no fluxo
+2. **"Dicas Importantes"** (Importar) — prevenção de erros antes da importação
+3. **"Por que acompanhar o patrimônio?"** (Patrimônio) — educação e reforço de valor
+
+A lógica estratégica é transformar o Oniefy de ferramenta passiva em mentor ativo. As caixas servem como nudges (empurrões) para combater a inércia do usuário. Visão de longo prazo: CFA pessoal para cada usuário.
+
+**Implementado parcialmente nos commits desta sessão:**
+
+| Commit | Nudge |
+|--------|-------|
+| `a926cf9` | Dicas colapsáveis de importação + refinamento do layout do template |
+| `6050fcc` | "Por que acompanhar o patrimônio?" no empty state de Patrimônio |
+
+O item "Não tem um extrato?" já existia na UI (`import-step-upload.tsx`). O registro da estratégia completa foi adicionado ao `PENDENCIAS-FUTURAS.md` para implementação futura nas demais telas.
+
+### 29.11 Commits da sessão
+
+| Hash | Descrição |
+|------|-----------|
+| `68c1fed` | fix: '5 semanas' → '5 etapas' no SetupJourneyCard |
+| `3c4adf8` | fix: fallback 'Sem receita no mês' → '—' |
+| `ea183e0` | fix: remover botão Importar redundante |
+| `40250c6` | fix: 'Sem.' → 'Et.' nas abas |
+| `8addd56` | fix(color): --plum/--primary/--ring para hsl(273,30%,18%) |
+| `bf5e883..5b3edda` | fix(color): #241E29 → #2F203B em 5 arquivos |
+| `91a2160` | fix(color): bg-emerald-700 → bg-verdant |
+| `9fb3b3f` | fix: callback OAuth com cookies no NextResponse |
+| `d2eb0f9` | fix: contador 'X/7 concluídos' → 'X/5 etapas' |
+| `5203106` | feat(color): fundo #FBF9F5 + tokens --sidebar-* |
+| `97cf3dd` | feat(sidebar): sidebar com fundo plum real |
+| `a0b83b1` | fix(color): reverter --primary para 273 15% 14% |
+| `c0b79c2` | fix(color): --primary → 273 30% 18% |
+| `b9eee36` | fix(color): --primary → 273 38% 30% (plum visível) |
+| `8715c74` | fix(connections): título 'Importar' + abas plum |
+| `e97f4cc` | fix(layout): pt-10 alinha título com logo |
+| `d13486e` | fix(connections): header no padrão das outras páginas |
+| `e2bbff5` | fix: remover 'Et.' das tabs |
+| `a926cf9` | feat(import): dicas colapsáveis + layout template |
+| `6050fcc` | feat(assets): nudge patrimônio no empty state |
+
+**Último commit verde:** `6050fcc` (4/4 CI jobs: Security + Lint + Unit Tests + Build)
+
+### 29.12 Estado atual do projeto (sem alterações de schema)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 |
+| Tabelas | 34 |
+| Políticas RLS | 103 |
+| Functions | 73 |
+| Triggers | 21 |
+| Indexes | 140 |
+| Migrations MCP | 48 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 44 (622 assertions) |
+| CI | Verde (4/4 jobs) |
+| Deploy | www.oniefy.com |
+
+### 29.13 Pendências abertas para próxima sessão
+
+Ver `PENDENCIAS-FUTURAS.md` na raiz do repositório. Destaques imediatos:
+- Ações Claudio: SMTP noreply@oniefy.com, Supabase Pro, Apple Developer Account, MFA reconfigurar
+- Estratégia "Suporte Contextual Silencioso": implementar nudge "Não tem um extrato?" de forma consistente
+- Testes com dados reais: usar o app por 1 semana, convidar 2-3 testers beta
+- Corridor usability test com 3 pessoas (UX-H3-05)
