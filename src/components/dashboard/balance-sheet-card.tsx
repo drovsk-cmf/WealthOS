@@ -82,7 +82,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
         </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-700" />
+            <span className="h-2 w-2 rounded-full bg-verdant" />
             <span className="text-sm text-muted-foreground">
               Ativos ilíquidos
             </span>
