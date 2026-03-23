@@ -70,8 +70,8 @@ jobs:
       # Aguardar propagação (Vercel edge pode levar alguns segundos)
       - name: Wait for deployment propagation
         run: |
-          echo "Aguardando 15s para propagação do deploy..."
-          sleep 15
+          echo "Aguardando 45s para propagação do deploy..."
+          sleep 45
           echo "Testando ${{ steps.url.outputs.target }}"
 
       - name: Run health check
