@@ -293,18 +293,39 @@ export default function AssetsPage() {
 
       {/* Empty state (UX-H1-03) */}
       {(!assets || assets.length === 0) && (
-        <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-            <Package className="h-7 w-7 text-muted-foreground" />
+        <div className="space-y-4">
+          <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+              <Package className="h-7 w-7 text-muted-foreground" />
+            </div>
+            <h2 className="text-lg font-semibold">Registre seus bens e investimentos</h2>
+            <p className="mt-1 max-w-md text-sm text-muted-foreground">
+              Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
+            </p>
+            <button type="button" onClick={handleNew}
+              className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              + Cadastrar bem
+            </button>
           </div>
-          <h2 className="text-lg font-semibold">Registre seus bens e investimentos</h2>
-          <p className="mt-1 max-w-md text-sm text-muted-foreground">
-            Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
-          </p>
-          <button type="button" onClick={handleNew}
-            className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
-            + Cadastrar bem
-          </button>
+
+          {/* Nudge: por que acompanhar o patrimônio? */}
+          <div className="rounded-lg border border-primary/20 bg-primary/5 px-5 py-4">
+            <p className="text-sm font-medium text-primary">Por que vale a pena registrar seu patrimônio?</p>
+            <ul className="mt-3 space-y-2 text-xs text-muted-foreground">
+              <li className="flex gap-2">
+                <span className="mt-0.5 text-primary flex-shrink-0">•</span>
+                <span><strong className="text-foreground">Patrimônio líquido em tempo real.</strong> Veja a diferença entre o que você tem e o que deve — o número que realmente importa para a liberdade financeira.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 text-primary flex-shrink-0">•</span>
+                <span><strong className="text-foreground">Evolução ao longo do tempo.</strong> O Oniefy tira snapshots mensais automáticos. Em 12 meses você vê exatamente quanto seu patrimônio cresceu.</span>
+              </li>
+              <li className="flex gap-2">
+                <span className="mt-0.5 text-primary flex-shrink-0">•</span>
+                <span><strong className="text-foreground">Solvência e runway.</strong> Com ativos e passivos registrados, o painel calcula automaticamente quantos meses você sobrevive sem renda — e se está em zona segura.</span>
+              </li>
+            </ul>
+          </div>
         </div>
       )}
 
