@@ -93,7 +93,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         <p className="mt-1 text-xs text-muted-foreground">
           {income > 0
             ? `${((expense / income) * 100).toFixed(0)} % da receita`
-            : "Sem receita no mês"}
+            : "—"}
         </p>
       </div>
 
