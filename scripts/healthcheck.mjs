@@ -99,15 +99,17 @@ async function checkPage(path, expectText = null) {
 
     const html = await res.text();
 
-    // Check for error indicators
+    // Check for error indicators in visible page content
+    // NOTE: do NOT check for "404" or "page could not be found" in HTML.
+    // Next.js embeds its 404 fallback template in every page's RSC payload.
+    // Real 404s are caught by HTTP status code (handled above).
     if (html.includes("Something went wrong") || html.includes("Application error")) {
       log("fail", `GET ${path}`, "página renderizou com erro");
       return;
     }
 
-    // Check for real 404 page (not just "404" mentioned anywhere in HTML)
-    if (html.includes("NEXT_NOT_FOUND") || html.includes("This page could not be found")) {
-      log("fail", `GET ${path}`, "página não encontrada (404)");
+    if (html.includes("NEXT_NOT_FOUND")) {
+      log("fail", `GET ${path}`, "página marcada como not found (NEXT_NOT_FOUND)");
       return;
     }
 
@@ -140,21 +142,22 @@ async function checkPage(path, expectText = null) {
 
 // ── API checks ────────────────────────────────────────────
 
-async function checkApi(path, method = "GET", body = null) {
+async function checkApi(path, method = "GET", body = null, opts = {}) {
   const url = `${BASE}${path}`;
+  const isCron = opts.cron === true;
   try {
-    const opts = { method, headers: {} };
+    const fetchOpts = { method, headers: {} };
     if (body) {
-      opts.headers["Content-Type"] = "application/json";
-      opts.body = JSON.stringify(body);
+      fetchOpts.headers["Content-Type"] = "application/json";
+      fetchOpts.body = JSON.stringify(body);
     }
 
-    // Follow redirects (apex→www) then check final response
+    // Follow redirects preserving method and body (307/308)
     let current = url;
     let res;
     for (let i = 0; i < 5; i++) {
-      res = await fetchWithTimeout(current, i === 0 ? opts : { method, headers: opts.headers });
-      if (res.status >= 300 && res.status < 400) {
+      res = await fetchWithTimeout(current, fetchOpts);
+      if (res.status === 307 || res.status === 308) {
         const location = res.headers.get("location") || "";
         current = location.startsWith("http") ? location : new URL(location, current).toString();
         continue;
@@ -172,6 +175,12 @@ async function checkApi(path, method = "GET", body = null) {
 
     if (status >= 200 && status < 300) {
       log("pass", `${method} ${path}`, `${status} OK`);
+      return;
+    }
+
+    // Cron endpoints return 500 if CRON_SECRET is not configured (fail-closed by design)
+    if (isCron && status === 500) {
+      log("warn", `${method} ${path}`, `${status} (cron sem secret configurado)`);
       return;
     }
 
@@ -278,7 +287,7 @@ async function main() {
   await checkApi("/api/auth/callback");
   await checkApi("/api/digest/preview");
   await checkApi("/api/indices/fetch", "POST");
-  await checkApi("/api/push/send", "POST", { title: "test" });
+  await checkApi("/api/push/send", "POST", { title: "test" }, { cron: true });
   await checkApi("/api/ai/categorize", "POST", { descriptions: ["teste"] });
 
   // 6. Summary
