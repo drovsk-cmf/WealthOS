@@ -3654,3 +3654,22 @@ Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
 | `e73a7e8` | feat(design): btn-cta gradient + muted-foreground plum tint |
 
 **CI verde:** `e73a7e8` (Post-Deploy Check: success)
+
+### 30.4 Fix OAuth double-click login
+
+**Problema:** usuário precisava clicar "Continuar com Google" duas vezes para logar.
+
+**Causa raiz:** race condition no `useAuthInit`. Após o redirect do OAuth callback, o `createBrowserClient` (singleton) ainda não havia completado `_initialize()` quando o hook executava. As chamadas de MFA (`listFactors`) disparavam sem access token → throw → catch → `router.push("/login")` → volta ao login. No segundo clique, o middleware detectava a sessão nos cookies e redirecionava para `/dashboard` com o singleton já inicializado.
+
+**Fix (commit `8093e48`):**
+- `useAuthInit`: adicionado `await supabase.auth.getSession()` como primeira operação, forçando sync cookie→memória do singleton
+- Se `getSession()` retorna null (sem sessão), bail para `/login` imediatamente sem tentar MFA/encryption
+- Log de erro em dev mode para diagnóstico futuro
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `8093e48` | fix(auth): await getSession before MFA/auth checks in useAuthInit |
+
+**CI verde:** `8093e48` (CI + Post-Deploy Check: success)
