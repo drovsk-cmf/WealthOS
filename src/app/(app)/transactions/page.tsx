@@ -94,14 +94,7 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Transações</h1>
         <div className="flex items-center gap-2">
-          <Link
-            href="/connections"
-            className="flex items-center gap-1.5 rounded-md border bg-card px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <Upload className="h-3.5 w-3.5" />
-            Importar
-          </Link>
-          <button type="button"
+                <button type="button"
             onClick={() => { setEditingTransactionId(null); setDuplicateData(null); setFormOpen(true); }}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
