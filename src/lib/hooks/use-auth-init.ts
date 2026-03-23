@@ -16,6 +16,20 @@ export function useAuthInit(pathname: string) {
       const supabase = createClient();
 
       try {
+        // Force browser client to sync session from cookies (critical after OAuth redirect).
+        // createBrowserClient is a singleton — _initialize() may not have completed
+        // by the time this hook runs. getSession() awaits initialization and returns
+        // the cookie-based session, preventing a race where MFA/getUser calls fire
+        // before the access token is loaded.
+        const { data: sessionData } = await supabase.auth.getSession();
+
+        if (!sessionData.session) {
+          // No session in cookies — middleware should have caught this,
+          // but bail gracefully instead of attempting MFA/encryption calls.
+          router.push("/login");
+          return;
+        }
+
         const { status } = await getMfaStatus(supabase);
 
         if (status === "enrolled_verified") {
@@ -36,6 +50,7 @@ export function useAuthInit(pathname: string) {
           if (process.env.NODE_ENV === "development") console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
         }
 
+        // getUser() validates the token server-side (more reliable than getSession).
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -51,7 +66,8 @@ export function useAuthInit(pathname: string) {
         }
 
         setReady(true);
-      } catch {
+      } catch (err) {
+        if (process.env.NODE_ENV === "development") console.error("[Oniefy] Auth init failed:", err);
         router.push("/login");
       }
     }
