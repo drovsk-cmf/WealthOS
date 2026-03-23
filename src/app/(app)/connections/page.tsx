@@ -36,11 +36,8 @@ export default function ConnectionsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 pb-12">
-      <div>
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Importar</h1>
-        <p className="text-sm text-muted-foreground">
-          Importe extratos, faça cadastros em massa e gerencie conexões
-        </p>
       </div>
 
       <div className="flex gap-1 rounded-lg bg-primary/10 p-1">
