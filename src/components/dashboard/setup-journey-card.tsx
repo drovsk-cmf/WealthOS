@@ -146,7 +146,7 @@ export function SetupJourneyCard() {
                         : "bg-muted text-muted-foreground/60"
                 }`}
               >
-                <span className="hidden sm:inline">Et. </span>{weekNum}
+                {weekNum}
                 {ws === "completed" && (
                   <CheckCircle2 className="ml-1 inline-block h-3 w-3" />
                 )}
