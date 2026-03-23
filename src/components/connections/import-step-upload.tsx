@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, ChevronDown, ChevronUp, Info } from "lucide-react";
 import { downloadImportTemplate } from "@/lib/parsers/oniefy-template";
 import type { Database } from "@/types/database";
 
@@ -30,6 +30,7 @@ export function ImportStepUpload({
   isParsing,
 }: Props) {
   const [dragging, setDragging] = useState(false);
+  const [tipsOpen, setTipsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -146,30 +147,74 @@ export function ImportStepUpload({
         {!accountId && <p className="mt-2 text-xs text-terracotta">Selecione uma conta primeiro.</p>}
       </div>
 
-      {/* Template download */}
-      <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-4 py-3">
-        <div>
-          <p className="text-sm font-medium">Não tem um extrato?</p>
-          <p className="text-xs text-muted-foreground">Baixe nosso template e preencha manualmente.</p>
+      {/* Não tem um extrato? */}
+      <div className="rounded-lg border bg-muted/30 px-4 py-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium">Não tem um extrato?</p>
+            <p className="text-xs text-muted-foreground">Baixe nosso template e preencha manualmente.</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => downloadImportTemplate("standard")}
+              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Transações
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadImportTemplate("card")}
+              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+            >
+              <Download className="h-3.5 w-3.5" />
+              Fatura cartão
+            </button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => downloadImportTemplate("standard")}
-            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Transações
-          </button>
-          <button
-            type="button"
-            onClick={() => downloadImportTemplate("card")}
-            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
-          >
-            <Download className="h-3.5 w-3.5" />
-            Fatura cartão
-          </button>
-        </div>
+      </div>
+
+      {/* Dicas importantes */}
+      <div className="rounded-lg border border-primary/20 bg-primary/5">
+        <button
+          type="button"
+          onClick={() => setTipsOpen((v) => !v)}
+          className="flex w-full items-center justify-between px-4 py-3 text-left"
+        >
+          <span className="flex items-center gap-2 text-sm font-medium text-primary">
+            <Info className="h-4 w-4 flex-shrink-0" />
+            Dicas para uma importação sem erros
+          </span>
+          {tipsOpen
+            ? <ChevronUp className="h-4 w-4 text-primary/60 flex-shrink-0" />
+            : <ChevronDown className="h-4 w-4 text-primary/60 flex-shrink-0" />
+          }
+        </button>
+        {tipsOpen && (
+          <ul className="border-t border-primary/10 px-4 pb-4 pt-3 space-y-2 text-xs text-muted-foreground">
+            <li className="flex gap-2">
+              <span className="mt-0.5 text-primary">•</span>
+              <span><strong className="text-foreground">Formato de data:</strong> DD/MM/AAAA ou YYYY-MM-DD. Formatos mistos causam erros de leitura.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-0.5 text-primary">•</span>
+              <span><strong className="text-foreground">Valores numéricos:</strong> use vírgula como separador decimal (ex: 1.234,56). Símbolos de moeda são ignorados automaticamente.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-0.5 text-primary">•</span>
+              <span><strong className="text-foreground">CSV com colunas mínimas:</strong> data, descrição e valor. O Oniefy mapeia as colunas automaticamente e permite ajuste manual.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-0.5 text-primary">•</span>
+              <span><strong className="text-foreground">OFX e QFX:</strong> exportados direto do internet banking — não precisam de mapeamento. Taxas de sucesso próximas de 100%.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="mt-0.5 text-primary">•</span>
+              <span><strong className="text-foreground">Duplicatas:</strong> o Oniefy detecta e descarta automaticamente transações já importadas pelo mesmo extrato.</span>
+            </li>
+          </ul>
+        )}
       </div>
     </div>
   );
