@@ -100,6 +100,9 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E6 | **Metas de economia (savings goals)** — meta longitudinal com target, progresso atual, projeção indexada ao CDI/Selic. Tabela `goals` simples. Usuários com metas ativas têm 40-60% menos churn (padrão de mercado). | Médio | Alto (retenção longa) | ⬜ |
 | E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto no Runway/Fôlego, impacto no LCR, comparativo com meta de reserva). Cálculo determinístico, sem IA. É o argumento de produto mais diferenciado do Oniefy. | Médio | Alto (diferenciação / marketing) | ⬜ |
 | E8 | **Exportação IRPF formatada** — PDF + planilha com rendimentos por fonte, deduções elegíveis, bens e direitos, ganhos de capital no padrão que o contador usa. Módulo fiscal já existe. Falta o export. Fideliza na renovação de abril/maio. | Médio | Alto (renovação anual) | ⬜ |
+| E8b | **CFA Pessoal: Diagnóstico Patrimonial (Frente A)** — RPC `get_wealth_diagnostics` com métricas CFA sobre dados existentes (zero schema change): taxa de poupança, concentração patrimonial (HHI), Debt-to-Equity, tendência de patrimônio, warning signs, composição patrimonial (% líquido/investido/imobilizado/restrito). Componente `WealthDiagnosticsCard` no dashboard ou página de patrimônio. Ref: `CFA-ONIEFY-MAPPING.md` §2.3-2.4, §3 Fase 1. | Médio | Alto (diferenciação CFA) | ⬜ |
+| E8c | **CFA Pessoal: Schema Evolution (Frente B)** — Adicionar `investment_class` enum em accounts tipo investment (renda_fixa, renda_variavel, fii, previdencia, cripto). Adicionar `interest_rate` + `rate_type` (pre, pos_cdi, pos_ipca, pos_tr) em accounts tipo loan/financing. Habilita: concentração por classe, sensibilidade a Selic/IPCA, WACC pessoal real. Ref: `CFA-ONIEFY-MAPPING.md` §2.5. | Médio | Alto (WACC pessoal, análise de risco) | ⬜ |
+| E8d | **CFA Pessoal: Calculadoras TVM** — Independência financeira (perpetuity), Comprar vs Alugar (NPV), CET de financiamento (YTM), SAC vs Price. Front-end only, sem RPC. Ref: `CFA-ONIEFY-MAPPING.md` §3 Fase 2. | Médio | Alto (diferenciação) | ⬜ |
 | E10 | **Open Finance com motor de reconciliação maduro** — Fase 2 planejada (adendo v1.3). Só entregar quando: (1) motor de deduplicação por hash, (2) indicador de status de sincronização por conta, (3) fila de transações "suspeitas" para confirmação do usuário. Entregar Open Finance com dados inconsistentes é pior que não ter. | Alto | Alto (aquisição / paridade) | 📌 |
 | E11 | **UX-H2-02: Push notifications triggers** — vencimentos + inatividade 7 dias. CFG-04 (APNs) depende de Mac. Web Push já funciona; criar cron de inatividade é independente. | Médio | Médio (engajamento) | 🔒 (APNs) / ⬜ (inatividade) |
 
@@ -156,6 +159,8 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Web3 wallet login (Ethereum/Solana) | Sessão 22 | Tester crypto solicitar — infraestrutura Supabase já habilitada |
 | Assistente conversacional (AI chat) | Adendo v1.5 P17 | Pós-validação de retenção — API route já implementada |
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
+| **CFA Pessoal: Inteligência Ativa (Frente C)** | CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B implementadas + 3 meses de dados por usuário. Inclui: insights automáticos no dashboard, benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
+| **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights CFA) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
 
 ---
 
@@ -219,4 +224,5 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 | Data | Atualização | Responsável |
 |------|------------|-------------|
 | 23/03/2026 | Documento criado. Compilação de HANDOVER §12 + benchmark de mercado + insights de produto. | Claude |
+| 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `CFA-ONIEFY-MAPPING.md`. | Claude |
 
