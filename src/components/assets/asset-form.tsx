@@ -170,7 +170,7 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
               const matches = searchTemplates(templates, name);
               if (matches.length === 0) return null;
               return (
-                <div className="absolute z-20 mt-1 w-full rounded-md border bg-card shadow-lg">
+                <div className="absolute z-20 mt-1 w-full rounded-md border bg-card shadow-elevated">
                   <div className="px-2 py-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     <Sparkles className="mr-1 inline h-3 w-3" />Sugestões
                   </div>

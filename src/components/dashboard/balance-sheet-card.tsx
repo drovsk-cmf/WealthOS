@@ -20,7 +20,7 @@ interface Props {
 export function BalanceSheetCard({ data, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card p-5 shadow-sm">
+      <div className="rounded-lg bg-card p-5 shadow-card card-alive">
         <div className="h-4 w-40 animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-3">
           {[1, 2, 3].map((i) => (
@@ -40,7 +40,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
   const assetPct = total > 0 ? (assets / total) * 100 : 100;
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg bg-card p-5 shadow-card card-alive">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Balanço Patrimonial</h3>
         <span

@@ -61,6 +61,10 @@
     --sidebar-active-fg: 273 30% 18%;
     --sidebar-hover-bg:  273 30% 26%;
 
+    /* ── Depth & warmth (v1.2) ── */
+    --shadow-plum:       47 32 59;
+    --label-plum:        270 10% 48%;
+
     --radius:       0.625rem;
   }
 
@@ -100,6 +104,10 @@
     --sidebar-active-bg: 273 10% 20%;
     --sidebar-active-fg: 37 48% 94%;
     --sidebar-hover-bg:  273 10% 16%;
+
+    /* ── Depth & warmth (v1.2) ── */
+    --shadow-plum:       10 8 14;
+    --label-plum:        270 8% 58%;
   }
 }
 
@@ -109,5 +117,18 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Card hover lift (opt-in via hover:shadow-card-hover) */
+  .card-alive {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card-alive:hover {
+    --tw-shadow: 0 2px 8px rgba(var(--shadow-plum) / 0.10), 0 8px 24px rgba(var(--shadow-plum) / 0.06);
+    --tw-shadow-colored: 0 2px 8px var(--tw-shadow-color), 0 8px 24px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    transform: translateY(-1px);
   }
 }

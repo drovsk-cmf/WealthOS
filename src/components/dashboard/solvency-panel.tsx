@@ -229,7 +229,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
 
       {/* DASH-12: Tier breakdown bar */}
       {tierTotal > 0 && (
-        <div className="rounded-lg border bg-card p-5 shadow-sm">
+        <div className="rounded-lg bg-card p-5 shadow-card card-alive">
           <h4 className="text-sm font-semibold">Patrimônio por Níveis</h4>
 
           {/* Stacked bar */}

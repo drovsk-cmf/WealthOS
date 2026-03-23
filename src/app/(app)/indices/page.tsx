@@ -44,7 +44,7 @@ interface TooltipPayloadItem {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayloadItem[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-card p-2 shadow-lg text-xs">
+    <div className="rounded-lg border bg-card p-2 shadow-elevated text-xs">
       <p className="font-semibold text-muted-foreground">{label}</p>
       {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }}>
@@ -239,7 +239,7 @@ export default function IndicesPage() {
 
       {/* Historical chart */}
       {selectedIndices.size > 0 && (
-        <div className="rounded-lg border bg-card p-5 shadow-sm">
+        <div className="rounded-lg bg-card p-5 shadow-card card-alive">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold">
               {selectedIndices.size === 1

@@ -87,6 +87,12 @@ const config = {
         "tier-2": "hsl(var(--tier-2) / <alpha-value>)",
         "tier-3": "hsl(var(--tier-3) / <alpha-value>)",
         "tier-4": "hsl(var(--tier-4) / <alpha-value>)",
+        // Label tint (plum desaturado para labels/captions)
+        "label-plum": "hsl(var(--label-plum))",
+      },
+      boxShadow: {
+        card: "0 1px 3px rgba(var(--shadow-plum) / 0.07), 0 4px 12px rgba(var(--shadow-plum) / 0.04)",
+        elevated: "0 4px 12px rgba(var(--shadow-plum) / 0.10), 0 12px 32px rgba(var(--shadow-plum) / 0.08)",
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -217,7 +217,7 @@ export function BulkImportTab() {
             key={d}
             onClick={() => setDomain(d)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              domain === d ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
+              domain === d ? "bg-card shadow-card" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {DOMAIN_CONFIG[d].title.replace("Cadastro de ", "")}

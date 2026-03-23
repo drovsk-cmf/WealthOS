@@ -68,7 +68,7 @@ export function CutoffDateModal({ open, onClose }: Props) {
     <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-        <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+        <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
           <div className="flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">Definir data de corte</h2>

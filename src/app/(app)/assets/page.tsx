@@ -358,7 +358,7 @@ export default function AssetsPage() {
           const consolidatedValue = Number(asset.current_value) + children.reduce((s, c) => s + Number(c.current_value), 0);
 
             return (
-              <div key={asset.id} className="rounded-lg border bg-card shadow-sm transition-colors hover:bg-accent/30">
+              <div key={asset.id} className="rounded-lg bg-card shadow-card card-alive transition-colors hover:bg-accent/30">
                 <div className="flex items-start gap-3 p-4">
                   {/* Category color */}
                   <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"

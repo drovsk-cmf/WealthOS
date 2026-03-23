@@ -298,7 +298,7 @@ export default function CostCentersPage() {
           {centers.map((center) => {
             const isExpanded = expandedCenter === center.id;
             return (
-              <div key={center.id} className="rounded-lg border bg-card shadow-sm overflow-hidden">
+              <div key={center.id} className="rounded-lg border bg-card shadow-card card-alive overflow-hidden">
                 {/* Center row */}
                 <div
                   className="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-accent/50"
@@ -369,7 +369,7 @@ export default function CostCentersPage() {
       )}
 
       {/* Rateio info */}
-      <div className="rounded-lg border bg-card p-4 shadow-sm">
+      <div className="rounded-lg bg-card p-4 shadow-card card-alive">
         <h3 className="text-sm font-semibold">Rateio entre divisões</h3>
         <p className="mt-1 text-xs text-muted-foreground">
           Para dividir uma transação entre divisões, abra a transação na lista de
@@ -383,7 +383,7 @@ export default function CostCentersPage() {
         <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => { setFormOpen(false); setEditing(null); }} />
-          <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+          <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
             <h2 className="text-lg font-semibold">{isEdit ? "Editar divisão" : "Nova divisão"}</h2>
 
             {error && (
@@ -456,7 +456,7 @@ export default function CostCentersPage() {
         <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmOverhead(false)} />
-          <div className="relative z-10 w-full max-w-sm rounded-lg border bg-card p-6 shadow-lg">
+          <div className="relative z-10 w-full max-w-sm rounded-lg bg-card p-6 shadow-elevated">
             <h3 className="text-lg font-semibold">Ratear Overhead</h3>
             <p className="mt-2 text-sm text-muted-foreground">
               Distribui as despesas das divisões marcadas como overhead para as demais divisões,

@@ -260,7 +260,7 @@ export function ReconciliationPanel() {
 
       {/* Match action bar */}
       {(selectedPending || selectedImported) && (
-        <div className="sticky bottom-4 flex items-center justify-between rounded-lg border bg-card px-4 py-3 shadow-lg">
+        <div className="sticky bottom-4 flex items-center justify-between rounded-lg border bg-card px-4 py-3 shadow-elevated">
           <div className="flex items-center gap-3 text-sm">
             <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
             {selectedPendingTx && selectedImportedTx ? (

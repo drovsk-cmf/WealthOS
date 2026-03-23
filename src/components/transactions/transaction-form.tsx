@@ -242,7 +242,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-lg border bg-card p-6 shadow-lg">
+      <div className="relative z-10 w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-t-xl sm:rounded-lg bg-card p-6 shadow-elevated">
         <h2 className="text-lg font-semibold">{editTransactionId ? "Editar transação" : "Nova transação"}</h2>
 
         {/* FIN-17: OCR scan button (new transactions only) */}

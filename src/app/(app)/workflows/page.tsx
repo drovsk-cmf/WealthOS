@@ -291,7 +291,7 @@ export default function WorkflowsPage() {
         ]).map((t) => (
           <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
+              tab === t.key ? "bg-card shadow-card" : "text-muted-foreground hover:text-foreground"
             }`}>
             {t.label}
             <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-bold">
@@ -317,7 +317,7 @@ export default function WorkflowsPage() {
           ) : (
             <div className="space-y-4">
               {Object.entries(groupedTasks).map(([workflowName, tasks]) => (
-                <div key={workflowName} className="rounded-lg border bg-card shadow-sm">
+                <div key={workflowName} className="rounded-lg border bg-card shadow-card">
                   <div className="border-b px-4 py-2.5">
                     <p className="text-sm font-semibold">{workflowName}</p>
                     <p className="text-[11px] text-muted-foreground">
@@ -383,7 +383,7 @@ export default function WorkflowsPage() {
           ) : (
             <div className="space-y-2">
               {workflows.map((wf) => (
-                <div key={wf.id} className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                <div key={wf.id} className="flex items-center gap-3 rounded-lg bg-card px-4 py-3 shadow-card card-alive">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{wf.name}</p>

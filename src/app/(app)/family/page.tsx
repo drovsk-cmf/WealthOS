@@ -174,7 +174,7 @@ export default function FamilyPage() {
           {members.map((m) => (
             <div
               key={m.id}
-              className="flex items-center gap-4 rounded-lg border bg-card px-4 py-3 shadow-sm"
+              className="flex items-center gap-4 rounded-lg bg-card px-4 py-3 shadow-card card-alive"
             >
               {/* Avatar */}
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-2xl">
@@ -256,7 +256,7 @@ export default function FamilyPage() {
         <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} />
-          <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+          <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
             <h2 className="text-lg font-semibold">
               {editing ? "Editar membro" : "Novo membro"}
             </h2>

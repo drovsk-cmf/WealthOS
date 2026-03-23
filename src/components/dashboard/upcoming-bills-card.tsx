@@ -42,7 +42,7 @@ interface UpcomingBillsCardProps {
 export function UpcomingBillsCard({ bills, isLoading }: UpcomingBillsCardProps) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card p-5 shadow-sm">
+      <div className="rounded-lg bg-card p-5 shadow-card card-alive">
         <div className="h-4 w-44 animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-3">
           {[1, 2, 3].map((i) => (
@@ -54,7 +54,7 @@ export function UpcomingBillsCard({ bills, isLoading }: UpcomingBillsCardProps) 
   }
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg bg-card p-5 shadow-card card-alive">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Próximas a Vencer</h3>
         <Link

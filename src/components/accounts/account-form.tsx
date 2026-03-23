@@ -113,7 +113,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Dialog */}
-      <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+      <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
         <h2 className="text-lg font-semibold">
           {isEdit ? "Editar conta" : "Nova conta"}
         </h2>

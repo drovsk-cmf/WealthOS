@@ -29,7 +29,7 @@ const FALLBACK_COLORS = [
 export function TopCategoriesCard({ data, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card p-5 shadow-sm">
+      <div className="rounded-lg bg-card p-5 shadow-card card-alive">
         <div className="h-4 w-44 animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -44,7 +44,7 @@ export function TopCategoriesCard({ data, isLoading }: Props) {
   const totalExpense = data?.total_expense ?? 0;
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg bg-card p-5 shadow-card card-alive">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Top Categorias</h3>
         <span className="text-xs text-muted-foreground">

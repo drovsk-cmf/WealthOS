@@ -319,7 +319,7 @@ export default function BudgetsPage() {
             return (
               <div
                 key={b.id}
-                className="rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/30"
+                className="rounded-lg bg-card p-4 shadow-card card-alive transition-colors hover:bg-accent/30"
               >
                 <div className="flex items-start justify-between">
                   {/* Category info */}
@@ -465,7 +465,7 @@ export default function BudgetsPage() {
 
       {/* ORC-05: Summary footer */}
       {hasBudgetsThisMonth && bva && (
-        <div className="rounded-lg border bg-card p-4 shadow-sm">
+        <div className="rounded-lg bg-card p-4 shadow-card card-alive">
           <h3 className="text-sm font-semibold">Resumo do Mês</h3>
           <div className="mt-3 grid grid-cols-3 gap-4 text-center">
             <div>

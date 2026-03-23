@@ -59,7 +59,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
 
   return (
-    <div className="rounded-lg border bg-card p-3 shadow-lg">
+    <div className="rounded-lg bg-card p-3 shadow-elevated">
       <p className="mb-1 text-xs font-semibold text-muted-foreground">{label}</p>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center gap-2 text-xs">
@@ -82,7 +82,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card p-5 shadow-sm">
+      <div className="rounded-lg bg-card p-5 shadow-card card-alive">
         <div className="h-4 w-36 animate-pulse rounded bg-muted" />
         <div className="mt-4 h-56 animate-pulse rounded bg-muted" />
       </div>
@@ -102,7 +102,7 @@ export function BalanceEvolutionChart({ data, isLoading }: Props) {
     }));
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg bg-card p-5 shadow-card card-alive">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Evolução Mensal</h3>
         <div className="flex gap-1">

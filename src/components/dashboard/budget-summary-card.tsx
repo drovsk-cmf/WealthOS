@@ -28,7 +28,7 @@ const STATUS_STYLES = {
 export function BudgetSummaryCard({ data, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="rounded-lg border bg-card p-5 shadow-sm">
+      <div className="rounded-lg bg-card p-5 shadow-card card-alive">
         <div className="h-4 w-40 animate-pulse rounded bg-muted" />
         <div className="mt-4 h-4 w-full animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-3">
@@ -50,7 +50,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
   const displayItems = items.slice(0, 4);
 
   return (
-    <div className="rounded-lg border bg-card p-5 shadow-sm">
+    <div className="rounded-lg bg-card p-5 shadow-card card-alive">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Orçamento do Mês</h3>
         <Link

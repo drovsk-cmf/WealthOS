@@ -212,7 +212,12 @@ export default function AppLayout({
       </aside>
 
       {/* Main content */}
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="relative flex-1">
+        {/* Sidebar glow edge (desktop only) */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-6 lg:block"
+          style={{ background: "linear-gradient(to right, hsl(var(--plum) / 0.06), transparent)" }}
+        />
         {/* Mobile header */}
         <header className="flex h-16 items-center border-b px-4 lg:hidden">
           <button type="button"

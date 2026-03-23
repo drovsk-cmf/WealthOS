@@ -152,7 +152,7 @@ export default function BillsPage() {
         ] as const).map((t) => (
           <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
+              tab === t.key ? "bg-card shadow-card" : "text-muted-foreground hover:text-foreground"
             }`}>
             {t.label}
             {t.count !== null && (
@@ -280,7 +280,7 @@ export default function BillsPage() {
               }).map((rec) => {
                 const tmpl = rec.template_transaction as Record<string, unknown>;
                 return (
-                  <div key={rec.id} className="rounded-lg border bg-card p-4 shadow-sm transition-colors hover:bg-accent/30">
+                  <div key={rec.id} className="rounded-lg bg-card p-4 shadow-card card-alive transition-colors hover:bg-accent/30">
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="font-medium">{(tmpl.description as string) || "Sem descrição"}</p>

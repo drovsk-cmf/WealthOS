@@ -114,7 +114,7 @@ export default function FiscalPage() {
 
       {/* ═══ PAINEL DE PROVISIONAMENTO (Inteligência principal) ═══ */}
       {prov && !prov.status && (
-        <div className={`rounded-lg border-2 p-6 shadow-sm ${
+        <div className={`rounded-lg border-2 p-6 shadow-card ${
           prov.monthly_provision > 0 ? "border-burnished/30 bg-burnished/10/50" : "border-verdant/30 bg-verdant/10/50"
         }`}>
           <div className="flex items-center justify-between">
@@ -259,7 +259,7 @@ export default function FiscalPage() {
               const total = isRevenue ? group.total_revenue : group.total_expense;
 
               return (
-                <div key={idx} className="rounded-lg border bg-card p-4 shadow-sm">
+                <div key={idx} className="rounded-lg bg-card p-4 shadow-card card-alive">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
@@ -399,7 +399,7 @@ export default function FiscalPage() {
               };
 
               return (
-                <div key={param.id} className="rounded-lg border bg-card p-4 shadow-sm">
+                <div key={param.id} className="rounded-lg bg-card p-4 shadow-card card-alive">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold">

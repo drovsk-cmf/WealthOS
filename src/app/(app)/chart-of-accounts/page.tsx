@@ -267,7 +267,7 @@ export default function ChartOfAccountsPage() {
         <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowCreate(false)} />
-          <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
+          <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
             <h2 className="text-lg font-semibold">Nova conta contábil</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Cria uma subconta sob o grupo selecionado. Para contas bancárias e cartões, use a tela &quot;Contas&quot; (criação automática).
