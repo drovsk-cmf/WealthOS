@@ -3735,3 +3735,46 @@ Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
 **CI verde:** `b556e3f` (CI + Post-Deploy Check: success)
 
 **Lição aprendida:** Nunca importar função server-side de arquivo com `"use client"`. Componentes React e funções server devem estar em arquivos separados, mesmo que compartilhem lógica. O catch genérico sem logging escondeu esse bug desde o deploy inicial.
+
+### 30.8 Auditoria de produção completa
+
+Auditoria executada em 23/03/2026 após falha crítica de auth em produção. 20 verificações realizadas.
+
+**Achado 1 (CRÍTICO): OAuth www vs non-www mismatch**
+- Supabase `site_url` era `https://oniefy.com` (sem www), `uri_allow_list` não incluía `www.oniefy.com`
+- Usuários acessam `www.oniefy.com` → `window.location.origin` = `https://www.oniefy.com`
+- OAuth `redirectTo` enviava `https://www.oniefy.com/api/auth/callback`
+- Supabase rejeitava o redirect ou setava cookies no domínio errado
+- FIX: `site_url` → `https://www.oniefy.com`, `uri_allow_list` expandida com `www.oniefy.com/**`
+
+**Achado 2 (ALTO): Middleware bloqueando arquivos estáticos**
+- `manifest.json`, `sw.js`, `robots.txt` retornavam 307 → login
+- Matcher excluía apenas extensões de imagem, não `.json`/`.js`/`.txt`
+- FIX: matcher atualizado com exclusões explícitas para os 4 arquivos
+
+**Achado 3 (MÉDIO): Rate limiter in-memory ineficaz em Vercel**
+- 7 tentativas de login consecutivas passaram sem bloqueio
+- Serverless functions não compartilham memória entre invocações
+- MITIGAÇÃO: GoTrue (Supabase) tem rate limiting próprio como fallback
+- STATUS: documentado como TEC-05 em PENDENCIAS-FUTURAS.md
+
+**Verificação pós-fix:**
+- manifest.json: HTTP 200 (era 307)
+- sw.js: HTTP 200 (era 307)
+- robots.txt: HTTP 200 (era 307)
+- Register: OK
+- Login: OK
+- Forgot-password: OK
+- Middleware redirects: OK (6 rotas protegidas testadas)
+- Security headers: CSP + HSTS + X-Frame-Options + X-Content-Type-Options + Referrer-Policy + Permissions-Policy: todos presentes
+- Static assets (SVGs, favicon): OK
+- Cron endpoints (sem auth): 401 (correto)
+- Open redirect: bloqueado (correto)
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `21a3876` | fix(critical): OAuth www mismatch + middleware blocking static files |
+
+**CI verde:** `21a3876` (CI + Post-Deploy Check: success)
