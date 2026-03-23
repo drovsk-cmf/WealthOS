@@ -7,11 +7,11 @@
  * sejam concluídos. Organiza os passos em 5 semanas, cada
  * uma entregando valor progressivo.
  *
- * Semana 1: Primeiros passos (data de corte + contas)
- * Semana 2: Despesas fixas (recorrências)
- * Semana 3: Importação (extratos + faturas)
- * Semana 4: Organização (categorização)
- * Semana 5: Controle (orçamento)
+ * Etapa 1: Primeiros passos (data de corte + contas)
+ * Etapa 2: Despesas fixas (recorrências)
+ * Etapa 3: Importação (extratos + faturas)
+ * Etapa 4: Organização (categorização)
+ * Etapa 5: Controle (orçamento)
  *
  * Step 1 (cutoff_date) abre modal inline em vez de navegar.
  * Referência: adendo v1.5 §4.4.
@@ -136,7 +136,7 @@ export function SetupJourneyCard() {
                         : "bg-muted text-muted-foreground/60"
                 }`}
               >
-                <span className="hidden sm:inline">Sem. </span>{weekNum}
+                <span className="hidden sm:inline">Et. </span>{weekNum}
                 {ws === "completed" && (
                   <CheckCircle2 className="ml-1 inline-block h-3 w-3" />
                 )}
