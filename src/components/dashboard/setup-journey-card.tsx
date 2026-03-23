@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SetupJourneyCard - Cronograma guiado de 5 semanas (P15)
+ * SetupJourneyCard - Cronograma guiado de 5 etapas (P15)
  *
  * Aparece no topo do Dashboard até que todos os 7 passos
  * sejam concluídos. Organiza os passos em 5 semanas, cada
@@ -91,7 +91,7 @@ export function SetupJourneyCard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">Seu plano de 5 semanas</h3>
+            <h3 className="font-semibold">Seu plano de 5 etapas</h3>
           </div>
           <span className="text-xs font-medium text-muted-foreground">
             {data.completed}/{data.total} concluídos
