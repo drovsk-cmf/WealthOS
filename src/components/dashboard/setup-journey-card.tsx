@@ -111,7 +111,7 @@ export function SetupJourneyCard() {
         {/* Progress bar — usa 7 tarefas para granularidade */}
         <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-500"
+            className="h-full rounded-full bar-primary transition-all duration-500"
             style={{ width: `${taskProgress}%` }}
           />
         </div>

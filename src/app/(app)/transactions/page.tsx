@@ -250,7 +250,7 @@ export default function TransactionsPage() {
                 </button>
                 <a
                   href="/connections"
-                  className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                  className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
                 >
                   Importar extrato
                 </a>
@@ -432,7 +432,7 @@ export default function TransactionsPage() {
             <button type="button"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
+              className="rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
             >
               Anterior
             </button>
@@ -442,7 +442,7 @@ export default function TransactionsPage() {
             <button type="button"
               onClick={() => setPage((p) => p + 1)}
               disabled={transactions.length < PAGE_SIZE}
-              className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
+              className="rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent disabled:opacity-30"
             >
               Próxima
             </button>

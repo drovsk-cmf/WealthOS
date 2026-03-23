@@ -103,7 +103,7 @@ function AssetDocuments({ assetId }: { assetId: string }) {
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Documentos
         </p>
-        <label className="cursor-pointer rounded-md border px-2 py-1 text-xs font-medium transition-colors hover:bg-accent">
+        <label className="cursor-pointer rounded-md btn-alive border px-2 py-1 text-xs font-medium transition-colors hover:bg-accent">
           <Paperclip className="mr-1 inline h-3 w-3" />
           Anexar
           <input

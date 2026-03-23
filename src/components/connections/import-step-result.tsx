@@ -141,7 +141,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
             </button>
             <button type="button"
               onClick={onReset}
-              className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="rounded-md btn-alive border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
             >
               Importar outro arquivo
             </button>
@@ -157,7 +157,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
             </a>
             <button type="button"
               onClick={onReset}
-              className="rounded-md border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="rounded-md btn-alive border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
             >
               Importar outro arquivo
             </button>

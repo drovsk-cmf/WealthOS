@@ -20,9 +20,9 @@ interface Props {
 }
 
 const STATUS_STYLES = {
-  ok: { bar: "bg-verdant", badge: "" },
-  warning: { bar: "bg-burnished", badge: "text-burnished bg-burnished/15" },
-  exceeded: { bar: "bg-terracotta", badge: "text-terracotta bg-terracotta/15" },
+  ok: { bar: "bar-verdant", badge: "" },
+  warning: { bar: "bar-burnished", badge: "text-burnished bg-burnished/15" },
+  exceeded: { bar: "bar-terracotta", badge: "text-terracotta bg-terracotta/15" },
 };
 
 export function BudgetSummaryCard({ data, isLoading }: Props) {
@@ -90,10 +90,10 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   pctUsed >= 100
-                    ? "bg-terracotta"
+                    ? "bar-terracotta"
                     : pctUsed >= 80
-                      ? "bg-burnished"
-                      : "bg-verdant"
+                      ? "bar-burnished"
+                      : "bar-verdant"
                 }`}
                 style={{ width: `${Math.min(pctUsed, 100)}%` }}
               />

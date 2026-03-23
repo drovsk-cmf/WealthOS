@@ -173,6 +173,17 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Helper: redirect while preserving session cookies set by getUser() refresh.
+  // Without this, token refreshes written to supabaseResponse are lost on redirect,
+  // causing the client to land with stale/missing tokens (e.g. OAuth double-click bug).
+  function redirectWithCookies(url: URL) {
+    const response = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      response.cookies.set(cookie.name, cookie.value);
+    });
+    return response;
+  }
+
   // ── Route classification ──
   const isPublicRoute = PUBLIC_ROUTES.some((route) =>
     pathname.startsWith(route)
@@ -227,7 +238,7 @@ export async function middleware(request: NextRequest) {
         if (!isAuthFlowRoute) {
           const url = request.nextUrl.clone();
           url.pathname = "/onboarding";
-          return NextResponse.redirect(url);
+          return redirectWithCookies(url);
         }
       }
     }
@@ -236,14 +247,14 @@ export async function middleware(request: NextRequest) {
     if (pathname === "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
+      return redirectWithCookies(url);
     }
 
     // Authenticated user on public auth pages: redirect away
     if (isPublicRoute && !isAuthFlowRoute) {
       const url = request.nextUrl.clone();
       url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
+      return redirectWithCookies(url);
     }
   }
 

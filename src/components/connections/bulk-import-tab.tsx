@@ -256,7 +256,7 @@ export function BulkImportTab() {
               key={tmpl}
               onClick={() => handleDownload(tmpl)}
               disabled={downloading === tmpl}
-              className="flex items-center gap-1.5 rounded-md border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md btn-alive border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
             >
               <Download className="h-3.5 w-3.5" />
               {downloading === tmpl ? "Gerando..." : DOMAIN_TEMPLATE_INFO[tmpl].label}

@@ -16,20 +16,20 @@ export function useAuthInit(pathname: string) {
       const supabase = createClient();
 
       try {
-        // Force browser client to sync session from cookies (critical after OAuth redirect).
-        // createBrowserClient is a singleton — _initialize() may not have completed
-        // by the time this hook runs. getSession() awaits initialization and returns
-        // the cookie-based session, preventing a race where MFA/getUser calls fire
-        // before the access token is loaded.
-        const { data: sessionData } = await supabase.auth.getSession();
+        // getUser() validates the token server-side and properly awaits
+        // createBrowserClient initialization. This is the authoritative check.
+        // getSession() reads from memory cache which may be stale after OAuth redirect.
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
 
-        if (!sessionData.session) {
-          // No session in cookies — middleware should have caught this,
-          // but bail gracefully instead of attempting MFA/encryption calls.
+        if (userError || !user) {
           router.push("/login");
           return;
         }
 
+        // MFA check (only after user is confirmed)
         const { status } = await getMfaStatus(supabase);
 
         if (status === "enrolled_verified") {
@@ -50,21 +50,13 @@ export function useAuthInit(pathname: string) {
           if (process.env.NODE_ENV === "development") console.warn("[Oniefy] DEK load failed - E2E fields unavailable");
         }
 
-        // getUser() validates the token server-side (more reliable than getSession).
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+          .from("users_profile")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
 
-        if (user) {
-          const { data: profile } = await supabase
-            .from("users_profile")
-            .select("full_name")
-            .eq("id", user.id)
-            .single();
-
-          setUserName(profile?.full_name || user.email || "");
-        }
-
+        setUserName(profile?.full_name || user.email || "");
         setReady(true);
       } catch (err) {
         if (process.env.NODE_ENV === "development") console.error("[Oniefy] Auth init failed:", err);

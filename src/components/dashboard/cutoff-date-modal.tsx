@@ -119,7 +119,7 @@ export function CutoffDateModal({ open, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className="flex-1 rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Cancelar
             </button>

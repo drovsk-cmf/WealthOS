@@ -268,7 +268,7 @@ export default function WorkflowsPage() {
         </div>
         <div className="flex gap-2">
           <button type="button" onClick={handleGenerateTasks} disabled={generateTasks.isPending}
-            className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50">
+            className="rounded-md btn-alive border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50">
             {generateTasks.isPending ? "Gerando" : "Gerar tarefas do mês"}
           </button>
         </div>
@@ -481,7 +481,7 @@ export default function WorkflowsPage() {
 
               <div className="flex justify-end gap-3 pt-2">
                 <button type="button" onClick={() => setShowNewWorkflow(false)}
-                  className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
+                  className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
                   Cancelar
                 </button>
                 <button type="submit" disabled={createWorkflow.isPending}

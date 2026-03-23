@@ -106,7 +106,7 @@ export default function NotificationsPage() {
           <button
             type="button"
             onClick={handleTest}
-            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+            className="flex items-center gap-1.5 rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
           >
             <Send className="h-3 w-3" />
             Enviar notificação de teste

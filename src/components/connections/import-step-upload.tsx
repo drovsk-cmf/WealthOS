@@ -132,7 +132,7 @@ export function ImportStepUpload({
         </p>
         {isParsing && (
           <div className="mt-2 h-1.5 w-32 overflow-hidden rounded-full bg-muted">
-            <div className="h-full animate-pulse rounded-full bg-primary" style={{ width: "70%" }} />
+            <div className="h-full animate-pulse rounded-full bar-primary" style={{ width: "70%" }} />
           </div>
         )}
         <p className="mt-1 text-xs text-muted-foreground">CSV, TSV, OFX, QFX, XLSX, XLS</p>
@@ -158,7 +158,7 @@ export function ImportStepUpload({
             <button
               type="button"
               onClick={() => downloadImportTemplate("standard")}
-              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+              className="flex items-center gap-1.5 rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
             >
               <Download className="h-3.5 w-3.5" />
               Transações
@@ -166,7 +166,7 @@ export function ImportStepUpload({
             <button
               type="button"
               onClick={() => downloadImportTemplate("card")}
-              className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
+              className="flex items-center gap-1.5 rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent"
             >
               <Download className="h-3.5 w-3.5" />
               Fatura cartão

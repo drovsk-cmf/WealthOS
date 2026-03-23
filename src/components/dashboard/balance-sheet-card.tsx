@@ -58,7 +58,7 @@ export function BalanceSheetCard({ data, isLoading }: Props) {
       {/* Proportion bar */}
       <div className="mt-4 h-3 w-full overflow-hidden rounded-full bg-terracotta/20">
         <div
-          className="h-full rounded-full bg-verdant transition-all duration-500"
+          className="h-full rounded-full bar-verdant transition-all duration-500"
           style={{ width: `${Math.max(assetPct, 2)}%` }}
         />
       </div>

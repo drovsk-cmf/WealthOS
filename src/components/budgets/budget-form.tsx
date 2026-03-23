@@ -249,7 +249,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
               type="button"
               onClick={onClose}
               disabled={isPending}
-              className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Cancelar
             </button>

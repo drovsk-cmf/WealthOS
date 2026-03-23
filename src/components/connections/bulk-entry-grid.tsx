@@ -295,7 +295,7 @@ export function BulkEntryGrid({
         <button
           type="button"
           onClick={addRow}
-          className="flex items-center gap-1.5 rounded-md border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="flex items-center gap-1.5 rounded-md btn-alive border bg-card px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <Plus className="h-3.5 w-3.5" />
           Adicionar linha

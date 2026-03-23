@@ -143,10 +143,23 @@
   .dark .btn-cta:hover {
     background: linear-gradient(135deg, hsl(145 9% 57%), hsl(145 9% 50%));
   }
+
+  /* Secondary/outline/ghost buttons: subtle hover lift (Plum Ledger v1.2) */
+  .btn-alive {
+    transition: box-shadow 0.2s ease, transform 0.15s ease, background-color 0.15s ease;
+  }
+  .btn-alive:hover {
+    box-shadow: 0 1px 4px rgba(var(--shadow-plum) / 0.10);
+    transform: translateY(-0.5px);
+  }
+  .btn-alive:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
 }
 
 @layer utilities {
-  /* Card hover lift (opt-in via hover:shadow-card-hover) */
+  /* Card hover lift */
   .card-alive {
     transition: box-shadow 0.2s ease, transform 0.2s ease;
   }
@@ -155,5 +168,19 @@
     --tw-shadow-colored: 0 2px 8px var(--tw-shadow-color), 0 8px 24px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     transform: translateY(-1px);
+  }
+
+  /* Micro-gradient progress bars (Plum Ledger v1.2) */
+  .bar-verdant {
+    background: linear-gradient(90deg, hsl(162 44% 28%), hsl(162 44% 38%));
+  }
+  .bar-terracotta {
+    background: linear-gradient(90deg, hsl(3 40% 40%), hsl(3 40% 50%));
+  }
+  .bar-burnished {
+    background: linear-gradient(90deg, hsl(35 66% 34%), hsl(35 66% 44%));
+  }
+  .bar-primary {
+    background: linear-gradient(90deg, hsl(273 38% 26%), hsl(273 38% 34%));
   }
 }

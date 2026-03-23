@@ -306,7 +306,7 @@ export default function DataSettingsPage() {
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-primary transition-all"
+                className="h-full rounded-full bar-primary transition-all"
                 style={{ width: `${(totalRows / TABLES_TO_EXPORT.length) * 100}%` }}
               />
             </div>
@@ -330,7 +330,7 @@ export default function DataSettingsPage() {
           <button type="button"
             onClick={() => handleExport("csv")}
             disabled={exporting}
-            className="flex items-center gap-2 rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-md btn-alive border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
           >
             {exporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -343,7 +343,7 @@ export default function DataSettingsPage() {
           <button type="button"
             onClick={() => setShowEncForm(!showEncForm)}
             disabled={exporting}
-            className="flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
+            className="flex items-center gap-2 rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
           >
             <Lock className="h-4 w-4" />
             Exportar criptografado

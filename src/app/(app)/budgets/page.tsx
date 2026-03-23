@@ -47,9 +47,9 @@ interface EditData {
 }
 
 const STATUS_COLORS = {
-  ok: "bg-verdant",
-  warning: "bg-burnished",
-  exceeded: "bg-terracotta",
+  ok: "bar-verdant",
+  warning: "bar-burnished",
+  exceeded: "bar-terracotta",
 };
 
 const STATUS_BADGES = {
@@ -252,10 +252,10 @@ export default function BudgetsPage() {
           <div
             className={`h-full rounded-full transition-all duration-500 ${
               (bva.pct_used ?? 0) >= 100
-                ? "bg-terracotta"
+                ? "bar-terracotta"
                 : (bva.pct_used ?? 0) >= 80
-                  ? "bg-burnished"
-                  : "bg-verdant"
+                  ? "bar-burnished"
+                  : "bar-verdant"
             }`}
             style={{ width: `${Math.min(bva.pct_used ?? 0, 100)}%` }}
           />
@@ -283,7 +283,7 @@ export default function BudgetsPage() {
             </button>
             <button type="button"
               onClick={() => setConfirmCopy(true)}
-              className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Copiar de {formatMonthLabel(prevMonthKey)}
             </button>
@@ -530,7 +530,7 @@ export default function BudgetsPage() {
             <div className="mt-5 flex justify-end gap-3">
               <button type="button"
                 onClick={() => { setConfirmCopy(false); setCopyError(""); }}
-                className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+                className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
               >
                 Cancelar
               </button>

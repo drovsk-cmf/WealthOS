@@ -248,7 +248,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
         {/* FIN-17: OCR scan button (new transactions only) */}
         {!editTransactionId && type !== "transfer" && (
           <div className="mt-2">
-            <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent ${scanning ? "opacity-60" : ""}`}>
+            <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent ${scanning ? "opacity-60" : ""}`}>
               <Camera className="h-3.5 w-3.5" />
               {scanning ? "Escaneando..." : "Preencher por foto de recibo"}
               <input
@@ -560,7 +560,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              className="flex-1 rounded-md btn-alive border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
             >
               Cancelar
             </button>

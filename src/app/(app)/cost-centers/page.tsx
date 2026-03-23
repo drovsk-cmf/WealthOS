@@ -156,11 +156,11 @@ function PnlPanel({ centerId, centerName }: { centerId: string; centerName: stri
       {/* CEN-05: Export buttons */}
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={handleExportCsv} disabled={centerExport.isPending}
-          className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
+          className="rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
           {centerExport.isPending ? "Exportando" : "Exportar CSV"}
         </button>
         <button type="button" onClick={handleExportJson} disabled={centerExport.isPending}
-          className="rounded-md border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
+          className="rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
           {centerExport.isPending ? "Exportando" : "Exportar JSON"}
         </button>
       </div>
@@ -263,7 +263,7 @@ export default function CostCentersPage() {
           {centers && centers.some(c => c.is_overhead) && (
             <button type="button"
               onClick={() => setConfirmOverhead(true)}
-              className="rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+              className="rounded-md btn-alive border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
             >
               Ratear overhead
             </button>
@@ -437,7 +437,7 @@ export default function CostCentersPage() {
 
               <div className="flex gap-2 pt-2">
                 <button type="button" onClick={() => { setFormOpen(false); setEditing(null); }}
-                  className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent">
+                  className="flex-1 rounded-md btn-alive border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent">
                   Cancelar
                 </button>
                 <button type="submit" disabled={loading}
@@ -468,7 +468,7 @@ export default function CostCentersPage() {
             <div className="mt-5 flex justify-end gap-3">
               <button type="button"
                 onClick={() => setConfirmOverhead(false)}
-                className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
+                className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
                 Cancelar
               </button>
               <button type="button"

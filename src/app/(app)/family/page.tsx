@@ -346,7 +346,7 @@ export default function FamilyPage() {
                 <button
                   type="button"
                   onClick={() => { setShowForm(false); setEditing(null); }}
-                  className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                  className="flex-1 rounded-md btn-alive border px-4 py-2.5 text-sm font-medium hover:bg-accent"
                 >
                   Cancelar
                 </button>

@@ -332,7 +332,7 @@ export default function ChartOfAccountsPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
-                  className="flex-1 rounded-md border px-4 py-2.5 text-sm font-medium hover:bg-accent"
+                  className="flex-1 rounded-md btn-alive border px-4 py-2.5 text-sm font-medium hover:bg-accent"
                 >
                   Cancelar
                 </button>

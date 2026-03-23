@@ -35,12 +35,12 @@ export default function ConnectionsPage() {
   const [tab, setTab] = useState<Tab>("import");
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-12">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Importar</h1>
       </div>
 
-      <div className="flex gap-1 rounded-lg bg-primary/10 p-1">
+      <div className="flex gap-1 rounded-lg border bg-muted p-1">
         {([
           { key: "import" as const, label: "Importar extrato" },
           { key: "bulk" as const, label: "Cadastro em massa" },
@@ -51,7 +51,7 @@ export default function ConnectionsPage() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              tab === t.key ? "bg-primary text-primary-foreground" : "text-primary/60 hover:text-primary hover:bg-primary/20"
+              tab === t.key ? "bg-card shadow-card" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {t.label}
@@ -201,7 +201,7 @@ function ConnectionsManager() {
                 <button
                   type="button"
                   onClick={() => setShowNew(false)}
-                  className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent"
+                  className="rounded-md btn-alive border px-4 py-2 text-sm font-medium hover:bg-accent"
                 >
                   Cancelar
                 </button>

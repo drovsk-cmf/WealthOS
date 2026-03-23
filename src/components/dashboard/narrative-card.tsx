@@ -85,7 +85,7 @@ export function NarrativeCard({
             </Link>
             <Link
               href="/connections"
-              className="rounded-md border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
+              className="rounded-md btn-alive border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
             >
               Importar extrato
             </Link>
@@ -223,7 +223,7 @@ export function NarrativeCard({
             </Link>
             <Link
               href="/connections"
-              className="rounded-md border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
+              className="rounded-md btn-alive border border-input px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent"
             >
               Importar extrato
             </Link>

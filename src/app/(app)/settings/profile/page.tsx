@@ -262,7 +262,7 @@ export default function ProfileSettingsPage() {
         <button type="button"
           onClick={handleChangePassword}
           disabled={passwordSaving || !newPassword || !confirmPassword}
-          className="rounded-md border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
+          className="rounded-md btn-alive border border-primary px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 disabled:opacity-50"
         >
           {passwordSaving ? "Alterando..." : "Alterar senha"}
         </button>

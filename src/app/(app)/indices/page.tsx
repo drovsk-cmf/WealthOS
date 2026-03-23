@@ -155,7 +155,7 @@ export default function IndicesPage() {
         <button type="button"
           onClick={() => fetchIndices.mutate()}
           disabled={fetchIndices.isPending}
-          className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
+          className="rounded-md btn-alive border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-50"
         >
           {fetchIndices.isPending ? "Atualizando" : "Atualizar índices"}
         </button>
