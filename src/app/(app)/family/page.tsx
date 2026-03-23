@@ -280,7 +280,7 @@ export default function FamilyPage() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Claudio, Luna (pet)"
+                  placeholder="Ex: João, Luna (pet)"
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   autoFocus
                 />

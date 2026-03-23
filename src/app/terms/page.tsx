@@ -21,7 +21,7 @@ export default function TermsPage() {
         <p>
           Estes Termos de Uso (&quot;Termos&quot;) regem o acesso e a utilização do
           aplicativo Oniefy (&quot;Serviço&quot;, &quot;aplicativo&quot; ou &quot;nós&quot;),
-          operado por Claudio Macêdo Filho (&quot;Operador&quot;). Ao criar uma conta ou
+          operado por WealthOS Tecnologia S/A, CNPJ 00.000.000/0001-00 (&quot;Operador&quot;). Ao criar uma conta ou
           utilizar o Serviço, você (&quot;Usuário&quot;) declara que leu, compreendeu e
           concorda integralmente com estes Termos e com
           a <Link href="/privacy" className="underline">Política de Privacidade</Link>.
