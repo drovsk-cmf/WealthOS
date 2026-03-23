@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit, rateLimitHeaders } from "@/lib/auth/rate-limiter";
 import { z } from "zod";
-import { verifyTurnstile } from "@/lib/auth/turnstile";
+import { verifyTurnstile } from "@/lib/auth/turnstile-verify";
 
 const forgotSchema = z.object({
   email: z.string().email(),
@@ -49,7 +49,8 @@ export async function POST(request: NextRequest) {
     if (!turnstileOk) {
       return NextResponse.json({ error: "Verificação CAPTCHA falhou." }, { status: 403 });
     }
-  } catch {
+  } catch (err) {
+    console.error("[auth/forgot-password] Body parse error:", err instanceof Error ? err.message : err);
     return NextResponse.json(
       { error: "Corpo da requisição inválido." },
       { status: 400 }
