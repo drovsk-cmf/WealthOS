@@ -246,6 +246,14 @@ Paleta institucional (`src/app/globals.css` + `tailwind.config.ts`):
 - `--sidebar-active-bg: 37 48% 94%` (bone) — item ativo na sidebar
 - `--sidebar-active-fg: 273 30% 18%` (plum) — texto do item ativo
 
+**Tokens de profundidade e calor (adicionados sessão 30 — Plum Ledger v1.2):**
+- `--shadow-plum: 47 32 59` (light) / `10 8 14` (dark) — RGB para sombras tingidas com plum
+- `--label-plum: 270 10% 48%` (light) / `270 8% 58%` (dark) — labels com tint plum (substituiu cinza neutro)
+- `shadow-card`: sombra quente padrão para cards (`0 1px 3px / 0 4px 12px`, tingida plum)
+- `shadow-elevated`: sombra alta para modais, tooltips, FAB (`0 4px 12px / 0 12px 32px`)
+- `.card-alive`: classe utilitária — hover lift (`translateY(-1px)` + sombra ampliada)
+- Sidebar glow edge: gradiente `hsl(plum/0.06) → transparent` de 24px no desktop, transição visual entre sidebar e conteúdo
+
 Semânticas: Verdant #2F7A68 (receitas/positivo), Terracotta #A64A45 (despesas/negativo), Burnished #A97824 (warning), Info Slate #56688F (informativo). Tiers de solvência: T1 #2F7A68, T2 #56688F, T3 #A97824, T4 #6F6678.
 
 Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Serif (display/hero, adiado). Iconografia: Lucide React SVG (zero emojis decorativos). Microcopy: auditado contra MAN-LNG-CMF-001 v1.0.
@@ -3576,3 +3584,51 @@ Ver `PENDENCIAS-FUTURAS.md` na raiz do repositório. Destaques imediatos:
 - Estratégia "Suporte Contextual Silencioso": implementar nudge "Não tem um extrato?" de forma consistente
 - Testes com dados reais: usar o app por 1 semana, convidar 2-3 testers beta
 - Corridor usability test com 3 pessoas (UX-H3-05)
+
+
+---
+
+## Sessão 30 — Plum Ledger v1.2: Profundidade e Calor
+
+### 30.1 Diagnóstico e Implementação
+
+Problema: cores "chapadas" / sem vida. Diagnóstico identificou 6 causas raiz:
+1. Sombras genéricas cinza (`shadow-sm`) sem identidade de marca
+2. Delta de luminosidade background/card quase nulo (97% vs 100%)
+3. Zero gradients em todo o codebase
+4. Plum confinado à sidebar, área principal sem personalidade
+5. Hover effects quase imperceptíveis
+6. Labels em cinza neutro sem conexão com a paleta
+
+**Solução implementada** (commit `106f4f1`):
+- `globals.css`: 4 novos tokens (`--shadow-plum`, `--label-plum` light+dark), classe `.card-alive`
+- `tailwind.config.ts`: `shadow-card`, `shadow-elevated`, cor `label-plum`
+- `layout.tsx`: sidebar glow edge (gradiente plum 6% → transparent, 24px, desktop only)
+- 29 arquivos alterados: substituição global de `shadow-sm` → `shadow-card`, `shadow-lg` → `shadow-elevated`
+- Borders removidas de cards (sombra quente já fornece separação visual)
+- `.card-alive` em cards interativos: hover com `translateY(-1px)` + sombra ampliada
+
+**Commits:**
+
+| Hash | Descrição |
+|------|-----------|
+| `106f4f1` | feat(design): Plum Ledger v1.2 - sombras quentes, sidebar glow, card-alive hover |
+
+**CI verde:** `106f4f1` (Post-Deploy Check: success)
+
+### 30.2 Estado atual do projeto
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 |
+| Tabelas | 34 |
+| Políticas RLS | 103 |
+| Functions | 73 |
+| Triggers | 21 |
+| Indexes | 140 |
+| Migrations MCP | 48 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 44 (622 assertions) |
+| CI | Verde (Post-Deploy Check) |
+| Deploy | www.oniefy.com |
+| Design System | Plum Ledger v1.2 |
