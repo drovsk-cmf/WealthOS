@@ -3518,15 +3518,38 @@ Fix: `script-src 'self' 'unsafe-inline'` em produção (sem nonce). Restante do 
 - `npm run test:smoke` → Playwright smoke E2E
 - `npm run healthcheck` → health check sem browser
 
-### 28.4 Commits da sessão
+### 28.4 Commits da sessão (7)
 
 | Hash | Descrição |
 |---|---|
 | `9d16a93` | feat: preflight script, health check, smoke E2E test, roteiro manual |
 | `e77254e` | ci: post-deploy health check + uptime monitor + external URL support |
 | `6dc3cfa` | fix: CSP blocking all scripts in production (nonce incompatible with static pre-rendering) |
+| `f7646d4` | docs: HANDOVER sessão 28 (deploy Vercel + test infra + CSP fix) |
+| `00d13be` | fix: audit session 28: healthcheck redirects, CSP cleanup, Turnstile CSP |
+| `4ab0b83` | fix: healthcheck false positives + CSP dead code + Turnstile + Vercel env |
+| `8adc71c` | fix: replace personal name with corporate entity in Terms of Use |
 
-### 28.5 Pendências manuais (Claudio)
+### 28.5 Auditoria pós-implementação
+
+8 achados, 7 corrigidos:
+
+| # | Achado | Gravidade | Correção |
+|---|---|---|---|
+| 1 | Healthcheck não seguia redirects apex→www (32 falsos avisos) | Alta | `fetchFollowRedirects` com até 5 hops |
+| 2 | Falso positivo 404: Next.js embute "This page could not be found" em todas as páginas como RSC fallback | Média | Removido check de HTML, confia no HTTP status |
+| 3 | Código morto: `generateNonce()`, `x-nonce` header, param nonce em `buildCsp` | Baixa | Removido |
+| 4 | CSP faltando Turnstile: `challenges.cloudflare.com` ausente em script-src, frame-src, connect-src | Média | Adicionado (opt-in via TURNSTILE_SITE_KEY) |
+| 5 | Post-deploy default URL sem www | Baixa | Corrigido para `www.oniefy.com` |
+| 6 | `NEXT_PUBLIC_APP_URL` na Vercel apontava para apex sem www | Baixa | Atualizado via API |
+| 7 | Termos de Uso: nome pessoal substituído por entidade corporativa | N/A | "Claudio Macêdo Filho" → "WealthOS Tecnologia S/A, CNPJ 00.000.000/0001-00" |
+| 8 | Smoke E2E `waitForTimeout(3000)` frágil | Baixa | Mantido (risco baixo, funciona) |
+
+### 28.6 Revisão ortográfica e gramatical
+
+Varredura completa de ~360 strings user-facing em 20 páginas e 30+ componentes. Resultado: **zero erros de acentuação ou ortografia encontrados.** Todas as palavras com acentuação gráfica (transações, orçamento, patrimônio, configurações, notificações, índices, conciliação, importação, exclusão, conexões, divisões, recorrências, etc.) estão corretas. Termos de Uso e Política de Privacidade revisados integralmente.
+
+### 28.7 Pendências manuais (Claudio)
 
 1. SMTP sender: Dashboard Supabase → Auth → SMTP → definir noreply@oniefy.com
 2. MFA: fator TOTP "unverified" no projeto novo — reconfigurar no app
@@ -3534,7 +3557,20 @@ Fix: `script-src 'self' 'unsafe-inline'` em produção (sem nonce). Restante do 
 4. Supabase Pro upgrade (leaked password protection) — decisão de custo
 5. Teste de corredor com 3 pessoas (UX-H3-05)
 
-### 28.6 Estado atual do projeto
+### 28.8 Env vars Vercel (8 configuradas)
+
+| Variável | Target | Nota |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | prod/preview/dev | mngjbrbxapazdddzgoje |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod/preview/dev | encrypted |
+| `SUPABASE_SERVICE_ROLE_KEY` | prod/preview | encrypted |
+| `SUPABASE_PROJECT_ID` | prod/preview/dev | mngjbrbxapazdddzgoje |
+| `NEXT_PUBLIC_APP_URL` | prod | https://www.oniefy.com |
+| `VAPID_EMAIL` | prod/preview | mailto:admin@oniefy.com |
+| `CRON_SECRET` | prod/preview | encrypted (gerado sessão 28) |
+| `DIGEST_CRON_SECRET` | prod/preview | encrypted (gerado sessão 28) |
+
+### 28.9 Estado atual do projeto
 
 | Métrica | Valor |
 |---|---|
