@@ -129,37 +129,29 @@ export default function AppLayout({
         role={sidebarOpen ? "dialog" : undefined}
         aria-modal={sidebarOpen ? true : undefined}
         aria-label={sidebarOpen ? "Menu de navegação" : undefined}
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col border-r bg-card transition-transform duration-200 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 transform flex-col bg-[hsl(var(--sidebar-bg))] transition-transform duration-200 lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header: brand + user + logout */}
-        <div className="flex-shrink-0 border-b px-4 py-5">
-          <Image
-            src="/brand/lockup-h-plum-transparent.svg"
-            alt="Oniefy"
-            width={1588}
-            height={617}
-            className="h-auto w-full dark:hidden"
-            priority
-            unoptimized
-          />
+        <div className="flex-shrink-0 border-b border-[hsl(var(--sidebar-fg)/0.15)] px-4 py-5">
           <Image
             src="/brand/lockup-h-bone-transparent.svg"
             alt="Oniefy"
             width={1588}
             height={617}
-            className="hidden h-auto w-full dark:block"
+            className="h-auto w-full"
             priority
             unoptimized
           />
+
           {userName && (
             <div className="mt-2 flex items-center justify-between">
-              <p className="truncate text-xs text-muted-foreground">{userName}</p>
+              <p className="truncate text-xs text-[hsl(var(--sidebar-fg)/0.6)]">{userName}</p>
               <div className="flex items-center gap-0.5">
                 <button type="button"
                   onClick={toggleValues}
-                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="rounded-md p-1.5 text-[hsl(var(--sidebar-fg)/0.6)] transition-colors hover:bg-[hsl(var(--sidebar-hover-bg))] hover:text-[hsl(var(--sidebar-fg))]"
                   title={valuesHidden ? "Exibir valores" : "Ocultar valores"}
                   aria-label={valuesHidden ? "Exibir valores financeiros" : "Ocultar valores financeiros"}
                 >
@@ -167,7 +159,7 @@ export default function AppLayout({
                 </button>
                 <button type="button"
                   onClick={handleLogout}
-                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="rounded-md p-1.5 text-[hsl(var(--sidebar-fg)/0.6)] transition-colors hover:bg-[hsl(var(--sidebar-hover-bg))] hover:text-[hsl(var(--sidebar-fg))]"
                   title="Sair"
                   aria-label="Sair"
                 >
@@ -190,8 +182,8 @@ export default function AppLayout({
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active-fg))] font-semibold"
+                      : "text-[hsl(var(--sidebar-fg)/0.7)] hover:bg-[hsl(var(--sidebar-hover-bg))] hover:text-[hsl(var(--sidebar-fg))]"
                   }`}
                 >
                   <Icon className="h-4 w-4 flex-shrink-0" />
@@ -202,14 +194,14 @@ export default function AppLayout({
           </div>
 
           {/* Settings - separated at bottom */}
-          <div className="border-t pt-3">
+          <div className="border-t border-[hsl(var(--sidebar-fg)/0.15)] pt-3">
             <Link
               href="/settings"
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                 SETTINGS_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"))
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  ? "bg-[hsl(var(--sidebar-active-bg))] text-[hsl(var(--sidebar-active-fg))] font-semibold"
+                  : "text-[hsl(var(--sidebar-fg)/0.7)] hover:bg-[hsl(var(--sidebar-hover-bg))] hover:text-[hsl(var(--sidebar-fg))]"
               }`}
             >
               <Settings className="h-4 w-4 flex-shrink-0" />
@@ -233,7 +225,7 @@ export default function AppLayout({
             </svg>
           </button>
           <Image
-            src="/brand/lockup-h-plum-transparent.svg"
+            src="/brand/lockup-h-bone-transparent.svg"
             alt="Oniefy"
             width={1588}
             height={617}
