@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* ── Plum Ledger (brand) ── */
-    --plum:         273 15% 14%;
+    --plum:         273 30% 18%;
     --graphite:     218 15% 11%;
     --bone:         37 48% 94%;
     --stone:        33 21% 76%;
@@ -35,8 +35,8 @@
     --muted-foreground: 270 4% 55%;
     --border:       30 19% 83%;
     --input:        30 19% 83%;
-    --ring:         273 15% 14%;
-    --primary:      273 15% 14%;
+    --ring:         273 30% 18%;
+    --primary:      273 30% 18%;
     --primary-foreground: 37 48% 94%;
     --secondary:    145 9% 54%;
     --secondary-foreground: 0 0% 100%;
@@ -71,7 +71,7 @@
     --ring:         145 9% 54%;
     --primary:      145 9% 54%;
     --primary-foreground: 218 15% 11%;
-    --secondary:    273 15% 14%;
+    --secondary:    273 30% 18%;
     --secondary-foreground: 37 48% 94%;
     --accent:       273 10% 20%;
     --accent-foreground: 37 48% 94%;
