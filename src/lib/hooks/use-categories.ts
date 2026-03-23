@@ -31,7 +31,7 @@ export const CATEGORY_ICONS = [
 
 export const CATEGORY_COLORS = [
   "#A64A45", "#A7794E", "#A97824", "#2F7A68", "#7E9487", "#56688F",
-  "#6F6678", "#241E29", "#CEC4B8", "#4A7A6E", "#8B6B4A", "#5A7B8F",
+  "#6F6678", "#2F203B", "#CEC4B8", "#4A7A6E", "#8B6B4A", "#5A7B8F",
 ];
 
 // ─── Queries ────────────────────────────────────────────────
