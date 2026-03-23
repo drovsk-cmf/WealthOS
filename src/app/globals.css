@@ -25,11 +25,11 @@
     --tier-4:       268 8% 44%;
 
     /* ── Light Mode ── */
-    --background:   37 48% 94%;
+    --background:   40 43% 97%;
     --foreground:   218 15% 11%;
-    --card:         30 60% 98%;
+    --card:         0 0% 100%;
     --card-foreground: 218 15% 11%;
-    --popover:      30 60% 98%;
+    --popover:      0 0% 100%;
     --popover-foreground: 218 15% 11%;
     --muted:        33 21% 76%;
     --muted-foreground: 270 4% 55%;
@@ -53,6 +53,13 @@
     --warning-foreground: 0 0% 100%;
     --info:         218 24% 45%;
     --info-foreground: 0 0% 100%;
+
+    /* ── Sidebar (dark plum surface) ── */
+    --sidebar-bg:        273 30% 18%;
+    --sidebar-fg:        37 48% 94%;
+    --sidebar-active-bg: 37 48% 94%;
+    --sidebar-active-fg: 273 30% 18%;
+    --sidebar-hover-bg:  273 30% 26%;
 
     --radius:       0.625rem;
   }
@@ -86,6 +93,13 @@
     --warning-foreground: 0 0% 100%;
     --info:         218 24% 52%;
     --info-foreground: 0 0% 100%;
+
+    /* ── Sidebar (em dark mode: levemente mais escura que o background) ── */
+    --sidebar-bg:        270 14% 6%;
+    --sidebar-fg:        37 48% 94%;
+    --sidebar-active-bg: 273 10% 20%;
+    --sidebar-active-fg: 37 48% 94%;
+    --sidebar-hover-bg:  273 10% 16%;
   }
 }
 
