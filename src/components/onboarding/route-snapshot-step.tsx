@@ -226,7 +226,7 @@ export function RouteSnapshotStep({ onComplete, currencySymbol = "R$" }: RouteSn
       <button type="button"
         onClick={handleSave}
         disabled={saving}
-        className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+        className="w-full rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
       >
         {saving ? (
           <span className="flex items-center justify-center gap-2">

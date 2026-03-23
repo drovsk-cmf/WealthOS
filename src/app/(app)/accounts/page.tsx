@@ -83,7 +83,7 @@ export default function AccountsPage() {
         <h1 className="text-2xl font-bold tracking-tight">Contas</h1>
         <button type="button"
           onClick={handleNew}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           + Nova conta
         </button>
@@ -139,7 +139,7 @@ export default function AccountsPage() {
           </p>
           <button type="button"
             onClick={handleNew}
-            className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="mt-5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
           >
             + Adicionar conta
           </button>

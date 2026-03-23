@@ -108,7 +108,7 @@ function ConnectionsManager() {
       <div className="flex justify-end">
         <button type="button"
           onClick={() => setShowNew(true)}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           + Nova conexão
         </button>
@@ -208,7 +208,7 @@ function ConnectionsManager() {
                 <button
                   type="submit"
                   disabled={!newName.trim() || createConnection.isPending}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
                 >
                   {createConnection.isPending ? "Criando" : "Criar"}
                 </button>

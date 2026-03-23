@@ -364,7 +364,7 @@ export default function WorkflowsPage() {
         <>
           <div className="flex justify-end">
             <button type="button" onClick={() => setShowNewWorkflow(true)}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
               + Novo workflow
             </button>
           </div>
@@ -485,7 +485,7 @@ export default function WorkflowsPage() {
                   Cancelar
                 </button>
                 <button type="submit" disabled={createWorkflow.isPending}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
+                  className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
                   {createWorkflow.isPending ? "Criando" : "Criar"}
                 </button>
               </div>

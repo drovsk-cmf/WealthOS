@@ -309,7 +309,7 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
               Cancelar
             </button>
             <button type="submit" disabled={isPending}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
+              className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
               {isPending ? "Salvando" : isEditing ? "Salvar" : "Cadastrar"}
             </button>
           </div>

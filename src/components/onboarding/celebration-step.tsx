@@ -105,7 +105,7 @@ export function CelebrationStep({
       {/* CTA */}
       <button type="button"
         onClick={onGoToApp}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+        className="flex w-full items-center justify-center gap-2 rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground"
       >
         Ir para o Início
         <ArrowRight className="h-4 w-4" />

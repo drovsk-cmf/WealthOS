@@ -269,7 +269,7 @@ export default function CostCentersPage() {
             </button>
           )}
           <button type="button" onClick={handleNew}
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+            className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
             + Nova divisão
           </button>
         </div>
@@ -441,7 +441,7 @@ export default function CostCentersPage() {
                   Cancelar
                 </button>
                 <button type="submit" disabled={loading}
-                  className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
+                  className="flex-1 rounded-md btn-cta px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50">
                   {loading ? "Salvando" : isEdit ? "Salvar" : "Criar"}
                 </button>
               </div>
@@ -487,7 +487,7 @@ export default function CostCentersPage() {
                   }
                 }}
                 disabled={distributeOverhead.isPending}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
+                className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
                 {distributeOverhead.isPending ? "Rateando" : "Ratear mês atual"}
               </button>
             </div>

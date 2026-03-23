@@ -142,7 +142,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={() => setStep("question")}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="flex w-full items-center justify-center gap-2 rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground"
             >
               Iniciar
               <ArrowRight className="h-4 w-4" />
@@ -221,7 +221,7 @@ export default function OnboardingPage() {
             <button
               type="button"
               onClick={handleStart}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="flex w-full items-center justify-center gap-2 rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground"
             >
               Continuar
               <ArrowRight className="h-4 w-4" />

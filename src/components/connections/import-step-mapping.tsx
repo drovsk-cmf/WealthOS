@@ -95,7 +95,7 @@ export function ImportStepMapping({
       <button type="button"
         onClick={onApply}
         disabled={!mapping}
-        className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="w-full rounded-md btn-cta py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
       >
         Aplicar mapeamento e continuar
       </button>

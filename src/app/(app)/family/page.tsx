@@ -133,7 +133,7 @@ export default function FamilyPage() {
         </div>
         <button type="button"
           onClick={handleNew}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           + Novo membro
         </button>
@@ -161,7 +161,7 @@ export default function FamilyPage() {
           </p>
           <button type="button"
             onClick={handleNew}
-            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="mt-4 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
           >
             Adicionar primeiro membro
           </button>
@@ -353,7 +353,7 @@ export default function FamilyPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  className="flex-1 rounded-md btn-cta px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
                 >
                   {loading ? "Salvando" : editing ? "Salvar" : "Criar membro"}
                 </button>

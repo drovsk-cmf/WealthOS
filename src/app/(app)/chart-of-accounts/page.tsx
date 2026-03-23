@@ -217,7 +217,7 @@ export default function ChartOfAccountsPage() {
         <div className="flex gap-2">
           <button type="button"
             onClick={() => setShowCreate(true)}
-            className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="rounded-md btn-cta px-3 py-1.5 text-xs font-medium text-primary-foreground"
           >
             + Nova conta
           </button>
@@ -339,7 +339,7 @@ export default function ChartOfAccountsPage() {
                 <button
                   type="submit"
                   disabled={createCOA.isPending}
-                  className="flex-1 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+                  className="flex-1 rounded-md btn-cta px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
                 >
                   {createCOA.isPending ? "Criando" : "Criar conta"}
                 </button>

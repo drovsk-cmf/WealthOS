@@ -223,7 +223,7 @@ export default function AssetsPage() {
           </p>
         </div>
         <button type="button" onClick={handleNew}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
           + Novo bem
         </button>
       </div>
@@ -303,7 +303,7 @@ export default function AssetsPage() {
               Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
             </p>
             <button type="button" onClick={handleNew}
-              className="mt-5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
+              className="mt-5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
               + Cadastrar bem
             </button>
           </div>

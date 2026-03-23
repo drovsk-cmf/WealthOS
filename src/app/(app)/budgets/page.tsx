@@ -176,7 +176,7 @@ export default function BudgetsPage() {
         </div>
         <button type="button"
           onClick={handleNew}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           + Nova categoria
         </button>
@@ -277,7 +277,7 @@ export default function BudgetsPage() {
           <div className="mt-5 flex gap-3">
             <button type="button"
               onClick={handleNew}
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               Criar orçamento
             </button>
@@ -537,7 +537,7 @@ export default function BudgetsPage() {
               <button type="button"
                 onClick={handleCopy}
                 disabled={copyBudgets.isPending}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
               >
                 {copyBudgets.isPending ? "Copiando" : "Copiar"}
               </button>

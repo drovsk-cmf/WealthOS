@@ -79,7 +79,7 @@ export function NarrativeCard({
           <div className="mt-2 flex gap-2">
             <Link
               href="/accounts"
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+              className="rounded-md btn-cta px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
               Criar conta
             </Link>
@@ -217,7 +217,7 @@ export function NarrativeCard({
           <div className="mt-2 flex gap-2">
             <Link
               href="/transactions"
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+              className="rounded-md btn-cta px-3 py-1.5 text-xs font-medium text-primary-foreground"
             >
               Novo lançamento
             </Link>

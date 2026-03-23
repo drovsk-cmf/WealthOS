@@ -58,7 +58,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           </p>
           <button type="button"
             onClick={onReset}
-            className="mt-6 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="mt-6 rounded-md btn-cta px-5 py-2.5 text-sm font-medium text-primary-foreground"
           >
             Importar outro arquivo
           </button>
@@ -134,7 +134,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           <>
             <button type="button"
               onClick={() => onImportComplete({ imported, categorized })}
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-md btn-cta px-5 py-2.5 text-sm font-medium text-primary-foreground"
             >
               Continuar
               <ArrowRight className="h-4 w-4" />
@@ -150,7 +150,7 @@ export function ImportStepResult({ imported = 0, skipped = 0, categorized = 0, m
           <>
             <a
               href="/transactions"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-md btn-cta px-5 py-2.5 text-sm font-medium text-primary-foreground"
             >
               Ver transações
               <ArrowRight className="h-4 w-4" />

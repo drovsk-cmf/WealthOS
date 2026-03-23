@@ -177,7 +177,7 @@ export function RouteManualStep({ onComplete, currencySymbol = "R$" }: RouteManu
           <button type="button"
             onClick={handleCreateAccount}
             disabled={isLoading}
-            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            className="w-full rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -270,7 +270,7 @@ export function RouteManualStep({ onComplete, currencySymbol = "R$" }: RouteManu
           <button type="button"
             onClick={handleCreateTransaction}
             disabled={isLoading || !txAmount}
-            className="w-full rounded-lg bg-primary px-4 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+            className="w-full rounded-lg btn-cta px-4 py-3 text-sm font-medium text-primary-foreground disabled:opacity-50"
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">

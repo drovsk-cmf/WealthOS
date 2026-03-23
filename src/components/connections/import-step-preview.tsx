@@ -101,7 +101,7 @@ export function ImportStepPreview({
       <button type="button"
         onClick={onImport}
         disabled={selected.size === 0 || isImporting}
-        className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+        className="w-full rounded-md btn-cta py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
       >
         {isImporting ? "Importando" : `Importar ${selected.size} transações`}
       </button>
