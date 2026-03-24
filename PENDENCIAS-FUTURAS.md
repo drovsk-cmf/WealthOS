@@ -194,7 +194,40 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 
 ## 11. Contexto de Benchmark — Insights de Produto
 
-**Origem:** análise comparativa de mercado (sessão 23/03/2026) com Mobills, Organizze, Oinc, YNAB, Empower, Monarch. Inclui leitura de reviews e Reclame Aqui.
+**Origem:** análise comparativa de mercado (sessões 23-24/03/2026) com Mobills, Organizze, Oinc, YNAB, Empower, Monarch, iDinheiro. Inclui leitura de reviews, Reclame Aqui e App Store/Google Play.
+
+### Mapa de concorrentes
+
+| App | Mercado | Open Finance | Modelo de negócio | Público | Diferencial principal |
+|-----|---------|-------------|-------------------|---------|----------------------|
+| Mobills | BR | Sim | Freemium + anúncios | Massa | Maior base BR, muitos anúncios |
+| Organizze | BR | Sim | Freemium | Massa | Simplicidade, mas dados inconsistentes |
+| Oinc | BR | Não | Freemium | Massa | Gerenciador de assinaturas |
+| iDinheiro | BR | Sim (200+ instituições) | Freemium + afiliados (marketplace crédito) | Massa | Projeção financeira + metas com sugestões automáticas + monetização via ofertas de crédito/empréstimo dentro do app |
+| YNAB | US | Não (import manual) | Assinatura (US$99/ano) | Intencionais | Metodologia envelope, 6 pessoas por assinatura |
+| Empower | US | Sim (Plaid) | Freemium + advisory | Mass affluent | Net Worth tracking + investment advisory |
+| Monarch | US | Sim (Plaid) | Assinatura (US$99/ano) | Mass affluent | Melhor UX, compartilhamento familiar |
+| **Oniefy** | **BR** | **Não (roadmap)** | **Assinatura** | **Hybrid Earner** | **Solvência, CFA pessoal, patrimônio, fiscal** |
+
+### iDinheiro — Análise detalhada (adicionado sessão 30)
+
+O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.br — comparadores, rankings, reviews) e app de gestão financeira (iOS/Android). O portal monetiza via comissões de afiliados; o app oferece marketplace de crédito integrado (ofertas de empréstimo após simulação). Isso significa que o app gratuito é viabilizado pelo lead generation, não pela assinatura.
+
+**Features relevantes para o Oniefy:**
+
+| Feature iDinheiro | O que faz | Tem no Oniefy? | Prioridade |
+|---|---|---|---|
+| Projeção financeira | Projeta receitas, gastos e faturas para os próximos meses | Não | Alta (E8d — calculadoras TVM) |
+| Metas com sugestões automáticas | Calcula automaticamente como concluir a meta (quanto poupar/mês) | Não | Alta (E6 — savings goals) |
+| Revisor de gastos por categoria | Agrupa transações em 6 categorias cross-conta | Sim (16 categorias) | Implementado |
+| Open Finance (200+ instituições) | Conexão automática com bancos | Não | Roadmap E10 (quando reconciliação madura) |
+| Calculadora 50/30/20 | Distribui orçamento em necessidades/desejos/poupança | Não | Baixo esforço, alto valor percebido |
+| Marketplace de crédito | Ofertas de empréstimo/cartão dentro do app | Não (fora do modelo) | N/A — Oniefy não monetiza via afiliados |
+| Patrimônio / Solvência | Não oferece | Sim (LCR, runway, tiers, balance sheet) | Vantagem Oniefy |
+| Fiscal / IRPF | Não oferece | Sim (módulo fiscal, tax_parameters) | Vantagem Oniefy |
+| Análise CFA | Não oferece | Backlog (E8b-E8d) | Diferenciação radical |
+
+**Insight estratégico:** O iDinheiro valida que projeção financeira e metas com sugestões automáticas são features de alta demanda no mercado BR. O modelo de monetização via afiliados é incompatível com a proposta do Oniefy ("CFA pessoal" exige independência — não pode recomendar empréstimo e ao mesmo tempo ganhar comissão por ele). Mas a funcionalidade de projeção é universalmente valiosa e reforça a prioridade dos itens E6 e E8d no backlog.
 
 ### O que os concorrentes ensinam por negativo
 
@@ -203,6 +236,7 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 | Dados incorretos / saldo errado | Dominante (Mobills, Organizze) | Modelo append-only com estorno obrigatório — dado nunca some silenciosamente |
 | Duplicatas após Open Finance | Alta | Motor de reconciliação já implementado (Camada 3 na UI) |
 | Anúncios em produto pago | Moderada (Mobills) | Zero anúncios por arquitetura de negócio |
+| Ofertas de crédito/empréstimo misturadas com gestão financeira | Moderada (iDinheiro) | Oniefy não monetiza via afiliados — independência de recomendação |
 | Curva de aprendizagem excessiva (YNAB) | Moderada | Filosofia Apple: sem termos contábeis expostos |
 | Open Finance com dados incompletos (Organizze) | Alta | Entregar Open Finance só quando reconciliação estiver madura |
 | Mudança retroativa de plano (Organizze) | Pontual | Política de early adopters definida antes do lançamento (item E5) |
@@ -211,6 +245,9 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 
 | Funcionalidade que fideliza | Quem tem | Prioridade para o Oniefy |
 |-----------------------------|---------|-----------------------|
+| Projeção financeira mensal (próximos meses) | iDinheiro, Monarch | E8d (calculadoras TVM) — H2 |
+| Metas com sugestões automáticas ("quanto poupar/mês") | iDinheiro, YNAB | E6 (savings goals) — H2 |
+| Calculadora 50/30/20 | iDinheiro | Baixo esforço, poderia entrar em H1 |
 | Planejamento de despesas futuras irregulares | YNAB | E6 (metas) + E7 (simulador) — H1/H2 |
 | Net Worth histórico (linha temporal) | Empower, Monarch | E2 — H1, baixo esforço, alto impacto |
 | Gerenciador de assinaturas consolidado | Oinc | E3 — H1, muito baixo esforço |
@@ -225,4 +262,5 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 |------|------------|-------------|
 | 23/03/2026 | Documento criado. Compilação de HANDOVER §12 + benchmark de mercado + insights de produto. | Claude |
 | 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `CFA-ONIEFY-MAPPING.md`. | Claude |
+| 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas com 3 novos itens (projeção, metas automáticas, calculadora 50/30/20). | Claude |
 
