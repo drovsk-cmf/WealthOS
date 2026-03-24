@@ -3797,3 +3797,75 @@ Adicionados 7 checks ao `scripts/healthcheck.mjs` que rodam em todo Post-Deploy 
 Esses checks teriam pego os bugs das sessões 30.7 (turnstile "use client") e 30.8 (middleware matcher) antes de qualquer usuário reportar.
 
 **Commit:** `f23b297` | CI + Post-Deploy Check: success
+
+### 30.10 Especificação completa do Motor JARVIS CFA
+
+Sessão encerrada com especificação técnica detalhada do motor de inteligência do Oniefy. Documentos atualizados:
+
+**Princípios definitivos do CFA Pessoal (definidos por Claudio):**
+1. Análise de contexto com dados reais, nunca regras genéricas (50/30/20 descartado)
+2. Sugestões ancoradas em hábitos específicos ("reduza 7 pedidos iFood" > "gaste menos com alimentação")
+3. Tempo é o ativo mais caro — nunca sugerir economia que custa mais em tempo
+4. Postura crítica sobre sabedoria convencional (acumulação imobiliária BR quase sempre inviável)
+5. Dados concretos, não adjetivos
+6. Perguntas provocativas como gatilho
+7. Linguagem financeira profissional
+
+**Framework: 3 Pilares (Taxa, Fluxo, Tempo)**
+- Toda otimização financeira melhora pelo menos um eixo
+- TMA = CDI + prêmio de risco como referência universal
+- Qualquer ativo com retorno < TMA está destruindo valor
+
+**Arquitetura em 3 camadas:**
+- Camada 1: Scanner padronizado (determinístico, 10 regras R01-R10)
+- Camada 2: Combinador de cenários (efeito agregado de múltiplas otimizações)
+- Camada 3: IA narrativa (Claude Haiku, apenas edge cases)
+
+**10 Regras especificadas com fórmulas SQL:**
+
+| Regra | Descrição | Schema pronto? |
+|-------|-----------|----------------|
+| R01 | Ativo com retorno líquido < CDI | 90% (depende de transactions.asset_id preenchido) |
+| R02 | Dívida com taxa > CDI + 5 p.p. | Requer Frente B (interest_rate + rate_type) |
+| R03 | Assinaturas com potencial de cancelamento | 100% |
+| R04 | Veículo: assinatura vs financiado (TCO) | 70% (depende de transactions.asset_id) |
+| R05 | Pagamento mínimo de cartão (espiral juros) | Requer Frente B ou fallback BCB |
+| R06 | Categoria de despesa em escalada (+20% 3m) | 100% |
+| R07 | Reserva de emergência < 3 meses | 100% (RPC já existe) |
+| R08 | Depreciação de ativo > rendimento líquido | 90% (depende de transactions.asset_id) |
+| R09 | Concentração de renda > 80% em uma fonte | 100% |
+| R10 | Fluxo mensal negativo 2+ meses consecutivos | 100% (monthly_snapshots já existe) |
+
+**Schema gaps identificados (Frente B):**
+- `accounts.investment_class` enum (renda_fixa, renda_variavel, fii, previdencia, cripto, outro)
+- `accounts.interest_rate` numeric (% a.m.) para loan/financing/credit_card
+- `accounts.rate_type` enum (pre, pos_cdi, pos_ipca, pos_tr) para loan/financing
+
+**UX: "Limpeza de Disco" financeira** — sugestões proativas sem o usuário pedir. Card no dashboard: "Otimizações disponíveis (3) — Economia potencial: R$ 740/mês"
+
+**Princípio arquitetural: algoritmo primeiro, IA depois.** Garante reprodutibilidade, auditabilidade, custo controlado.
+
+**Documentos de referência:**
+- `CFA-ONIEFY-MAPPING.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
+- `PENDENCIAS-FUTURAS.md` E8b-E8d (backlog de implementação)
+
+**Próximo passo:** Implementar as 6 regras que funcionam com zero schema change (R03, R06, R07, R08, R09, R10) + Frente B (migration para interest_rate/rate_type/investment_class) + 4 regras restantes.
+
+### Sessão 30 — Commits consolidados
+
+| Hash | Descrição |
+|------|-----------|
+| `106f4f1` | Sombras quentes, sidebar glow, card-alive |
+| `e73a7e8` | btn-cta gradient + muted-foreground plum tint |
+| `8093e48` | useAuthInit: getSession antes de MFA |
+| `9d9fc90` | Revert Midnight Plum para #241E29 |
+| `127af22` | 5 fixes: Importar/OAuth/glow/hover/gradients |
+| `807c4c1` | CFA → Oniefy mapping (57 readings) |
+| `b920dfb` | CFA + Suporte Contextual no backlog |
+| `b556e3f` | FIX CRÍTICO: turnstile "use client" |
+| `21a3876` | FIX CRÍTICO: OAuth www mismatch + static files |
+| `f23b297` | Smoke tests auth + static files no CI |
+| `b2b79c3` | Benchmark com iDinheiro |
+| `3c6f080` | Descartar 50/30/20 |
+| `ed56a59` | Princípios CFA Pessoal revisados |
+| `0a2958d` | Motor JARVIS CFA especificação |
