@@ -3778,3 +3778,22 @@ Auditoria executada em 23/03/2026 após falha crítica de auth em produção. 20
 | `21a3876` | fix(critical): OAuth www mismatch + middleware blocking static files |
 
 **CI verde:** `21a3876` (CI + Post-Deploy Check: success)
+
+### 30.9 Smoke tests pós-deploy para auth e static files
+
+Adicionados 7 checks ao `scripts/healthcheck.mjs` que rodam em todo Post-Deploy Check:
+
+**Auth API Smoke Tests (3):**
+- `POST /api/auth/register` com body JSON real → detecta "Corpo da requisição inválido" como FAIL
+- `POST /api/auth/login` com body JSON real → idem
+- `POST /api/auth/forgot-password` com body JSON real → idem
+
+**Static File Checks (4):**
+- `GET /manifest.json` → FAIL se 307 (middleware bloqueando)
+- `GET /robots.txt` → idem
+- `GET /sw.js` → idem
+- `GET /favicon.ico` → idem
+
+Esses checks teriam pego os bugs das sessões 30.7 (turnstile "use client") e 30.8 (middleware matcher) antes de qualquer usuário reportar.
+
+**Commit:** `f23b297` | CI + Post-Deploy Check: success
