@@ -125,7 +125,7 @@ export function useImportBatch() {
       const { data, error } = await supabase.rpc("import_transactions_batch", {
         p_user_id: userId,
         p_account_id: accountId,
-        p_bank_connection_id: bankConnectionId || undefined,
+        p_bank_connection_id: bankConnectionId as unknown as string,
         p_batch_id: batchId,
         p_transactions: JSON.stringify(transactions),
       });
