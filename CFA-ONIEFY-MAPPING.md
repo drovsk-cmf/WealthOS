@@ -193,17 +193,19 @@ D/E = Dívidas totais / Patrimônio líquido
 
 ## 5. Princípios de Design para o "CFA Pessoal"
 
-1. **Diagnóstico, não prescrição.** "Seu custo de dívida é CDI+4,2%" (fato). Nunca: "Renegocie sua dívida" (conselho).
+1. **Análise de contexto, não regras.** O Oniefy calcula com dados reais do usuário: composição patrimonial, retorno ajustado ao risco, custo de oportunidade vs taxa básica de juros, depreciação, despesas incorridas sobre cada ativo. Nunca aplica heurísticas genéricas (50/30/20 descartado por falta de fundamento em financial analysis). Cada diagnóstico é personalizado porque cada patrimônio é diferente.
 
-2. **Dados concretos, não adjetivos.** "Runway de 4,2 meses" (número). Nunca: "Sua reserva é insuficiente" (julgamento).
+2. **Sugestões ancoradas em hábitos específicos.** O Oniefy não diz "reduza gastos com alimentação". O Oniefy diz: "47 pedidos de delivery nos últimos 3 meses, ticket médio R$ 60. Uma redução de 7 pedidos/mês libera R$ 420 que, em 18 meses, cobre a entrada de X." A sugestão é cirúrgica: identifica o hábito concreto, quantifica o impacto, e conecta com um objetivo real. Nunca sugere soluções que exigem investimento de tempo desproporcional ("cozinhe em casa" para quem fatura R$ 200/hora é uma péssima troca de custo de oportunidade).
 
-3. **Comparação como educação.** "Sua taxa de poupança é 22%. A média brasileira para sua faixa de renda é 12%." O usuário tira a conclusão.
+3. **Tempo é o ativo mais caro.** Toda sugestão de economia deve considerar o custo de oportunidade do tempo necessário para implementá-la. Se a economia exige mais horas do que o valor economizado justifica, é uma sugestão ruim. O Oniefy entende que o Hybrid Earner tem restrição de tempo como principal constraint.
 
-4. **Perguntas provocativas.** "Se sua renda PJ parasse amanhã, quantos meses a reserva cobre?" (o cálculo já está feito; a pergunta dá contexto).
+4. **Postura crítica sobre "sabedoria convencional".** Exemplo: a mania brasileira de acumulação imobiliária vem de uma era de hiperinflação onde ativos tangíveis eram reserva de valor. Hoje, com Selic a 14,25%, o custo de oportunidade de capital empatado em imóvel é brutal. O Oniefy mostra: renda de aluguel vs despesas incorridas (IPTU, condomínio, seguro, manutenção) vs valorização marginal vs depreciação natural vs retorno de benchmark (Tesouro IPCA+, CDI). Se o retorno real é negativo, o dado fala por si. Diagnóstico, não prescrição.
 
-5. **Progressividade.** Fase 1 mostra dados que o usuário já tem. Fase 2 pede inputs pontuais. Fase 3 conecta tudo em narrativa inteligente.
+5. **Dados concretos, não adjetivos.** "Runway de 4,2 meses" (número). Nunca "sua reserva é insuficiente" (julgamento). O usuário é adulto e tira conclusões quando o dado é claro.
 
-6. **Linguagem financeira profissional.** Solvência, liquidez, alavancagem, runway, burn rate. Termos que diferenciam o Oniefy de expense trackers ("onde gastei?") e posicionam como wealth management ("para onde estou indo?").
+6. **Perguntas provocativas como gatilho.** "Se sua renda PJ parasse amanhã, quantos meses a reserva cobre?" O cálculo já está feito; a pergunta dá contexto e urgência. "Seu apartamento rendeu 0,4% a.m. líquido nos últimos 12 meses. Sabe quanto rendeu o CDI no mesmo período?"
+
+7. **Linguagem financeira profissional.** Solvência, liquidez, alavancagem, runway, burn rate, custo de oportunidade, retorno ajustado ao risco. Termos que diferenciam o Oniefy de expense trackers e posicionam como wealth management.
 
 ---
 
