@@ -35,6 +35,7 @@ import {
   SetupJourneyCard,
   ImportCTA,
   MfaReminderBanner,
+  JarvisScanCard,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -125,6 +126,9 @@ export default function DashboardPage() {
       />
 
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
+
+      {/* JARVIS CFA: "Limpeza de Disco" Financeira (P5: ativo+) */}
+      {showMidTier && <JarvisScanCard />}
 
       {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
       <SummaryCards data={d?.summary} isLoading={dash.isLoading} />

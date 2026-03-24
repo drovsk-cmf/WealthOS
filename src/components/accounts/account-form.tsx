@@ -35,6 +35,9 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [liquidityTier, setLiquidityTier] = useState("T1");
   const [currency, setCurrency] = useState("BRL");
+  const [investmentClass, setInvestmentClass] = useState<string>("");
+  const [interestRate, setInterestRate] = useState("");
+  const [rateType, setRateType] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const { data: supportedCurrencies } = useSupportedCurrencies();
@@ -53,6 +56,10 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setColor(account.color || PRESET_COLORS[0]);
       setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
       setCurrency(account.currency || "BRL");
+      // Frente B fields (JARVIS CFA)
+      setInvestmentClass((account as Record<string, unknown>).investment_class as string ?? "");
+      setInterestRate(String((account as Record<string, unknown>).interest_rate ?? ""));
+      setRateType((account as Record<string, unknown>).rate_type as string ?? "");
     } else {
       setName("");
       setType("checking");
@@ -61,6 +68,9 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setColor(PRESET_COLORS[0]);
       setLiquidityTier("T1");
       setCurrency("BRL");
+      setInvestmentClass("");
+      setInterestRate("");
+      setRateType("");
     }
     setError(null);
   }, [account, open]);
@@ -85,7 +95,11 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           color,
           liquidity_tier: liquidityTier,
           currency,
-        });
+          // Frente B (JARVIS CFA)
+          investment_class: type === "investment" && investmentClass ? investmentClass : null,
+          interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate) : null,
+          rate_type: ["loan", "financing"].includes(type) && rateType ? rateType : null,
+        } as Parameters<typeof updateAccount.mutateAsync>[0]);
       } else {
         await createAccount.mutateAsync({
           name: name.trim(),
@@ -95,7 +109,11 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           liquidity_tier: liquidityTier,
           currency,
           ...(type === "financing" && { coaParentCode: financingSubtype }),
-        });
+          // Frente B (JARVIS CFA)
+          ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
+          ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate) }),
+          ...(["loan", "financing"].includes(type) && rateType && { rate_type: rateType }),
+        } as Parameters<typeof createAccount.mutateAsync>[0]);
       }
       toast.success(isEdit ? "Conta atualizada." : "Conta criada com sucesso.");
       onClose();
@@ -226,6 +244,82 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                   </option>
                 ))}
               </select>
+            </div>
+          )}
+
+          {/* ═══ Frente B: Campos JARVIS CFA ═══ */}
+
+          {/* Investment class (only for type=investment) */}
+          {type === "investment" && (
+            <div className="space-y-1.5">
+              <label htmlFor="acc-investment-class" className="text-sm font-medium">
+                Classe do investimento
+              </label>
+              <select
+                id="acc-investment-class"
+                value={investmentClass}
+                onChange={(e) => setInvestmentClass(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Não informada</option>
+                <option value="renda_fixa">Renda fixa</option>
+                <option value="renda_variavel">Renda variável</option>
+                <option value="fii">FII</option>
+                <option value="previdencia">Previdência</option>
+                <option value="cripto">Cripto</option>
+                <option value="outro">Outro</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Usada na análise JARVIS para comparar retorno vs TMA.
+              </p>
+            </div>
+          )}
+
+          {/* Interest rate (only for loan/financing/credit_card) */}
+          {(type === "loan" || type === "financing" || type === "credit_card") && (
+            <div className="space-y-1.5">
+              <label htmlFor="acc-interest-rate" className="text-sm font-medium">
+                Taxa de juros (% a.m.)
+              </label>
+              <input
+                id="acc-interest-rate"
+                type="number"
+                step="0.01"
+                min="0"
+                value={interestRate}
+                onChange={(e) => setInterestRate(e.target.value)}
+                placeholder="Ex: 1.99"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              <p className="text-xs text-muted-foreground">
+                {type === "credit_card"
+                  ? "Taxa rotativo/parcelamento. Usada para projeção de espiral de juros."
+                  : "Taxa contratual mensal. Usada na análise de dívida cara."}
+              </p>
+            </div>
+          )}
+
+          {/* Rate type (only for loan/financing) */}
+          {(type === "loan" || type === "financing") && (
+            <div className="space-y-1.5">
+              <label htmlFor="acc-rate-type" className="text-sm font-medium">
+                Tipo de taxa
+              </label>
+              <select
+                id="acc-rate-type"
+                value={rateType}
+                onChange={(e) => setRateType(e.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <option value="">Não informado</option>
+                <option value="pre">Prefixada</option>
+                <option value="pos_cdi">Pós-fixada (CDI)</option>
+                <option value="pos_ipca">Pós-fixada (IPCA)</option>
+                <option value="pos_tr">Pós-fixada (TR)</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Determina como o JARVIS calcula o custo real da dívida.
+              </p>
             </div>
           )}
 

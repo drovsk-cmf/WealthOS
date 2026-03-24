@@ -380,6 +380,33 @@ export const dashboardAllSchema = z.object({
   attention: attentionQueueSchema,
 });
 
+// ─── JARVIS CFA Scan (Motor JARVIS Camada 1+2) ─────────────
+
+export const jarvisFindingSchema = z.object({
+  rule_id: z.string(),
+  severity: z.enum(["info", "warning", "critical"]),
+  title: z.string(),
+  description: z.string(),
+  potential_savings_monthly: z.number(),
+  affected_items: z.any().nullable().optional(),
+});
+
+export const jarvisScanSchema = z.object({
+  scan_date: z.string(),
+  findings_count: z.number(),
+  findings: z.array(jarvisFindingSchema),
+  summary: z.object({
+    total_potential_savings_monthly: z.number(),
+    projected_3m: z.number(),
+    projected_6m: z.number(),
+    projected_12m: z.number(),
+    critical_count: z.number(),
+    warning_count: z.number(),
+    info_count: z.number(),
+  }),
+  solvency: solvencyMetricsSchema.nullable(),
+});
+
 export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown>) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
