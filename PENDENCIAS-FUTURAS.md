@@ -221,7 +221,7 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Metas com sugestões automáticas | Calcula automaticamente como concluir a meta (quanto poupar/mês) | Não | Alta (E6 — savings goals) |
 | Revisor de gastos por categoria | Agrupa transações em 6 categorias cross-conta | Sim (16 categorias) | Implementado |
 | Open Finance (200+ instituições) | Conexão automática com bancos | Não | Roadmap E10 (quando reconciliação madura) |
-| Calculadora 50/30/20 | Distribui orçamento em necessidades/desejos/poupança | Não | Baixo esforço, alto valor percebido |
+| Calculadora 50/30/20 | Distribui orçamento em necessidades/desejos/poupança | Não | Descartado — heurística comportamental sem base em financial analysis. Oniefy calcula com dados reais (TVM, taxa de poupança necessária para objetivo X no prazo Y) |
 | Marketplace de crédito | Ofertas de empréstimo/cartão dentro do app | Não (fora do modelo) | N/A — Oniefy não monetiza via afiliados |
 | Patrimônio / Solvência | Não oferece | Sim (LCR, runway, tiers, balance sheet) | Vantagem Oniefy |
 | Fiscal / IRPF | Não oferece | Sim (módulo fiscal, tax_parameters) | Vantagem Oniefy |
@@ -247,7 +247,6 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 |-----------------------------|---------|-----------------------|
 | Projeção financeira mensal (próximos meses) | iDinheiro, Monarch | E8d (calculadoras TVM) — H2 |
 | Metas com sugestões automáticas ("quanto poupar/mês") | iDinheiro, YNAB | E6 (savings goals) — H2 |
-| Calculadora 50/30/20 | iDinheiro | Baixo esforço, poderia entrar em H1 |
 | Planejamento de despesas futuras irregulares | YNAB | E6 (metas) + E7 (simulador) — H1/H2 |
 | Net Worth histórico (linha temporal) | Empower, Monarch | E2 — H1, baixo esforço, alto impacto |
 | Gerenciador de assinaturas consolidado | Oinc | E3 — H1, muito baixo esforço |
@@ -262,5 +261,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 |------|------------|-------------|
 | 23/03/2026 | Documento criado. Compilação de HANDOVER §12 + benchmark de mercado + insights de produto. | Claude |
 | 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `CFA-ONIEFY-MAPPING.md`. | Claude |
-| 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas com 3 novos itens (projeção, metas automáticas, calculadora 50/30/20). | Claude |
+| 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas (projeção, metas automáticas). Calculadora 50/30/20 avaliada e descartada (heurística sem base CFA). | Claude |
 
