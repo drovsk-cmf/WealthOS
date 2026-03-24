@@ -236,6 +236,79 @@ async function checkHeaders() {
   }
 }
 
+// ── Auth endpoint smoke tests ─────────────────────────────
+// POST with JSON body — validates that the endpoint parses
+// the request correctly and returns a meaningful response
+// (not "Corpo da requisição inválido" which means the
+// server-side code failed to even parse the body).
+
+async function checkAuthEndpoint(path, body) {
+  const url = `${BASE}${path}`;
+  try {
+    const res = await fetchWithTimeout(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const status = res.status;
+    let data;
+    try { data = await res.json(); } catch { data = {}; }
+
+    // The CRITICAL check: if we get "Corpo da requisição inválido",
+    // it means the endpoint is broken (can't parse body).
+    // This is the exact bug that broke production.
+    const errorMsg = data.error || "";
+    if (errorMsg.includes("Corpo da requisição inválido") || errorMsg.includes("Invalid request body")) {
+      log("fail", `POST ${path}`, `BODY PARSE BROKEN: "${errorMsg}"`);
+      return;
+    }
+
+    // Any 2xx or expected 4xx (400 validation, 401 wrong creds, 429 rate limit) = endpoint is alive
+    if (status >= 200 && status < 500) {
+      const msg = data.message || data.error || `status ${status}`;
+      log("pass", `POST ${path}`, `${status} — ${msg.substring(0, 60)}`);
+    } else {
+      log("fail", `POST ${path}`, `${status} SERVER ERROR`);
+    }
+  } catch (err) {
+    log("fail", `POST ${path}`, err.name === "AbortError" ? "timeout" : err.message);
+  }
+}
+
+// ── Static file checks ───────────────────────────────────
+// Verifies that root static files are NOT intercepted by
+// auth middleware (which would return 307 → /login).
+
+async function checkStaticFile(path) {
+  const url = `${BASE}${path}`;
+  try {
+    const res = await fetchWithTimeout(url);
+    const status = res.status;
+
+    // 307 means middleware redirected to /login — the file is blocked
+    if (status === 307 || status === 308) {
+      const location = res.headers.get("location") || "";
+      if (location.includes("/login")) {
+        log("fail", `GET ${path}`, `BLOCKED by middleware (${status} → login)`);
+      } else {
+        log("warn", `GET ${path}`, `redirect ${status} → ${location}`);
+      }
+      return;
+    }
+
+    if (status === 200) {
+      log("pass", `GET ${path}`, `${status} OK`);
+    } else if (status === 404) {
+      log("warn", `GET ${path}`, `404 (arquivo não existe em public/)`);
+    } else {
+      log("warn", `GET ${path}`, `status ${status}`);
+    }
+  } catch (err) {
+    log("fail", `GET ${path}`, err.name === "AbortError" ? "timeout" : err.message);
+  }
+}
+
 // ── Main ──────────────────────────────────────────────────
 
 async function main() {
@@ -290,7 +363,30 @@ async function main() {
   await checkApi("/api/push/send", "POST", { title: "test" }, { cron: true });
   await checkApi("/api/ai/categorize", "POST", { descriptions: ["teste"] });
 
-  // 6. Summary
+  // 6. Auth API smoke tests (POST with real body — the exact scenario that broke prod)
+  console.log("\n─── Auth API Smoke Tests ───");
+  await checkAuthEndpoint("/api/auth/register", {
+    fullName: "Healthcheck Bot",
+    email: `healthcheck-${Date.now()}@test.invalid`,
+    password: "Hc2026!xyzABC",
+    confirmPassword: "Hc2026!xyzABC",
+  });
+  await checkAuthEndpoint("/api/auth/login", {
+    email: "healthcheck@test.invalid",
+    password: "Hc2026!xyzABC",
+  });
+  await checkAuthEndpoint("/api/auth/forgot-password", {
+    email: "healthcheck@test.invalid",
+  });
+
+  // 7. Static root files (must NOT be intercepted by middleware)
+  console.log("\n─── Arquivos Estáticos Raiz ───");
+  await checkStaticFile("/manifest.json");
+  await checkStaticFile("/robots.txt");
+  await checkStaticFile("/sw.js");
+  await checkStaticFile("/favicon.ico");
+
+  // 8. Summary
   console.log("\n══════════════════════════════════════");
   console.log(`  Passou:  ${passed}`);
   console.log(`  Falhou:  ${failed}`);
