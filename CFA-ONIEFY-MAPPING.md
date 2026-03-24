@@ -210,3 +210,101 @@ D/E = Dívidas totais / Patrimônio líquido
 ---
 
 *Documento gerado em 23/03/2026. Base: CFA Level I Schweser Notes 2020 (Books 1-5, 1.527 págs) + Secret Sauce 2019 (243 págs) + QuickSheet 2020 (6 págs).*
+
+---
+
+## 6. Motor de Inteligência: "JARVIS CFA"
+
+### 6.1 Os 3 Pilares
+
+Toda análise financeira se reduz a otimizar um ou mais destes eixos:
+
+| Pilar | O que mede | Direção de otimização |
+|---|---|---|
+| **Taxa** | Custo do dinheiro (dívida) ou retorno (ativo) | Reduzir taxa de dívida, aumentar retorno de ativo, eliminar posição com retorno < TMA |
+| **Fluxo** | Dinheiro entrando vs saindo por período | Aumentar receita, reduzir despesa, eliminar vazamentos |
+| **Tempo** | Quando o dinheiro entra/sai e por quanto tempo | Antecipar recebível, postergar pagamento, realocar timing de custos |
+
+### 6.2 TMA (Taxa Mínima de Atratividade)
+
+Referência: CDI (retorno do "fazer nada" com risco quase zero).
+
+`TMA de um investimento = CDI + prêmio de risco específico`
+
+Se CDI = 14,25% a.a. e um imóvel rende 5% a.a. líquido (após IPTU, condomínio, seguro, manutenção, vacância, depreciação), o imóvel perde para o CDI antes mesmo de considerar o prêmio de risco (iliquidez, concentração, custo de transação). O dado fala por si.
+
+### 6.3 Arquitetura em 3 Camadas
+
+#### Camada 1: Scanner Padronizado (determinístico, sem IA)
+
+Roda periodicamente. Varre posições procurando ineficiências com regras estruturadas.
+
+| Regra | Gatilho | Otimização | Pilar | Dados necessários |
+|---|---|---|---|---|
+| R01 | Ativo com retorno líquido < CDI | Sinalizar investimento ineficiente | Taxa | assets + custos incorridos + índice CDI |
+| R02 | Dívida com taxa > CDI + 5 p.p. | Candidata a renegociação/portabilidade | Taxa | accounts (loan/financing) + interest_rate |
+| R03 | Assinaturas streaming 2+ com soma > threshold | Sugerir cancelamento com economia projetada | Fluxo | recurrences por categoria |
+| R04 | Veículo assinatura vs financiado | Simular troca com TCO e custos diferidos (manutenção 6m, IPVA 12m) | Fluxo+Tempo | assets + recurrences |
+| R05 | Pagamento mínimo de cartão ou atraso | Projetar espiral de juros compostos 3/6/12m | Taxa+Tempo | accounts (credit_card) + transactions |
+| R06 | Categoria +20% por 3 meses consecutivos | Decompor por comerciante/frequência | Fluxo | transactions por categoria/merchant |
+| R07 | Reserva < 3 meses de burn rate | Priorizar reserva antes de investimento | Tempo | solvency metrics |
+| R08 | Depreciação de ativo > rendimento líquido | Sinalizar ativo perdendo valor líquido | Taxa | assets + value_history |
+| R09 | Renda concentrada > 80% em uma fonte | Risco de concentração de receita | Fluxo | transactions income por source |
+| R10 | Fluxo mensal negativo 2+ meses | Alerta insolvência progressiva com projeção | Fluxo+Tempo | dashboard_summary |
+
+Cada regra: gatilho (condição booleana) → cálculo (fórmula determinística) → output (frase com números) → urgência (informativo / atenção / crítico).
+
+#### Camada 2: Combinador de Cenários (determinístico, sem IA)
+
+Combina múltiplas otimizações da Camada 1 e calcula efeito agregado.
+
+Exemplo de output combinado:
+```
+Encontramos 3 otimizações no seu fluxo de caixa:
+  1. Cancelar 2 streamings duplicados: -R$ 80/mês
+  2. Substituir 8 pedidos de delivery por refeição pronta: -R$ 440/mês
+  3. Portabilidade do consignado de 2,1% → 1,5% a.m.: -R$ 180/mês
+
+Efeito combinado: +R$ 700/mês no fluxo.
+Déficit atual de -R$ 200 vira superávit de +R$ 500.
+Em 6 meses: R$ 3.000 de reserva (0,9 meses de runway).
+Em 12 meses: R$ 6.000 (1,8 meses de runway).
+```
+
+O diferencial: nenhuma pessoa processa simultaneamente "se eu cancelar X e trocar Y e renegociar Z, qual o efeito líquido e em quanto tempo atinjo o objetivo W?" O Oniefy processa.
+
+Medidas drásticas com alívio imediato de caixa são priorizadas no output:
+- Cancelamento de assinaturas (efeito no próximo mês)
+- Troca de veículo (efeito em 30-60 dias, com timeline de custos diferidos)
+- Renegociação de dívida (efeito em 30 dias após portabilidade)
+- Venda de ativo ineficiente (efeito em 60-90 dias por liquidez)
+
+#### Camada 3: IA Narrativa (Claude Haiku, edge cases)
+
+Entra APENAS quando o algoritmo padronizado não resolve. Recebe dados estruturados das Camadas 1+2 e gera narrativa contextualizada. Nunca inventa números: todo dado vem do banco. A IA formata, contextualiza e conecta.
+
+Casos de uso da IA:
+- Tradeoffs ambíguos (qualidade de vida vs economia)
+- Decisões com variáveis não-financeiras (mudar de cidade, trocar de emprego)
+- Narrativa mensal consolidada ("o que mudou no seu patrimônio e por quê")
+
+### 6.4 UX: "Limpeza de Disco" Financeira
+
+Analogia com otimização de SO: o sistema detecta ineficiências e apresenta sugestões proativas, sem o usuário pedir.
+
+```
+[Dashboard ou notificação periódica]
+
+Otimizações disponíveis (3)
+Economia potencial: R$ 740/mês
+
+  ▸ Cancelar streamings duplicados      R$ 80/mês    [Ver detalhes]
+  ▸ Ajustar frequência de delivery      R$ 440/mês   [Ver detalhes]
+  ▸ Portabilidade de dívida             R$ 220/mês   [Ver detalhes]
+```
+
+Cada sugestão, ao expandir, mostra: dado real que motivou, cálculo detalhado, projeção de impacto em 3/6/12 meses, e alternativas quando aplicável (ex: troca de veículo mostra 2-3 cenários com TCO comparado).
+
+### 6.5 Princípio: Algoritmo Primeiro, IA Depois
+
+A IA não é o motor. É o copiloto. O motor são as regras estruturadas (R01-R10+) operando sobre os 3 pilares (taxa, fluxo, tempo) com referência na TMA (CDI + prêmio de risco). A IA entra onde o algoritmo padronizado esgota sua capacidade de interpretar combinações. Essa separação garante: reprodutibilidade (mesmos dados → mesmas sugestões), auditabilidade (o usuário vê a fórmula, não uma "caixa preta"), e custo controlado (IA só para edge cases, não para cada análise).
