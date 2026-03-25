@@ -69,9 +69,9 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Tabelas | 34 (todas com RLS) |
 | Políticas RLS | 103 |
 | Functions (total) | 74 no schema public. Todas com `SET search_path = public`. 71 SECURITY DEFINER com auth.uid() guard |
-| Triggers | 21 |
-| ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
-| Indexes | 140 |
+| Triggers | 24 |
+| ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
+| Indexes | 141 |
 | Migrations aplicadas (MCP) | 52 no projeto ativo (mngjbrbxapazdddzgoje) |
 | Migration files (repo) | 59 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
@@ -87,7 +87,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (73 no schema public)
+### 3.3 Functions (74 no schema public)
 
 | Grupo | Functions |
 |---|---|
@@ -95,6 +95,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, recalculate_account_balance_for, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
 | Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
+| JARVIS CFA | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -108,12 +109,15 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (148 arquivos em src/, 45 suítes de teste, 666 assertions)
+### 3.4 Código Fonte (201 arquivos TS/TSX em src/, 45 suítes de teste, 666 assertions)
 
 ```
 src/
 ├── __tests__/                    # 45 suítes de teste (Jest + RTL), 666 assertions
+│   ├── accounts-mutations.test.tsx
+│   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
+│   ├── assets-hooks.test.tsx
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
 │   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
 │   ├── audit-map-relations.test.ts    # 11: helper DRY mapTransactionRelations
@@ -122,8 +126,16 @@ src/
 │   ├── audit-tx-invalidation.test.tsx # 7: invalidação de cache em todas as 5 mutations
 │   ├── auth-schemas-extended.test.ts  # mfaCode, forgot/reset password, passwordStrength, blocklist
 │   ├── auth-validation.test.ts
+│   ├── budgets-hooks.test.tsx
+│   ├── budgets-mutations-extended.test.tsx
+│   ├── categories-mutations.test.tsx
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
+│   ├── cost-centers-hooks.test.tsx
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
+│   ├── fiscal-timing-safe.test.ts
+│   ├── hooks-batch-coverage.test.tsx
+│   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
+│   ├── lgpd-account-deletion.test.ts
 │   ├── onboarding-seeds.test.ts
 │   ├── oniefy-template.test.ts
 │   ├── p1-divisoes-rename.test.ts     # 4: Centro→Divisão, N1-N4 nomenclatura
@@ -135,18 +147,25 @@ src/
 │   ├── pii-sanitizer.test.ts          # 14: CPF, CNPJ, email, tel, cartão, conta
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
 │   ├── read-hooks.test.tsx
+│   ├── recurrences-hooks.test.tsx
 │   ├── rpc-auto-categorize-schema.test.ts
 │   ├── rpc-new-schemas.test.ts        # 13 schemas para RPCs novas (sessão 19)
 │   ├── rpc-schemas.test.ts
 │   ├── rpc-schemas-extended.test.ts   # 17 schemas restantes (assets, centers, indices, workflows, dashboard)
+│   ├── sentry-pii-scrub.test.ts
+│   ├── setup-journey-hooks.test.tsx
 │   ├── transaction-hooks.test.tsx
-│   └── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
+│   ├── turnstile-verify.test.ts
+│   ├── utils.test.ts                 # formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
+│   ├── weekly-digest-template.test.ts
+│   └── workflows-hooks.test.tsx
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (18 páginas)
+│   ├── (app)/                    # Rotas autenticadas (19 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
 │   │   ├── budgets/page.tsx
+│   │   ├── calculators/page.tsx  # 4 calculadoras CFA (E8d)
 │   │   ├── categories/page.tsx
 │   │   ├── chart-of-accounts/page.tsx
 │   │   ├── connections/page.tsx   # 3 abas: Importar + Conciliação + Conexões
@@ -159,7 +178,7 @@ src/
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
 │   │   ├── error.tsx              # Error boundary (UX: P3)
-│   │   └── layout.tsx            # Sidebar 5+1 (UX-H1-01), auth, offline banner
+│   │   └── layout.tsx            # Sidebar 7+1 (UX-H1-01 + E8d), auth, offline banner
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
@@ -175,9 +194,14 @@ src/
 │   │   └── indices/fetch/route.ts  # Coleta BCB SGS (SSRF-protected)
 │   └── layout.tsx, globals.css
 ├── components/
-│   ├── accounts/account-form.tsx
+│   ├── accounts/account-form.tsx   # Campos condicionais Frente B (investment_class, interest_rate, rate_type)
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
+│   ├── calculators/               # 4 calculadoras CFA (E8d, front-end only)
+│   │   ├── independence-calculator.tsx  # Perpetuidade + tempo para atingir
+│   │   ├── buy-vs-rent-calculator.tsx   # NPV, custo de oportunidade
+│   │   ├── cet-calculator.tsx           # IRR/Newton-Raphson, spread vs nominal
+│   │   └── sac-vs-price-calculator.tsx  # Tabela comparativa amortização
 │   ├── categories/category-form.tsx
 │   ├── connections/              # Wizard de importação + conciliação (WEA-013)
 │   │   ├── import-wizard.tsx
@@ -186,32 +210,41 @@ src/
 │   │   ├── import-step-preview.tsx
 │   │   ├── import-step-result.tsx
 │   │   └── reconciliation-panel.tsx  # Camada 3: conciliação manual lado a lado
-│   ├── dashboard/ (8 componentes + index.ts)
+│   ├── dashboard/ (15 componentes + index.ts)
+│   │   # Inclui: summary-cards, balance-sheet-card, top-categories-card,
+│   │   # upcoming-bills-card, budget-summary-card, solvency-panel,
+│   │   # balance-evolution-chart, quick-entry-fab, narrative-card,
+│   │   # attention-queue, setup-journey-card, import-cta, mfa-reminder-banner,
+│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS CFA)
 │   ├── onboarding/ (4 step components + index.ts: route-choice, route-manual, route-snapshot, celebration)
 │   ├── recurrences/recurrence-form.tsx
-│   └── transactions/transaction-form.tsx
+│   ├── transactions/transaction-form.tsx
+│   └── ui/masked-value.tsx        # Mv (privacy mode)
 ├── lib/
 │   ├── auth/ (8 arquivos: encryption-manager, index, mfa, biometric,
 │   │          session-timeout, app-lifecycle, password-blocklist, rate-limiter)
 │   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
-│   ├── hooks/ (21 hooks: accounts, analytics, assets, auth-init, auto-category,
-│   │          bank-connections, budgets, categories, chart-of-accounts, cost-centers,
-│   │          dashboard, dialog-helpers, economic-indices, family-members, fiscal,
-│   │          online-status, progressive-disclosure, reconciliation, recurrences,
-│   │          transactions, workflows)
+│   ├── hooks/ (30 hooks: access-logs, accounts, ai-categorize, analytics,
+│   │          asset-templates, assets, auth-init, auto-category, bank-connections,
+│   │          budgets, categories, chart-of-accounts, cost-centers, currencies,
+│   │          currency-label, dashboard, dialog-helpers, documents,
+│   │          economic-indices, family-members, fiscal, jarvis, online-status,
+│   │          progressive-disclosure, push-notifications, reconciliation,
+│   │          recurrences, setup-journey, transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 29 schemas Zod (todos os RPCs cobertos)
+│   ├── schemas/rpc.ts            # 33 schemas Zod (todos os RPCs cobertos + JARVIS)
 │   ├── services/
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
 │   │   └── transaction-engine.ts
-│   ├── supabase/ (client.ts, server.ts)
+│   ├── stores/privacy.ts         # Zustand store (privacy mode)
+│   ├── supabase/ (client.ts, server.ts, admin.ts, cached-auth.ts)
 │   ├── utils/index.ts            # cn, formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
 │   ├── validations/auth.ts
 │   └── query-provider.tsx
 ├── middleware.ts                  # Rate limit, session refresh, route protection, Server-Timing
-└── types/database.ts             # 26 tables, 39 functions, 25 enums (migration 031)
+└── types/database.ts             # 34 tables, 74 functions, 29 enums (regenerado sessão 31)
 ```
 
 **Arquivos fora de `src/`:**
@@ -220,7 +253,7 @@ src/
 - `public/brand/` - 6 SVGs (lockup-h/v plum/bone) + OG PNG + favicon + PWA icons
 - `next.config.js` - Security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy)
 - `.github/workflows/ci.yml` - 4 jobs: Security + Lint/TypeCheck + Unit Tests + Build
-- `supabase/migrations/` - 40 SQL files (001 a 052, com gaps)
+- `supabase/migrations/` - 59 SQL files (001 a 071, com gaps)
 - `supabase/tests/test_rls_isolation.sql` - Suíte de testes RLS (50 assertions, 4 batches)
 - `docs/audit/` - 9 arquivos de relatório + DIVIDA-TECNICA.md
 
