@@ -16,7 +16,7 @@ import { toast } from "sonner";
  */
 
 import { useState } from "react";
-import { CalendarClock, Repeat, AlertTriangle, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarClock, Repeat, AlertTriangle, Clock, ChevronLeft, ChevronRight, CreditCard } from "lucide-react";
 import {
   useRecurrences,
   usePendingBills,
@@ -33,7 +33,7 @@ import type { Database } from "@/types/database";
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
-type Tab = "pending" | "recurrences" | "calendar";
+type Tab = "pending" | "recurrences" | "calendar" | "subscriptions";
 
 interface EditData {
   id: string;
@@ -114,6 +114,17 @@ export default function BillsPage() {
 
   const isLoading = tab === "pending" || tab === "calendar" ? loadingBills : loadingRec;
 
+  // E3: Subscriptions = active monthly expense recurrences
+  const subscriptions = recurrences?.filter((r) => {
+    if (!r.is_active) return false;
+    const tmpl = r.template_transaction as Record<string, unknown>;
+    return r.frequency === "monthly" && (tmpl.type as string) === "expense";
+  }) ?? [];
+  const totalSubscriptions = subscriptions.reduce(
+    (s, r) => s + Number((r.template_transaction as Record<string, unknown>).amount),
+    0
+  );
+
   if (isLoading) {
     return (
       <div className="mx-auto max-w-3xl space-y-4">
@@ -148,6 +159,7 @@ export default function BillsPage() {
         {([
           { key: "pending", label: "Pendentes", count: pendingBills?.length ?? 0 },
           { key: "recurrences", label: "Recorrências", count: recurrences?.length ?? 0 },
+          { key: "subscriptions", label: "Assinaturas", count: subscriptions.length },
           { key: "calendar", label: "Calendário", count: null },
         ] as const).map((t) => (
           <button type="button" key={t.key} onClick={() => setTab(t.key)}
@@ -167,7 +179,7 @@ export default function BillsPage() {
       {/* Search (not shown on calendar) */}
       {tab !== "calendar" && (
         <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder={tab === "pending" ? "Buscar pendentes" : "Buscar recorrências"} aria-label="Buscar contas"
+          placeholder={tab === "pending" ? "Buscar pendentes" : tab === "subscriptions" ? "Buscar assinatura" : "Buscar recorrências"} aria-label="Buscar contas"
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
       )}
 
@@ -342,6 +354,87 @@ export default function BillsPage() {
                   </div>
                 );
               })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ═══ TAB: Assinaturas (E3) ═══ */}
+      {tab === "subscriptions" && (
+        <>
+          {/* Total bar */}
+          {subscriptions.length > 0 && (
+            <div className="flex items-center justify-between rounded-lg border bg-card px-4 py-3">
+              <span className="text-sm text-muted-foreground">Custo mensal em assinaturas</span>
+              <span className="text-lg font-bold tabular-nums text-terracotta">
+                <Mv>{formatCurrency(totalSubscriptions)}</Mv>/mês
+              </span>
+            </div>
+          )}
+
+          {subscriptions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+                <CreditCard className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <h2 className="text-lg font-semibold">Nenhuma assinatura ativa</h2>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">
+                Recorrências mensais de despesa aparecem aqui automaticamente. Cadastre uma recorrência na aba Recorrências.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {subscriptions
+                .filter((r) => {
+                  if (!search) return true;
+                  const desc = (r.template_transaction as Record<string, unknown>)?.description as string || "";
+                  return desc.toLowerCase().includes(search.toLowerCase());
+                })
+                .sort((a, b) => {
+                  const amtA = Number((a.template_transaction as Record<string, unknown>).amount);
+                  const amtB = Number((b.template_transaction as Record<string, unknown>).amount);
+                  return amtB - amtA;
+                })
+                .map((rec) => {
+                  const tmpl = rec.template_transaction as Record<string, unknown>;
+                  const amount = Number(tmpl.amount);
+                  const annualCost = amount * 12;
+                  return (
+                    <div key={rec.id} className="rounded-lg bg-card p-4 shadow-card card-alive transition-colors hover:bg-accent/30">
+                      <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium">{(tmpl.description as string) || "Sem descrição"}</p>
+                          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>Próx: {formatDate(rec.next_due_date)}</span>
+                            {rec.adjustment_index && rec.adjustment_index !== "none" && (
+                              <span className="rounded bg-burnished/15 px-1.5 py-0.5 text-burnished">
+                                Reajuste: {rec.adjustment_index === "manual"
+                                  ? `+${Number(rec.adjustment_rate)}%`
+                                  : rec.adjustment_index.toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold tabular-nums text-terracotta">
+                            {formatCurrency(amount)}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">
+                            {formatCurrency(annualCost)}/ano
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+
+          {subscriptions.length > 0 && (
+            <div className="rounded-lg border bg-muted/30 p-4 text-center">
+              <p className="text-xs text-muted-foreground">
+                {subscriptions.length} assinatura{subscriptions.length !== 1 ? "s" : ""} ativa{subscriptions.length !== 1 ? "s" : ""} totalizando {formatCurrency(totalSubscriptions * 12)}/ano
+              </p>
             </div>
           )}
         </>
