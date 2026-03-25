@@ -65,17 +65,52 @@ function Sparkline({ values, color = "currentColor", width = 64, height = 20 }: 
 }
 
 function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
-  if (lcr >= 2) return { label: "Sólida", color: "text-verdant", bg: "bg-verdant/15" };
+  if (lcr >= 2) return { label: "Confortável", color: "text-verdant", bg: "bg-verdant/15" };
   if (lcr >= 1) return { label: "Saudável", color: "text-verdant", bg: "bg-verdant/10" };
   if (lcr >= 0.5) return { label: "Atenção", color: "text-burnished", bg: "bg-burnished/15" };
-  return { label: "Risco", color: "text-terracotta", bg: "bg-terracotta/15" };
+  return { label: "Crítico", color: "text-terracotta", bg: "bg-terracotta/15" };
 }
 
-function runwayStatus(months: number): { label: string; color: string } {
-  if (months >= 12) return { label: "Sólido", color: "text-verdant" };
-  if (months >= 6) return { label: "Estável", color: "text-verdant" };
-  if (months >= 3) return { label: "Atenção", color: "text-burnished" };
-  return { label: "Urgente", color: "text-terracotta" };
+function lcrExplanation(lcr: number): string {
+  if (lcr >= 999) return "Sem despesas recorrentes registradas";
+  if (lcr >= 2) return `Sua liquidez cobre ${lcr.toFixed(1)}x o custo de 6 meses. Posição confortável.`;
+  if (lcr >= 1) return `Sua liquidez cobre ${lcr.toFixed(1)}x o custo de 6 meses. Margem razoável.`;
+  if (lcr >= 0.5) return `Sua liquidez cobre apenas ${(lcr * 100).toFixed(0)}% do custo semestral. Considere reforçar a reserva.`;
+  return `Sua liquidez cobre apenas ${(lcr * 100).toFixed(0)}% do custo semestral. Reserva insuficiente para imprevistos.`;
+}
+
+function runwayStatus(months: number): { label: string; color: string; bg: string } {
+  if (months >= 12) return { label: "Confortável", color: "text-verdant", bg: "bg-verdant/15" };
+  if (months >= 6) return { label: "Saudável", color: "text-verdant", bg: "bg-verdant/10" };
+  if (months >= 3) return { label: "Atenção", color: "text-burnished", bg: "bg-burnished/15" };
+  return { label: "Crítico", color: "text-terracotta", bg: "bg-terracotta/15" };
+}
+
+function runwayExplanation(months: number): string {
+  if (months >= 999) return "Sem despesas recorrentes registradas";
+  const m = Math.floor(months);
+  if (months >= 12) return `Você sobrevive ${m} meses sem renda. Reserva sólida.`;
+  if (months >= 6) return `Você sobrevive ${m} meses sem renda. Dentro do recomendado.`;
+  if (months >= 3) return `Você sobrevive apenas ${m} meses sem renda. Abaixo do ideal (6+ meses).`;
+  return `Apenas ${m} mês(es) de reserva. Priorize recompor a reserva de emergência.`;
+}
+
+function burnRateExplanation(burnRate: number): string {
+  if (burnRate <= 0) return "Sem despesas registradas no período";
+  return `Média de ${formatCurrency(burnRate)}/mês nos últimos 6 meses. Base para calcular seu fôlego.`;
+}
+
+function patrimonyExplanation(
+  total: number,
+  tier1: number,
+  tier2: number
+): string {
+  if (total <= 0) return "Sem patrimônio registrado";
+  const liquidRatio = total > 0 ? ((tier1 + tier2) / total) * 100 : 0;
+  if (liquidRatio >= 50) {
+    return `${liquidRatio.toFixed(0)}% do seu patrimônio é acessível em até 30 dias. Boa liquidez.`;
+  }
+  return `${liquidRatio.toFixed(0)}% do patrimônio é líquido. A maior parte está em bens ou investimentos restritos.`;
 }
 
 function KpiSkeleton() {
@@ -160,10 +195,8 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
               {lcrInfo.label}
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            {capped999(lcr)
-              ? "Sem despesas recorrentes"
-              : "Liquidez / (Custo × 6)"}
+          <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            {lcrExplanation(lcr)}
           </p>
           {lcrHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={lcrHistory} color="#2F7A68" /></div>
@@ -182,12 +215,12 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
             {!capped999(runway) && (
               <span className="text-sm text-muted-foreground">meses</span>
             )}
-            <span className={`text-xs font-semibold ${runwayInfo.color}`}>
+            <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${runwayInfo.bg} ${runwayInfo.color}`}>
               {runwayInfo.label}
             </span>
           </div>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Meses de liberdade financeira
+          <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            {runwayExplanation(runway)}
           </p>
           {runwayHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={runwayHistory} color="#2F7A68" /></div>
@@ -202,8 +235,8 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           <span className="mt-1 block text-2xl font-bold tabular-nums">
             <Mv>{formatCurrency(burnRate)}</Mv>
           </span>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            Custo mensal médio (6 meses)
+          <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            {burnRateExplanation(burnRate)}
           </p>
           {burnHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={burnHistory} color="#A97824" /></div>
@@ -218,8 +251,12 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           <span className="mt-1 block text-2xl font-bold tabular-nums">
             <Mv>{formatCurrency(totalPatrimony)}</Mv>
           </span>
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            N1 + N2 + N3 + N4
+          <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+            {patrimonyExplanation(
+              totalPatrimony,
+              data?.tier1_total ?? 0,
+              data?.tier2_total ?? 0
+            )}
           </p>
           {patrimonyHistory.length >= 2 && (
             <div className="mt-1.5"><Sparkline values={patrimonyHistory} color="#56688F" /></div>
