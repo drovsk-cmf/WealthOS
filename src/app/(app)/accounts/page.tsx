@@ -179,6 +179,28 @@ export default function AccountsPage() {
                       (Date.now() - new Date(account.updated_at).getTime()) /
                         (1000 * 60 * 60 * 24)
                     );
+                    const hasDivergence =
+                      Math.abs(account.current_balance - account.projected_balance) >
+                      Math.max(Math.abs(account.current_balance) * 0.01, 1);
+
+                    if (days < 7 && !hasDivergence)
+                      return (
+                        <span className="rounded bg-verdant/10 px-1 py-0.5 text-[9px] font-medium text-verdant">
+                          Conferido
+                        </span>
+                      );
+                    if (hasDivergence)
+                      return (
+                        <span className="rounded bg-burnished/10 px-1 py-0.5 text-[9px] font-medium text-burnished">
+                          Divergência
+                        </span>
+                      );
+                    if (days >= 30)
+                      return (
+                        <span className="rounded bg-terracotta/10 px-1 py-0.5 text-[9px] font-medium text-terracotta">
+                          {days}d sem atualização
+                        </span>
+                      );
                     if (days >= 7)
                       return (
                         <span className="rounded bg-burnished/10 px-1 py-0.5 text-[9px] font-medium text-burnished">
