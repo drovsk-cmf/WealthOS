@@ -11,6 +11,7 @@ import {
   PieChart,
   Building,
   Upload,
+  Calculator,
   Settings,
   LogOut,
   Eye,
@@ -27,9 +28,10 @@ import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status
 import { usePrivacyStore } from "@/lib/stores/privacy";
 
 /**
- * Navigation 6+1 (UX-H1-01 + P2)
- * 6 primary items + Settings icon separated at bottom.
+ * Navigation 7+1 (UX-H1-01 + P2 + E8d)
+ * 7 primary items + Settings icon separated at bottom.
  * Importar promoted to sidebar per adendo v1.5 §2.6.
+ * Calculadoras added per E8d (CFA Pessoal).
  */
 const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Início", icon: Home },
@@ -38,6 +40,7 @@ const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/accounts", label: "Contas", icon: Wallet },
   { href: "/budgets", label: "Orçamento", icon: PieChart },
   { href: "/assets", label: "Patrimônio", icon: Building },
+  { href: "/calculators", label: "Calculadoras", icon: Calculator },
 ];
 
 /** Routes that belong to Settings (highlight Settings icon when active) */
