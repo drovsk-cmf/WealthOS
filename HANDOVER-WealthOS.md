@@ -4019,3 +4019,5 @@ Navegação atualizada: 7+1 items (Calculadoras adicionado na sidebar).
 | `3251b20` | HANDOVER §31 + PENDENCIAS atualizados |
 | `80e4603` | JARVIS completo: R01 + R04 + 44 testes + HANDOVER §31 final |
 | `464efc5` | E8d: Calculadoras CFA (4 ferramentas TVM, front-end only) |
+| `183563b` | HANDOVER + PENDENCIAS: E8d ✅, bloco E8 fechado |
+| `e92b8f3` | HANDOVER §3: corrige todas as discrepâncias numéricas |
