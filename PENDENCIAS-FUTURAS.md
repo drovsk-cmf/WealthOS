@@ -75,11 +75,11 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
 | E1 | **Indicador de saúde de saldo por conta** — badge por conta: "conferido", "divergência detectada", "aguardando reconciliação". Motor já existe, falta UI. | Baixo | Alto (confiança) | ⬜ |
-| E2 | **Gráfico Net Worth ao longo do tempo** — linha temporal com monthly_snapshots. Dados existem, falta UI dedicada. Argumento de retenção mais forte do produto. | Baixo | Alto (retenção) | ⬜ |
+| E2 | **Gráfico Net Worth ao longo do tempo** — linha temporal com monthly_snapshots. Componente `net-worth-chart.tsx` no dashboard (engajado+), stacked areas por tier, seletor 6/12/24m, variação MoM. Ref: HANDOVER §32. | Baixo | Alto (retenção) | ✅ |
 | E3 | **Gerenciador de assinaturas** — agrupamento de recorrências por tipo "assinatura", soma consolidada mensal, badge de reajuste detectado. Extensão do módulo CAP existente. | Baixo | Médio (percepção de valor) | ⬜ |
 | E4 | **Onboarding: valor em menos de 5 minutos** — validar empiricamente no corredor (UX-H3-05). Se TTI > 5min, redesenhar o fluxo de boas-vindas. | Médio | Alto (ativação) | ⬜ |
 | E5 | **Política de early adopters documentada** — definir e publicar: o que os primeiros usuários ganham, por quanto tempo, o que acontece quando novos planos surgem. Prevenção de churn de reputação (Organizze fez errado). | Zero (técnico) | Alto (reputação) | ⬜ |
-| E9 | **Interpretação de solvência em linguagem direta** — cada métrica do Cockpit de Fôlego precisa de um estado ("Confortável", "Atenção", "Crítico") + frase explicativa. "Você tem reserva para 14 meses" em vez de "LCR: 2.4x". | Baixo | Médio (adoção das métricas) | ⬜ |
+| E9 | **Interpretação de solvência em linguagem direta** — cada métrica do Cockpit de Fôlego com estado (Confortável/Saudável/Atenção/Crítico) + frase explicativa contextual. Funções: lcrExplanation, runwayExplanation, patrimonyExplanation, burnRateExplanation. Ref: HANDOVER §32. | Baixo | Médio (adoção das métricas) | ✅ |
 
 ### 4.2 Infra e Qualidade
 
@@ -98,7 +98,7 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
 | E6 | **Metas de economia (savings goals)** — meta longitudinal com target, progresso atual, projeção indexada ao CDI/Selic. Tabela `goals` simples. Usuários com metas ativas têm 40-60% menos churn (padrão de mercado). | Médio | Alto (retenção longa) | ⬜ |
-| E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto no Runway/Fôlego, impacto no LCR, comparativo com meta de reserva). Cálculo determinístico, sem IA. É o argumento de produto mais diferenciado do Oniefy. | Médio | Alto (diferenciação / marketing) | ⬜ |
+| E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto Runway, impacto LCR, comparativo reserva 6 meses). Cálculo determinístico com dados reais de solvência. Componente `affordability-simulator.tsx`, 1ª aba nas Calculadoras (5 abas). Ref: HANDOVER §32. | Médio | Alto (diferenciação / marketing) | ✅ |
 | E8 | **Exportação IRPF formatada** — PDF + planilha com rendimentos por fonte, deduções elegíveis, bens e direitos, ganhos de capital no padrão que o contador usa. Módulo fiscal já existe. Falta o export. Fideliza na renovação de abril/maio. | Médio | Alto (renovação anual) | ⬜ |
 | E8b | **Motor JARVIS CFA: Frente A (zero schema change)** — RPC `get_jarvis_scan` com 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10). Camada 2: combinador com projeção 3/6/12m. UX: JarvisScanCard no dashboard. 40 testes Jest. Ref: HANDOVER §31. | Médio | Alto (diferenciação CFA) | ✅ |
 | E8c | **Motor JARVIS CFA: Frente B (schema evolution)** — Migration aplicada: `investment_class`, `interest_rate`, `rate_type` em accounts + CHECK constraints. FIX: `depreciation_rate` numeric(5,4)→(7,4). Todas 4 regras implementadas: R01 (ativo < CDI), R02 (dívida cara), R04 (veículo TCO), R05 (espiral cartão). Formulário de contas com campos condicionais. **Motor JARVIS Camada 1 completo: 10 regras.** Ref: HANDOVER §31. | Médio | Alto (WACC pessoal, análise de risco) | ✅ |
@@ -267,4 +267,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 24/03/2026 | E8b concluído (✅): get_jarvis_scan com 8 regras + JarvisScanCard + 40 testes. E8c parcial (🟡): schema aplicado, R02+R05 implementados, R01+R04 pendentes. E8e adicionado: Polymarket como input futuro da Camada 3 (rejeitado para agora). | Claude |
 | 25/03/2026 | E8c concluído (✅): R01 (ativo < CDI) e R04 (veículo TCO) implementados. Motor JARVIS Camada 1 completo: 10 regras determinísticas. 45 suítes / 666 assertions. | Claude |
 | 25/03/2026 | E8d concluído (✅): 4 calculadoras TVM (Independência, Comprar vs Alugar, CET, SAC vs Price). Bloco E8 inteiro fechado (E8b ✅, E8c ✅, E8d ✅, E8e ⏳). | Claude |
+| 25/03/2026 | E2 concluído (✅): gráfico Patrimônio Líquido (net-worth-chart, stacked areas por tier, 6/12/24m). E9 concluído (✅): interpretação de solvência em linguagem direta (4 funções explicativas). E7 concluído (✅): simulador "Posso comprar?" (3 inputs → 3 outputs, dados reais). 46 suítes / 688 assertions. | Claude |
 

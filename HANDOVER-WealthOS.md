@@ -109,11 +109,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (201 arquivos TS/TSX em src/, 45 suítes de teste, 666 assertions)
+### 3.4 Código Fonte (204 arquivos TS/TSX em src/, 46 suítes de teste, 688 assertions)
 
 ```
 src/
-├── __tests__/                    # 45 suítes de teste (Jest + RTL), 666 assertions
+├── __tests__/                    # 46 suítes de teste (Jest + RTL), 688 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -132,6 +132,7 @@ src/
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── cost-centers-hooks.test.tsx
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
+│   ├── e7-e9-affordability-solvency.test.ts  # 22: PMT, reserva, lcrExplanation, runwayExplanation, patrimonyExplanation
 │   ├── fiscal-timing-safe.test.ts
 │   ├── hooks-batch-coverage.test.tsx
 │   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
@@ -197,11 +198,12 @@ src/
 │   ├── accounts/account-form.tsx   # Campos condicionais Frente B (investment_class, interest_rate, rate_type)
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
-│   ├── calculators/               # 4 calculadoras CFA (E8d, front-end only)
+│   ├── calculators/               # 5 calculadoras CFA (E8d + E7)
 │   │   ├── independence-calculator.tsx  # Perpetuidade + tempo para atingir
 │   │   ├── buy-vs-rent-calculator.tsx   # NPV, custo de oportunidade
 │   │   ├── cet-calculator.tsx           # IRR/Newton-Raphson, spread vs nominal
-│   │   └── sac-vs-price-calculator.tsx  # Tabela comparativa amortização
+│   │   ├── sac-vs-price-calculator.tsx  # Tabela comparativa amortização
+│   │   └── affordability-simulator.tsx  # E7: "Posso comprar?" (3 inputs → 3 outputs, dados reais)
 │   ├── categories/category-form.tsx
 │   ├── connections/              # Wizard de importação + conciliação (WEA-013)
 │   │   ├── import-wizard.tsx
@@ -210,12 +212,13 @@ src/
 │   │   ├── import-step-preview.tsx
 │   │   ├── import-step-result.tsx
 │   │   └── reconciliation-panel.tsx  # Camada 3: conciliação manual lado a lado
-│   ├── dashboard/ (15 componentes + index.ts)
+│   ├── dashboard/ (16 componentes + index.ts)
 │   │   # Inclui: summary-cards, balance-sheet-card, top-categories-card,
 │   │   # upcoming-bills-card, budget-summary-card, solvency-panel,
 │   │   # balance-evolution-chart, quick-entry-fab, narrative-card,
 │   │   # attention-queue, setup-journey-card, import-cta, mfa-reminder-banner,
-│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS CFA)
+│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS CFA),
+│   │   # net-worth-chart (E2: patrimônio líquido ao longo do tempo)
 │   ├── onboarding/ (4 step components + index.ts: route-choice, route-manual, route-snapshot, celebration)
 │   ├── recurrences/recurrence-form.tsx
 │   ├── transactions/transaction-form.tsx
@@ -4021,3 +4024,112 @@ Navegação atualizada: 7+1 items (Calculadoras adicionado na sidebar).
 | `464efc5` | E8d: Calculadoras CFA (4 ferramentas TVM, front-end only) |
 | `183563b` | HANDOVER + PENDENCIAS: E8d ✅, bloco E8 fechado |
 | `e92b8f3` | HANDOVER §3: corrige todas as discrepâncias numéricas |
+
+---
+
+## 32. Sessão 32 — E2 + E7 + E9: Patrimônio, Simulador, Solvência (25/03/2026)
+
+### 32.1 E2: Gráfico Patrimônio Líquido ao longo do tempo
+
+Novo componente `net-worth-chart.tsx` no dashboard (engajado+):
+
+- **Dois modos de visualização:**
+  - Stacked areas por tier (N1-N4) quando há dados de tier no `monthly_snapshots`
+  - Área simples (net worth) como fallback
+- Seletor de período: 6m / 12m / 24m (snapshots ampliado de 12 para 24 meses)
+- Variação MoM: diff absoluto + percentual vs mês anterior
+- Gradientes Recharts com cores dos tiers (verdant, slate, burnished, tier-4)
+- Empty state educativo (< 2 snapshots)
+- Posicionado entre Evolução Mensal e Fôlego Financeiro no dashboard
+
+**Zero schema changes, zero novas RPCs** — usa `monthly_snapshots` existente via `useMonthlySnapshots(24)`.
+
+### 32.2 E9: Interpretação de solvência em linguagem direta
+
+Reescrita do `solvency-panel.tsx` para substituir rótulos técnicos por frases explicativas:
+
+| Métrica | Antes | Depois |
+|---------|-------|--------|
+| LCR | "Liquidez / (Custo × 6)" | "Sua liquidez cobre 2.4x o custo de 6 meses. Posição confortável." |
+| Runway | "Meses de liberdade financeira" | "Você sobrevive 14 meses sem renda. Reserva sólida." |
+| Burn Rate | "Custo mensal médio (6 meses)" | "Média de R$ 8.500/mês nos últimos 6 meses. Base para calcular seu fôlego." |
+| Patrimônio | "N1 + N2 + N3 + N4" | "72% do seu patrimônio é acessível em até 30 dias. Boa liquidez." |
+
+Estados semânticos padronizados: **Confortável / Saudável / Atenção / Crítico** (com badges coloridos consistentes nos 4 KPIs).
+
+Funções de interpretação: `lcrExplanation()`, `runwayExplanation()`, `patrimonyExplanation()`, `burnRateExplanation()`.
+
+### 32.3 E7: Simulador "Posso comprar?"
+
+Novo componente `affordability-simulator.tsx`, posicionado como 1ª aba nas Calculadoras (5 abas total).
+
+**3 inputs:**
+- Valor do bem (R$)
+- Forma de pagamento: à vista, parcelado sem juros, financiado
+- Prazo (meses) + taxa mensal (% a.m., se financiado)
+
+**3 outputs (antes → depois):**
+1. Impacto no Runway (meses perdidos)
+2. Impacto no LCR (antes → depois)
+3. Comparativo com meta de reserva de emergência (6 meses)
+
+**Comportamento por forma de pagamento:**
+- À vista: debita `liquid` (T1+T2), burn inalterado
+- Parcelado: liquid inalterado, burn += parcela mensal
+- Financiado: PMT = PV × r / (1 - (1+r)^-n), liquid inalterado, burn += PMT
+
+**Features:**
+- Banner contextual com dados reais (reserva, custo, fôlego)
+- Barra de progresso reserva vs meta
+- Veredito visual: viável (verde) / atenção (dourado) / crítico (vermelho)
+- Custo total de juros destacado para financiamento
+- Sugestão de parcelamento quando à vista compromete reserva
+- Empty state quando sem dados de solvência (< 1 mês de transações)
+
+**Zero schema changes, zero novas RPCs** — usa `useSolvencyMetrics()` existente.
+
+### 32.4 Testes
+
+Nova suíte `e7-e9-affordability-solvency.test.ts` com 22 assertions:
+
+| Grupo | Testes | Cobertura |
+|-------|--------|-----------|
+| E7: à vista | 3 | Redução líquido, esgotamento, burn inalterado |
+| E7: parcelado | 2 | Líquido inalterado, juros zero |
+| E7: financiado | 4 | PMT, juros positivos, líquido inalterado, taxa zero |
+| E7: meta reserva | 2 | Reserva ok, reserva comprometida |
+| E9: lcrExplanation | 4 | Sem despesas, confortável, razoável, insuficiente |
+| E9: runwayExplanation | 4 | Sem despesas, sólida, recomendado, priorize |
+| E9: patrimonyExplanation | 3 | Sem patrimônio, maioria líquida, maioria ilíquida |
+
+**Estado final:** 46 suítes, 688 assertions, 0 falhas.
+
+### 32.5 Estado do projeto
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 34 |
+| Políticas RLS | 103 |
+| Functions | 74 |
+| Triggers | 24 |
+| Indexes | 141 |
+| Migrations MCP | 52 |
+| Migration files (repo) | 59 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 46 (688 assertions) |
+| Arquivos TS/TSX | 204 |
+| Hooks | 30 |
+| Schemas Zod | 33 |
+| CI | Runners falhando (billing). Validação local: tsc + jest limpos |
+| Deploy | www.oniefy.com |
+| Design System | Plum Ledger v1.2 |
+
+### Sessão 32 — Commits consolidados
+
+| Hash | Descrição |
+|------|-----------|
+| `7cbb3fb` | E2: gráfico Patrimônio Líquido ao longo do tempo (NetWorthChart) |
+| `a10b68b` | E9: interpretação de solvência em linguagem direta |
+| `a4418f7` | E7: simulador "Posso comprar?" com dados reais de solvência |
+| `d4507fe` | test(E7+E9): 22 testes para simulador e interpretação de solvência |
