@@ -66,14 +66,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 34 (todas com RLS) |
-| Políticas RLS | 103 |
+| Tabelas | 35 (todas com RLS) |
+| Políticas RLS | 107 |
 | Functions (total) | 74 no schema public. Todas com `SET search_path = public`. 71 SECURITY DEFINER com auth.uid() guard |
-| Triggers | 24 |
+| Triggers | 22 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
-| Indexes | 141 |
-| Migrations aplicadas (MCP) | 52 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 59 em supabase/migrations/ |
+| Indexes | 144 |
+| Migrations aplicadas (MCP) | 53 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 60 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -109,11 +109,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (204 arquivos TS/TSX em src/, 46 suítes de teste, 688 assertions)
+### 3.4 Código Fonte (207 arquivos TS/TSX em src/, 47 suítes de teste, 708 assertions)
 
 ```
 src/
-├── __tests__/                    # 46 suítes de teste (Jest + RTL), 688 assertions
+├── __tests__/                    # 47 suítes de teste (Jest + RTL), 708 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -133,6 +133,7 @@ src/
 │   ├── cost-centers-hooks.test.tsx
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── e7-e9-affordability-solvency.test.ts  # 22: PMT, reserva, lcrExplanation, runwayExplanation, patrimonyExplanation
+│   ├── e1-e3-e6-features.test.ts  # 20: health badge, subscription filter, savings goals enrichment
 │   ├── fiscal-timing-safe.test.ts
 │   ├── hooks-batch-coverage.test.tsx
 │   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
@@ -161,18 +162,19 @@ src/
 │   ├── weekly-digest-template.test.ts
 │   └── workflows-hooks.test.tsx
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (19 páginas)
+│   ├── (app)/                    # Rotas autenticadas (20 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
 │   │   ├── budgets/page.tsx
-│   │   ├── calculators/page.tsx  # 4 calculadoras CFA (E8d)
+│   │   ├── calculators/page.tsx  # 5 calculadoras CFA (E8d + E7 Posso Comprar?)
 │   │   ├── categories/page.tsx
 │   │   ├── chart-of-accounts/page.tsx
 │   │   ├── connections/page.tsx   # 3 abas: Importar + Conciliação + Conexões
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
 │   │   ├── family/page.tsx
+│   │   ├── goals/page.tsx         # E6: metas de economia (CRUD, progresso, sugestão mensal)
 │   │   ├── indices/page.tsx
 │   │   ├── settings/page.tsx + security/page.tsx + profile/page.tsx + data/page.tsx
 │   │   ├── tax/page.tsx
@@ -229,13 +231,13 @@ src/
 │   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
-│   ├── hooks/ (30 hooks: access-logs, accounts, ai-categorize, analytics,
+│   ├── hooks/ (31 hooks: access-logs, accounts, ai-categorize, analytics,
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
 │   │          budgets, categories, chart-of-accounts, cost-centers, currencies,
 │   │          currency-label, dashboard, dialog-helpers, documents,
 │   │          economic-indices, family-members, fiscal, jarvis, online-status,
 │   │          progressive-disclosure, push-notifications, reconciliation,
-│   │          recurrences, setup-journey, transactions, workflows)
+│   │          recurrences, savings-goals, setup-journey, transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── schemas/rpc.ts            # 33 schemas Zod (todos os RPCs cobertos + JARVIS)
 │   ├── services/
@@ -4104,23 +4106,75 @@ Nova suíte `e7-e9-affordability-solvency.test.ts` com 22 assertions:
 
 **Estado final:** 46 suítes, 688 assertions, 0 falhas.
 
-### 32.5 Estado do projeto
+### 32.6 E1: Indicador de saúde de saldo por conta
+
+Badge visual por conta na página `/accounts`:
+
+| Estado | Condição | Cor |
+|--------|----------|-----|
+| Conferido | Atualizado < 7 dias, saldo atual ≈ previsto (< 1% divergência) | Verde |
+| Divergência | |current - projected| > max(1% × |current|, R$1) | Dourado |
+| Xd sem atualização | 7-29 dias sem updated_at | Dourado |
+| Xd sem atualização | 30+ dias sem updated_at | Vermelho |
+
+Divergência prevalece sobre staleness (se ambos, mostra "Divergência").
+
+### 32.7 E3: Gerenciador de assinaturas consolidado
+
+Nova aba "Assinaturas" na página Contas a Pagar (4 abas: Pendentes | Recorrências | Assinaturas | Calendário).
+
+- Filtra automaticamente: recorrências ativas + mensais + tipo despesa
+- Total mensal consolidado no topo
+- Cada card: valor mensal + custo anual + badge de reajuste (se indexado)
+- Ordenação por valor (maior primeiro)
+- Resumo anual no rodapé
+- Zero schema changes, zero RPCs novas (filtra `recurrences` existente)
+
+### 32.8 E6: Metas de economia (savings goals)
+
+**Migration 072:** tabela `savings_goals` (11 colunas, 4 RLS policies, 2 indexes, trigger updated_at).
+
+**Hook `use-savings-goals.ts`:**
+- CRUD: `useSavingsGoals`, `useCreateGoal`, `useUpdateGoal`, `useDeleteGoal`
+- `enrichGoal()`: campos computados (progress_pct, remaining_amount, monthly_savings_needed, months_remaining)
+
+**Página `/goals`:**
+- Cards com barra de progresso colorida (cor customizável, 6 opções)
+- Valor mensal sugerido ("Para atingir no prazo, economize R$ X/mês")
+- Meses restantes calculados automaticamente
+- Resumo consolidado (progresso geral de metas ativas)
+- Concluir/reabrir meta (auto-preenche current_amount = target ao concluir)
+- Seção "Concluídas" separada (colapsada, opacity reduzida)
+- Form inline para criar/editar
+
+**Sidebar atualizada: 8+1** (Metas entre Patrimônio e Calculadoras).
+
+### 32.9 Testes adicionais
+
+| Suíte | Testes | Cobertura |
+|-------|--------|-----------|
+| `e1-e3-e6-features.test.ts` | 20 | E1 health badge (6), E3 subscription filter (6), E6 enrichGoal (8) |
+
+### 32.10 Estado do projeto (ground truth)
 
 | Métrica | Valor |
 |---------|-------|
 | Stories | 105/108 (3 bloqueadas por Mac) |
-| Tabelas | 34 |
-| Políticas RLS | 103 |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
 | Functions | 74 |
-| Triggers | 24 |
-| Indexes | 141 |
-| Migrations MCP | 52 |
-| Migration files (repo) | 59 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 60 |
 | pg_cron jobs | 13 |
-| Suítes Jest | 46 (688 assertions) |
-| Arquivos TS/TSX | 204 |
-| Hooks | 30 |
+| Suítes Jest | 47 (708 assertions) |
+| Arquivos TS/TSX | 207 |
+| Hooks | 31 |
 | Schemas Zod | 33 |
+| Páginas autenticadas | 20 |
+| Sidebar | 8+1 (Metas adicionada) |
 | CI | Runners falhando (billing). Validação local: tsc + jest limpos |
 | Deploy | www.oniefy.com |
 | Design System | Plum Ledger v1.2 |
@@ -4133,3 +4187,8 @@ Nova suíte `e7-e9-affordability-solvency.test.ts` com 22 assertions:
 | `a10b68b` | E9: interpretação de solvência em linguagem direta |
 | `a4418f7` | E7: simulador "Posso comprar?" com dados reais de solvência |
 | `d4507fe` | test(E7+E9): 22 testes para simulador e interpretação de solvência |
+| `dda0a44` | HANDOVER §32 + PENDENCIAS: E2 ✅, E7 ✅, E9 ✅ |
+| `0daef6a` | E1: indicador de saúde de saldo por conta |
+| `c36ccad` | E3: gerenciador de assinaturas consolidado |
+| `e9cda03` | E6: metas de economia (savings goals) com CRUD completo |
+| `bb99620` | test(E1+E3+E6): 20 testes |
