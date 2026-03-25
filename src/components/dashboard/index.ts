@@ -12,3 +12,4 @@ export { SetupJourneyCard } from "./setup-journey-card";
 export { ImportCTA } from "./import-cta";
 export { MfaReminderBanner } from "./mfa-reminder-banner";
 export { JarvisScanCard } from "./jarvis-scan-card";
+export { NetWorthChart } from "./net-worth-chart";

@@ -36,6 +36,7 @@ import {
   ImportCTA,
   MfaReminderBanner,
   JarvisScanCard,
+  NetWorthChart,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -48,7 +49,7 @@ export default function DashboardPage() {
   // Single RPC: all dashboard data in 1 roundtrip
   const dash = useDashboardAll();
   // Snapshots kept separate (10min staleTime, only for sparklines)
-  const snapshots = useMonthlySnapshots(12);
+  const snapshots = useMonthlySnapshots(24);
   const disclosure = useProgressiveDisclosure();
 
   const d = dash.data;
@@ -165,6 +166,14 @@ export default function DashboardPage() {
             isLoading={dash.isLoading}
           />
         </div>
+      )}
+
+      {/* E2: Patrimônio Líquido ao longo do tempo (P5: engajado+) */}
+      {showFullTier && (
+        <NetWorthChart
+          snapshots={snapshots.data ?? []}
+          isLoading={snapshots.isLoading}
+        />
       )}
 
       {/* ═══ Fôlego Financeiro (P5: engajado+) ═══ */}
