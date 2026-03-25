@@ -109,11 +109,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (207 arquivos TS/TSX em src/, 47 suítes de teste, 708 assertions)
+### 3.4 Código Fonte (209 arquivos TS/TSX em src/, 49 suítes de teste, 763 assertions)
 
 ```
 src/
-├── __tests__/                    # 47 suítes de teste (Jest + RTL), 708 assertions
+├── __tests__/                    # 49 suítes de teste (Jest + RTL), 763 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -145,6 +145,8 @@ src/
 │   ├── p11-ai-gateway.test.ts         # 11: uncategorized filter, rate limit shape
 │   ├── p14-asset-templates.test.ts    # 10: searchTemplates, estrutura, bounds
 │   ├── p16-asset-categories.test.ts   # 11: 14 categorias, labels, colors, zod
+│   ├── q1-hook-coverage-batch.test.tsx  # 26: recurrences, indices, fiscal, workflows, documents, reconciliation
+│   ├── q1-hook-coverage-batch2.test.tsx # 29: bank-connections, COA, currencies, family-members
 │   ├── parsers.test.ts
 │   ├── pii-sanitizer.test.ts          # 14: CPF, CNPJ, email, tel, cartão, conta
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
@@ -4155,7 +4157,24 @@ Nova aba "Assinaturas" na página Contas a Pagar (4 abas: Pendentes | Recorrênc
 |-------|--------|-----------|
 | `e1-e3-e6-features.test.ts` | 20 | E1 health badge (6), E3 subscription filter (6), E6 enrichGoal (8) |
 
-### 32.10 Estado do projeto (ground truth)
+### 32.10 E5: Política de Early Adopters
+
+Documento `docs/POLITICA-EARLY-ADOPTERS.md`: acesso vitalício ao plano vigente, preço congelado, acesso antecipado a features beta, features nunca removidas. Inspirado nos erros do Organizze e acertos do YNAB. Zero código.
+
+### 32.11 Q1: Cobertura de testes 60.9% → 67.9%
+
+| Suíte | Testes | Hooks cobertos |
+|-------|--------|----------------|
+| `q1-hook-coverage-batch.test.tsx` | 26 | recurrences (4), economic-indices (5), fiscal (5), workflows (9), documents (2), reconciliation (1) |
+| `q1-hook-coverage-batch2.test.tsx` | 29 | bank-connections (7), chart-of-accounts (5), currencies (13), family-members (4) |
+
+Gaps restantes (< 60%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%) — API routes, candidatos a Playwright E2E.
+
+### 32.12 Q3: Sentry beforeSend (já implementado)
+
+Os 3 configs Sentry já têm `beforeSend: scrubEvent` + PII sanitization. Falta DSN (ação Claudio A11).
+
+### 32.13 Estado do projeto (ground truth final sessão 32)
 
 | Métrica | Valor |
 |---------|-------|
@@ -4169,12 +4188,13 @@ Nova aba "Assinaturas" na página Contas a Pagar (4 abas: Pendentes | Recorrênc
 | Migrations MCP | 53 |
 | Migration files (repo) | 60 |
 | pg_cron jobs | 13 |
-| Suítes Jest | 47 (708 assertions) |
-| Arquivos TS/TSX | 207 |
+| Suítes Jest | 49 (763 assertions) |
+| Cobertura statements | 67.9% |
+| Arquivos TS/TSX | 209 |
 | Hooks | 31 |
 | Schemas Zod | 33 |
 | Páginas autenticadas | 20 |
-| Sidebar | 8+1 (Metas adicionada) |
+| Sidebar | 8+1 |
 | CI | Runners falhando (billing). Validação local: tsc + jest limpos |
 | Deploy | www.oniefy.com |
 | Design System | Plum Ledger v1.2 |
@@ -4183,12 +4203,15 @@ Nova aba "Assinaturas" na página Contas a Pagar (4 abas: Pendentes | Recorrênc
 
 | Hash | Descrição |
 |------|-----------|
-| `7cbb3fb` | E2: gráfico Patrimônio Líquido ao longo do tempo (NetWorthChart) |
+| `7cbb3fb` | E2: gráfico Patrimônio Líquido ao longo do tempo |
 | `a10b68b` | E9: interpretação de solvência em linguagem direta |
-| `a4418f7` | E7: simulador "Posso comprar?" com dados reais de solvência |
-| `d4507fe` | test(E7+E9): 22 testes para simulador e interpretação de solvência |
-| `dda0a44` | HANDOVER §32 + PENDENCIAS: E2 ✅, E7 ✅, E9 ✅ |
-| `0daef6a` | E1: indicador de saúde de saldo por conta |
-| `c36ccad` | E3: gerenciador de assinaturas consolidado |
-| `e9cda03` | E6: metas de economia (savings goals) com CRUD completo |
+| `a4418f7` | E7: simulador "Posso comprar?" |
+| `d4507fe` | test(E7+E9): 22 testes |
+| `dda0a44` | HANDOVER §32 + PENDENCIAS (E2/E7/E9) |
+| `0daef6a` | E1: indicador de saúde de saldo |
+| `c36ccad` | E3: gerenciador de assinaturas |
+| `e9cda03` | E6: metas de economia (savings goals) |
 | `bb99620` | test(E1+E3+E6): 20 testes |
+| `32379fb` | HANDOVER §32 (E1/E3/E6) |
+| `df0aa39` | E5: política early adopters + Q1 batch 1 (26 testes) |
+| `82f181d` | Q1 batch 2: 29 testes |

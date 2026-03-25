@@ -78,16 +78,16 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 | E2 | **Gráfico Net Worth ao longo do tempo** — linha temporal com monthly_snapshots. Componente `net-worth-chart.tsx` no dashboard (engajado+), stacked areas por tier, seletor 6/12/24m, variação MoM. Ref: HANDOVER §32. | Baixo | Alto (retenção) | ✅ |
 | E3 | **Gerenciador de assinaturas** — nova aba "Assinaturas" em Contas a Pagar. Filtra recorrências mensais de despesa ativas, total consolidado mensal/anual, badge de reajuste. Ordenação por valor. Ref: HANDOVER §32. | Baixo | Médio (percepção de valor) | ✅ |
 | E4 | **Onboarding: valor em menos de 5 minutos** — validar empiricamente no corredor (UX-H3-05). Se TTI > 5min, redesenhar o fluxo de boas-vindas. | Médio | Alto (ativação) | ⬜ |
-| E5 | **Política de early adopters documentada** — definir e publicar: o que os primeiros usuários ganham, por quanto tempo, o que acontece quando novos planos surgem. Prevenção de churn de reputação (Organizze fez errado). | Zero (técnico) | Alto (reputação) | ⬜ |
+| E5 | **Política de early adopters documentada** — `docs/POLITICA-EARLY-ADOPTERS.md`: acesso vitalício, preço congelado, features nunca removidas, acesso antecipado a betas. Ref: HANDOVER §32. | Zero (técnico) | Alto (reputação) | ✅ |
 | E9 | **Interpretação de solvência em linguagem direta** — cada métrica do Cockpit de Fôlego com estado (Confortável/Saudável/Atenção/Crítico) + frase explicativa contextual. Funções: lcrExplanation, runwayExplanation, patrimonyExplanation, burnRateExplanation. Ref: HANDOVER §32. | Baixo | Médio (adoção das métricas) | ✅ |
 
 ### 4.2 Infra e Qualidade
 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
-| Q1 | **Cobertura de testes: elevar de 61.6% para 75%+** — focar nos 10 hooks de query a 0% (dashboard, transactions, push) + fluxos críticos com Playwright E2E | Médio | Alto (confiança no deploy) | ⬜ |
+| Q1 | **Cobertura de testes: elevar para 75%+** — 67.9% statements (era 60.9%). 55 testes adicionados em 2 batches (Q1 batch 1+2). Gaps restantes: API routes push/digest (~20%, requerem Playwright E2E). Hooks entre 42-58% (cost-centers, economic-indices, reconciliation). | Médio | Alto (confiança no deploy) | 🔄 |
 | Q2 | **E2E Playwright no CI como gate obrigatório** — atualmente condicional (vars.E2E_ENABLED). Requer Supabase de teste isolado para o GitHub Actions. | Médio | Alto (qualidade) | ⬜ |
-| Q3 | **Logging estruturado** — Sentry está integrado, mas sem `beforeSend` consistente + sem alertas configurados para erros de produção. | Baixo | Médio (observabilidade) | ⬜ |
+| Q3 | **Logging estruturado** — Sentry `beforeSend` + PII scrub implementados nos 3 configs (client/server/edge). Falta DSN (ação Claudio A11: criar conta Sentry free + env var Vercel). | Baixo | Médio (observabilidade) | ✅ (código) / ⏳ (DSN) |
 
 ---
 
@@ -269,4 +269,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 25/03/2026 | E8d concluído (✅): 4 calculadoras TVM (Independência, Comprar vs Alugar, CET, SAC vs Price). Bloco E8 inteiro fechado (E8b ✅, E8c ✅, E8d ✅, E8e ⏳). | Claude |
 | 25/03/2026 | E2 concluído (✅): gráfico Patrimônio Líquido (net-worth-chart, stacked areas por tier, 6/12/24m). E9 concluído (✅): interpretação de solvência em linguagem direta (4 funções explicativas). E7 concluído (✅): simulador "Posso comprar?" (3 inputs → 3 outputs, dados reais). 46 suítes / 688 assertions. | Claude |
 | 25/03/2026 | E1 concluído (✅): indicador de saúde de saldo por conta (3 estados visuais). E3 concluído (✅): gerenciador de assinaturas (aba em Contas a Pagar). E6 concluído (✅): metas de economia com CRUD, progresso, sugestão mensal (migration 072, nova tabela savings_goals, sidebar 8+1). 47 suítes / 708 assertions. | Claude |
+| 25/03/2026 | E5 concluído (✅): política de early adopters (docs/POLITICA-EARLY-ADOPTERS.md). Q1 em progresso (🔄): cobertura 60.9%→67.9% (+55 testes em 2 batches). Q3 concluído (✅ código): Sentry beforeSend + PII scrub nos 3 configs (falta DSN = A11). 49 suítes / 763 assertions. | Claude |
 
