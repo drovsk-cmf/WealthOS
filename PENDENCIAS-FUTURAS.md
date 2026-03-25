@@ -102,7 +102,7 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E8 | **Exportação IRPF formatada** — PDF + planilha com rendimentos por fonte, deduções elegíveis, bens e direitos, ganhos de capital no padrão que o contador usa. Módulo fiscal já existe. Falta o export. Fideliza na renovação de abril/maio. | Médio | Alto (renovação anual) | ⬜ |
 | E8b | **Motor JARVIS CFA: Frente A (zero schema change)** — RPC `get_jarvis_scan` com 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10). Camada 2: combinador com projeção 3/6/12m. UX: JarvisScanCard no dashboard. 40 testes Jest. Ref: HANDOVER §31. | Médio | Alto (diferenciação CFA) | ✅ |
 | E8c | **Motor JARVIS CFA: Frente B (schema evolution)** — Migration aplicada: `investment_class`, `interest_rate`, `rate_type` em accounts + CHECK constraints. FIX: `depreciation_rate` numeric(5,4)→(7,4). Todas 4 regras implementadas: R01 (ativo < CDI), R02 (dívida cara), R04 (veículo TCO), R05 (espiral cartão). Formulário de contas com campos condicionais. **Motor JARVIS Camada 1 completo: 10 regras.** Ref: HANDOVER §31. | Médio | Alto (WACC pessoal, análise de risco) | ✅ |
-| E8d | **CFA Pessoal: Calculadoras TVM** — Independência financeira (perpetuity), Comprar vs Alugar (NPV), CET de financiamento (YTM), SAC vs Price. Front-end only, sem RPC. Ref: `CFA-ONIEFY-MAPPING.md` §3 Fase 2. | Médio | Alto (diferenciação) | ⬜ |
+| E8d | **CFA Pessoal: Calculadoras TVM** — 4 calculadoras implementadas: Independência Financeira (perpetuidade), Comprar vs Alugar (NPV), CET (IRR/Newton-Raphson), SAC vs Price. Front-end only, zero RPC. Página `/calculators` com tabs. Nav 7+1. Ref: HANDOVER §31.7. | Médio | Alto (diferenciação) | ✅ |
 | E8e | **Polymarket / Prediction Markets como input contextual** — Integrar API do Polymarket (ou equivalente) como sinal de mercado na Camada 3 (IA narrativa). Ex: "mercado precifica 72% de chance de Selic cair, o que favoreceria migrar CDB pré para pós-CDI". Analisado e rejeitado para agora: desalinhamento de domínio, cobertura BR ≈ zero, escopo creep. Reavaliar quando Camada 3 for implementada. | Baixo | Baixo (Camada 3 futura) | ⏳ |
 | E10 | **Open Finance com motor de reconciliação maduro** — Fase 2 planejada (adendo v1.3). Só entregar quando: (1) motor de deduplicação por hash, (2) indicador de status de sincronização por conta, (3) fila de transações "suspeitas" para confirmação do usuário. Entregar Open Finance com dados inconsistentes é pior que não ter. | Alto | Alto (aquisição / paridade) | 📌 |
 | E11 | **UX-H2-02: Push notifications triggers** — vencimentos + inatividade 7 dias. CFG-04 (APNs) depende de Mac. Web Push já funciona; criar cron de inatividade é independente. | Médio | Médio (engajamento) | 🔒 (APNs) / ⬜ (inatividade) |
@@ -226,7 +226,7 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Marketplace de crédito | Ofertas de empréstimo/cartão dentro do app | Não (fora do modelo) | N/A — Oniefy não monetiza via afiliados |
 | Patrimônio / Solvência | Não oferece | Sim (LCR, runway, tiers, balance sheet) | Vantagem Oniefy |
 | Fiscal / IRPF | Não oferece | Sim (módulo fiscal, tax_parameters) | Vantagem Oniefy |
-| Análise CFA | Não oferece | Backlog (E8b-E8d) | Diferenciação radical |
+| Análise CFA | Não oferece | Implementado (E8b-E8d) | Diferenciação radical |
 
 **Insight estratégico:** O iDinheiro valida que projeção financeira e metas com sugestões automáticas são features de alta demanda no mercado BR. O modelo de monetização via afiliados é incompatível com a proposta do Oniefy ("CFA pessoal" exige independência — não pode recomendar empréstimo e ao mesmo tempo ganhar comissão por ele). Mas a funcionalidade de projeção é universalmente valiosa e reforça a prioridade dos itens E6 e E8d no backlog.
 
@@ -266,4 +266,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 24/03/2026 | E8b-E8c reescritos com especificação detalhada do Motor JARVIS CFA: 10 regras com fórmulas SQL, 3 camadas, dependências de schema mapeadas. Ref: HANDOVER §30.10 + CFA-ONIEFY-MAPPING.md §6. | Claude |
 | 24/03/2026 | E8b concluído (✅): get_jarvis_scan com 8 regras + JarvisScanCard + 40 testes. E8c parcial (🟡): schema aplicado, R02+R05 implementados, R01+R04 pendentes. E8e adicionado: Polymarket como input futuro da Camada 3 (rejeitado para agora). | Claude |
 | 25/03/2026 | E8c concluído (✅): R01 (ativo < CDI) e R04 (veículo TCO) implementados. Motor JARVIS Camada 1 completo: 10 regras determinísticas. 45 suítes / 666 assertions. | Claude |
+| 25/03/2026 | E8d concluído (✅): 4 calculadoras TVM (Independência, Comprar vs Alugar, CET, SAC vs Price). Bloco E8 inteiro fechado (E8b ✅, E8c ✅, E8d ✅, E8e ⏳). | Claude |
 

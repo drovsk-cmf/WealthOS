@@ -3962,6 +3962,19 @@ Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **re
 
 **Decisão:** anotar em PENDENCIAS-FUTURAS como ideia para Camada 3 (IA narrativa) em futuro distante.
 
+### 31.7 Calculadoras CFA (E8d)
+
+4 calculadoras front-end only adicionadas em `/calculators`:
+
+| Calculadora | Conceito CFA | Método |
+|-------------|-------------|--------|
+| Independência Financeira | Perpetuidade (Gordon) | PV = Despesa anual / Retorno real |
+| Comprar vs Alugar | NPV | Custo total compra vs aluguel + investimento da diferença |
+| CET de financiamento | IRR (YTM) | Newton-Raphson sobre fluxo líquido (principal - taxas) vs parcela total |
+| SAC vs Price | Amortização | Tabela comparativa lado a lado com total de juros |
+
+Navegação atualizada: 7+1 items (Calculadoras adicionado na sidebar).
+
 ### Sessão 31 — Commits consolidados
 
 | Hash | Descrição |
@@ -3971,3 +3984,5 @@ Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **re
 | `cc1f1bb` | JARVIS: 40 testes + types regenerados + fix bank-connections |
 | `7137a3c` | CI: re-trigger (runner provisioning failure) |
 | `3251b20` | HANDOVER §31 + PENDENCIAS atualizados |
+| `80e4603` | JARVIS completo: R01 + R04 + 44 testes + HANDOVER §31 final |
+| `464efc5` | E8d: Calculadoras CFA (4 ferramentas TVM, front-end only) |
