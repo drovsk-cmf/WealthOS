@@ -13,13 +13,20 @@
  */
 
 import { useState } from "react";
-import { Target, Home, Percent, Scale } from "lucide-react";
+import { Target, Home, Percent, Scale, ShoppingCart } from "lucide-react";
 import { IndependenceCalculator } from "@/components/calculators/independence-calculator";
 import { BuyVsRentCalculator } from "@/components/calculators/buy-vs-rent-calculator";
 import { CetCalculator } from "@/components/calculators/cet-calculator";
 import { SacVsPriceCalculator } from "@/components/calculators/sac-vs-price-calculator";
+import { AffordabilitySimulator } from "@/components/calculators/affordability-simulator";
 
 const TABS = [
+  {
+    id: "affordability",
+    label: "Posso comprar?",
+    icon: ShoppingCart,
+    description: "Simule o impacto de uma compra no seu fôlego financeiro",
+  },
   {
     id: "independence",
     label: "Independência",
@@ -49,7 +56,7 @@ const TABS = [
 type TabId = (typeof TABS)[number]["id"];
 
 export default function CalculatorsPage() {
-  const [activeTab, setActiveTab] = useState<TabId>("independence");
+  const [activeTab, setActiveTab] = useState<TabId>("affordability");
   const active = TABS.find((t) => t.id === activeTab)!;
 
   return (
@@ -90,6 +97,7 @@ export default function CalculatorsPage() {
           <p className="text-sm text-muted-foreground">{active.description}</p>
         </div>
 
+        {activeTab === "affordability" && <AffordabilitySimulator />}
         {activeTab === "independence" && <IndependenceCalculator />}
         {activeTab === "buy-vs-rent" && <BuyVsRentCalculator />}
         {activeTab === "cet" && <CetCalculator />}
