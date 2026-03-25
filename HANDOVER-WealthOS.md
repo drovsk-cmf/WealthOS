@@ -72,8 +72,8 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | 21 |
 | ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
 | Indexes | 140 |
-| Migrations aplicadas (MCP) | 51 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 58 em supabase/migrations/ |
+| Migrations aplicadas (MCP) | 52 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 59 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -108,11 +108,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (148 arquivos em src/, 45 suítes de teste, 662 assertions)
+### 3.4 Código Fonte (148 arquivos em src/, 45 suítes de teste, 666 assertions)
 
 ```
 src/
-├── __tests__/                    # 45 suítes de teste (Jest + RTL), 662 assertions
+├── __tests__/                    # 45 suítes de teste (Jest + RTL), 666 assertions
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
 │   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
@@ -3916,7 +3916,18 @@ CHECK constraints: `chk_investment_class_type`, `chk_interest_rate_type`, `chk_r
 
 Pendentes: R01 (ativo < CDI - precisa tracking retorno portfolio), R04 (veículo TCO - simulação complexa).
 
-### 31.2 Frontend JARVIS
+### 31.2 R01 e R04 implementados (scanner completo)
+
+Adicionados na mesma sessão, completando o scanner:
+
+| Regra | Descrição | Pilar |
+|-------|-----------|-------|
+| R01 | Ativo com retorno líquido < CDI (compara yield mensal vs CDI dinâmico; degradação graceful sem income data) | Taxa |
+| R04 | Veículo TCO (depreciação + despesas operacionais via asset_id; peso na renda como %) | Fluxo+Tempo |
+
+**Total final: 10 regras + R03b = 11 findings possíveis. Motor JARVIS CFA Camada 1 completo.**
+
+### 31.3 Frontend JARVIS
 
 - `src/lib/schemas/rpc.ts` - 2 schemas Zod: `jarvisFindingSchema`, `jarvisScanSchema`
 - `src/lib/hooks/use-jarvis.ts` - Hook `useJarvisScan` (staleTime 10min) + helpers `sortFindings`, `getRuleLabel`
@@ -3924,9 +3935,9 @@ Pendentes: R01 (ativo < CDI - precisa tracking retorno portfolio), R04 (veículo
 - `src/components/accounts/account-form.tsx` - Campos condicionais da Frente B (investment_class, interest_rate, rate_type)
 - Dashboard page: JarvisScanCard visível para maturity level "ativo+" (11+ transações)
 
-### 31.3 Testes
+### 31.4 Testes
 
-Suite `jarvis-scan.test.tsx` com 40 assertions:
+Suite `jarvis-scan.test.tsx` com 44 assertions:
 - `sortFindings`: ordering, empty, single, immutability
 - `getRuleLabel`: todos os 11 labels + fallback
 - `jarvisFindingSchema`: validação por regra (R02, R03, R05, R09), null items, rejeição severity inválida, rejeição campo ausente
@@ -3934,13 +3945,13 @@ Suite `jarvis-scan.test.tsx` com 40 assertions:
 - `useJarvisScan`: success, RPC args, error, schema failure, empty findings
 - Rule data contracts: R02 rate comparison, R03 subscription array, R05 compound projection, R06 growth trajectory, R08 net_loss math, R09 concentration %, R10 negative flow
 
-### 31.4 Types regenerados
+### 31.5 Types regenerados
 
 `database.ts` regenerado com novos enums `investment_class` e `rate_type`, e colunas `interest_rate`.
 
 FIX colateral: `use-bank-connections.ts` - nullable UUID param `p_bank_connection_id` incompatível com tipos regenerados.
 
-### 31.5 Polymarket - análise e decisão
+### 31.6 Polymarket - análise e decisão
 
 Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **rejeitada** para o momento:
 1. Desalinhamento de domínio (prediction markets vs patrimônio individual)
@@ -3959,3 +3970,4 @@ Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **re
 | `1690761` | JARVIS: adiciona R02 (dívida cara) e R05 (espiral cartão) |
 | `cc1f1bb` | JARVIS: 40 testes + types regenerados + fix bank-connections |
 | `7137a3c` | CI: re-trigger (runner provisioning failure) |
+| `3251b20` | HANDOVER §31 + PENDENCIAS atualizados |

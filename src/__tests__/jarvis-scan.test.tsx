@@ -40,6 +40,45 @@ jest.mock("@/lib/supabase/cached-auth", () => ({
 
 // ─── Test fixtures ─────────────────────────────────────────────
 
+const FINDING_R01: JarvisFinding = {
+  rule_id: "R01",
+  severity: "warning",
+  title: '"Rico Invest" rende 0.29% a.m. (CDI: 1.20%)',
+  description:
+    'Retorno medio: R$ 43.33/mes (0.29% a.m.). CDI atual: 1.20% a.m. Classe: renda_fixa. No CDI renderia R$ 181.66/mes.',
+  potential_savings_monthly: 138.33,
+  affected_items: {
+    account_id: "acc-invest",
+    account_name: "Rico Invest",
+    balance: 15130,
+    yield_pct: 0.29,
+    cdi_pct: 1.2,
+    monthly_income: 43.33,
+    investment_class: "renda_fixa",
+    months_data: 3,
+  },
+};
+
+const FINDING_R04: JarvisFinding = {
+  rule_id: "R04",
+  severity: "info",
+  title: '"Civic 2022": TCO R$ 1966.67/mes',
+  description:
+    'Custo total de propriedade: R$ 1966.67/mes. Depreciacao: R$ 1000.00/mes. Despesas operacionais: R$ 966.67/mes (7 lancamentos em 3 meses). Peso na renda: 16.0%.',
+  potential_savings_monthly: 0,
+  affected_items: {
+    asset_id: "asset-car",
+    asset_name: "Civic 2022",
+    category: "vehicle_auto",
+    current_value: 80000,
+    monthly_depreciation: 1000,
+    monthly_expenses: 966.67,
+    total_tco: 1966.67,
+    months_data: 3,
+    income_pct: 16.0,
+  },
+};
+
 const FINDING_R02: JarvisFinding = {
   rule_id: "R02",
   severity: "critical",
@@ -161,10 +200,12 @@ const FINDING_R10: JarvisFinding = {
 
 const FULL_SCAN_RESULT: JarvisScanResult = {
   scan_date: "2026-03-24T22:00:00.000000+00:00",
-  findings_count: 8,
+  findings_count: 10,
   findings: [
+    FINDING_R01,
     FINDING_R02,
     FINDING_R03,
+    FINDING_R04,
     FINDING_R05,
     FINDING_R06,
     FINDING_R07,
@@ -173,13 +214,13 @@ const FULL_SCAN_RESULT: JarvisScanResult = {
     FINDING_R10,
   ],
   summary: {
-    total_potential_savings_monthly: 2523.1,
-    projected_3m: 7569.3,
-    projected_6m: 15138.6,
-    projected_12m: 30277.2,
+    total_potential_savings_monthly: 2661.43,
+    projected_3m: 7984.29,
+    projected_6m: 15968.58,
+    projected_12m: 31937.16,
     critical_count: 2,
     warning_count: 5,
-    info_count: 1,
+    info_count: 3,
   },
   solvency: {
     tier1_total: 11500,
@@ -303,6 +344,11 @@ describe("getRuleLabel", () => {
 });
 
 describe("jarvisFindingSchema", () => {
+  it("validates R01 finding (investment yield)", () => {
+    const result = jarvisFindingSchema.safeParse(FINDING_R01);
+    expect(result.success).toBe(true);
+  });
+
   it("validates R02 finding (debt with rate)", () => {
     const result = jarvisFindingSchema.safeParse(FINDING_R02);
     expect(result.success).toBe(true);
@@ -310,6 +356,11 @@ describe("jarvisFindingSchema", () => {
 
   it("validates R03 finding (subscriptions with array items)", () => {
     const result = jarvisFindingSchema.safeParse(FINDING_R03);
+    expect(result.success).toBe(true);
+  });
+
+  it("validates R04 finding (vehicle TCO)", () => {
+    const result = jarvisFindingSchema.safeParse(FINDING_R04);
     expect(result.success).toBe(true);
   });
 
@@ -343,7 +394,7 @@ describe("jarvisFindingSchema", () => {
 });
 
 describe("jarvisScanSchema", () => {
-  it("validates full scan result with 8 findings", () => {
+  it("validates full scan result with 10 findings", () => {
     const result = jarvisScanSchema.safeParse(FULL_SCAN_RESULT);
     expect(result.success).toBe(true);
   });
@@ -395,10 +446,10 @@ describe("useJarvisScan", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(result.current.data?.findings_count).toBe(8);
-    expect(result.current.data?.summary.total_potential_savings_monthly).toBe(2523.1);
+    expect(result.current.data?.findings_count).toBe(10);
+    expect(result.current.data?.summary.total_potential_savings_monthly).toBe(2661.43);
     expect(result.current.data?.summary.critical_count).toBe(2);
-    expect(result.current.data?.findings).toHaveLength(8);
+    expect(result.current.data?.findings).toHaveLength(10);
   });
 
   it("calls RPC with correct arguments", async () => {
@@ -461,6 +512,17 @@ describe("useJarvisScan", () => {
 // ─── Rule-specific data validation ─────────────────────────────
 
 describe("Rule data contracts", () => {
+  it("R01: yield below CDI with rate comparison", () => {
+    const items = FINDING_R01.affected_items as Record<string, unknown>;
+    expect(items).toHaveProperty("yield_pct");
+    expect(items).toHaveProperty("cdi_pct");
+    expect(items).toHaveProperty("investment_class");
+    expect(items).toHaveProperty("months_data");
+    // Yield should be below CDI for this finding to exist
+    expect(items.yield_pct).toBeLessThan(items.cdi_pct as number);
+    expect(FINDING_R01.potential_savings_monthly).toBeGreaterThan(0);
+  });
+
   it("R02: affected_items contains rate comparison data", () => {
     const items = FINDING_R02.affected_items as Record<string, unknown>;
     expect(items).toHaveProperty("rate");
@@ -475,6 +537,19 @@ describe("Rule data contracts", () => {
     expect(items.length).toBeGreaterThanOrEqual(2);
     expect(items[0]).toHaveProperty("description");
     expect(items[0]).toHaveProperty("amount");
+  });
+
+  it("R04: TCO includes depreciation + expenses", () => {
+    const items = FINDING_R04.affected_items as Record<string, unknown>;
+    expect(items).toHaveProperty("monthly_depreciation");
+    expect(items).toHaveProperty("monthly_expenses");
+    expect(items).toHaveProperty("total_tco");
+    expect(items).toHaveProperty("income_pct");
+    // TCO = depreciation + expenses
+    expect(items.total_tco).toBeCloseTo(
+      (items.monthly_depreciation as number) + (items.monthly_expenses as number),
+      0
+    );
   });
 
   it("R05: affected_items contains compound projection", () => {
