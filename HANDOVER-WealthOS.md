@@ -68,12 +68,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 34 (todas com RLS) |
 | Políticas RLS | 103 |
-| Functions (total) | 73 no schema public. Todas com `SET search_path = public`. 70 SECURITY DEFINER com auth.uid() guard |
+| Functions (total) | 74 no schema public. Todas com `SET search_path = public`. 71 SECURITY DEFINER com auth.uid() guard |
 | Triggers | 21 |
 | ENUMs | 27 (index_type com 46 valores: 13 originais + 33 moedas) |
 | Indexes | 140 |
-| Migrations aplicadas (MCP) | 48 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 55 em supabase/migrations/ |
+| Migrations aplicadas (MCP) | 51 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 58 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -108,11 +108,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (148 arquivos em src/, 44 suítes de teste, 622 assertions)
+### 3.4 Código Fonte (148 arquivos em src/, 45 suítes de teste, 662 assertions)
 
 ```
 src/
-├── __tests__/                    # 44 suítes de teste (Jest + RTL), 622 assertions
+├── __tests__/                    # 45 suítes de teste (Jest + RTL), 662 assertions
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
 │   ├── audit-dedup-cleanup.test.ts    # 15: budget dedup, rate limiter edge cases
@@ -202,7 +202,7 @@ src/
 │   │          online-status, progressive-disclosure, reconciliation, recurrences,
 │   │          transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 27 schemas Zod (todos os RPCs cobertos)
+│   ├── schemas/rpc.ts            # 29 schemas Zod (todos os RPCs cobertos)
 │   ├── services/
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
 │   │   └── transaction-engine.ts
@@ -3869,3 +3869,93 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 | `3c6f080` | Descartar 50/30/20 |
 | `ed56a59` | Princípios CFA Pessoal revisados |
 | `0a2958d` | Motor JARVIS CFA especificação |
+
+---
+
+## 31. Sessão 31 — Motor JARVIS CFA: Implementação (24/03/2026)
+
+### 31.1 Motor JARVIS CFA implementado (Frentes A + B + parcial C)
+
+Implementação completa do Motor JARVIS CFA conforme especificação da sessão 30 (§30.10) e `CFA-ONIEFY-MAPPING.md` §6.
+
+**Frente A (zero schema change): 6 regras iniciais**
+
+RPC `get_jarvis_scan(p_user_id UUID)` criada com as regras:
+
+| Regra | Descrição | Pilar |
+|-------|-----------|-------|
+| R03 | Assinaturas canceláveis (duplicatas na mesma categoria) | Fluxo |
+| R03b | Peso total das assinaturas (>15% da renda) | Fluxo |
+| R06 | Categoria de despesa em escalada (+20% por 3 meses consecutivos) | Fluxo |
+| R07 | Reserva de emergência insuficiente (runway < 6 meses) | Tempo |
+| R08 | Depreciação de ativo > rendimento líquido | Taxa |
+| R09 | Concentração de renda (>80% em uma fonte) | Fluxo |
+| R10 | Fluxo mensal negativo persistente (2+ meses) | Fluxo+Tempo |
+
+**Camada 2 (Combinador):** soma `potential_savings_monthly` de todos os findings e projeta em 3/6/12 meses.
+
+**Frente B (schema evolution):**
+
+3 novos campos em `accounts`:
+- `investment_class` enum (renda_fixa, renda_variavel, fii, previdencia, cripto, outro) - nullable, somente type=investment
+- `interest_rate` numeric (% a.m.) - nullable, somente type IN (loan, financing, credit_card)
+- `rate_type` enum (pre, pos_cdi, pos_ipca, pos_tr) - nullable, somente type IN (loan, financing)
+
+CHECK constraints: `chk_investment_class_type`, `chk_interest_rate_type`, `chk_rate_type_type`, `chk_interest_rate_positive`.
+
+**FIX:** `assets.depreciation_rate` ampliado de `numeric(5,4)` para `numeric(7,4)` - veículos com 15-20% a.a. não cabiam.
+
+**Frente C (parcial): 2 regras adicionais pós Frente B**
+
+| Regra | Descrição | Pilar |
+|-------|-----------|-------|
+| R02 | Dívida com taxa > CDI + 5 p.p. (CDI dinâmico via `economic_indices`) | Taxa |
+| R05 | Espiral de juros de cartão de crédito (projeção composta 3/6/12m) | Taxa+Tempo |
+
+**Total: 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10).**
+
+Pendentes: R01 (ativo < CDI - precisa tracking retorno portfolio), R04 (veículo TCO - simulação complexa).
+
+### 31.2 Frontend JARVIS
+
+- `src/lib/schemas/rpc.ts` - 2 schemas Zod: `jarvisFindingSchema`, `jarvisScanSchema`
+- `src/lib/hooks/use-jarvis.ts` - Hook `useJarvisScan` (staleTime 10min) + helpers `sortFindings`, `getRuleLabel`
+- `src/components/dashboard/jarvis-scan-card.tsx` - Card "Limpeza de Disco" com severity colors (verdant/burnished/terracotta), expansion toggle, projeção 3/6/12m
+- `src/components/accounts/account-form.tsx` - Campos condicionais da Frente B (investment_class, interest_rate, rate_type)
+- Dashboard page: JarvisScanCard visível para maturity level "ativo+" (11+ transações)
+
+### 31.3 Testes
+
+Suite `jarvis-scan.test.tsx` com 40 assertions:
+- `sortFindings`: ordering, empty, single, immutability
+- `getRuleLabel`: todos os 11 labels + fallback
+- `jarvisFindingSchema`: validação por regra (R02, R03, R05, R09), null items, rejeição severity inválida, rejeição campo ausente
+- `jarvisScanSchema`: full scan, empty scan, null solvency, consistência de projeções, soma de severity counts
+- `useJarvisScan`: success, RPC args, error, schema failure, empty findings
+- Rule data contracts: R02 rate comparison, R03 subscription array, R05 compound projection, R06 growth trajectory, R08 net_loss math, R09 concentration %, R10 negative flow
+
+### 31.4 Types regenerados
+
+`database.ts` regenerado com novos enums `investment_class` e `rate_type`, e colunas `interest_rate`.
+
+FIX colateral: `use-bank-connections.ts` - nullable UUID param `p_bank_connection_id` incompatível com tipos regenerados.
+
+### 31.5 Polymarket - análise e decisão
+
+Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **rejeitada** para o momento:
+1. Desalinhamento de domínio (prediction markets vs patrimônio individual)
+2. Cobertura Brasil ≈ zero (eventos BR sem liquidez)
+3. Escopo creep no momento errado
+4. Risco regulatório (zona cinzenta apostas/derivativos)
+5. Viola Princípio CFA #1 (probabilidades genéricas, não específicas ao patrimônio)
+
+**Decisão:** anotar em PENDENCIAS-FUTURAS como ideia para Camada 3 (IA narrativa) em futuro distante.
+
+### Sessão 31 — Commits consolidados
+
+| Hash | Descrição |
+|------|-----------|
+| `6eb60a6` | Motor JARVIS CFA: scanner 6 regras + Frente B schema + UX card |
+| `1690761` | JARVIS: adiciona R02 (dívida cara) e R05 (espiral cartão) |
+| `cc1f1bb` | JARVIS: 40 testes + types regenerados + fix bank-connections |
+| `7137a3c` | CI: re-trigger (runner provisioning failure) |
