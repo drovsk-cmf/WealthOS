@@ -1,10 +1,10 @@
 -- ============================================================
--- Frente B: Schema evolution para Motor JARVIS CFA
+-- Frente B: Schema evolution para Motor JARVIS
 -- 1. investment_class enum para accounts type=investment
 -- 2. interest_rate numeric para loan/financing/credit_card
 -- 3. rate_type enum para loan/financing
 -- 4. FIX: depreciation_rate ampliado para numeric(7,4)
--- Ref: CFA-ONIEFY-MAPPING.md §6, PENDENCIAS-FUTURAS E8c
+-- Ref: FINANCIAL-METHODOLOGY.md §6, PENDENCIAS-FUTURAS E8c
 -- ============================================================
 
 DO $$ BEGIN

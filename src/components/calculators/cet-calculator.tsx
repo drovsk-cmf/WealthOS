@@ -6,7 +6,7 @@
  * Dado: valor liberado, parcela, prazo, taxas
  * Calcula: taxa efetiva mensal e anual (IRR do fluxo de caixa)
  *
- * Ref: CFA-ONIEFY-MAPPING.md §3 Fase 2, financial-math §1.3
+ * Ref: FINANCIAL-METHODOLOGY.md §3 Fase 2, financial-math §1.3
  */
 
 import { useState, useMemo } from "react";

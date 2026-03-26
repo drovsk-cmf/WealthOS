@@ -8,7 +8,7 @@
  * - Juros e amortização por período
  * - Total pago e total de juros
  *
- * Ref: CFA-ONIEFY-MAPPING.md §3 Fase 2, financial-math §5
+ * Ref: FINANCIAL-METHODOLOGY.md §3 Fase 2, financial-math §5
  */
 
 import { useState, useMemo } from "react";

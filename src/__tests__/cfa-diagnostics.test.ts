@@ -1,5 +1,5 @@
 /**
- * Tests for CFA Diagnostics (Camada A + B)
+ * Tests for Financial Diagnostics (Camada A + B)
  *
  * Covers:
  * - Zod schema validation (cfaDiagnosticsSchema)

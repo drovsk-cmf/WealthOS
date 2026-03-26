@@ -1,5 +1,5 @@
 -- ══════════════════════════════════════════════════════════════════════
--- get_jarvis_v2: Motor CFA v2 com Grafo de Dependências + Máquina de Estados
+-- get_jarvis_v2: Motor v2 com Grafo de Dependências + Máquina de Estados
 --
 -- Arquitetura em 6 camadas:
 --   L0: dados brutos (transactions, accounts, assets, recurrences, indices)
@@ -11,7 +11,7 @@
 --   L6: output (estado + classification_inputs + metrics + actions ordenadas)
 --
 -- Dependência: accounts.is_collateralized (migration 074)
--- Ref: CFA-ONIEFY-MAPPING.md, sessão 33 (26/03/2026)
+-- Ref: FINANCIAL-METHODOLOGY.md, sessão 33 (26/03/2026)
 -- ══════════════════════════════════════════════════════════════════════
 -- Fonte completa aplicada via execute_sql (MCP OAuth).
 -- Para recuperar a definição: SELECT pg_get_functiondef(oid) FROM pg_proc WHERE proname = 'get_jarvis_v2';

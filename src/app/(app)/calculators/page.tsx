@@ -9,7 +9,7 @@
  * 3. CET de financiamento (IRR/YTM)
  * 4. SAC vs Price (amortização)
  *
- * Ref: docs/CFA-ONIEFY-MAPPING.md §3 Fase 2
+ * Ref: docs/FINANCIAL-METHODOLOGY.md §3 Fase 2
  */
 
 import { useState } from "react";

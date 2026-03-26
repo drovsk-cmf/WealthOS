@@ -6,7 +6,7 @@
  * Capital necessário = Despesa anual / Retorno real anual
  * Gordon Growth: PV = PMT / (r - g) onde g = inflação
  *
- * Ref: CFA-ONIEFY-MAPPING.md §3 Fase 2, financial-math §4.4
+ * Ref: FINANCIAL-METHODOLOGY.md §3 Fase 2, financial-math §4.4
  */
 
 import { useState, useMemo } from "react";

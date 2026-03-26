@@ -7,7 +7,7 @@
  * Estados: SEM_DADOS | CRISE | SOBREVIVENCIA | ESTABILIZACAO | OTIMIZACAO | CRESCIMENTO
  * Cada estado tem sua própria fila de prioridades com conflitos resolvidos.
  *
- * Ref: CFA-ONIEFY-MAPPING.md, sessão 33
+ * Ref: FINANCIAL-METHODOLOGY.md, sessão 33
  */
 
 import { useQuery } from "@tanstack/react-query";

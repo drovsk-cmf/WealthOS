@@ -6,7 +6,7 @@
  * Compara o custo total de comprar (entrada + financiamento + custos incorridos)
  * com alugar (aluguel + investir a diferença).
  *
- * Ref: CFA-ONIEFY-MAPPING.md §3 Fase 2, financial-math §1.2
+ * Ref: FINANCIAL-METHODOLOGY.md §3 Fase 2, financial-math §1.2
  */
 
 import { useState, useMemo } from "react";

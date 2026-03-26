@@ -1,8 +1,8 @@
 -- ============================================================
--- Motor JARVIS CFA - Adiciona R02 (dívida cara) e R05 (espiral cartão)
+-- Motor JARVIS - Adiciona R02 (dívida cara) e R05 (espiral cartão)
 -- Substitui get_jarvis_scan de 068 com 2 regras adicionais
 -- Dependem de accounts.interest_rate (Frente B, migration 069)
--- Ref: CFA-ONIEFY-MAPPING.md §6, PENDENCIAS-FUTURAS E8c
+-- Ref: FINANCIAL-METHODOLOGY.md §6, PENDENCIAS-FUTURAS E8c
 -- ============================================================
 -- Nota: Função completa aplicada via Supabase MCP (apply_migration).
 -- Este arquivo contém a versão canônica para replay de migrations.
@@ -304,5 +304,5 @@ END;
 $$;
 
 COMMENT ON FUNCTION get_jarvis_scan IS
-  'Motor JARVIS CFA - 8 regras (R02,R03,R05,R06,R07,R08,R09,R10) + Camada 2. '
-  'R01 e R04 pendentes. Ref: CFA-ONIEFY-MAPPING.md §6';
+  'Motor JARVIS - 8 regras (R02,R03,R05,R06,R07,R08,R09,R10) + Camada 2. '
+  'R01 e R04 pendentes. Ref: FINANCIAL-METHODOLOGY.md §6';

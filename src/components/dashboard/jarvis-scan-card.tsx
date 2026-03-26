@@ -7,7 +7,7 @@
  * Expandido: lista de findings com severity, números concretos, projeção.
  *
  * Design: Plum Ledger - severity colors (verdant/burnished/terracotta)
- * Ref: CFA-ONIEFY-MAPPING.md §6.4
+ * Ref: FINANCIAL-METHODOLOGY.md §6.4
  */
 
 import { useState } from "react";

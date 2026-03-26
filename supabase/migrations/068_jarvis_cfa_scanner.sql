@@ -1,7 +1,7 @@
 -- ============================================================
--- Motor JARVIS CFA - Camada 1 (Scanner) + Camada 2 (Combinador)
+-- Motor JARVIS - Camada 1 (Scanner) + Camada 2 (Combinador)
 -- 6 regras determinísticas com zero schema change
--- Ref: CFA-ONIEFY-MAPPING.md §6, HANDOVER §30.10
+-- Ref: FINANCIAL-METHODOLOGY.md §6, HANDOVER §30.10
 -- ============================================================
 
 CREATE OR REPLACE FUNCTION get_jarvis_scan(p_user_id UUID)
@@ -425,5 +425,5 @@ $$;
 GRANT EXECUTE ON FUNCTION get_jarvis_scan(UUID) TO authenticated;
 
 COMMENT ON FUNCTION get_jarvis_scan IS
-  'Motor JARVIS CFA - Camada 1 (Scanner: R03,R06,R07,R08,R09,R10) + Camada 2 (Combinador). '
-  'Retorna findings com severity, savings e projecoes. Ref: CFA-ONIEFY-MAPPING.md §6';
+  'Motor JARVIS - Camada 1 (Scanner: R03,R06,R07,R08,R09,R10) + Camada 2 (Combinador). '
+  'Retorna findings com severity, savings e projecoes. Ref: FINANCIAL-METHODOLOGY.md §6';

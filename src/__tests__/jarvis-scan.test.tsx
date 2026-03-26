@@ -2,7 +2,7 @@
 export {};
 
 /**
- * Tests: Motor JARVIS CFA - useJarvisScan hook + helper functions
+ * Tests: Motor JARVIS - useJarvisScan hook + helper functions
  *
  * Covers:
  * - useJarvisScan: RPC call, schema validation, error handling, empty state
@@ -10,7 +10,7 @@ export {};
  * - getRuleLabel: all 11 rules + unknown fallback
  * - Schema validation: jarvisScanSchema with realistic payloads per rule
  *
- * Ref: CFA-ONIEFY-MAPPING.md §6, HANDOVER §30.10
+ * Ref: FINANCIAL-METHODOLOGY.md §6, HANDOVER §30.10
  */
 
 import { renderHook, waitFor } from "@testing-library/react";

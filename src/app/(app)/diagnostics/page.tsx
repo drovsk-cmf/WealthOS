@@ -7,7 +7,7 @@
  * Camada A (diagnóstico): Savings Rate, HHI, WACC, D/E, Working Capital, Breakeven
  * Camada B (temporal): Income CV, DuPont Pessoal, Category Trends, Warning Signs, Monthly History
  *
- * Ref: docs/CFA-ONIEFY-MAPPING.md §2-3
+ * Ref: docs/FINANCIAL-METHODOLOGY.md §2-3
  */
 
 import { useState } from "react";

@@ -1,12 +1,12 @@
-# CFA → Oniefy: Mapeamento Estratégico
+# Metodologia Financeira Oniefy
 
-> **Objetivo:** Transformar o Oniefy no "CFA pessoal" de cada assinante.
-> **Base:** Currículo CFA Level I (Schweser Notes 2020, 57 Readings, 1.527 páginas) + Secret Sauce + QuickSheet.
+> **Objetivo:** Transformar o Oniefy no analista financeiro pessoal de cada assinante.
+> **Base:** Currículo de análise financeira quantitativa (57 tópicos, cobrindo TVM, FRA, Corp Finance, Fixed Income, Portfolio Mgmt).
 > **Premissa regulatória:** Oniefy não dá conselho de investimento (CVM). Diagnostica, sinaliza riscos, educa. O "conselho" vem como perguntas provocativas e cenários, não como recomendações diretas.
 
 ---
 
-## 1. Mapa Curricular CFA Level I
+## 1. Mapa Curricular de Análise Financeira
 
 | # | Área | Peso | Readings | Aplicabilidade PF | Prioridade Oniefy |
 |---|------|------|----------|-------------------|-------------------|
@@ -23,23 +23,23 @@
 
 ---
 
-## 2. Detalhamento por Área: Conceitos CFA → Features Oniefy
+## 2. Detalhamento por Área: Conceitos Financeiros → Features Oniefy
 
 ### 2.1 Quantitative Methods (Book 1, R6-R11)
 
-| Conceito CFA | Fórmula/Framework | Tradução Pessoa Física | Feature Oniefy | Status |
+| Conceito | Fórmula/Framework | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|---|
 | **Time Value of Money** | FV = PV(1+r)^n, PV = FV/(1+r)^n | "R$ 10.000 hoje valem mais que R$ 10.000 daqui a 5 anos." Projeção de patrimônio futuro, custo real de parcelas | Calculadora TVM integrada. Projeção de patrimônio com taxa real (descontada IPCA) | ✅ E8d |
 | **Annuities (PMT)** | PV/FV de anuidades ordinárias e antecipadas | Valor presente de parcelas de financiamento. "Quanto realmente custa esse parcelamento em 48x?" | Custo efetivo total (CET) de financiamentos. Input: parcela, prazo, entrada. Output: CET real vs CDI | ✅ E8d |
 | **Perpetuities** | PV = PMT/r | "Se você precisa de R$ 5.000/mês para sempre, precisa acumular R$ X a Y% real." | Calculadora de independência financeira (patrimônio alvo = despesa mensal / taxa real) | ✅ E8d |
-| **EAR (Effective Annual Rate)** | EAR = (1 + i/m)^m - 1 | Taxa efetiva real de empréstimos, cartão, cheque especial. Bancos anunciam taxa nominal; o CFA ensina a calcular a efetiva | Comparador de custo de dívida: input = taxa anunciada + periodicidade → output = EAR + custo total | ✅ E8d |
+| **EAR (Effective Annual Rate)** | EAR = (1 + i/m)^m - 1 | Taxa efetiva real de empréstimos, cartão, cheque especial. Bancos anunciam taxa nominal; a análise financeira ensina a calcular a efetiva | Comparador de custo de dívida: input = taxa anunciada + periodicidade → output = EAR + custo total | ✅ E8d |
 | **Holding Period Return** | HPR = (P1 - P0 + D) / P0 | Retorno real do patrimônio mês a mês, incluindo valorização + rendimentos | Já existe parcialmente (variação patrimonial). Falta: HPR por ativo individual e consolidado | Parcial |
 | **Coefficient of Variation** | CV = σ/média | Dispersão relativa: "Sua renda varia muito?" (CLT+PJ). Quanto maior o CV, maior a necessidade de reserva | Insight automático: calcular CV da renda dos últimos 6-12 meses. Se CV > 0.3 → nudge de reserva maior | ✅ E15 |
 | **Probabilidade e Distribuição Normal** | μ ± 1σ = 68%, ± 2σ = 95% | Faixa provável de despesas do próximo mês. "Com 95% de confiança, suas despesas ficarão entre R$ X e R$ Y" | Projeção estatística de gastos baseada no histórico (média ± 2σ) | Futuro |
 
 ### 2.2 Economics (Book 2, R12-R18)
 
-| Conceito CFA | Tradução Pessoa Física | Feature Oniefy | Status |
+| Conceito | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|
 | **Inflação (CPI/IPCA)** | Erosão do poder de compra. "Seu patrimônio cresceu 8%, mas a inflação foi 5%. Ganho real: 2,9%." | Retorno real = (1+nominal)/(1+IPCA) - 1. Aplicar em toda variação patrimonial | Parcial (tracking IPCA existe) |
 | **Taxa de juros real vs nominal** | Fisher: (1+r_nominal) = (1+r_real)(1+inflação) | "Seu financiamento custa CDI+2%, mas descontando inflação o custo real é X%" | Insight: custo real de cada dívida vs retorno real de cada ativo |
@@ -49,9 +49,9 @@
 
 ### 2.3 Financial Reporting & Analysis (Book 3, R19-R30)
 
-**Esta é a área de maior densidade para o Oniefy.** O CFA ensina a analisar empresas; o Oniefy aplica os mesmos frameworks para a "empresa pessoal" do usuário.
+**Esta é a área de maior densidade para o Oniefy.** A análise financeira ensina a analisar empresas; o Oniefy aplica os mesmos frameworks para a "empresa pessoal" do usuário.
 
-| Conceito CFA (Corporativo) | Equivalente Pessoa Física | Fórmula Adaptada | Feature Oniefy | Status |
+| Conceito (Corporativo) | Equivalente Pessoa Física | Fórmula Adaptada | Feature Oniefy | Status |
 |---|---|---|---|---|
 | **Income Statement (DRE)** | Receitas vs Despesas mensais | Receita total - Despesas totais = Resultado do mês | Dashboard DASH-01/02 | Implementado |
 | **Balance Sheet** | Balanço patrimonial pessoal: Ativos - Passivos = Patrimônio Líquido | Contas + Ativos - Dívidas = PL | Solvency Panel + Balance Sheet Card | Implementado |
@@ -67,7 +67,7 @@
 
 ### 2.4 Corporate Finance (Book 4, R31-R35)
 
-| Conceito CFA | Tradução Pessoa Física | Fórmula | Feature Oniefy | Status |
+| Conceito | Tradução Pessoa Física | Fórmula | Feature Oniefy | Status |
 |---|---|---|---|---|
 | **NPV (Net Present Value)** | "Vale a pena comprar esse imóvel?" Comparar custo total de compra vs aluguel em VPL | NPV = Σ CF_t/(1+r)^t | Simulador comprar vs alugar (NPV). Calculadoras E8d | ✅ E8d |
 | **IRR (Internal Rate of Return)** | Taxa interna de retorno de um investimento imobiliário ou negócio | Taxa que zera o NPV | IRR via CET calculator | ✅ E8d |
@@ -79,7 +79,7 @@
 
 ### 2.5 Fixed Income (Book 4, R42-R47)
 
-| Conceito CFA | Tradução Pessoa Física | Feature Oniefy | Status |
+| Conceito | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|
 | **Bond Pricing (YTM)** | Custo efetivo de financiamentos (imóvel, veículo, consignado). O banco diz "1,2% a.m."; qual o custo efetivo com IOF, TAC, seguros? | Calculadora CET: parcela × n - principal = custo total → converter para taxa efetiva | ✅ E8d |
 | **Duration** | Sensibilidade das dívidas a mudanças na Selic. "Se Selic subir 1 p.p., quanto muda sua parcela de financiamento pós-fixado?" | Classificação de dívidas: pré-fixada (imune) vs pós-fixada (sensível) vs indexada IPCA | Novo |
@@ -90,9 +90,9 @@
 
 ### 2.6 Portfolio Management (Book 5, R51-R57)
 
-**Esta é a área que define o "CFA pessoal" como conceito.**
+**Esta é a área que define o analista financeiro pessoal como conceito.**
 
-| Conceito CFA | Tradução Pessoa Física | Feature Oniefy | Status |
+| Conceito | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|
 | **Investment Policy Statement (IPS)** | Política de investimento pessoal: objetivos, tolerância a risco, horizonte, restrições | Onboarding expandido: perfil de risco, horizonte de objetivos, restrições (liquidez, fiscal) | Futuro |
 | **Return Objectives** | "Preciso de retorno real de X% para atingir meu objetivo em Y anos" | Calculadora: patrimônio alvo + prazo → retorno real necessário → compatível com perfil de risco? | Novo |
@@ -111,7 +111,7 @@
 
 Implementação: RPC `get_cfa_diagnostics` + página `/diagnostics` (sessão 33, 26/03/2026).
 
-| Feature | Conceitos CFA | Status |
+| Feature | Conceitos | Status |
 |---|---|---|
 | Taxa de poupança | FRA (common-size) | ✅ `savings_rate` |
 | Concentração patrimonial (HHI) | Portfolio Mgmt (Markowitz) | ✅ `patrimony_hhi` |
@@ -125,13 +125,13 @@ Implementação: RPC `get_cfa_diagnostics` + página `/diagnostics` (sessão 33,
 | Income Volatility (CV) | QM (CV) | ✅ `income_volatility` |
 | Monthly History | Múltiplos | ✅ `monthly_history` |
 
-Motor JARVIS CFA (10 regras R01-R10): ✅ `get_jarvis_scan` (sessão 31).
+Motor JARVIS (10 regras R01-R10): ✅ `get_jarvis_scan` (sessão 31).
 
-### Fase 2 - Calculadoras (input do usuário + cálculos CFA) ✅ CONCLUÍDA
+### Fase 2 - Calculadoras (input do usuário + cálculos financeiros) ✅ CONCLUÍDA
 
 Implementação: página `/calculators` com 7 abas (sessões 31-32).
 
-| Feature | Conceitos CFA | Status |
+| Feature | Conceitos | Status |
 |---|---|---|
 | Posso comprar? (simulador) | Corp Finance (affordability) | ✅ E7 |
 | Projeção indexada IPCA/IGP-M | Economics (inflação) | ✅ E12 |
@@ -141,11 +141,11 @@ Implementação: página `/calculators` com 7 abas (sessões 31-32).
 | SAC vs Price | Fixed Income (amortization) | ✅ E8d |
 | Capital Humano (DCF carreira) | Portfolio Mgmt | ✅ E13 |
 
-### Fase 3 - Inteligência ativa (o "CFA falando") — PENDENTE
+### Fase 3 - Inteligência ativa (o analista falando) — PENDENTE
 
 Gatilho: 3 meses de dados por usuário + provider IA confirmado.
 
-| Feature | Conceitos CFA | Infraestrutura necessária | Complexidade |
+| Feature | Conceitos | Infraestrutura necessária | Complexidade |
 |---|---|---|---|
 | Insights automáticos no dashboard | Múltiplos | RPC de análise + componente de exibição | Alta |
 | Benchmark pessoal vs médias | Economics + FRA | Dados BCB/IBGE + cálculos comparativos | Alta |
@@ -205,7 +205,7 @@ D/E = Dívidas totais / Patrimônio líquido
 
 ---
 
-## 5. Princípios de Design para o "CFA Pessoal"
+## 5. Princípios de Design para o Analista Financeiro Pessoal
 
 1. **Análise de contexto, não regras.** O Oniefy calcula com dados reais do usuário: composição patrimonial, retorno ajustado ao risco, custo de oportunidade vs taxa básica de juros, depreciação, despesas incorridas sobre cada ativo. Nunca aplica heurísticas genéricas (50/30/20 descartado por falta de fundamento em financial analysis). Cada diagnóstico é personalizado porque cada patrimônio é diferente.
 
@@ -223,11 +223,11 @@ D/E = Dívidas totais / Patrimônio líquido
 
 ---
 
-*Documento gerado em 23/03/2026. Base: CFA Level I Schweser Notes 2020 (Books 1-5, 1.527 págs) + Secret Sauce 2019 (243 págs) + QuickSheet 2020 (6 págs).*
+*Documento gerado em 23/03/2026. Base: currículo de análise financeira quantitativa (Books 1-5, 1.527 págs) + material complementar (243 págs + 6 págs).*
 
 ---
 
-## 6. Motor de Inteligência: "JARVIS CFA"
+## 6. Motor de Inteligência: "JARVIS"
 
 ### 6.1 Os 3 Pilares
 

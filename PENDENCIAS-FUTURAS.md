@@ -100,9 +100,9 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E6 | **Metas de economia (savings goals)** — tabela `savings_goals` + CRUD + página `/goals` com progresso visual, valor mensal sugerido, meses restantes, concluir/reabrir. Sidebar 8+1. Migration 072. Ref: HANDOVER §32. | Médio | Alto (retenção longa) | ✅ |
 | E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto Runway, impacto LCR, comparativo reserva 6 meses). Cálculo determinístico com dados reais de solvência. Componente `affordability-simulator.tsx`, 1ª aba nas Calculadoras (5 abas). Ref: HANDOVER §32. | Médio | Alto (diferenciação / marketing) | ✅ |
 | E8 | **Exportação IRPF formatada** — XLSX com ExcelJS (6 abas: Resumo, Rendimentos, Deduções, Bens, Dívidas, Provisionamento). Botão "Exportar" na página de IR, lazy import. Zero deps novas. Ref: HANDOVER §32. | Médio | Alto (renovação anual) | ✅ |
-| E8b | **Motor JARVIS CFA: Frente A (zero schema change)** — RPC `get_jarvis_scan` com 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10). Camada 2: combinador com projeção 3/6/12m. UX: JarvisScanCard no dashboard. 40 testes Jest. Ref: HANDOVER §31. | Médio | Alto (diferenciação CFA) | ✅ |
-| E8c | **Motor JARVIS CFA: Frente B (schema evolution)** — Migration aplicada: `investment_class`, `interest_rate`, `rate_type` em accounts + CHECK constraints. FIX: `depreciation_rate` numeric(5,4)→(7,4). Todas 4 regras implementadas: R01 (ativo < CDI), R02 (dívida cara), R04 (veículo TCO), R05 (espiral cartão). Formulário de contas com campos condicionais. **Motor JARVIS Camada 1 completo: 10 regras.** Ref: HANDOVER §31. | Médio | Alto (WACC pessoal, análise de risco) | ✅ |
-| E8d | **CFA Pessoal: Calculadoras TVM** — 4 calculadoras implementadas: Independência Financeira (perpetuidade), Comprar vs Alugar (NPV), CET (IRR/Newton-Raphson), SAC vs Price. Front-end only, zero RPC. Página `/calculators` com tabs. Nav 7+1. Ref: HANDOVER §31.7. | Médio | Alto (diferenciação) | ✅ |
+| E8b | **Motor JARVIS: Frente A (zero schema change)** — RPC `get_jarvis_scan` com 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10). Camada 2: combinador com projeção 3/6/12m. UX: JarvisScanCard no dashboard. 40 testes Jest. Ref: HANDOVER §31. | Médio | Alto (diferenciação) | ✅ |
+| E8c | **Motor JARVIS: Frente B (schema evolution)** — Migration aplicada: `investment_class`, `interest_rate`, `rate_type` em accounts + CHECK constraints. FIX: `depreciation_rate` numeric(5,4)→(7,4). Todas 4 regras implementadas: R01 (ativo < CDI), R02 (dívida cara), R04 (veículo TCO), R05 (espiral cartão). Formulário de contas com campos condicionais. **Motor JARVIS Camada 1 completo: 10 regras.** Ref: HANDOVER §31. | Médio | Alto (WACC pessoal, análise de risco) | ✅ |
+| E8d | **Calculadoras Financeiras TVM** — 4 calculadoras implementadas: Independência Financeira (perpetuidade), Comprar vs Alugar (NPV), CET (IRR/Newton-Raphson), SAC vs Price. Front-end only, zero RPC. Página `/calculators` com tabs. Nav 7+1. Ref: HANDOVER §31.7. | Médio | Alto (diferenciação) | ✅ |
 | E8e | **Polymarket / Prediction Markets como input contextual** — Integrar API do Polymarket (ou equivalente) como sinal de mercado na Camada 3 (IA narrativa). Ex: "mercado precifica 72% de chance de Selic cair, o que favoreceria migrar CDB pré para pós-CDI". Analisado e rejeitado para agora: desalinhamento de domínio, cobertura BR ≈ zero, escopo creep. Reavaliar quando Camada 3 for implementada. | Baixo | Baixo (Camada 3 futura) | ⏳ |
 | E10 | **Open Finance com motor de reconciliação maduro** — Fase 2 planejada (adendo v1.3). Só entregar quando: (1) motor de deduplicação por hash, (2) indicador de status de sincronização por conta, (3) fila de transações "suspeitas" para confirmação do usuário. Entregar Open Finance com dados inconsistentes é pior que não ter. | Alto | Alto (aquisição / paridade) | 📌 |
 | E11 | **UX-H2-02: Push notifications triggers** — inatividade 7 dias implementada dentro de `/api/push/send` (Vercel cron diário 11:00 UTC). Texto: "Oniefy sente sua falta". Log em notification_log tipo "inactivity". APNs nativo depende de Mac. | Médio | Médio (engajamento) | ✅ (inatividade) / 🔒 (APNs) |
@@ -117,8 +117,8 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 |--------|------|---------|---------|--------|
 | E11 | **Compartilhamento familiar com permissões granulares** — "cônjuge com acesso total" vs "filho com acesso às próprias contas". Arquitetura multi-user documentada (RLS multi-user backlog). Muda unidade de cobrança de "pessoa" para "família". | Alto | Alto (ticket médio) | 📌 |
 | E12 | **Projeção indexada IPCA/IGP-M** — 3 cenários (pessimista/base/otimista) para despesas recorrentes nos próximos 12 meses. Cada recorrência usa seu adjustment_index. Gráfico Recharts + cards totais. 2ª aba em Calculadoras. Ref: HANDOVER §32. | Médio | Alto (diferenciação BR) | ✅ |
-| E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: CFA Institute, Ibbotson 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
-| E15 | **Diagnóstico CFA Camada A+B** — RPC `get_cfa_diagnostics` com 11 métricas: savings rate, HHI (Markowitz), WACC pessoal, D/E, working capital, breakeven, income CV, DuPont pessoal (3 fatores), category trends (3 meses), warning signs (CFA R29), monthly history. Página `/diagnostics`, nav 9+1, 37 testes Jest, 8 helpers de interpretação. | Médio | Alto (CFA core) | ✅ |
+| E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: Ibbotson et al. 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
+| E15 | **Diagnóstico Financeiro Camada A+B** — RPC `get_cfa_diagnostics` com 11 métricas: savings rate, HHI (Markowitz), WACC pessoal, D/E, working capital, breakeven, income CV, DuPont pessoal (3 fatores), category trends (3 meses), warning signs, monthly history. Página `/diagnostics`, nav 9+1, 37 testes Jest, 8 helpers de interpretação. | Médio | Alto (core financeiro) | ✅ |
 | E14 | **Shadow Ledger (off-balance sheet)** — milhas, pontos de fidelidade, garantias judiciais, passivos contingentes. Exibidos em seção separada com nota de estimativa. Completa a foto patrimonial sem comprometer o ledger principal. | Médio | Médio (completude patrimonial) | 📌 |
 
 ---
@@ -161,8 +161,8 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Web3 wallet login (Ethereum/Solana) | Sessão 22 | Tester crypto solicitar — infraestrutura Supabase já habilitada |
 | Assistente conversacional (AI chat) | Adendo v1.5 P17 | Pós-validação de retenção — API route já implementada |
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
-| **CFA Pessoal: Inteligência Ativa (Frente C)** | docs/CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B concluídas (E8b/E8c/E15). Gatilho: 3 meses de dados por usuário. Inclui: insights automáticos no dashboard (IA narrativa), benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
-| **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights CFA) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
+| **Inteligência Ativa (Frente C)** | docs/FINANCIAL-METHODOLOGY.md §3 Fase 3 | Frentes A+B concluídas (E8b/E8c/E15). Gatilho: 3 meses de dados por usuário. Inclui: insights automáticos no dashboard (IA narrativa), benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
+| **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights financeiros) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
 
 ---
 
@@ -209,7 +209,7 @@ Documentadas, não são bugs. Reavaliar se o cenário de uso mudar.
 | YNAB | US | Não (import manual) | Assinatura (US$99/ano) | Intencionais | Metodologia envelope, 6 pessoas por assinatura |
 | Empower | US | Sim (Plaid) | Freemium + advisory | Mass affluent | Net Worth tracking + investment advisory |
 | Monarch | US | Sim (Plaid) | Assinatura (US$99/ano) | Mass affluent | Melhor UX, compartilhamento familiar |
-| **Oniefy** | **BR** | **Não (roadmap)** | **Assinatura** | **Hybrid Earner** | **Solvência, CFA pessoal, patrimônio, fiscal** |
+| **Oniefy** | **BR** | **Não (roadmap)** | **Assinatura** | **Hybrid Earner** | **Solvência, análise financeira, patrimônio, fiscal** |
 
 ### iDinheiro — Análise detalhada (adicionado sessão 30)
 
@@ -227,9 +227,9 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Marketplace de crédito | Ofertas de empréstimo/cartão dentro do app | Não (fora do modelo) | N/A — Oniefy não monetiza via afiliados |
 | Patrimônio / Solvência | Não oferece | Sim (LCR, runway, tiers, balance sheet) | Vantagem Oniefy |
 | Fiscal / IRPF | Não oferece | Sim (módulo fiscal, tax_parameters) | Vantagem Oniefy |
-| Análise CFA | Não oferece | Implementado (E8b-E8d) | Diferenciação radical |
+| Análise financeira avançada | Não oferece | Implementado (E8b-E8d) | Diferenciação radical |
 
-**Insight estratégico:** O iDinheiro valida que projeção financeira e metas com sugestões automáticas são features de alta demanda no mercado BR. O modelo de monetização via afiliados é incompatível com a proposta do Oniefy ("CFA pessoal" exige independência — não pode recomendar empréstimo e ao mesmo tempo ganhar comissão por ele). Mas a funcionalidade de projeção é universalmente valiosa e reforça a prioridade dos itens E6 e E8d no backlog.
+**Insight estratégico:** O iDinheiro valida que projeção financeira e metas com sugestões automáticas são features de alta demanda no mercado BR. O modelo de monetização via afiliados é incompatível com a proposta do Oniefy (a proposta de análise financeira independente exige imparcialidade — não pode recomendar empréstimo e ao mesmo tempo ganhar comissão por ele). Mas a funcionalidade de projeção é universalmente valiosa e reforça a prioridade dos itens E6 e E8d no backlog.
 
 ### O que os concorrentes ensinam por negativo
 
@@ -262,9 +262,9 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Data | Atualização | Responsável |
 |------|------------|-------------|
 | 23/03/2026 | Documento criado. Compilação de HANDOVER §12 + benchmark de mercado + insights de produto. | Claude |
-| 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `docs/CFA-ONIEFY-MAPPING.md`. | Claude |
-| 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas (projeção, metas automáticas). Calculadora 50/30/20 avaliada e descartada (heurística sem base CFA). | Claude |
-| 24/03/2026 | E8b-E8c reescritos com especificação detalhada do Motor JARVIS CFA: 10 regras com fórmulas SQL, 3 camadas, dependências de schema mapeadas. Ref: HANDOVER §30.10 + docs/CFA-ONIEFY-MAPPING.md §6. | Claude |
+| 23/03/2026 | Adicionados E8b-E8d (Frentes A/B/C + Calculadoras Financeiras TVM). Adicionados itens estratégicos: Inteligência Ativa + Suporte Contextual Silencioso. Ref: `docs/FINANCIAL-METHODOLOGY.md`. | Claude |
+| 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas (projeção, metas automáticas). Calculadora 50/30/20 avaliada e descartada (heurística sem base em análise financeira quantitativa). | Claude |
+| 24/03/2026 | E8b-E8c reescritos com especificação detalhada do Motor JARVIS: 10 regras com fórmulas SQL, 3 camadas, dependências de schema mapeadas. Ref: HANDOVER §30.10 + docs/FINANCIAL-METHODOLOGY.md §6. | Claude |
 | 24/03/2026 | E8b concluído (✅): get_jarvis_scan com 8 regras + JarvisScanCard + 40 testes. E8c parcial (🟡): schema aplicado, R02+R05 implementados, R01+R04 pendentes. E8e adicionado: Polymarket como input futuro da Camada 3 (rejeitado para agora). | Claude |
 | 25/03/2026 | E8c concluído (✅): R01 (ativo < CDI) e R04 (veículo TCO) implementados. Motor JARVIS Camada 1 completo: 10 regras determinísticas. 45 suítes / 666 assertions. | Claude |
 | 25/03/2026 | E8d concluído (✅): 4 calculadoras TVM (Independência, Comprar vs Alugar, CET, SAC vs Price). Bloco E8 inteiro fechado (E8b ✅, E8c ✅, E8d ✅, E8e ⏳). | Claude |
@@ -272,5 +272,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 25/03/2026 | E1 concluído (✅): indicador de saúde de saldo por conta (3 estados visuais). E3 concluído (✅): gerenciador de assinaturas (aba em Contas a Pagar). E6 concluído (✅): metas de economia com CRUD, progresso, sugestão mensal (migration 072, nova tabela savings_goals, sidebar 8+1). 47 suítes / 708 assertions. | Claude |
 | 25/03/2026 | E5 concluído (✅): política de early adopters (docs/POLITICA-EARLY-ADOPTERS.md). Q1 em progresso (🔄): cobertura 60.9%→67.9% (+55 testes em 2 batches). Q3 concluído (✅ código): Sentry beforeSend + PII scrub nos 3 configs (falta DSN = A11). 49 suítes / 763 assertions. | Claude |
 | 25-26/03/2026 | E8 concluído (✅): exportação IRPF formatada (XLSX 6 abas, ExcelJS). Q1 batch 3 (+12 testes): cobertura 67.9%→71.2% statements, 75.3% functions. Fix Vercel deploy (ESLint override para testes). 50 suítes / 775 assertions. Sessão 32 total: 8 features (E1/E2/E3/E5/E6/E7/E8/E9), 109 testes novos, 17 commits. | Claude |
-| 26/03/2026 | E15 concluído (✅): Diagnóstico CFA Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
+| 26/03/2026 | E15 concluído (✅): Diagnóstico Financeiro Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 

@@ -1,9 +1,9 @@
 -- ============================================================
--- Motor JARVIS CFA - VERSÃO COMPLETA: todas 10 regras
+-- Motor JARVIS - VERSÃO COMPLETA: todas 10 regras
 -- Adiciona R01 (ativo < CDI) e R04 (veículo TCO) ao scanner
 -- Versão final: R01-R10 + R03b + Camada 2 Combinador
 -- Substitui get_jarvis_scan das migrations 068 e 070
--- Ref: CFA-ONIEFY-MAPPING.md §6
+-- Ref: FINANCIAL-METHODOLOGY.md §6
 -- ============================================================
 -- Nota: função completa aplicada via Supabase MCP (apply_migration).
 -- Este arquivo contém documentação da versão canônica.

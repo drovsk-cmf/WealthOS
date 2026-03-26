@@ -94,8 +94,8 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, recalculate_account_balance_for, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
 | Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
-| JARVIS CFA | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
-| CFA Diagnostics | get_cfa_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
+| JARVIS | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
+| Diagnostics | get_cfa_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -171,13 +171,13 @@ src/
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
 │   │   ├── budgets/page.tsx
-│   │   ├── calculators/page.tsx  # 5 calculadoras CFA (E8d + E7 Posso Comprar?)
+│   │   ├── calculators/page.tsx  # 5 calculadoras financeiras (E8d + E7 Posso Comprar?)
 │   │   ├── categories/page.tsx
 │   │   ├── chart-of-accounts/page.tsx
 │   │   ├── connections/page.tsx   # 3 abas: Importar + Conciliação + Conexões
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
-│   │   ├── diagnostics/page.tsx   # CFA Diagnostics Camada A+B (11 métricas)
+│   │   ├── diagnostics/page.tsx   # Diagnóstico Financeiro Camada A+B (11 métricas)
 │   │   ├── family/page.tsx
 │   │   ├── goals/page.tsx         # E6: metas de economia (CRUD, progresso, sugestão mensal)
 │   │   ├── indices/page.tsx
@@ -205,7 +205,7 @@ src/
 │   ├── accounts/account-form.tsx   # Campos condicionais Frente B (investment_class, interest_rate, rate_type)
 │   ├── assets/asset-form.tsx
 │   ├── budgets/budget-form.tsx
-│   ├── calculators/               # 5 calculadoras CFA (E8d + E7)
+│   ├── calculators/               # 5 calculadoras financeiras (E8d + E7)
 │   │   ├── independence-calculator.tsx  # Perpetuidade + tempo para atingir
 │   │   ├── buy-vs-rent-calculator.tsx   # NPV, custo de oportunidade
 │   │   ├── cet-calculator.tsx           # IRR/Newton-Raphson, spread vs nominal
@@ -224,7 +224,7 @@ src/
 │   │   # upcoming-bills-card, budget-summary-card, solvency-panel,
 │   │   # balance-evolution-chart, quick-entry-fab, narrative-card,
 │   │   # attention-queue, setup-journey-card, import-cta, mfa-reminder-banner,
-│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS CFA),
+│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS),
 │   │   # net-worth-chart (E2: patrimônio líquido ao longo do tempo)
 │   ├── onboarding/ (4 step components + index.ts: route-choice, route-manual, route-snapshot, celebration)
 │   ├── recurrences/recurrence-form.tsx
@@ -3565,7 +3565,7 @@ Sugestão recebida de um colaborador externo propondo UX Writing e Design Compor
 2. **"Dicas Importantes"** (Importar) — prevenção de erros antes da importação
 3. **"Por que acompanhar o patrimônio?"** (Patrimônio) — educação e reforço de valor
 
-A lógica estratégica é transformar o Oniefy de ferramenta passiva em mentor ativo. As caixas servem como nudges (empurrões) para combater a inércia do usuário. Visão de longo prazo: CFA pessoal para cada usuário.
+A lógica estratégica é transformar o Oniefy de ferramenta passiva em mentor ativo. As caixas servem como nudges (empurrões) para combater a inércia do usuário. Visão de longo prazo: analista financeiro pessoal para cada usuário.
 
 **Implementado parcialmente nos commits desta sessão:**
 
@@ -3840,11 +3840,11 @@ Esses checks teriam pego os bugs das sessões 30.7 (turnstile "use client") e 30
 
 **Commit:** `f23b297` | CI + Post-Deploy Check: success
 
-### 30.10 Especificação completa do Motor JARVIS CFA
+### 30.10 Especificação completa do Motor JARVIS
 
 Sessão encerrada com especificação técnica detalhada do motor de inteligência do Oniefy. Documentos atualizados:
 
-**Princípios definitivos do CFA Pessoal (definidos por Claudio):**
+**Princípios definitivos do Analista Financeiro Pessoal (definidos por Claudio):**
 1. Análise de contexto com dados reais, nunca regras genéricas (50/30/20 descartado)
 2. Sugestões ancoradas em hábitos específicos ("reduza 7 pedidos iFood" > "gaste menos com alimentação")
 3. Tempo é o ativo mais caro — nunca sugerir economia que custa mais em tempo
@@ -3888,7 +3888,7 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 **Princípio arquitetural: algoritmo primeiro, IA depois.** Garante reprodutibilidade, auditabilidade, custo controlado.
 
 **Documentos de referência:**
-- `docs/CFA-ONIEFY-MAPPING.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
+- `docs/FINANCIAL-METHODOLOGY.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
 - `PENDENCIAS-FUTURAS.md` E8b-E8d (backlog de implementação)
 
 **Próximo passo:** Implementar as 6 regras que funcionam com zero schema change (R03, R06, R07, R08, R09, R10) + Frente B (migration para interest_rate/rate_type/investment_class) + 4 regras restantes.
@@ -3902,23 +3902,23 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 | `8093e48` | useAuthInit: getSession antes de MFA |
 | `9d9fc90` | Revert Midnight Plum para #241E29 |
 | `127af22` | 5 fixes: Importar/OAuth/glow/hover/gradients |
-| `807c4c1` | CFA → Oniefy mapping (57 readings) |
-| `b920dfb` | CFA + Suporte Contextual no backlog |
+| `807c4c1` | Metodologia financeira mapping (57 readings) |
+| `b920dfb` | Metodologia + Suporte Contextual no backlog |
 | `b556e3f` | FIX CRÍTICO: turnstile "use client" |
 | `21a3876` | FIX CRÍTICO: OAuth www mismatch + static files |
 | `f23b297` | Smoke tests auth + static files no CI |
 | `b2b79c3` | Benchmark com iDinheiro |
 | `3c6f080` | Descartar 50/30/20 |
-| `ed56a59` | Princípios CFA Pessoal revisados |
-| `0a2958d` | Motor JARVIS CFA especificação |
+| `ed56a59` | Princípios análise financeira revisados |
+| `0a2958d` | Motor JARVIS especificação |
 
 ---
 
-## 31. Sessão 31 — Motor JARVIS CFA: Implementação (24/03/2026)
+## 31. Sessão 31 — Motor JARVIS: Implementação (24/03/2026)
 
-### 31.1 Motor JARVIS CFA implementado (Frentes A + B + parcial C)
+### 31.1 Motor JARVIS implementado (Frentes A + B + parcial C)
 
-Implementação completa do Motor JARVIS CFA conforme especificação da sessão 30 (§30.10) e `docs/CFA-ONIEFY-MAPPING.md` §6.
+Implementação completa do Motor JARVIS conforme especificação da sessão 30 (§30.10) e `docs/FINANCIAL-METHODOLOGY.md` §6.
 
 **Frente A (zero schema change): 6 regras iniciais**
 
@@ -3967,7 +3967,7 @@ Adicionados na mesma sessão, completando o scanner:
 | R01 | Ativo com retorno líquido < CDI (compara yield mensal vs CDI dinâmico; degradação graceful sem income data) | Taxa |
 | R04 | Veículo TCO (depreciação + despesas operacionais via asset_id; peso na renda como %) | Fluxo+Tempo |
 
-**Total final: 10 regras + R03b = 11 findings possíveis. Motor JARVIS CFA Camada 1 completo.**
+**Total final: 10 regras + R03b = 11 findings possíveis. Motor JARVIS Camada 1 completo.**
 
 ### 31.3 Frontend JARVIS
 
@@ -4000,15 +4000,15 @@ Proposta de integrar API do Polymarket para "cheiro de mercado" analisada e **re
 2. Cobertura Brasil ≈ zero (eventos BR sem liquidez)
 3. Escopo creep no momento errado
 4. Risco regulatório (zona cinzenta apostas/derivativos)
-5. Viola Princípio CFA #1 (probabilidades genéricas, não específicas ao patrimônio)
+5. Viola Princípio #1 de análise financeira (probabilidades genéricas, não específicas ao patrimônio)
 
 **Decisão:** anotar em PENDENCIAS-FUTURAS como ideia para Camada 3 (IA narrativa) em futuro distante.
 
-### 31.7 Calculadoras CFA (E8d)
+### 31.7 Calculadoras Financeiras (E8d)
 
 4 calculadoras front-end only adicionadas em `/calculators`:
 
-| Calculadora | Conceito CFA | Método |
+| Calculadora | Conceito | Método |
 |-------------|-------------|--------|
 | Independência Financeira | Perpetuidade (Gordon) | PV = Despesa anual / Retorno real |
 | Comprar vs Alugar | NPV | Custo total compra vs aluguel + investimento da diferença |
@@ -4021,13 +4021,13 @@ Navegação atualizada: 7+1 items (Calculadoras adicionado na sidebar).
 
 | Hash | Descrição |
 |------|-----------|
-| `6eb60a6` | Motor JARVIS CFA: scanner 6 regras + Frente B schema + UX card |
+| `6eb60a6` | Motor JARVIS: scanner 6 regras + Frente B schema + UX card |
 | `1690761` | JARVIS: adiciona R02 (dívida cara) e R05 (espiral cartão) |
 | `cc1f1bb` | JARVIS: 40 testes + types regenerados + fix bank-connections |
 | `7137a3c` | CI: re-trigger (runner provisioning failure) |
 | `3251b20` | HANDOVER §31 + PENDENCIAS atualizados |
 | `80e4603` | JARVIS completo: R01 + R04 + 44 testes + HANDOVER §31 final |
-| `464efc5` | E8d: Calculadoras CFA (4 ferramentas TVM, front-end only) |
+| `464efc5` | E8d: Calculadoras financeiras (4 ferramentas TVM, front-end only) |
 | `183563b` | HANDOVER + PENDENCIAS: E8d ✅, bloco E8 fechado |
 | `e92b8f3` | HANDOVER §3: corrige todas as discrepâncias numéricas |
 
@@ -4303,7 +4303,7 @@ Componente `human-capital-calculator.tsx` na 7ª aba de Calculadoras:
 - 3 outputs: Capital Humano (VP), Gap descoberto, Cobertura seguro recomendada
 - Gráfico barras (VP renda anual + VP acumulado) + linha referência patrimônio
 - Insight contextualizado: "gap de R$ X descoberto, cobertura Y%"
-- Ref: CFA Institute, Ibbotson et al. 2007
+- Ref: Ibbotson et al. 2007
 
 ### 32.22 Estado do projeto (snapshot intermediário, ver §32.26 para versão final)
 
@@ -4317,7 +4317,7 @@ _Tabela removida para evitar confusão. Ground truth final em §32.26._
 - `PENDENCIAS-FUTURAS.md` — Backlog ativo de produto
 
 **Arquivos movidos para docs/:**
-- `CFA-ONIEFY-MAPPING.md` → `docs/CFA-ONIEFY-MAPPING.md`
+- `FINANCIAL-METHODOLOGY.md` → `docs/FINANCIAL-METHODOLOGY.md`
 - `PLANO-REVISAO-ONIEFY.md` → `docs/PLANO-REVISAO-ONIEFY.md`
 - `RELATORIO-AUDITORIA-2026-03-19.md` → `docs/RELATORIO-AUDITORIA-2026-03-19.md`
 
@@ -4335,7 +4335,7 @@ docs/
   AUDIT-CODE-DUMP.md           # Snapshot de código para auditoria (histórico, 852KB)
   AUDIT-PROMPT-GEMINI.md       # Prompt usado na auditoria Gemini
   AUDITORIA-TECNICA-*.md       # Auditoria contra projeto legado
-  CFA-ONIEFY-MAPPING.md        # Mapeamento CFA + Motor JARVIS
+  FINANCIAL-METHODOLOGY.md        # Metodologia Financeira + Motor JARVIS
   DEPLOY-VERCEL.md             # Guia de deploy
   LGPD-MAPEAMENTO.md           # Conformidade LGPD (TEC-07)
   MATRIZ-VALIDACAO.md          # Matriz de validação de stories
