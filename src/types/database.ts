@@ -2082,6 +2082,7 @@ export type Database = {
       get_index_latest: { Args: never; Returns: Json }
       get_cfa_diagnostics: { Args: { p_user_id: string }; Returns: Json }
       get_jarvis_scan: { Args: { p_user_id: string }; Returns: Json }
+      get_jarvis_v2: { Args: { p_user_id: string }; Returns: Json }
       get_rate_to_brl: { Args: { p_currency: string }; Returns: number }
       get_retention_metrics: { Args: never; Returns: Json }
       get_setup_journey: { Args: { p_user_id: string }; Returns: Json }

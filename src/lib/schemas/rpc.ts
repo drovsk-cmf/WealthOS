@@ -509,6 +509,57 @@ export const cfaDiagnosticsSchema = z.object({
   monthly_history: z.array(monthlyHistoryItemSchema),
 });
 
+// ─── JARVIS v2 (State Machine + Dependency Graph) ────────
+
+const jarvisV2StateSchema = z.enum([
+  "SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO",
+]);
+
+const jarvisV2ClassificationSchema = z.object({
+  reserve_ratio: z.number(),
+  debt_stress: z.number(),
+  savings_rate: z.number(),
+  fi_progress: z.number(),
+  income_cv: z.number(),
+  base_months: z.number(),
+  reserve_target: z.number(),
+});
+
+const jarvisV2MetricsSchema = z.object({
+  avg_income: z.number(),
+  avg_expense: z.number(),
+  surplus: z.number(),
+  burn_rate: z.number(),
+  liquid_assets: z.number(),
+  illiquid_assets: z.number(),
+  total_debt: z.number(),
+  debt_uncollateralized: z.number(),
+  net_worth: z.number(),
+  wacc_monthly: z.number(),
+  hhi: z.number(),
+  hhi_top_item: z.string(),
+  hhi_top_pct: z.number(),
+  cdi_monthly: z.number(),
+  cdi_annual: z.number(),
+  months_analyzed: z.number(),
+});
+
+const jarvisV2ActionSchema = z.object({
+  priority: z.number(),
+  rule: z.string(),
+  action: z.string(),
+  impact_monthly: z.number(),
+  rationale: z.string(),
+});
+
+export const jarvisV2Schema = z.object({
+  state: jarvisV2StateSchema,
+  classification_inputs: jarvisV2ClassificationSchema,
+  metrics: jarvisV2MetricsSchema,
+  actions: z.array(jarvisV2ActionSchema),
+  actions_count: z.number(),
+});
+
 export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown>) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)
