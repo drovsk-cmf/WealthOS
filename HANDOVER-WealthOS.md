@@ -108,7 +108,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (211 arquivos TS/TSX em src/, 50 suítes de teste, 775 assertions)
+### 3.4 Código Fonte (213 arquivos TS/TSX em src/, 50 suítes de teste, 775 assertions)
 
 ```
 src/
@@ -366,10 +366,10 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 ### Próximo: Fase 10 (Polish + App Store)
 
 A última fase é um conjunto de refinamentos, não stories novas:
-- PWA icons, manifest.json, Service Worker
-- Capacitor iOS build + App Store
-- Next.js upgrade (14 → 15+)
-- OCR real (WKF-03), testes, Edge Functions com pg_cron
+- ~~PWA icons, manifest.json, Service Worker~~ — **FEITO** (manifest.json, sw.js v2 em public/)
+- Capacitor iOS build + App Store — **bloqueado** (requer Mac + Apple Developer Account)
+- ~~Next.js upgrade (14 → 15+)~~ — **FEITO** (Next.js 15.5.14 + React 19.2.4)
+- OCR real (WKF-03) — web fallback Tesseract.js implementado, nativo iOS bloqueado por Mac
 
 ### Auditoria de Segurança (Gemini, 2026-03-10)
 

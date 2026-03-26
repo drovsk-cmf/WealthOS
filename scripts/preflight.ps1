@@ -100,9 +100,9 @@ if (Test-Path ".env.local") {
 
     # Obrigatorias
     $required = @(
-        "NEXT_PUBLIC_SUPABASE_URL",
-        "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY"
+        "NEXT_PUBLIC_ONIEFY_DB_URL",
+        "NEXT_PUBLIC_ONIEFY_DB_KEY",
+        "ONIEFY_DB_SECRET"
     )
     foreach ($key in $required) {
         if ($envContent -match "(?m)^$key=.+") {
@@ -112,11 +112,9 @@ if (Test-Path ".env.local") {
         }
     }
 
-    # Projeto correto (nao o legado)
+    # Projeto correto
     if ($envContent -match "mngjbrbxapazdddzgoje") {
         Write-Check "  Supabase project" "PASS" "oniefy-prod"
-    } elseif ($envContent -match "hmwdfcsxtmbzlslxgqus") {
-        Write-Check "  Supabase project" "FAIL" "aponta para projeto LEGADO (pausado!)"
     } else {
         Write-Check "  Supabase project" "WARN" "project ID nao reconhecido"
     }
@@ -175,11 +173,11 @@ if ($portInUse) {
 # ── 7. Conectividade Supabase ────────────────────────────────
 if (Test-Path ".env.local") {
     $envLines = Get-Content ".env.local"
-    $supaUrl = ($envLines | Where-Object { $_ -match "^NEXT_PUBLIC_SUPABASE_URL=" }) -replace "^NEXT_PUBLIC_SUPABASE_URL=", ""
+    $supaUrl = ($envLines | Where-Object { $_ -match "^NEXT_PUBLIC_ONIEFY_DB_URL=" }) -replace "^NEXT_PUBLIC_ONIEFY_DB_URL=", ""
     if ($supaUrl) {
         try {
             $healthUrl = "$supaUrl/rest/v1/"
-            $anonKey = ($envLines | Where-Object { $_ -match "^NEXT_PUBLIC_SUPABASE_ANON_KEY=" }) -replace "^NEXT_PUBLIC_SUPABASE_ANON_KEY=", ""
+            $anonKey = ($envLines | Where-Object { $_ -match "^NEXT_PUBLIC_ONIEFY_DB_KEY=" }) -replace "^NEXT_PUBLIC_ONIEFY_DB_KEY=", ""
             $response = Invoke-WebRequest -Uri $healthUrl -Headers @{
                 "apikey" = $anonKey
                 "Authorization" = "Bearer $anonKey"
