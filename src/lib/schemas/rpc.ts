@@ -407,6 +407,108 @@ export const jarvisScanSchema = z.object({
   solvency: solvencyMetricsSchema.nullable(),
 });
 
+// ─── CFA Diagnostics (Camada A + B) ─────────────────────
+
+const savingsRateSchema = z.object({
+  value: z.number(),
+  monthly_surplus: z.number(),
+  avg_income: z.number(),
+  avg_expense: z.number(),
+  months_analyzed: z.number(),
+});
+
+const patrimonyHhiSchema = z.object({
+  value: z.number(),
+  concentration: z.enum(["critical", "high", "moderate", "diversified"]),
+  top_item: z.string(),
+  top_pct: z.number(),
+  total_patrimony: z.number(),
+});
+
+const waccPersonalSchema = z.object({
+  value: z.number(),
+  debt_count: z.number(),
+  total_debt: z.number(),
+});
+
+const debtToEquitySchema = z.object({
+  value: z.number(),
+  total_debt: z.number(),
+  net_worth: z.number(),
+});
+
+const workingCapitalSchema = z.object({
+  value: z.number(),
+  current_assets: z.number(),
+  current_liabilities_30d: z.number(),
+});
+
+const breakevenSchema = z.object({
+  monthly_value: z.number(),
+  fixed_expenses: z.number(),
+  variable_expenses: z.number(),
+  variable_pct: z.number(),
+});
+
+const incomeVolatilitySchema = z.object({
+  cv: z.number(),
+  mean: z.number(),
+  std_dev: z.number(),
+  months_analyzed: z.number(),
+  risk_level: z.enum(["critical", "high", "moderate", "low"]),
+});
+
+const dupontPersonalSchema = z.object({
+  savings_margin: z.number(),
+  asset_turnover: z.number(),
+  equity_multiplier: z.number(),
+  roe: z.number(),
+});
+
+const categoryTrendItemSchema = z.object({
+  cid: z.string().optional(),
+  cname: z.string(),
+  color: z.string().nullable().optional(),
+  m1: z.number(),
+  m2: z.number(),
+  m3: z.number(),
+  biggest: z.number().optional(),
+  trend_pct: z.number(),
+  direction: z.enum(["up", "down", "stable"]),
+});
+
+const warningSignsSchema = z.object({
+  burn_rising: z.boolean(),
+  nw_declining: z.boolean(),
+  runway_shrinking: z.boolean(),
+  savings_negative: z.boolean(),
+  count: z.number(),
+});
+
+const monthlyHistoryItemSchema = z.object({
+  month: z.string(),
+  income: z.number(),
+  expense: z.number(),
+  savings_rate: z.number(),
+  net_worth: z.number(),
+  burn_rate: z.number(),
+  runway: z.number(),
+});
+
+export const cfaDiagnosticsSchema = z.object({
+  savings_rate: savingsRateSchema,
+  patrimony_hhi: patrimonyHhiSchema,
+  wacc_personal: waccPersonalSchema,
+  debt_to_equity: debtToEquitySchema,
+  working_capital: workingCapitalSchema,
+  breakeven: breakevenSchema,
+  income_volatility: incomeVolatilitySchema,
+  dupont_personal: dupontPersonalSchema,
+  category_trends: z.array(categoryTrendItemSchema),
+  warning_signs: warningSignsSchema,
+  monthly_history: z.array(monthlyHistoryItemSchema),
+});
+
 export function logSchemaError(rpcName: string, parsed: z.SafeParseError<unknown>) {
   const issues = parsed.error.issues
     .map((issue) => `${issue.path.join(".") || "root"}: ${issue.message}`)

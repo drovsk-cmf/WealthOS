@@ -13,6 +13,7 @@ import {
   Upload,
   Calculator,
   Target,
+  Activity,
   Settings,
   LogOut,
   Eye,
@@ -29,11 +30,12 @@ import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status
 import { usePrivacyStore } from "@/lib/stores/privacy";
 
 /**
- * Navigation 8+1 (UX-H1-01 + P2 + E8d + E6)
- * 8 primary items + Settings icon separated at bottom.
+ * Navigation 9+1 (UX-H1-01 + P2 + E8d + E6 + CFA Diagnostics)
+ * 9 primary items + Settings icon separated at bottom.
  * Importar promoted to sidebar per adendo v1.5 §2.6.
  * Calculadoras added per E8d (CFA Pessoal).
  * Metas added per E6 (savings goals).
+ * Diagnóstico CFA added per Camada A+B.
  */
 const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Início", icon: Home },
@@ -44,6 +46,7 @@ const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/assets", label: "Patrimônio", icon: Building },
   { href: "/goals", label: "Metas", icon: Target },
   { href: "/calculators", label: "Calculadoras", icon: Calculator },
+  { href: "/diagnostics", label: "Diagnóstico", icon: Activity },
 ];
 
 /** Routes that belong to Settings (highlight Settings icon when active) */
