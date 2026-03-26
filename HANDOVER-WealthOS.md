@@ -4215,3 +4215,18 @@ Os 3 configs Sentry já têm `beforeSend: scrubEvent` + PII sanitization. Falta 
 | `32379fb` | HANDOVER §32 (E1/E3/E6) |
 | `df0aa39` | E5: política early adopters + Q1 batch 1 (26 testes) |
 | `82f181d` | Q1 batch 2: 29 testes |
+
+### 32.15 Fix crítico: deploy Vercel quebrado por ESLint (commit 57bf21b)
+
+**Problema:** Deploys Vercel falharam a partir do commit `82f181d` (Q1 batch 2). Site continuou no ar servindo o último deploy ok (`32379fb`).
+
+**Causa raiz:** Os 2 novos arquivos de teste (`q1-hook-coverage-batch*.tsx`) usavam `require()` dentro de `describe` blocks (padrão Jest para lazy import após `jest.mock()`). A regra `@typescript-eslint/no-require-imports` do preset `recommended` tratava esses `require()` como **erro** (não warning). O `next build` do Vercel executa ESLint por padrão, encontrou 10 erros, e abortou o build.
+
+**Fix:** Override no `.eslintrc.json` para `src/__tests__/**`:
+- `@typescript-eslint/no-require-imports`: off
+- `@typescript-eslint/no-unused-vars`: off
+- `no-console`: off
+
+**Lição aprendida:** Sempre rodar `npx next lint` (não apenas `npx eslint`) antes de push, pois é o que o Vercel executa. A diferença: `next lint` usa a config do Next.js que pode incluir regras adicionais e paths específicos.
+
+**Verificação:** Deploy `57bf21b` → success. Smoke test: manifest 200, robots 200, sw.js 200, favicon 200.
