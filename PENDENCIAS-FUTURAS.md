@@ -118,6 +118,7 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 | E11 | **Compartilhamento familiar com permissões granulares** — "cônjuge com acesso total" vs "filho com acesso às próprias contas". Arquitetura multi-user documentada (RLS multi-user backlog). Muda unidade de cobrança de "pessoa" para "família". | Alto | Alto (ticket médio) | 📌 |
 | E12 | **Projeção indexada IPCA/IGP-M** — 3 cenários (pessimista/base/otimista) para despesas recorrentes nos próximos 12 meses. Cada recorrência usa seu adjustment_index. Gráfico Recharts + cards totais. 2ª aba em Calculadoras. Ref: HANDOVER §32. | Médio | Alto (diferenciação BR) | ✅ |
 | E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: CFA Institute, Ibbotson 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
+| E15 | **Diagnóstico CFA Camada A+B** — RPC `get_cfa_diagnostics` com 11 métricas: savings rate, HHI (Markowitz), WACC pessoal, D/E, working capital, breakeven, income CV, DuPont pessoal (3 fatores), category trends (3 meses), warning signs (CFA R29), monthly history. Página `/diagnostics`, nav 9+1, 37 testes Jest, 8 helpers de interpretação. | Médio | Alto (CFA core) | ✅ |
 | E14 | **Shadow Ledger (off-balance sheet)** — milhas, pontos de fidelidade, garantias judiciais, passivos contingentes. Exibidos em seção separada com nota de estimativa. Completa a foto patrimonial sem comprometer o ledger principal. | Médio | Médio (completude patrimonial) | 📌 |
 
 ---
@@ -160,7 +161,7 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Web3 wallet login (Ethereum/Solana) | Sessão 22 | Tester crypto solicitar — infraestrutura Supabase já habilitada |
 | Assistente conversacional (AI chat) | Adendo v1.5 P17 | Pós-validação de retenção — API route já implementada |
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
-| **CFA Pessoal: Inteligência Ativa (Frente C)** | docs/CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B implementadas + 3 meses de dados por usuário. Inclui: insights automáticos no dashboard, benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
+| **CFA Pessoal: Inteligência Ativa (Frente C)** | docs/CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B concluídas (E8b/E8c/E15). Gatilho: 3 meses de dados por usuário. Inclui: insights automáticos no dashboard (IA narrativa), benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
 | **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights CFA) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
 
 ---
@@ -271,4 +272,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 25/03/2026 | E1 concluído (✅): indicador de saúde de saldo por conta (3 estados visuais). E3 concluído (✅): gerenciador de assinaturas (aba em Contas a Pagar). E6 concluído (✅): metas de economia com CRUD, progresso, sugestão mensal (migration 072, nova tabela savings_goals, sidebar 8+1). 47 suítes / 708 assertions. | Claude |
 | 25/03/2026 | E5 concluído (✅): política de early adopters (docs/POLITICA-EARLY-ADOPTERS.md). Q1 em progresso (🔄): cobertura 60.9%→67.9% (+55 testes em 2 batches). Q3 concluído (✅ código): Sentry beforeSend + PII scrub nos 3 configs (falta DSN = A11). 49 suítes / 763 assertions. | Claude |
 | 25-26/03/2026 | E8 concluído (✅): exportação IRPF formatada (XLSX 6 abas, ExcelJS). Q1 batch 3 (+12 testes): cobertura 67.9%→71.2% statements, 75.3% functions. Fix Vercel deploy (ESLint override para testes). 50 suítes / 775 assertions. Sessão 32 total: 8 features (E1/E2/E3/E5/E6/E7/E8/E9), 109 testes novos, 17 commits. | Claude |
+| 26/03/2026 | E15 concluído (✅): Diagnóstico CFA Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 

@@ -67,12 +67,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 35 (todas com RLS) |
 | Políticas RLS | 107 |
-| Functions (total) | 74 no schema public. Todas com `SET search_path = public`. 71 SECURITY DEFINER com auth.uid() guard |
+| Functions (total) | 75 no schema public. Todas com `SET search_path = public`. 72 SECURITY DEFINER com auth.uid() guard |
 | Triggers | 22 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
 | Indexes | 144 |
 | Migrations aplicadas (MCP) | 53 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 60 em supabase/migrations/ |
+| Migration files (repo) | 61 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -95,6 +95,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
 | Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
 | JARVIS CFA | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
+| CFA Diagnostics | get_cfa_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -108,11 +109,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (213 arquivos TS/TSX em src/, 50 suítes de teste, 775 assertions)
+### 3.4 Código Fonte (216 arquivos TS/TSX em src/, 51 suítes de teste, 812 assertions)
 
 ```
 src/
-├── __tests__/                    # 50 suítes de teste (Jest + RTL), 775 assertions
+├── __tests__/                    # 51 suítes de teste (Jest + RTL), 812 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -128,6 +129,7 @@ src/
 │   ├── budgets-hooks.test.tsx
 │   ├── budgets-mutations-extended.test.tsx
 │   ├── categories-mutations.test.tsx
+│   ├── cfa-diagnostics.test.ts           # 37: schema, helpers (savings rate, HHI, WACC, D/E, CV, DuPont, warnings)
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── cost-centers-hooks.test.tsx
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
@@ -164,7 +166,7 @@ src/
 │   ├── weekly-digest-template.test.ts
 │   └── workflows-hooks.test.tsx
 ├── app/
-│   ├── (app)/                    # Rotas autenticadas (20 páginas)
+│   ├── (app)/                    # Rotas autenticadas (21 páginas)
 │   │   ├── accounts/page.tsx
 │   │   ├── assets/page.tsx
 │   │   ├── bills/page.tsx
@@ -175,6 +177,7 @@ src/
 │   │   ├── connections/page.tsx   # 3 abas: Importar + Conciliação + Conexões
 │   │   ├── cost-centers/page.tsx
 │   │   ├── dashboard/page.tsx
+│   │   ├── diagnostics/page.tsx   # CFA Diagnostics Camada A+B (11 métricas)
 │   │   ├── family/page.tsx
 │   │   ├── goals/page.tsx         # E6: metas de economia (CRUD, progresso, sugestão mensal)
 │   │   ├── indices/page.tsx

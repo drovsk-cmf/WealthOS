@@ -29,12 +29,12 @@
 
 | Conceito CFA | Fórmula/Framework | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|---|
-| **Time Value of Money** | FV = PV(1+r)^n, PV = FV/(1+r)^n | "R$ 10.000 hoje valem mais que R$ 10.000 daqui a 5 anos." Projeção de patrimônio futuro, custo real de parcelas | Calculadora TVM integrada. Projeção de patrimônio com taxa real (descontada IPCA) | Novo |
-| **Annuities (PMT)** | PV/FV de anuidades ordinárias e antecipadas | Valor presente de parcelas de financiamento. "Quanto realmente custa esse parcelamento em 48x?" | Custo efetivo total (CET) de financiamentos. Input: parcela, prazo, entrada. Output: CET real vs CDI | Novo |
-| **Perpetuities** | PV = PMT/r | "Se você precisa de R$ 5.000/mês para sempre, precisa acumular R$ X a Y% real." | Calculadora de independência financeira (patrimônio alvo = despesa mensal / taxa real) | Novo |
-| **EAR (Effective Annual Rate)** | EAR = (1 + i/m)^m - 1 | Taxa efetiva real de empréstimos, cartão, cheque especial. Bancos anunciam taxa nominal; o CFA ensina a calcular a efetiva | Comparador de custo de dívida: input = taxa anunciada + periodicidade → output = EAR + custo total | Novo |
+| **Time Value of Money** | FV = PV(1+r)^n, PV = FV/(1+r)^n | "R$ 10.000 hoje valem mais que R$ 10.000 daqui a 5 anos." Projeção de patrimônio futuro, custo real de parcelas | Calculadora TVM integrada. Projeção de patrimônio com taxa real (descontada IPCA) | ✅ E8d |
+| **Annuities (PMT)** | PV/FV de anuidades ordinárias e antecipadas | Valor presente de parcelas de financiamento. "Quanto realmente custa esse parcelamento em 48x?" | Custo efetivo total (CET) de financiamentos. Input: parcela, prazo, entrada. Output: CET real vs CDI | ✅ E8d |
+| **Perpetuities** | PV = PMT/r | "Se você precisa de R$ 5.000/mês para sempre, precisa acumular R$ X a Y% real." | Calculadora de independência financeira (patrimônio alvo = despesa mensal / taxa real) | ✅ E8d |
+| **EAR (Effective Annual Rate)** | EAR = (1 + i/m)^m - 1 | Taxa efetiva real de empréstimos, cartão, cheque especial. Bancos anunciam taxa nominal; o CFA ensina a calcular a efetiva | Comparador de custo de dívida: input = taxa anunciada + periodicidade → output = EAR + custo total | ✅ E8d |
 | **Holding Period Return** | HPR = (P1 - P0 + D) / P0 | Retorno real do patrimônio mês a mês, incluindo valorização + rendimentos | Já existe parcialmente (variação patrimonial). Falta: HPR por ativo individual e consolidado | Parcial |
-| **Coefficient of Variation** | CV = σ/média | Dispersão relativa: "Sua renda varia muito?" (CLT+PJ). Quanto maior o CV, maior a necessidade de reserva | Insight automático: calcular CV da renda dos últimos 6-12 meses. Se CV > 0.3 → nudge de reserva maior | Novo |
+| **Coefficient of Variation** | CV = σ/média | Dispersão relativa: "Sua renda varia muito?" (CLT+PJ). Quanto maior o CV, maior a necessidade de reserva | Insight automático: calcular CV da renda dos últimos 6-12 meses. Se CV > 0.3 → nudge de reserva maior | ✅ E15 |
 | **Probabilidade e Distribuição Normal** | μ ± 1σ = 68%, ± 2σ = 95% | Faixa provável de despesas do próximo mês. "Com 95% de confiança, suas despesas ficarão entre R$ X e R$ Y" | Projeção estatística de gastos baseada no histórico (média ± 2σ) | Futuro |
 
 ### 2.2 Economics (Book 2, R12-R18)
@@ -57,20 +57,20 @@
 | **Balance Sheet** | Balanço patrimonial pessoal: Ativos - Passivos = Patrimônio Líquido | Contas + Ativos - Dívidas = PL | Solvency Panel + Balance Sheet Card | Implementado |
 | **Cash Flow Statement** | Fluxo de caixa pessoal: operacional (salário - contas), investimento (aportes), financiamento (parcelas) | Separação por tipo de fluxo | Parcial (transações existem, classificação por fluxo não) | Novo |
 | **Common-Size Analysis** | "Alimentação = 32% da despesa total", "Moradia = 28%" | despesa_categoria / despesa_total × 100 | Top Categories Card (percentual por categoria) | Implementado |
-| **Horizontal Analysis** | Variação mês a mês: "Despesas com transporte cresceram 15% vs mês anterior" | (valor_atual - valor_anterior) / valor_anterior | Insight de tendência (Tipo 3 do framework nudge) | Novo |
+| **Horizontal Analysis** | Variação mês a mês: "Despesas com transporte cresceram 15% vs mês anterior" | (valor_atual - valor_anterior) / valor_anterior | Insight de tendência via category_trends na página /diagnostics | ✅ E15 |
 | **Liquidity Ratios** | Liquidez pessoal: capacidade de pagar obrigações de curto prazo | Ativos líquidos / Despesas mensais = Meses de runway | LCR no Solvency Panel | Implementado |
-| **DuPont Analysis (3 fatores)** | Decomposição da "eficiência financeira pessoal" | Taxa de poupança × Retorno dos ativos × Alavancagem patrimonial | DuPont Pessoal: (Poupança/Renda) × (Renda/Ativos) × (Ativos/PL) | Novo |
-| **Debt-to-Equity** | Alavancagem pessoal | Dívidas totais / Patrimônio líquido | Calculável com dados existentes. Falta: exibição como métrica | Novo |
+| **DuPont Analysis (3 fatores)** | Decomposição da "eficiência financeira pessoal" | Taxa de poupança × Retorno dos ativos × Alavancagem patrimonial | DuPont Pessoal: (Poupança/Renda) × (Renda/Ativos) × (Ativos/PL) | ✅ E15 |
+| **Debt-to-Equity** | Alavancagem pessoal | Dívidas totais / Patrimônio líquido | Calculável com dados existentes. Exibição na página /diagnostics | ✅ E15 |
 | **Interest Coverage** | Capacidade de pagar juros das dívidas | Renda líquida / Despesas com juros | Calculável. Requer classificação de juros nas transações | Novo |
 | **Depreciation** | Depreciação de ativos (veículos, equipamentos) | Custo - Valor residual / Vida útil | Assets já tem campo de depreciação. Falta: cálculo automático | Parcial |
-| **Warning Signs (R29)** | Sinais de alerta na "saúde financeira" pessoal | Burn rate crescente, runway decrescente, dívida/PL crescente | Alertas automáticos baseados em tendências de 3+ meses | Novo |
+| **Warning Signs (R29)** | Sinais de alerta na "saúde financeira" pessoal | Burn rate crescente, runway decrescente, dívida/PL crescente | Warning signs na página /diagnostics (4 sinais) | ✅ E15 |
 
 ### 2.4 Corporate Finance (Book 4, R31-R35)
 
 | Conceito CFA | Tradução Pessoa Física | Fórmula | Feature Oniefy | Status |
 |---|---|---|---|---|
-| **NPV (Net Present Value)** | "Vale a pena comprar esse imóvel?" Comparar custo total de compra vs aluguel em VPL | NPV = Σ CF_t/(1+r)^t | Simulador comprar vs alugar. Inputs: preço, entrada, taxa, aluguel equivalente, valorização estimada | Novo |
-| **IRR (Internal Rate of Return)** | Taxa interna de retorno de um investimento imobiliário ou negócio | Taxa que zera o NPV | Complemento do simulador acima | Novo |
+| **NPV (Net Present Value)** | "Vale a pena comprar esse imóvel?" Comparar custo total de compra vs aluguel em VPL | NPV = Σ CF_t/(1+r)^t | Simulador comprar vs alugar (NPV). Calculadoras E8d | ✅ E8d |
+| **IRR (Internal Rate of Return)** | Taxa interna de retorno de um investimento imobiliário ou negócio | Taxa que zera o NPV | IRR via CET calculator | ✅ E8d |
 | **WACC** | Custo médio ponderado da dívida pessoal | Σ (peso_i × taxa_i) para cada dívida | "Seu custo médio de dívida é X% a.a." Comparar com CDI para saber se vale quitar ou investir | Novo |
 | **Capital Budgeting** | Decisões de investimento pessoal: trocar de carro? Reformar? Abrir PJ? | NPV + payback period | Calculadora de decisão: "Em quanto tempo essa decisão se paga?" | Futuro |
 | **Leverage (DOL, DFL)** | Alavancagem pessoal: quanto da renda é fixa vs variável, quanto das despesas é fixa vs variável | Despesas fixas / Despesas totais (operational leverage pessoal) | Insight: "X% das suas despesas são fixas. Isso reduz sua flexibilidade em momentos de queda de renda" | Novo |
@@ -81,9 +81,9 @@
 
 | Conceito CFA | Tradução Pessoa Física | Feature Oniefy | Status |
 |---|---|---|---|
-| **Bond Pricing (YTM)** | Custo efetivo de financiamentos (imóvel, veículo, consignado). O banco diz "1,2% a.m."; qual o custo efetivo com IOF, TAC, seguros? | Calculadora CET: parcela × n - principal = custo total → converter para taxa efetiva | Novo |
+| **Bond Pricing (YTM)** | Custo efetivo de financiamentos (imóvel, veículo, consignado). O banco diz "1,2% a.m."; qual o custo efetivo com IOF, TAC, seguros? | Calculadora CET: parcela × n - principal = custo total → converter para taxa efetiva | ✅ E8d |
 | **Duration** | Sensibilidade das dívidas a mudanças na Selic. "Se Selic subir 1 p.p., quanto muda sua parcela de financiamento pós-fixado?" | Classificação de dívidas: pré-fixada (imune) vs pós-fixada (sensível) vs indexada IPCA | Novo |
-| **Amortization (SAC vs Price)** | Diferença entre SAC e Price no financiamento imobiliário. "SAC: parcela decresce, total de juros menor. Price: parcela fixa, total de juros maior" | Simulador SAC vs Price com gráfico comparativo | Novo |
+| **Amortization (SAC vs Price)** | Diferença entre SAC e Price no financiamento imobiliário. "SAC: parcela decresce, total de juros menor. Price: parcela fixa, total de juros maior" | Simulador SAC vs Price com gráfico comparativo | ✅ E8d |
 | **Yield Spread** | Spread da dívida pessoal sobre CDI. "Seu financiamento custa CDI+3%. Isso é bom ou ruim?" | Benchmark automático: comparar spread de cada dívida com médias do mercado (via BCB SGS) | Futuro |
 | **Credit Analysis (4 Cs)** | Auto-avaliação de crédito pessoal: Capacity (renda vs dívida), Collateral (garantias), Covenants (restrições), Character (histórico) | "Score de crédito Oniefy" baseado nos 4 Cs calculados com dados reais | Futuro |
 | **Reinvestment Risk** | Risco de reinvestimento quando CDB/LCI vence e Selic caiu | Alerta: "Seu CDB de R$ X vence em Y dias. A taxa atual é Z%, vs W% quando você aplicou" | Futuro |
@@ -107,29 +107,43 @@
 
 ## 3. Priorização: O que implementar primeiro
 
-### Fase 1 - Diagnóstico (dados que já existem no banco)
+### Fase 1 - Diagnóstico (dados que já existem no banco) ✅ CONCLUÍDA
 
-Features que usam dados já coletados, sem input adicional do usuário:
+Implementação: RPC `get_cfa_diagnostics` + página `/diagnostics` (sessão 33, 26/03/2026).
 
-| Feature | Conceitos CFA | Dados necessários | Complexidade |
-|---|---|---|---|
-| Taxa de poupança | FRA (common-size) | receitas e despesas do mês | Baixa (RPC) |
-| Concentração patrimonial | Portfolio Mgmt (Markowitz) | assets por tipo | Baixa (RPC) |
-| Custo médio de dívida (WACC pessoal) | Corp Finance (WACC) | recorrências de dívida + taxas | Média (campo de taxa em recurrences) |
-| Tendência de despesas por categoria | FRA (horizontal analysis) | transações dos últimos 3 meses | Baixa (RPC) |
-| DuPont Pessoal simplificado | FRA (DuPont) | renda, despesa, ativos, PL | Média (RPC composto) |
-| Warning Signs | FRA (R29) | runway decrescente, burn rate crescente | Baixa (já tem dados) |
+| Feature | Conceitos CFA | Status |
+|---|---|---|
+| Taxa de poupança | FRA (common-size) | ✅ `savings_rate` |
+| Concentração patrimonial (HHI) | Portfolio Mgmt (Markowitz) | ✅ `patrimony_hhi` |
+| Custo médio de dívida (WACC pessoal) | Corp Finance (WACC) | ✅ `wacc_personal` |
+| Debt-to-Equity | FRA (alavancagem) | ✅ `debt_to_equity` |
+| Working Capital | Corp Finance | ✅ `working_capital` |
+| Breakeven pessoal | Corp Finance | ✅ `breakeven` |
+| Tendência de despesas por categoria | FRA (horizontal analysis) | ✅ `category_trends` |
+| DuPont Pessoal (3 fatores) | FRA (DuPont) | ✅ `dupont_personal` |
+| Warning Signs | FRA (R29) | ✅ `warning_signs` |
+| Income Volatility (CV) | QM (CV) | ✅ `income_volatility` |
+| Monthly History | Múltiplos | ✅ `monthly_history` |
 
-### Fase 2 - Calculadoras (input do usuário + cálculos CFA)
+Motor JARVIS CFA (10 regras R01-R10): ✅ `get_jarvis_scan` (sessão 31).
 
-| Feature | Conceitos CFA | Input necessário | Complexidade |
-|---|---|---|---|
-| Independência financeira | QM (perpetuity) | despesa mensal alvo + retorno real estimado | Baixa (front-end only) |
-| Comprar vs Alugar | Corp Finance (NPV) | preço, entrada, taxa, aluguel, valorização | Média (front-end + lógica TVM) |
-| CET de financiamento | Fixed Income (YTM) | parcela, prazo, principal, taxas | Média |
-| SAC vs Price | Fixed Income (amortization) | valor, taxa, prazo | Média |
+### Fase 2 - Calculadoras (input do usuário + cálculos CFA) ✅ CONCLUÍDA
 
-### Fase 3 - Inteligência ativa (o "CFA falando")
+Implementação: página `/calculators` com 7 abas (sessões 31-32).
+
+| Feature | Conceitos CFA | Status |
+|---|---|---|
+| Posso comprar? (simulador) | Corp Finance (affordability) | ✅ E7 |
+| Projeção indexada IPCA/IGP-M | Economics (inflação) | ✅ E12 |
+| Independência financeira | QM (perpetuity) | ✅ E8d |
+| Comprar vs Alugar | Corp Finance (NPV) | ✅ E8d |
+| CET de financiamento | Fixed Income (YTM/IRR) | ✅ E8d |
+| SAC vs Price | Fixed Income (amortization) | ✅ E8d |
+| Capital Humano (DCF carreira) | Portfolio Mgmt | ✅ E13 |
+
+### Fase 3 - Inteligência ativa (o "CFA falando") — PENDENTE
+
+Gatilho: 3 meses de dados por usuário + provider IA confirmado.
 
 | Feature | Conceitos CFA | Infraestrutura necessária | Complexidade |
 |---|---|---|---|
