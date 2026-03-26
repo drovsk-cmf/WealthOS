@@ -160,7 +160,7 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Web3 wallet login (Ethereum/Solana) | Sessão 22 | Tester crypto solicitar — infraestrutura Supabase já habilitada |
 | Assistente conversacional (AI chat) | Adendo v1.5 P17 | Pós-validação de retenção — API route já implementada |
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
-| **CFA Pessoal: Inteligência Ativa (Frente C)** | CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B implementadas + 3 meses de dados por usuário. Inclui: insights automáticos no dashboard, benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
+| **CFA Pessoal: Inteligência Ativa (Frente C)** | docs/CFA-ONIEFY-MAPPING.md §3 Fase 3 | Frentes A+B implementadas + 3 meses de dados por usuário. Inclui: insights automáticos no dashboard, benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
 | **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights CFA) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
 
 ---
@@ -261,9 +261,9 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Data | Atualização | Responsável |
 |------|------------|-------------|
 | 23/03/2026 | Documento criado. Compilação de HANDOVER §12 + benchmark de mercado + insights de produto. | Claude |
-| 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `CFA-ONIEFY-MAPPING.md`. | Claude |
+| 23/03/2026 | Adicionados E8b-E8d (CFA Pessoal: Frentes A/B/C + Calculadoras TVM). Adicionados itens estratégicos: CFA Inteligência Ativa + Suporte Contextual Silencioso. Ref: `docs/CFA-ONIEFY-MAPPING.md`. | Claude |
 | 24/03/2026 | Benchmark expandido: iDinheiro adicionado (app + portal). Mapa de concorrentes com 8 players. Análise detalhada do modelo de afiliados. Tabelas negativo/positivo atualizadas (projeção, metas automáticas). Calculadora 50/30/20 avaliada e descartada (heurística sem base CFA). | Claude |
-| 24/03/2026 | E8b-E8c reescritos com especificação detalhada do Motor JARVIS CFA: 10 regras com fórmulas SQL, 3 camadas, dependências de schema mapeadas. Ref: HANDOVER §30.10 + CFA-ONIEFY-MAPPING.md §6. | Claude |
+| 24/03/2026 | E8b-E8c reescritos com especificação detalhada do Motor JARVIS CFA: 10 regras com fórmulas SQL, 3 camadas, dependências de schema mapeadas. Ref: HANDOVER §30.10 + docs/CFA-ONIEFY-MAPPING.md §6. | Claude |
 | 24/03/2026 | E8b concluído (✅): get_jarvis_scan com 8 regras + JarvisScanCard + 40 testes. E8c parcial (🟡): schema aplicado, R02+R05 implementados, R01+R04 pendentes. E8e adicionado: Polymarket como input futuro da Camada 3 (rejeitado para agora). | Claude |
 | 25/03/2026 | E8c concluído (✅): R01 (ativo < CDI) e R04 (veículo TCO) implementados. Motor JARVIS Camada 1 completo: 10 regras determinísticas. 45 suítes / 666 assertions. | Claude |
 | 25/03/2026 | E8d concluído (✅): 4 calculadoras TVM (Independência, Comprar vs Alugar, CET, SAC vs Price). Bloco E8 inteiro fechado (E8b ✅, E8c ✅, E8d ✅, E8e ⏳). | Claude |

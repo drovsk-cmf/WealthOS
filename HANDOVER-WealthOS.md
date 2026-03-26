@@ -3260,8 +3260,8 @@ Varredura completa do codebase por referências ao projeto antigo (`hmwdfcsxtmbz
 **Código fonte (ts, tsx, js, json, sql, yml, css):** zero referências. Limpo.
 
 **Docs corrigidos:**
-- `PLANO-REVISAO-ONIEFY.md`: comando `gen types --project-id` apontava para projeto antigo → corrigido para `mngjbrbxapazdddzgoje`
-- `RELATORIO-AUDITORIA-2026-03-19.md`: adicionado aviso de que auditoria foi contra projeto legado
+- `docs/PLANO-REVISAO-ONIEFY.md`: comando `gen types --project-id` apontava para projeto antigo → corrigido para `mngjbrbxapazdddzgoje`
+- `docs/RELATORIO-AUDITORIA-2026-03-19.md`: adicionado aviso de que auditoria foi contra projeto legado
 
 **Test user ID atualizado em 5 arquivos:**
 - HANDOVER §4: `04c41302-...` → `fab01037-a437-4394-9d8f-bd84db9ce418`
@@ -3888,7 +3888,7 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 **Princípio arquitetural: algoritmo primeiro, IA depois.** Garante reprodutibilidade, auditabilidade, custo controlado.
 
 **Documentos de referência:**
-- `CFA-ONIEFY-MAPPING.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
+- `docs/CFA-ONIEFY-MAPPING.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
 - `PENDENCIAS-FUTURAS.md` E8b-E8d (backlog de implementação)
 
 **Próximo passo:** Implementar as 6 regras que funcionam com zero schema change (R03, R06, R07, R08, R09, R10) + Frente B (migration para interest_rate/rate_type/investment_class) + 4 regras restantes.
@@ -3918,7 +3918,7 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 
 ### 31.1 Motor JARVIS CFA implementado (Frentes A + B + parcial C)
 
-Implementação completa do Motor JARVIS CFA conforme especificação da sessão 30 (§30.10) e `CFA-ONIEFY-MAPPING.md` §6.
+Implementação completa do Motor JARVIS CFA conforme especificação da sessão 30 (§30.10) e `docs/CFA-ONIEFY-MAPPING.md` §6.
 
 **Frente A (zero schema change): 6 regras iniciais**
 
@@ -4352,3 +4352,101 @@ Componente `human-capital-calculator.tsx` na 7ª aba de Calculadoras:
 | Deploy | www.oniefy.com (success) |
 | Design System | Plum Ledger v1.2 |
 | Repo | Público (https://github.com/drovsk-cmf/WealthOS) |
+
+### 32.23 Organização do repositório
+
+**Estrutura raiz limpa (apenas 3 .md):**
+- `README.md` — Porta de entrada do projeto (reescrito para repo público)
+- `HANDOVER-WealthOS.md` — Fonte de verdade (lido no início de cada sessão)
+- `PENDENCIAS-FUTURAS.md` — Backlog ativo de produto
+
+**Arquivos movidos para docs/:**
+- `CFA-ONIEFY-MAPPING.md` → `docs/CFA-ONIEFY-MAPPING.md`
+- `PLANO-REVISAO-ONIEFY.md` → `docs/PLANO-REVISAO-ONIEFY.md`
+- `RELATORIO-AUDITORIA-2026-03-19.md` → `docs/RELATORIO-AUDITORIA-2026-03-19.md`
+
+**Duplicata removida:**
+- `docs/MAPEAMENTO-LGPD.md` (versão antiga) — mantida `docs/LGPD-MAPEAMENTO.md` (versão atual)
+
+**Referências internas atualizadas** em HANDOVER e PENDENCIAS para refletir novos paths.
+
+**Estrutura docs/ final:**
+```
+docs/
+  audit/           # 11 arquivos de auditoria de segurança (sessões 18-19)
+  data/            # Catálogos BCB SGS e IBGE SIDRA (.xlsx)
+  specs/           # 8 documentos de especificação (.docx)
+  AUDIT-CODE-DUMP.md           # Snapshot de código para auditoria (histórico, 852KB)
+  AUDIT-PROMPT-GEMINI.md       # Prompt usado na auditoria Gemini
+  AUDITORIA-TECNICA-*.md       # Auditoria contra projeto legado
+  CFA-ONIEFY-MAPPING.md        # Mapeamento CFA + Motor JARVIS
+  DEPLOY-VERCEL.md             # Guia de deploy
+  LGPD-MAPEAMENTO.md           # Conformidade LGPD (TEC-07)
+  MATRIZ-VALIDACAO.md          # Matriz de validação de stories
+  MIGRATE-SUPABASE-SP.md       # Guia migração para sa-east-1
+  PLANO-REVISAO-ONIEFY.md      # Plano de revisão pré-lançamento
+  POLITICA-EARLY-ADOPTERS.md   # Política early adopters (E5)
+  PROMPT-CLAUDE-CODE-E2E.md    # Prompt para testes E2E
+  RELATORIO-AUDITORIA-*.md     # Relatório de auditoria
+  ROTEIRO-TESTE-MANUAL.md      # Roteiro de teste manual
+  SETUP-LOCAL.md               # Setup desenvolvimento local
+```
+
+### 32.24 Padronização decimal BR (vírgula) e correções UI
+
+**5 issues corrigidas:**
+1. MFA banner movido para 1o lugar no Dashboard (segurança = prioridade)
+2. Calculadoras tabs padronizados (sem ícones, flex-1, shadow-sm, border bg-muted)
+3. Índices "Atualizar índices" crashava (FetchResult.errors → error_count)
+4. Selic/CDI "% ao ano" → "% ao mês" (BCB SGS retorna taxa mensal)
+5. Padronização decimal: .toFixed() → formatDecimalBR() em 21 arquivos
+
+**3 novos helpers em lib/utils:**
+- `formatPercent(value, decimals)` — percentuais com vírgula
+- `formatDecimalBR(value, decimals)` — números com vírgula
+- `formatAxisBR(value)` — formato compacto para eixos (1,5M / 45k)
+
+### 32.25 Migração de env vars (segurança)
+
+Nomes renomeados para evitar conflito com integração Vercel-Supabase:
+
+| Antigo | Novo | Tipo |
+|--------|------|------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `NEXT_PUBLIC_ONIEFY_DB_URL` | Público (browser) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `NEXT_PUBLIC_ONIEFY_DB_KEY` | Público (browser) |
+| `SUPABASE_SERVICE_ROLE_KEY` | `ONIEFY_DB_SECRET` | Servidor only |
+
+14 arquivos alterados. Valores no Vercel:
+- `NEXT_PUBLIC_ONIEFY_DB_URL` = `https://mngjbrbxapazdddzgoje.supabase.co`
+- `NEXT_PUBLIC_ONIEFY_DB_KEY` = `sb_publishable_...` (Claudio configurou)
+- `ONIEFY_DB_SECRET` = `sb_secret_...` (Claudio configurou)
+
+### 32.26 Estado do projeto (ground truth FINAL sessão 32)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 74 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 60 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 50 (775 assertions) |
+| Cobertura statements | 71.2% |
+| Arquivos TS/TSX | 213 |
+| Hooks | 31 |
+| Schemas Zod | 33 |
+| Páginas autenticadas | 22 |
+| Sidebar | 8+1 |
+| Calculadoras | 7 tabs |
+| CI | ✅ Verde (repo público, Actions ilimitado) |
+| Deploy | www.oniefy.com (success) |
+| Design System | Plum Ledger v1.2 |
+| Repo | Público (https://github.com/drovsk-cmf/WealthOS) |
+| Supabase keys | Legacy desabilitáveis, novas publishable+secret ativas |
+| Env vars | Renomeadas (ONIEFY_DB_*) sem conflito com integrações |
+| Formatação decimal | Padrão BR (vírgula) em toda a plataforma |
