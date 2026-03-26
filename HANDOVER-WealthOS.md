@@ -306,7 +306,7 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 
 - ID: fab01037-a437-4394-9d8f-bd84db9ce418
 - Nome: Claudio Filho
-- Email: claudiomacedo@gmail.com
+- Email: <email do proprietário>
 - Provider: Google OAuth
 - MFA: TOTP inscrito (fator 97c227e6-179d-4e6f-b8ba-1804f4273264, status: unverified)
 - onboarding_completed: true
@@ -1600,8 +1600,8 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 - **.env.local:**
   ```
   NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZ2picmJ4YXBhemRkZHpnb2plIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3NjM0NDQsImV4cCI6MjA4OTMzOTQ0NH0.uSPQ41vOKV_wnN9Wmenv7uyBphayQ7r013twwWqKBEM
-  SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uZ2picmJ4YXBhemRkZHpnb2plIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzc2MzQ0NCwiZXhwIjoyMDg5MzM5NDQ0fQ.eAdrIKnWtRwu75Z4P3taApAWsWByWt_3g5G33YUsaGI
+  NEXT_PUBLIC_SUPABASE_ANON_KEY=<obter no Supabase Dashboard → Settings → API → anon public>
+  SUPABASE_SERVICE_ROLE_KEY=<obter no Supabase Dashboard → Settings → API → service_role (NUNCA expor no frontend)>
   SUPABASE_PROJECT_ID=mngjbrbxapazdddzgoje
   NEXT_PUBLIC_APP_URL=http://localhost:3000
   ```

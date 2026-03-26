@@ -127,7 +127,7 @@ Receiving objects: 100% ...
 
 Se pedir autenticação:
 - **Username:** seu usuário do GitHub (drovsk-cmf)
-- **Password:** cole o token `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`
+- **Password:** cole seu Personal Access Token (PAT) do GitHub
 
 ### 1.3 Entrar na pasta do projeto
 
@@ -270,7 +270,7 @@ SUPABASE_SERVICE_ROLE_KEY=COLE_A_SERVICE_ROLE_KEY_AQUI
 Selecione apenas o texto `COLE_A_SERVICE_ROLE_KEY_AQUI` e substitua pela chave
 que você copiou no Bloco de Notas na Etapa 2. O resultado deve ficar assim:
 ```
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJz...
+SUPABASE_SERVICE_ROLE_KEY=<cole a service_role key do Supabase Dashboard>
 ```
 
 **Regras importantes:**
