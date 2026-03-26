@@ -38,6 +38,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [investmentClass, setInvestmentClass] = useState<string>("");
   const [interestRate, setInterestRate] = useState("");
   const [rateType, setRateType] = useState<string>("");
+  const [isCollateralized, setIsCollateralized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { data: supportedCurrencies } = useSupportedCurrencies();
@@ -60,6 +61,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInvestmentClass((account as Record<string, unknown>).investment_class as string ?? "");
       setInterestRate(String((account as Record<string, unknown>).interest_rate ?? ""));
       setRateType((account as Record<string, unknown>).rate_type as string ?? "");
+      setIsCollateralized(!!(account as Record<string, unknown>).is_collateralized);
     } else {
       setName("");
       setType("checking");
@@ -71,6 +73,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInvestmentClass("");
       setInterestRate("");
       setRateType("");
+      setIsCollateralized(false);
     }
     setError(null);
   }, [account, open]);
@@ -99,6 +102,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
           interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate) : null,
           rate_type: ["loan", "financing"].includes(type) && rateType ? rateType : null,
+          is_collateralized: ["loan", "financing"].includes(type) ? isCollateralized : false,
         } as Parameters<typeof updateAccount.mutateAsync>[0]);
       } else {
         await createAccount.mutateAsync({
@@ -113,6 +117,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
           ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate) }),
           ...(["loan", "financing"].includes(type) && rateType && { rate_type: rateType }),
+          ...(["loan", "financing"].includes(type) && { is_collateralized: isCollateralized }),
         } as Parameters<typeof createAccount.mutateAsync>[0]);
       }
       toast.success(isEdit ? "Conta atualizada." : "Conta criada com sucesso.");
@@ -321,6 +326,26 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                 Determina como o JARVIS calcula o custo real da dívida.
               </p>
             </div>
+          )}
+
+          {/* Collateralized flag (only for loan/financing) */}
+          {(type === "loan" || type === "financing") && (
+            <label htmlFor="acc-collateralized" className="flex items-start gap-3 cursor-pointer">
+              <input
+                id="acc-collateralized"
+                type="checkbox"
+                checked={isCollateralized}
+                onChange={(e) => setIsCollateralized(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-input accent-primary"
+              />
+              <div>
+                <span className="text-sm font-medium">Dívida com garantia real</span>
+                <p className="text-xs text-muted-foreground">
+                  Marque se há bem vinculado como garantia (imóvel, veículo, equipamento).
+                  Dívidas com garantia não entram no cálculo de stress financeiro.
+                </p>
+              </div>
+            </label>
           )}
 
           {/* Initial Balance */}

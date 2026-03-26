@@ -60,6 +60,7 @@ export type Database = {
             | Database["public"]["Enums"]["investment_class"]
             | null
           is_active: boolean
+          is_collateralized: boolean
           liquidity_tier: string
           name: string
           projected_balance: number
@@ -83,6 +84,7 @@ export type Database = {
             | Database["public"]["Enums"]["investment_class"]
             | null
           is_active?: boolean
+          is_collateralized?: boolean
           liquidity_tier?: string
           name: string
           projected_balance?: number
@@ -106,6 +108,7 @@ export type Database = {
             | Database["public"]["Enums"]["investment_class"]
             | null
           is_active?: boolean
+          is_collateralized?: boolean
           liquidity_tier?: string
           name?: string
           projected_balance?: number
