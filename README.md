@@ -1,35 +1,57 @@
-# Oniefy (formerly WealthOS)
+# Oniefy
 
-Sistema integrado de gestao financeira e patrimonial para uso pessoal.
+**Seu CFA pessoal.** Sistema de gestão patrimonial e inteligência fiscal para profissionais brasileiros com múltiplas fontes de renda.
+
+[![CI](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml/badge.svg)](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/badge/deploy-www.oniefy.com-5C2D91)](https://www.oniefy.com)
+[![Coverage](https://img.shields.io/badge/coverage-71.2%25-yellow)](https://github.com/drovsk-cmf/WealthOS)
+
+> **Status:** Beta fechado. O Oniefy não é um app de controle de gastos. É um sistema patrimonial que trata seu dinheiro como um analista financeiro certificado faria: com clareza contábil, métricas de solvência e inteligência fiscal real.
+
+## O que o Oniefy faz
+
+| Módulo | O que resolve |
+|--------|--------------|
+| **Financeiro** | Receitas e despesas com contabilidade partidas dobradas (journal entries). Importação CSV/OFX/XLSX. Reconciliação bancária. |
+| **Patrimônio** | Bens, veículos, investimentos com depreciação, seguros e valorização. Classificação por liquidez (N1-N4). |
+| **Fiscal** | Consolidação automática por tratamento fiscal (tributável, isento, dedutível). Provisionamento de IR com projeção anual. Exportação IRPF formatada (XLSX 6 abas). |
+| **Orçamento** | Planejamento mensal por categoria com workflows de aprovação. |
+| **Contas a Pagar** | Vencimentos, recorrências com reajuste indexado (IPCA, IGP-M), alertas push. |
+| **Metas** | Objetivos de economia com progresso, sugestão de quanto poupar/mês. |
+| **Dashboard** | Solvência em linguagem direta ("Você sobrevive 14 meses sem renda"), patrimônio líquido temporal, gráfico evolutivo. |
+| **Calculadoras** | 7 ferramentas CFA: simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, capital humano (DCF da carreira). |
+| **Motor JARVIS** | 10 regras automáticas de inteligência financeira (alertas de solvência, distribuição de custos, reconciliação). |
 
 ## Stack
 
 | Camada | Tecnologia |
 |--------|-----------|
 | Frontend | Next.js 15 (App Router) + React 19 + TypeScript |
-| UI | shadcn/ui + Tailwind CSS |
-| Backend | Supabase (PostgreSQL + Auth + RLS + Storage) |
-| Mobile | Capacitor (iOS) |
-| Hospedagem | Vercel |
-| CI/CD | GitHub Actions |
+| UI | shadcn/ui + Tailwind CSS (Design System: Plum Ledger) |
+| Backend | Supabase (PostgreSQL 15 + Auth + RLS + Storage + pg_cron) |
+| Mobile | Capacitor 6 (iOS) |
+| Deploy | Vercel (www.oniefy.com) |
+| CI/CD | GitHub Actions (Lint + TypeCheck + Jest + Build + Security + Health Check) |
+| IA | Gemini Flash-Lite (categorização) + Claude Sonnet (assistente) |
 
-## Modulos
+## Números
 
-1. **Financeiro** - receitas, despesas, categorias, conciliacao
-2. **Orcamento** - planejamento mensal por categoria
-3. **Contas a Pagar** - vencimentos, recorrencias, alertas
-4. **Patrimonio** - bens, depreciacao, seguros
-5. **Fiscal** - dados para IRPF
-6. **Dashboard** - visao consolidada
+| Métrica | Valor |
+|---------|-------|
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions PostgreSQL | 74 |
+| pg_cron jobs | 13 |
+| Testes (Jest + RTL) | 50 suítes, 775 assertions |
+| Cobertura | 71.2% statements, 75.3% functions |
+| Arquivos TypeScript | 213 |
 
-## Setup Local
+## Setup local
 
-### Pre-requisitos
+### Pré-requisitos
 
 - Node.js 20+
-- npm 10+
 - Conta no [Supabase](https://supabase.com)
-- (Opcional) Supabase CLI: `npm install -g supabase`
 
 ### 1. Clonar e instalar
 
@@ -39,22 +61,19 @@ cd WealthOS
 npm install
 ```
 
-### 2. Configurar Supabase
+### 2. Configurar ambiente
 
-1. Criar projeto em [supabase.com](https://supabase.com/dashboard)
-2. Copiar `.env.example` para `.env.local` e preencher:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-3. Executar a migration no SQL Editor do Supabase:
-   - Copiar conteudo de `supabase/migrations/001_initial_schema.sql`
-   - Colar e executar no SQL Editor
-4. Executar a seed de categorias:
-   - Copiar conteudo de `supabase/seed/001_default_categories.sql`
-   - Colar e executar no SQL Editor
-5. Configurar provedores de autenticacao (Google, Apple) no painel do Supabase
+```bash
+cp .env.example .env.local
+```
 
-### 3. Rodar localmente
+Preencher as variáveis no `.env.local` (ver comentários no arquivo).
+
+### 3. Configurar banco
+
+Executar as migrations no SQL Editor do Supabase (pasta `supabase/migrations/`, em ordem numérica).
+
+### 4. Rodar
 
 ```bash
 npm run dev
@@ -62,61 +81,47 @@ npm run dev
 
 Acessar: http://localhost:3000
 
-### 4. Gerar tipos do banco (apos configurar Supabase)
+### 5. Testes
 
 ```bash
-export SUPABASE_PROJECT_ID=seu-project-id
-npm run db:types
+npm test              # Jest
+npm run lint          # ESLint
+npm run type-check    # TypeScript
 ```
 
-## Setup iOS (Capacitor)
-
-```bash
-npx cap add ios
-npx cap sync
-npx cap open ios
-```
-
-Requer: Apple Developer Account (US$ 99/ano) e Xcode.
-
-## Estrutura do Projeto
+## Estrutura
 
 ```
 src/
-  app/
-    (auth)/          # Rotas públicas: login, registro, onboarding, MFA
-    (app)/           # Rotas autenticadas: dashboard, transações, fiscal etc.
-    api/             # Route handlers server-side (auth callback, índices)
-  components/
-    accounts/        # Formulários e UI de contas
-    assets/          # Formulários e UI de patrimônio
-    budgets/         # Formulários e UI de orçamento
-    categories/      # Formulários e UI de categorias
-    dashboard/       # Cards, gráficos e widgets do dashboard
-    recurrences/     # Formulário de recorrências
-    transactions/    # Formulário de transações
-  lib/
-    auth/            # MFA, timeout, criptografia e segurança de sessão
-    crypto/          # Primitivas de criptografia (DEK/KEK)
-    hooks/           # Hooks React Query por domínio
-    parsers/         # Parsers CSV/OFX/XLSX
-    schemas/         # Schemas Zod para contratos RPC
-    services/        # Serviços de mutação crítica (transaction engine)
-    supabase/        # Clients Supabase (browser/server/admin)
-    utils/           # Utilitários gerais
-    validations/     # Schemas de validação de formulários
-  types/
-    database.ts      # Tipos gerados do schema Supabase
+  app/(auth)/          # Login, registro, onboarding
+  app/(app)/           # Dashboard, transações, fiscal, patrimônio, metas...
+  app/api/             # Route handlers (auth, IA, push, digest, índices)
+  components/          # Componentes por domínio (dashboard, calculators, ...)
+  lib/hooks/           # 31 hooks React Query por domínio
+  lib/crypto/          # Criptografia AES-256 (DEK/KEK) para CPF
+  lib/parsers/         # Parsers CSV, OFX, XLSX para importação bancária
+  lib/schemas/         # 33 schemas Zod para contratos RPC
+  lib/services/        # Transaction engine, fiscal export, onboarding seeds
 supabase/
-  migrations/        # Migrations SQL (schema, RLS, RPCs e triggers)
-  seed/              # Seed SQL inicial
-  tests/             # Scripts SQL de validação de mutações
+  migrations/          # 60 migration files (schema, RLS, RPCs, triggers)
 ```
 
-Fonte de verdade para arquitetura, contexto operacional e roadmap: `HANDOVER-WealthOS.md`.
+Fonte de verdade para arquitetura e roadmap: `HANDOVER-WealthOS.md`.
 
-## Documentacao
+## Segurança
 
-- `wealthos-especificacao-v1.docx` - Especificacao tecnica e funcional
-- `wealthos-funcional-v1.docx` - 62 user stories com criterios de aceite
-- `wealthos-adendo-v1.1.docx` - Decisoes tecnicas, key management, Edge Functions, APNs
+- Row Level Security em 100% das tabelas (107 políticas, initplan pattern)
+- Criptografia AES-256 para dados sensíveis (CPF)
+- Sanitização PII obrigatória antes de toda chamada de IA
+- Rate limiting em middleware
+- Session timeout com purge de chaves criptográficas
+- CSP, HSTS, X-Frame-Options, Permissions-Policy
+- Sentry com beforeSend PII scrub
+- Audit log (access_logs com IP, user_agent, ação)
+- 5 cron jobs de cleanup (logs, analytics, cache, notificações, soft-deleted)
+
+## Licença
+
+Código fonte disponível para referência e estudo. Uso comercial requer autorização do autor.
+
+© 2025-2026 Claudio Macêdo Filho
