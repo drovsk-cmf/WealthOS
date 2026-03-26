@@ -1,6 +1,6 @@
 # Oniefy
 
-**Seu CFA pessoal.** Sistema de gestão patrimonial e inteligência fiscal para profissionais brasileiros com múltiplas fontes de renda.
+**Seu analista financeiro pessoal.** Sistema de gestão patrimonial e inteligência fiscal para profissionais brasileiros com múltiplas fontes de renda.
 
 [![CI](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml/badge.svg)](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml)
 [![Deploy](https://img.shields.io/badge/deploy-www.oniefy.com-5C2D91)](https://www.oniefy.com)
@@ -19,7 +19,7 @@
 | **Contas a Pagar** | Vencimentos, recorrências com reajuste indexado (IPCA, IGP-M), alertas push. |
 | **Metas** | Objetivos de economia com progresso, sugestão de quanto poupar/mês. |
 | **Dashboard** | Solvência em linguagem direta ("Você sobrevive 14 meses sem renda"), patrimônio líquido temporal, gráfico evolutivo. |
-| **Calculadoras** | 7 ferramentas CFA: simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, capital humano (DCF da carreira). |
+| **Calculadoras** | 7 ferramentas de análise financeira: simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, capital humano (DCF da carreira). |
 | **Motor JARVIS** | 10 regras automáticas de inteligência financeira (alertas de solvência, distribuição de custos, reconciliação). |
 
 ## Stack

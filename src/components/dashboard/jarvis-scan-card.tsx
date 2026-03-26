@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * JarvisScanCard - Motor JARVIS CFA (UX: "Limpeza de Disco" Financeira)
+ * JarvisScanCard - Motor JARVIS (UX: "Limpeza de Disco" Financeira)
  *
  * Card compacto no dashboard: "Otimizações disponíveis (N) — Economia potencial: R$ X/mês"
  * Expandido: lista de findings com severity, números concretos, projeção.

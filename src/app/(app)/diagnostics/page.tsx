@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Oniefy - Diagnóstico CFA (Camada A + B)
+ * Oniefy - Diagnóstico Financeiro (Camada A + B)
  *
- * 11 métricas financeiras baseadas em CFA Level I:
+ * 11 métricas financeiras:
  * Camada A (diagnóstico): Savings Rate, HHI, WACC, D/E, Working Capital, Breakeven
  * Camada B (temporal): Income CV, DuPont Pessoal, Category Trends, Warning Signs, Monthly History
  *
- * Ref: CFA-ONIEFY-MAPPING.md §2-3
+ * Ref: docs/CFA-ONIEFY-MAPPING.md §2-3
  */
 
 import { useState } from "react";
@@ -108,7 +108,7 @@ function WarningSignsCard({ data }: { data: CfaDiagnostics["warning_signs"] }) {
       <div className="rounded-lg border bg-card p-5 shadow-card card-alive">
         <div className="flex items-center gap-2">
           <Shield className="h-4 w-4 text-verdant-500" />
-          <h3 className="text-sm font-medium text-muted-foreground">Sinais de Alerta (CFA R29)</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">Sinais de Alerta</h3>
         </div>
         <p className="mt-2 text-sm text-verdant-600 dark:text-verdant-400">
           Nenhum sinal de alerta detectado. Tendências dos últimos 3 meses estáveis.
@@ -313,10 +313,10 @@ function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <Activity className="h-12 w-12 text-muted-foreground/30" />
-      <h2 className="mt-4 text-lg font-medium">Diagnóstico CFA</h2>
+      <h2 className="mt-4 text-lg font-medium">Diagnóstico Financeiro</h2>
       <p className="mt-2 max-w-md text-sm text-muted-foreground">
         Registre transações, contas e ativos para que o Oniefy calcule suas métricas financeiras.
-        O diagnóstico usa conceitos de CFA Level I adaptados para finanças pessoais.
+        Métricas quantitativas de análise financeira aplicadas ao seu contexto pessoal.
       </p>
     </div>
   );
@@ -332,7 +332,7 @@ export default function DiagnosticsPage() {
       <div className="space-y-6 p-4 sm:p-6">
         <div className="flex items-center gap-2">
           <Activity className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-xl font-semibold">Diagnóstico CFA</h1>
+          <h1 className="text-xl font-semibold">Diagnóstico Financeiro</h1>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -365,9 +365,9 @@ export default function DiagnosticsPage() {
       <div className="flex items-center gap-2">
         <Activity className="h-5 w-5 text-muted-foreground" />
         <div>
-          <h1 className="text-xl font-semibold">Diagnóstico CFA</h1>
+          <h1 className="text-xl font-semibold">Diagnóstico Financeiro</h1>
           <p className="text-xs text-muted-foreground">
-            {data.savings_rate.months_analyzed} meses analisados. Conceitos CFA Level I adaptados para finanças pessoais.
+            {data.savings_rate.months_analyzed} meses analisados. Análise baseada em métricas de finanças quantitativas aplicadas ao contexto pessoal.
           </p>
         </div>
       </div>

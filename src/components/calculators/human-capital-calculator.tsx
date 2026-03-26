@@ -373,7 +373,7 @@ export function HumanCapitalCalculator() {
             não coberta da família.
           </p>
           <p>
-            Referência: CFA Institute, &quot;Lifetime Financial Advice&quot; (Ibbotson et al., 2007).
+            Metodologia: Ibbotson et al. (2007), &quot;Lifetime Financial Advice&quot;.
             A taxa de desconto reflete o risco de carreira (estabilidade do emprego, setor,
             senioridade).
           </p>

@@ -132,7 +132,7 @@ export default function DashboardPage() {
 
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 
-      {/* JARVIS CFA: "Limpeza de Disco" Financeira (P5: ativo+) */}
+      {/* JARVIS: "Limpeza de Disco" Financeira (P5: ativo+) */}
       {showMidTier && <JarvisScanCard />}
 
       {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento (P5: ativo+) */}

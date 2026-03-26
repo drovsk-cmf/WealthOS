@@ -57,7 +57,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setColor(account.color || PRESET_COLORS[0]);
       setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
       setCurrency(account.currency || "BRL");
-      // Frente B fields (JARVIS CFA)
+      // Frente B fields (JARVIS)
       setInvestmentClass((account as Record<string, unknown>).investment_class as string ?? "");
       setInterestRate(String((account as Record<string, unknown>).interest_rate ?? ""));
       setRateType((account as Record<string, unknown>).rate_type as string ?? "");
@@ -98,7 +98,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           color,
           liquidity_tier: liquidityTier,
           currency,
-          // Frente B (JARVIS CFA)
+          // Frente B (JARVIS)
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
           interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate) : null,
           rate_type: ["loan", "financing"].includes(type) && rateType ? rateType : null,
@@ -113,7 +113,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           liquidity_tier: liquidityTier,
           currency,
           ...(type === "financing" && { coaParentCode: financingSubtype }),
-          // Frente B (JARVIS CFA)
+          // Frente B (JARVIS)
           ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
           ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate) }),
           ...(["loan", "financing"].includes(type) && rateType && { rate_type: rateType }),
@@ -252,7 +252,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </div>
           )}
 
-          {/* ═══ Frente B: Campos JARVIS CFA ═══ */}
+          {/* ═══ Frente B: Campos JARVIS ═══ */}
 
           {/* Investment class (only for type=investment) */}
           {type === "investment" && (

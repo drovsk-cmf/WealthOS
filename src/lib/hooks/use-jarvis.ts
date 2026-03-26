@@ -1,7 +1,7 @@
 /**
- * Oniefy - JARVIS CFA Hook
+ * Oniefy - JARVIS Hook
  *
- * React Query hook for Motor JARVIS CFA (Camada 1 Scanner + Camada 2 Combinador).
+ * React Query hook for Motor JARVIS (Camada 1 Scanner + Camada 2 Combinador).
  * Calls get_jarvis_scan RPC which runs 6 deterministic rules (R03,R06,R07,R08,R09,R10)
  * and returns findings with severity, savings projections, and solvency context.
  *
@@ -75,7 +75,7 @@ const EMPTY_SCAN: JarvisScanResult = {
 // ─── Hook ──────────────────────────────────────────────────
 
 /**
- * Fetches JARVIS CFA scan results.
+ * Fetches JARVIS scan results.
  * staleTime: 10 min (scan is expensive and data changes slowly).
  */
 export function useJarvisScan() {

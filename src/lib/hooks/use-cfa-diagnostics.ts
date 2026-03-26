@@ -1,10 +1,10 @@
 /**
- * Oniefy - CFA Diagnostics Hook
+ * Oniefy - Financial Diagnostics Hook
  *
  * React Query hook for get_cfa_diagnostics RPC.
  * Returns 11 financial metrics: 6 Camada A (diagnósticos) + 5 Camada B (análises temporais).
  *
- * Conceitos CFA: Savings Rate, HHI (Markowitz), WACC, D/E, Working Capital,
+ * Conceitos: Savings Rate, HHI (Markowitz), WACC, D/E, Working Capital,
  *                Breakeven, Income CV, DuPont Pessoal, Category Trends,
  *                Warning Signs (FRA R29), Monthly History.
  *
@@ -64,7 +64,7 @@ const EMPTY_DIAGNOSTICS: CfaDiagnostics = {
 // ─── Hook ──────────────────────────────────────────────────
 
 /**
- * Fetches CFA diagnostics (11 financial metrics).
+ * Fetches financial diagnostics (11 financial metrics).
  * staleTime: 10 min (data changes slowly, RPC is moderately expensive).
  */
 export function useCfaDiagnostics() {

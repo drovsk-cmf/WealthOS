@@ -1,5 +1,5 @@
 /**
- * Oniefy - JARVIS v2 Hook (Motor CFA com Máquina de Estados)
+ * Oniefy - JARVIS v2 Hook (Motor com Máquina de Estados)
  *
  * Substitui get_jarvis_scan (flat) por get_jarvis_v2 (grafo de dependências).
  * 6 camadas: dados → métricas → indicadores → estado → prioridades → conflitos → ações.

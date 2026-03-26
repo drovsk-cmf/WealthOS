@@ -30,12 +30,12 @@ import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status
 import { usePrivacyStore } from "@/lib/stores/privacy";
 
 /**
- * Navigation 9+1 (UX-H1-01 + P2 + E8d + E6 + CFA Diagnostics)
+ * Navigation 9+1 (UX-H1-01 + P2 + E8d + E6 + Diagnóstico Financeiro)
  * 9 primary items + Settings icon separated at bottom.
  * Importar promoted to sidebar per adendo v1.5 §2.6.
- * Calculadoras added per E8d (CFA Pessoal).
+ * Calculadoras added per E8d (análise financeira).
  * Metas added per E6 (savings goals).
- * Diagnóstico CFA added per Camada A+B.
+ * Diagnóstico Financeiro added per Camada A+B.
  */
 const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Início", icon: Home },

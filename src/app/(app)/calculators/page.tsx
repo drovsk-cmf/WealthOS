@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Oniefy - Calculadoras CFA (E8d)
+ * Oniefy - Calculadoras Financeiras (E8d)
  *
  * 4 calculadoras front-end only (zero RPC):
  * 1. Independência Financeira (perpetuidade)
@@ -9,7 +9,7 @@
  * 3. CET de financiamento (IRR/YTM)
  * 4. SAC vs Price (amortização)
  *
- * Ref: CFA-ONIEFY-MAPPING.md §3 Fase 2
+ * Ref: docs/CFA-ONIEFY-MAPPING.md §3 Fase 2
  */
 
 import { useState } from "react";
@@ -70,7 +70,7 @@ export default function CalculatorsPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Calculadoras</h2>
         <p className="text-sm text-muted-foreground">
-          Ferramentas de análise financeira com metodologia CFA
+          Ferramentas de análise e planejamento financeiro
         </p>
       </div>
 

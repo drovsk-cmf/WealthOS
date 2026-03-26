@@ -380,7 +380,7 @@ export const dashboardAllSchema = z.object({
   attention: attentionQueueSchema,
 });
 
-// ─── JARVIS CFA Scan (Motor JARVIS Camada 1+2) ─────────────
+// ─── JARVIS Scan (Motor JARVIS Camada 1+2) ─────────────
 
 export const jarvisFindingSchema = z.object({
   rule_id: z.string(),
@@ -407,7 +407,7 @@ export const jarvisScanSchema = z.object({
   solvency: solvencyMetricsSchema.nullable(),
 });
 
-// ─── CFA Diagnostics (Camada A + B) ─────────────────────
+// ─── Diagnostics (Camada A + B) ─────────────────────
 
 const savingsRateSchema = z.object({
   value: z.number(),
