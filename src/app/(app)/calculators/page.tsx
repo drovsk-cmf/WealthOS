@@ -13,13 +13,14 @@
  */
 
 import { useState } from "react";
-import { Target, Home, Percent, Scale, ShoppingCart, TrendingUp } from "lucide-react";
+import { Target, Home, Percent, Scale, ShoppingCart, TrendingUp, User } from "lucide-react";
 import { IndependenceCalculator } from "@/components/calculators/independence-calculator";
 import { BuyVsRentCalculator } from "@/components/calculators/buy-vs-rent-calculator";
 import { CetCalculator } from "@/components/calculators/cet-calculator";
 import { SacVsPriceCalculator } from "@/components/calculators/sac-vs-price-calculator";
 import { AffordabilitySimulator } from "@/components/calculators/affordability-simulator";
 import { ExpenseProjection } from "@/components/calculators/expense-projection";
+import { HumanCapitalCalculator } from "@/components/calculators/human-capital-calculator";
 
 const TABS = [
   {
@@ -57,6 +58,12 @@ const TABS = [
     label: "SAC vs Price",
     icon: Scale,
     description: "Qual sistema de amortização escolher?",
+  },
+  {
+    id: "human-capital",
+    label: "Capital Humano",
+    icon: User,
+    description: "Quanto vale sua capacidade de gerar renda até a aposentadoria?",
   },
 ] as const;
 
@@ -110,6 +117,7 @@ export default function CalculatorsPage() {
         {activeTab === "buy-vs-rent" && <BuyVsRentCalculator />}
         {activeTab === "cet" && <CetCalculator />}
         {activeTab === "sac-vs-price" && <SacVsPriceCalculator />}
+        {activeTab === "human-capital" && <HumanCapitalCalculator />}
       </div>
     </div>
   );
