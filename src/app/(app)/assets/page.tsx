@@ -29,7 +29,7 @@ import {
 import { useDocuments, useUploadDocument, useDeleteDocument } from "@/lib/hooks/use-documents";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
@@ -390,7 +390,7 @@ export default function AssetsPage() {
                     <p className="text-lg font-bold tabular-nums"><Mv>{formatCurrency(Number(asset.current_value))}</Mv></p>
                     {depPct > 0 && (
                       <p className="text-xs text-burnished tabular-nums">
-                        -{depPct.toFixed(1)} % desde aquisição
+                        -{formatDecimalBR(depPct, 1)} % desde aquisição
                       </p>
                     )}
                   </div>

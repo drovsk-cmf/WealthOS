@@ -30,7 +30,7 @@ import {
   INDEX_TYPE_COLORS,
   INDEX_UNIT,
 } from "@/lib/hooks/use-economic-indices";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatPercent, formatDecimalBR } from "@/lib/utils";
 
 import { formatMonthShort } from "@/lib/utils";
 
@@ -48,7 +48,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
       <p className="font-semibold text-muted-foreground">{label}</p>
       {payload.map((p) => (
         <p key={p.dataKey} style={{ color: p.color }}>
-          {p.name}: {p.value?.toFixed(4) ?? "-"}
+          {p.name}: {p.value != null ? formatDecimalBR(p.value, 4) : "-"}
         </p>
       ))}
     </div>
@@ -165,9 +165,9 @@ export default function IndicesPage() {
       {fetchIndices.data && (
         <div className="rounded-lg border border-verdant/20 bg-verdant/10 px-4 py-3 text-sm text-verdant">
           {fetchIndices.data.total_inserted} registro(s) atualizado(s)
-          {fetchIndices.data.results.some((r) => r.errors.length > 0) && (
+          {fetchIndices.data.results.some((r) => r.error_count > 0) && (
             <span className="ml-2 text-burnished">
-              (Erros: {fetchIndices.data.results.filter((r) => r.errors.length > 0).map((r) => `${r.index_type}: ${r.errors.join(", ")}`).join("; ")})
+              (Erros em: {fetchIndices.data.results.filter((r) => r.error_count > 0).map((r) => r.index_type).join(", ")})
             </span>
           )}
         </div>
@@ -207,7 +207,7 @@ export default function IndicesPage() {
                 <p className="mt-1.5 text-xl font-bold tabular-nums">
                   {idx.index_type === "usd_brl" || idx.index_type === "minimum_wage"
                     ? formatCurrency(idx.value)
-                    : `${idx.value.toFixed(2)} %`}
+                    : `${formatPercent(idx.value)} %`}
                 </p>
                 <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground">
                   <span>{unit}</span>
@@ -215,7 +215,7 @@ export default function IndicesPage() {
                 </div>
                 {idx.accumulated_12m !== null && idx.accumulated_12m !== undefined && (
                   <p className="mt-1 text-[10px] text-muted-foreground tabular-nums">
-                    12m: {Number(idx.accumulated_12m).toFixed(2)} %
+                    12m: {formatPercent(Number(idx.accumulated_12m))} %
                   </p>
                 )}
               </button>
@@ -348,13 +348,13 @@ export default function IndicesPage() {
                     <tr key={p.reference_date} className="border-b border-muted/50">
                       <td className="py-1 tabular-nums">{formatDate(p.reference_date, "MMM/yyyy")}</td>
                       <td className="py-1 text-right tabular-nums font-medium">
-                        {Number(p.value).toFixed(primaryIndex === "usd_brl" ? 4 : 2)}
+                        {formatDecimalBR(Number(p.value), primaryIndex === "usd_brl" ? 4 : 2)}
                       </td>
                       <td className="py-1 text-right tabular-nums">
-                        {p.accumulated_year !== null ? `${Number(p.accumulated_year).toFixed(2)} %` : "-"}
+                        {p.accumulated_year !== null ? `${formatPercent(Number(p.accumulated_year))} %` : "-"}
                       </td>
                       <td className="py-1 text-right tabular-nums">
-                        {p.accumulated_12m !== null ? `${Number(p.accumulated_12m).toFixed(2)} %` : "-"}
+                        {p.accumulated_12m !== null ? `${formatPercent(Number(p.accumulated_12m))} %` : "-"}
                       </td>
                     </tr>
                   ))}

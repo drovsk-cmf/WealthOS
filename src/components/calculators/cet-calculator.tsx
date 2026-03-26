@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 
 /**
  * Newton-Raphson IRR solver for equal-payment loan.
@@ -179,19 +179,19 @@ export function CetCalculator() {
             <div>
               <p className="text-xs text-muted-foreground">Taxa nominal</p>
               <p className="text-lg font-semibold font-mono tabular-nums">
-                {result.nominalRate.toFixed(2)}% a.m.
+                {formatDecimalBR(result.nominalRate)}% a.m.
               </p>
               <p className="text-xs text-muted-foreground">
-                {result.nominalAnnual.toFixed(2)}% a.a.
+                {formatDecimalBR(result.nominalAnnual)}% a.a.
               </p>
             </div>
             <div className="rounded-lg bg-terracotta/10 border border-terracotta/20 p-3">
               <p className="text-xs text-muted-foreground">CET (custo real)</p>
               <p className="text-lg font-bold font-mono tabular-nums text-terracotta">
-                {result.cetRate.toFixed(2)}% a.m.
+                {formatDecimalBR(result.cetRate)}% a.m.
               </p>
               <p className="text-xs text-muted-foreground">
-                {result.cetAnnual.toFixed(2)}% a.a.
+                {formatDecimalBR(result.cetAnnual)}% a.a.
               </p>
             </div>
           </div>
@@ -201,7 +201,7 @@ export function CetCalculator() {
               Spread CET vs nominal (custo oculto)
             </p>
             <p className="text-base font-semibold font-mono tabular-nums text-burnished">
-              +{result.spreadMonthly.toFixed(2)} p.p./mês (+{result.spreadAnnual.toFixed(2)} p.p./ano)
+              +{formatDecimalBR(result.spreadMonthly)} p.p./mês (+{formatDecimalBR(result.spreadAnnual)} p.p./ano)
             </p>
           </div>
 

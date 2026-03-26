@@ -10,7 +10,7 @@
 
 import Link from "next/link";
 import { PieChart } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { BudgetVsActualResult } from "@/lib/hooks/use-dashboard";
 
@@ -80,7 +80,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
           <div className="mt-4">
             <div className="flex items-end justify-between">
               <span className="text-lg font-bold tabular-nums">
-                {pctUsed.toFixed(0)} %
+                {formatDecimalBR(pctUsed, 0)} %
               </span>
               <span className="text-xs text-muted-foreground tabular-nums">
                 <Mv>{formatCurrency(totalActual)}</Mv> / <Mv>{formatCurrency(totalPlanned)}</Mv>
@@ -117,7 +117,7 @@ export function BudgetSummaryCard({ data, isLoading }: Props) {
                       <span className="truncate">{item.category_name}</span>
                     </span>
                     <span className="tabular-nums text-muted-foreground">
-                      {item.pct_used.toFixed(0)} %
+                      {formatDecimalBR(item.pct_used, 0)} %
                     </span>
                   </div>
                   <div className="h-1 w-full overflow-hidden rounded-full bg-muted">

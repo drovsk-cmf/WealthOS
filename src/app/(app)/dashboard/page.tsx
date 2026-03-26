@@ -77,6 +77,9 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* ═══ P4: MFA Reminder (alerta de segurança = prioridade máxima) ═══ */}
+      <MfaReminderBanner />
+
       {/* ═══ SEÇÃO 0: Resumo Financeiro (sempre visível, topo) ═══ */}
       {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
       <SummaryCards data={d?.summary} isLoading={dash.isLoading} />
@@ -99,10 +102,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* ═══ P4: MFA Reminder (24h após criação, sem MFA) ═══ */}
-      <MfaReminderBanner />
-
-      {/* ═══ SEÇÃO 0: Setup Journey (oculto após conclusão) ═══ */}
+      {/* ═══ SEÇÃO 1: Setup Journey (oculto após conclusão) ═══ */}
       <SetupJourneyCard />
 
       {/* ═══ P2: CTA de Importação (oculto após 20 transações) ═══ */}

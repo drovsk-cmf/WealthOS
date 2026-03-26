@@ -7,7 +7,7 @@
  * Saldo previsto exibido como valor secundário (adendo v1.1).
  */
 
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { DashboardSummary } from "@/lib/hooks/use-dashboard";
 
@@ -92,7 +92,7 @@ export function SummaryCards({ data, isLoading }: Props) {
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           {income > 0
-            ? `${((expense / income) * 100).toFixed(0)} % da receita`
+            ? `${formatDecimalBR((expense / income) * 100, 0)} % da receita`
             : "—"}
         </p>
       </div>

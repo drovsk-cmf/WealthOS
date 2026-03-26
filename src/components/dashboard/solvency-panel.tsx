@@ -13,7 +13,7 @@
  * Fôlego em meses = (N1+N2)/Custo mensal médio
  */
 
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { SolvencyMetrics, MonthlySnapshot } from "@/lib/hooks/use-dashboard";
 
@@ -73,10 +73,10 @@ function lcrStatus(lcr: number): { label: string; color: string; bg: string } {
 
 function lcrExplanation(lcr: number): string {
   if (lcr >= 999) return "Sem despesas recorrentes registradas";
-  if (lcr >= 2) return `Sua liquidez cobre ${lcr.toFixed(1)}x o custo de 6 meses. Posição confortável.`;
-  if (lcr >= 1) return `Sua liquidez cobre ${lcr.toFixed(1)}x o custo de 6 meses. Margem razoável.`;
-  if (lcr >= 0.5) return `Sua liquidez cobre apenas ${(lcr * 100).toFixed(0)}% do custo semestral. Considere reforçar a reserva.`;
-  return `Sua liquidez cobre apenas ${(lcr * 100).toFixed(0)}% do custo semestral. Reserva insuficiente para imprevistos.`;
+  if (lcr >= 2) return `Sua liquidez cobre ${formatDecimalBR(lcr, 1)}x o custo de 6 meses. Posição confortável.`;
+  if (lcr >= 1) return `Sua liquidez cobre ${formatDecimalBR(lcr, 1)}x o custo de 6 meses. Margem razoável.`;
+  if (lcr >= 0.5) return `Sua liquidez cobre apenas ${formatDecimalBR(lcr * 100, 0)}% do custo semestral. Considere reforçar a reserva.`;
+  return `Sua liquidez cobre apenas ${formatDecimalBR(lcr * 100, 0)}% do custo semestral. Reserva insuficiente para imprevistos.`;
 }
 
 function runwayStatus(months: number): { label: string; color: string; bg: string } {
@@ -108,9 +108,9 @@ function patrimonyExplanation(
   if (total <= 0) return "Sem patrimônio registrado";
   const liquidRatio = total > 0 ? ((tier1 + tier2) / total) * 100 : 0;
   if (liquidRatio >= 50) {
-    return `${liquidRatio.toFixed(0)}% do seu patrimônio é acessível em até 30 dias. Boa liquidez.`;
+    return `${formatDecimalBR(liquidRatio, 0)}% do seu patrimônio é acessível em até 30 dias. Boa liquidez.`;
   }
-  return `${liquidRatio.toFixed(0)}% do patrimônio é líquido. A maior parte está em bens ou investimentos restritos.`;
+  return `${formatDecimalBR(liquidRatio, 0)}% do patrimônio é líquido. A maior parte está em bens ou investimentos restritos.`;
 }
 
 function KpiSkeleton() {
@@ -187,7 +187,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           </p>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-bold tabular-nums">
-              {capped999(lcr) ? "∞" : lcr.toFixed(2)}
+              {capped999(lcr) ? "∞" : formatDecimalBR(lcr, 2)}
             </span>
             <span
               className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${lcrInfo.bg} ${lcrInfo.color}`}
@@ -210,7 +210,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
           </p>
           <div className="mt-1 flex items-baseline gap-2">
             <span className="text-2xl font-bold tabular-nums">
-              {capped999(runway) ? "∞" : runway.toFixed(1)}
+              {capped999(runway) ? "∞" : formatDecimalBR(runway, 1)}
             </span>
             {!capped999(runway) && (
               <span className="text-sm text-muted-foreground">meses</span>
@@ -300,7 +300,7 @@ export function SolvencyPanel({ data, isLoading, snapshots = [] }: Props) {
                     <span className="text-xs font-medium">{tier.label}</span>
                     {tierTotal > 0 && tier.value > 0 && (
                       <span className="text-[10px] text-muted-foreground">
-                        {((tier.value / tierTotal) * 100).toFixed(0)} %
+                        {formatDecimalBR((tier.value / tierTotal) * 100, 0)} %
                       </span>
                     )}
                   </div>

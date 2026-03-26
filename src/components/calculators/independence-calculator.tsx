@@ -10,7 +10,7 @@
  */
 
 import { useState, useMemo } from "react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 
 export function IndependenceCalculator() {
   const [monthlyExpense, setMonthlyExpense] = useState("10000");
@@ -135,7 +135,7 @@ export function IndependenceCalculator() {
             <div>
               <p className="text-xs text-muted-foreground">Retorno real</p>
               <p className="text-lg font-semibold font-mono tabular-nums">
-                {result.realReturn.toFixed(2)}% a.a.
+                {formatDecimalBR(result.realReturn)}% a.a.
               </p>
             </div>
             <div>
@@ -152,7 +152,7 @@ export function IndependenceCalculator() {
               {formatCurrency(result.capitalNeeded)}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              = {formatCurrency(result.annualExpense)} / {result.realReturn.toFixed(2)}% (perpetuidade)
+              = {formatCurrency(result.annualExpense)} / {formatDecimalBR(result.realReturn)}% (perpetuidade)
             </p>
           </div>
 
@@ -168,7 +168,7 @@ export function IndependenceCalculator() {
                 <p className="text-xs text-muted-foreground">Tempo estimado</p>
                 <p className="text-lg font-semibold font-mono tabular-nums">
                   {result.yearsToReach != null
-                    ? `${result.yearsToReach.toFixed(1)} anos`
+                    ? `${formatDecimalBR(result.yearsToReach, 1)} anos`
                     : "Defina aporte mensal"}
                 </p>
               </div>

@@ -22,7 +22,7 @@ import {
 } from "@/lib/hooks/use-savings-goals";
 import type { SavingsGoalWithProgress } from "@/lib/hooks/use-savings-goals";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 
 const GOAL_COLORS = [
@@ -258,7 +258,7 @@ function GoalCard({
           />
         </div>
         <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-          <span>{goal.progress_pct.toFixed(0)}%</span>
+          <span>{formatDecimalBR(goal.progress_pct, 0)}%</span>
           <span>Faltam <Mv>{formatCurrency(goal.remaining_amount)}</Mv></span>
         </div>
       </div>
@@ -384,7 +384,7 @@ export default function GoalsPage() {
                 </Mv>
               </p>
             </div>
-            <span className="text-2xl font-bold tabular-nums">{totalProgress.toFixed(0)}%</span>
+            <span className="text-2xl font-bold tabular-nums">{formatDecimalBR(totalProgress, 0)}%</span>
           </div>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-muted">
             <div

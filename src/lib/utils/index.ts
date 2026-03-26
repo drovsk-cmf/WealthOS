@@ -26,6 +26,43 @@ export function formatCurrency(value: number, currency = "BRL"): string {
 }
 
 /**
+ * Format a number as percentage with Brazilian locale (comma separator).
+ * @example formatPercent(0.054266) => "0,05" (default 2 decimals)
+ * @example formatPercent(5.5, 1) => "5,5"
+ */
+export function formatPercent(value: number, decimals = 2): string {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
+/**
+ * Format a number with Brazilian locale (comma separator).
+ * @example formatDecimalBR(1234.5678, 4) => "1.234,5678"
+ * @example formatDecimalBR(0.05, 2) => "0,05"
+ */
+export function formatDecimalBR(value: number, decimals = 2): string {
+  return new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
+/**
+ * Format number for chart axis labels (compact, BR locale).
+ * @example formatAxisBR(1500000) => "1,5M"
+ * @example formatAxisBR(45000) => "45k"
+ * @example formatAxisBR(750) => "750"
+ */
+export function formatAxisBR(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) return `${formatDecimalBR(value / 1_000_000, 1)}M`;
+  if (abs >= 1_000) return `${formatDecimalBR(value / 1_000, 0)}k`;
+  return formatDecimalBR(value, 0);
+}
+
+/**
  * Format a date string or Date object.
  * @param date - ISO string or Date object
  * @param pattern - date-fns format pattern (default: "dd/MM/yyyy")

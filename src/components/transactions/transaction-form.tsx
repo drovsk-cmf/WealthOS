@@ -26,7 +26,7 @@ import { useAutoCategory, learnCategoryPattern } from "@/lib/hooks/use-auto-cate
 import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
 import { useOcrReceipt } from "@/lib/services/ocr-service";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 
@@ -263,7 +263,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
                   try {
                     const result = await ocrReceipt.mutateAsync(file);
                     if (result.parsed.amount) {
-                      setAmount(result.parsed.amount.toFixed(2).replace(".", ","));
+                      setAmount(formatDecimalBR(result.parsed.amount));
                     }
                     if (result.parsed.date) {
                       setDate(result.parsed.date);
@@ -273,7 +273,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
                       setShowMore(true);
                     }
                     toast.success(
-                      `OCR: confiança ${result.confidence.toFixed(0)}%` +
+                      `OCR: confiança ${formatDecimalBR(result.confidence, 0)}%` +
                       (result.parsed.amount ? ` · ${formatCurrency(result.parsed.amount)}` : "") +
                       (result.parsed.date ? ` · ${result.parsed.date}` : "")
                     );

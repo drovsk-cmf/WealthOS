@@ -12,6 +12,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useProgressiveDisclosure } from "@/lib/hooks/use-progressive-disclosure";
+import { formatDecimalBR } from "@/lib/utils";
 
 interface RetentionData {
   total_users: number;
@@ -87,7 +88,7 @@ function MetricCard({
     value === undefined
       ? "..."
       : format === "percent"
-        ? `${(value * 100).toFixed(1)}%`
+        ? `${formatDecimalBR(value * 100, 1)}%`
         : String(value);
 
   const targetMet = target !== undefined && value !== undefined && value >= target;
@@ -102,7 +103,7 @@ function MetricCard({
             targetMet ? "text-verdant" : "text-burnished"
           }`}
         >
-          Meta: {format === "percent" ? `${(target * 100).toFixed(0)}%` : target}
+          Meta: {format === "percent" ? `${formatDecimalBR(target * 100, 0)}%` : target}
           {targetMet ? " ✓" : ""}
         </p>
       )}

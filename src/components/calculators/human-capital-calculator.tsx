@@ -30,7 +30,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR, formatAxisBR } from "@/lib/utils";
 
 // ─── Calculation ────────────────────────────────────────────────
 
@@ -285,13 +285,7 @@ export function HumanCapitalCalculator() {
                 tick={{ fontSize: 10 }}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(v: number) =>
-                  v >= 1_000_000
-                    ? `${(v / 1_000_000).toFixed(1)}M`
-                    : v >= 1000
-                      ? `${(v / 1000).toFixed(0)}k`
-                      : `${v}`
-                }
+                tickFormatter={(v: number) => formatAxisBR(v)}
               />
               <Tooltip
                 formatter={(value: number, name: string) => [
@@ -345,7 +339,7 @@ export function HumanCapitalCalculator() {
           {result.gap > 0 ? (
             <>
               {" "}O seu patrimônio atual de {formatCurrency(currentWealth)} cobre apenas{" "}
-              <strong>{((currentWealth / result.presentValue) * 100).toFixed(0)}%</strong> desse
+              <strong>{formatDecimalBR((currentWealth / result.presentValue) * 100, 0)}%</strong> desse
               valor. O gap de {formatCurrency(result.gap)} é o que seguro de vida,
               previdência ou aceleração de patrimônio deveria cobrir.
             </>

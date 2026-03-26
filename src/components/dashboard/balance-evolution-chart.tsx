@@ -23,7 +23,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatCurrency, formatMonthShort } from "@/lib/utils";
+import { formatCurrency, formatMonthShort, formatAxisBR } from "@/lib/utils";
 import type { BalanceEvolutionResult } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -38,9 +38,7 @@ const PERIOD_OPTIONS = [
 ];
 
 function compactCurrency(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1_000) return `${(value / 1_000).toFixed(0)}k`;
-  return value.toFixed(0);
+  return formatAxisBR(value);
 }
 
 interface TooltipPayloadItem {

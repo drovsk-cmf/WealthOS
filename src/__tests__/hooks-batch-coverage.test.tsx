@@ -204,7 +204,7 @@ describe("use-economic-indices constants", () => {
   it("INDEX_UNIT has 8 unit entries", () => {
     expect(Object.keys(INDEX_UNIT)).toHaveLength(8);
     expect(INDEX_UNIT.ipca).toContain("mês");
-    expect(INDEX_UNIT.selic).toContain("ano");
+    expect(INDEX_UNIT.selic).toContain("mês");
     expect(INDEX_UNIT.usd_brl).toContain("R$");
   });
 });

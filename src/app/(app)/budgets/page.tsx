@@ -30,7 +30,7 @@ import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { useBudgetVsActual } from "@/lib/hooks/use-dashboard";
 import { useFamilyMembers } from "@/lib/hooks/use-family-members";
 import { BudgetForm } from "@/components/budgets/budget-form";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
@@ -230,7 +230,7 @@ export default function BudgetsPage() {
           </p>
           {bva && bva.budget_count > 0 && (
             <p className="text-xs text-muted-foreground tabular-nums">
-              {bva.pct_used.toFixed(0)} % utilizado · <Mv>{formatCurrency(bva.total_actual)}</Mv> / <Mv>{formatCurrency(bva.total_planned)}</Mv>
+              {formatDecimalBR(bva.pct_used, 0)} % utilizado · <Mv>{formatCurrency(bva.total_actual)}</Mv> / <Mv>{formatCurrency(bva.total_planned)}</Mv>
             </p>
           )}
         </div>
@@ -364,7 +364,7 @@ export default function BudgetsPage() {
                     )}
                     {b.approval_status !== "proposed" && (
                       <span className="text-sm font-semibold tabular-nums">
-                        {pctUsed.toFixed(0)} %
+                        {formatDecimalBR(pctUsed, 0)} %
                       </span>
                     )}
 

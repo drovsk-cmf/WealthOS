@@ -29,7 +29,7 @@ import {
 } from "recharts";
 import { useRecurrences } from "@/lib/hooks/use-recurrences";
 import { useLatestIndices } from "@/lib/hooks/use-economic-indices";
-import { formatCurrency, formatMonthShort } from "@/lib/utils";
+import { formatCurrency, formatMonthShort, formatDecimalBR, formatAxisBR } from "@/lib/utils";
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -193,8 +193,8 @@ export function ExpenseProjection() {
         <p className="text-xs text-muted-foreground">
           Custo mensal atual:{" "}
           <strong className="text-foreground">{formatCurrency(currentMonthly)}</strong>
-          {" · "}IPCA: {ipca.toFixed(2)}% a.m.
-          {igpm !== 0 && <> · IGP-M: {igpm.toFixed(2)}% a.m.</>}
+          {" · "}IPCA: {formatDecimalBR(ipca)}% a.m.
+          {igpm !== 0 && <> · IGP-M: {formatDecimalBR(igpm)}% a.m.</>}
         </p>
       </div>
 
@@ -214,7 +214,7 @@ export function ExpenseProjection() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(v: number) =>
-                Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toFixed(0)
+                formatAxisBR(v)
               }
             />
             <Tooltip
@@ -347,8 +347,8 @@ export function ExpenseProjection() {
           </p>
           <p>
             Fonte dos índices: BCB SGS (coleta diária automática).
-            Valores usados: IPCA {ipca.toFixed(2)}% a.m.
-            {igpm !== 0 && <>, IGP-M {igpm.toFixed(2)}% a.m.</>}
+            Valores usados: IPCA {formatDecimalBR(ipca)}% a.m.
+            {igpm !== 0 && <>, IGP-M {formatDecimalBR(igpm)}% a.m.</>}
           </p>
         </div>
       </details>

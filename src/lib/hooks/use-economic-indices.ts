@@ -33,7 +33,7 @@ export interface LatestIndex {
 export interface FetchResult {
   status: string;
   fetched_at: string;
-  results: { index_type: string; inserted: number; errors: string[] }[];
+  results: { index_type: string; inserted: number; error_count: number }[];
   total_inserted: number;
 }
 
@@ -70,8 +70,8 @@ export const INDEX_UNIT: Record<string, string> = {
   ipca: "% ao mês",
   inpc: "% ao mês",
   igpm: "% ao mês",
-  selic: "% ao ano",
-  cdi: "% ao ano",
+  selic: "% ao mês",
+  cdi: "% ao mês",
   tr: "% ao mês",
   usd_brl: "R$/USD",
   minimum_wage: "R$",

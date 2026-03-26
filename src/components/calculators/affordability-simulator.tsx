@@ -26,7 +26,7 @@ import {
   Clock,
   Wallet,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { useSolvencyMetrics } from "@/lib/hooks/use-dashboard";
 
 type PaymentMethod = "cash" | "installment" | "financed";
@@ -195,7 +195,7 @@ function MetricCard({
   formatFn?: (v: number) => string;
   invertColor?: boolean;
 }) {
-  const fmt = formatFn ?? ((v: number) => v.toFixed(1));
+  const fmt = formatFn ?? ((v: number) => formatDecimalBR(v, 1));
   const diff = after - before;
   const isPositive = invertColor ? diff < 0 : diff > 0;
   const isNeutral = Math.abs(diff) < 0.01;
@@ -311,7 +311,7 @@ export function AffordabilitySimulator() {
           <strong className="text-foreground">{formatCurrency(burn)}</strong>,
           fôlego de{" "}
           <strong className="text-foreground">
-            {runway >= 999 ? "∞" : `${runway.toFixed(1)} meses`}
+            {runway >= 999 ? "∞" : `${formatDecimalBR(runway, 1)} meses`}
           </strong>
         </p>
       </div>
@@ -463,7 +463,7 @@ export function AffordabilitySimulator() {
                 result.runwayLost >= 999
                   ? "Sem impacto mensurável"
                   : result.runwayLost > 0
-                    ? `Você perde ${result.runwayLost.toFixed(1)} meses de fôlego financeiro`
+                    ? `Você perde ${formatDecimalBR(result.runwayLost, 1)} meses de fôlego financeiro`
                     : "Seu fôlego não é afetado"
               }
             />
@@ -474,7 +474,7 @@ export function AffordabilitySimulator() {
               icon={ShieldCheck}
               before={result.lcrBefore}
               after={result.lcrAfter}
-              formatFn={(v) => v.toFixed(2)}
+              formatFn={(v) => formatDecimalBR(v, 2)}
               explanation={
                 result.lcrAfter >= 1
                   ? "Liquidez permanece saudável após a compra"
@@ -564,7 +564,7 @@ export function AffordabilitySimulator() {
               <p className="mt-1 text-xs text-muted-foreground">
                 O financiamento adiciona{" "}
                 {formatCurrency(result.totalInterest)} em juros (
-                {((result.totalInterest / parsedValue) * 100).toFixed(1)}% do
+                {formatDecimalBR((result.totalInterest / parsedValue) * 100, 1)}% do
                 valor)
               </p>
             )}

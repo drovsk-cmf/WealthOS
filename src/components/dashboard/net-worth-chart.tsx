@@ -26,7 +26,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatCurrency, formatMonthShort } from "@/lib/utils";
+import { formatCurrency, formatMonthShort, formatAxisBR, formatDecimalBR } from "@/lib/utils";
 import type { MonthlySnapshot } from "@/lib/hooks/use-dashboard";
 
 interface Props {
@@ -48,9 +48,7 @@ const TIER_META = [
 ];
 
 function compactCurrency(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1_000) return `${(value / 1_000).toFixed(0)}k`;
-  return value.toFixed(0);
+  return formatAxisBR(value);
 }
 
 interface TooltipPayloadItem {
@@ -131,7 +129,7 @@ function MomVariation({
       </span>
       <span className="text-[10px] text-muted-foreground">
         ({isPositive ? "+" : ""}
-        {pct.toFixed(1)}%)
+        {formatDecimalBR(pct, 1)}%)
       </span>
     </div>
   );

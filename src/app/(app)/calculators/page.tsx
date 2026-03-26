@@ -13,7 +13,6 @@
  */
 
 import { useState } from "react";
-import { Target, Home, Percent, Scale, ShoppingCart, TrendingUp, User } from "lucide-react";
 import { IndependenceCalculator } from "@/components/calculators/independence-calculator";
 import { BuyVsRentCalculator } from "@/components/calculators/buy-vs-rent-calculator";
 import { CetCalculator } from "@/components/calculators/cet-calculator";
@@ -26,43 +25,36 @@ const TABS = [
   {
     id: "affordability",
     label: "Posso comprar?",
-    icon: ShoppingCart,
     description: "Simule o impacto de uma compra no seu fôlego financeiro",
   },
   {
     id: "projection",
     label: "Projeção",
-    icon: TrendingUp,
     description: "Quanto vou gastar nos próximos 12 meses? Cenários com índices reais (IPCA, IGP-M)",
   },
   {
     id: "independence",
     label: "Independência",
-    icon: Target,
     description: "Quanto preciso para viver de renda?",
   },
   {
     id: "buy-vs-rent",
     label: "Comprar vs Alugar",
-    icon: Home,
     description: "Vale mais comprar ou alugar?",
   },
   {
     id: "cet",
     label: "CET",
-    icon: Percent,
     description: "Qual o custo real do financiamento?",
   },
   {
     id: "sac-vs-price",
     label: "SAC vs Price",
-    icon: Scale,
     description: "Qual sistema de amortização escolher?",
   },
   {
     id: "human-capital",
     label: "Capital Humano",
-    icon: User,
     description: "Quanto vale sua capacidade de gerar renda até a aposentadoria?",
   },
 ] as const;
@@ -85,20 +77,18 @@ export default function CalculatorsPage() {
       {/* Tab bar */}
       <div className="flex gap-1 overflow-x-auto rounded-lg border bg-muted p-1">
         {TABS.map((tab) => {
-          const Icon = tab.icon;
           const isActive = tab.id === activeTab;
           return (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
+              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors ${
                 isActive
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-card shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className="h-4 w-4" />
               {tab.label}
             </button>
           );
