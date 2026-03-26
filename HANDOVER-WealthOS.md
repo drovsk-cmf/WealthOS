@@ -1,10 +1,9 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Data:** 21 de março de 2026
+**Última atualização:** 26 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
-**Repositório GitHub:** drovsk-cmf/WealthOS (privado)
-**Supabase Project ID (ativo):** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
-**Supabase Project ID (legado):** hmwdfcsxtmbzlslxgqus (sa-east-1 São Paulo) — "WealthOS Project" — INACTIVE (pausado 20/03/2026)
+**Repositório GitHub:** drovsk-cmf/WealthOS (público)
+**Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
 **Google Drive:** Meu Drive > 00. Novos Projetos > WealthOS > Documentacao/
 
 ---
@@ -836,7 +835,7 @@ Codex executou auditoria profunda do código. 18 achados (WEA-001 a WEA-018). Do
 Triagem Claude + Claudio: 11 autorizados, 7 rejeitados. Ordem de execução formal criada com spec por item (escopo permitido/proibido, critério de aceite, validação obrigatória). Documento em `resposta-auditoria-codex.md`.
 
 Itens não autorizados e motivos:
-- WEA-001 (credenciais em docs): repo privado, anon key pública por design
+- WEA-001 (credenciais em docs): repo público, anon key pública por design, legacy keys desabilitadas
 - WEA-004 (biometria stub): requer Mac, planejado para fase iOS
 - WEA-006 (build sem env): comportamento esperado, CI tem as variáveis
 - WEA-007 (CSP unsafe): requerido por Next.js dev + Tailwind/shadcn
@@ -1594,8 +1593,7 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 ## 17. Conexões
 
 - **GitHub:** Fine-grained PAT e Classic PAT disponíveis (Claudio fornece no início da sessão)
-- **Supabase ATIVO:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) — "oniefy-prod"
-- **Supabase LEGADO (pausar/desligar):** Project ID: `hmwdfcsxtmbzlslxgqus` (sa-east-1 São Paulo) — "WealthOS Project". Ambos os projetos SEMPRE estiveram em sa-east-1. A migração de sessão 22 consolidou o schema em oniefy-prod.
+- **Supabase:** via conector MCP remoto (mcp.supabase.com/mcp), autenticado por OAuth. Project ID: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) — "oniefy-prod". Projeto legado `hmwdfcsxtmbzlslxgqus` DELETADO em 26/03/2026.
 - **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` apontando para oniefy-prod
 - **.env.local:**
   ```
@@ -2347,7 +2345,7 @@ Evolução: v1.0 (23 auditorias) → v2.0 (34, +Perplexity) → v2.1 (37, +Gemin
 1. **Testar app no oniefy-prod:** `npm run dev` → criar conta → verificar dashboard atualiza após transação (P0 fix)
 2. **Deploy Vercel** - `docs/DEPLOY-VERCEL.md`
 3. **Supabase Pro** ($25/mês) para Leaked Password Protection + CAPTCHA
-4. **Pausar/deletar projeto legado** (`hmwdfcsxtmbzlslxgqus`) - não tem dados ou features exclusivas
+4. ~~Pausar/deletar projeto legado~~ (`hmwdfcsxtmbzlslxgqus`) — **DELETADO em 26/03/2026**
 5. **Logo Oniefy** - Penrose Ribbon (iterações em andamento com ferramentas externas)
 6. **iOS build chain** - Xcode Cloud ou Mac físico
 7. **Corridor usability test** com 3 pessoas (UX-H3-05)
@@ -2410,7 +2408,7 @@ Verificação exaustiva via SQL direto em ambos os projetos:
 
 ### 23.5 Ação pendente
 
-- **Pausar ou deletar o projeto legado** (`hmwdfcsxtmbzlslxgqus`): não contém dados exclusivos nem features ausentes do oniefy-prod. Claudio decide quando.
+- ~~Pausar ou deletar o projeto legado (`hmwdfcsxtmbzlslxgqus`)~~ — **DELETADO em 26/03/2026**
 
 ### 23.6 Totais atualizados (oniefy-prod, dados verificados por SQL)
 
@@ -2486,7 +2484,7 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 - Seção 8: Oniefy não é banco/corretora/CVM/SUSEP
 - Integrado: middleware (PUBLIC_ROUTES), robots.txt, register (consentimento), privacy (link cruzado)
 
-**12. Projeto Supabase antigo (us-east-1):** confirmado como INACTIVE (já pausado).
+**12. Projeto Supabase antigo:** ~~INACTIVE (pausado)~~ → DELETADO em 26/03/2026.
 
 ### Pendências
 
@@ -2519,10 +2517,9 @@ Itens rápidos de pré-produção: SBOM, Sentry, mapeamento LGPD, patch de segur
 1. Clonar repositório: `git clone https://<PAT>@github.com/drovsk-cmf/WealthOS.git`
 2. Ler este HANDOVER (seções 1-3 para contexto, seção 12 para backlog, sessão mais recente para estado atual)
 3. `npm install && npx tsc --noEmit && npm run lint && npm test` para validar estado
-4. Supabase SP: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) via MCP OAuth
-5. Supabase antigo: `hmwdfcsxtmbzlslxgqus` - INACTIVE, ignorar
-6. Seguir backlog da seção 12 ou instruções do Claudio
-7. Ao final: atualizar este HANDOVER com log da sessão, commits, e último commit verde
+4. Supabase: `mngjbrbxapazdddzgoje` (sa-east-1 São Paulo) via MCP OAuth (projeto legado deletado)
+5. Seguir backlog da seção 12 ou instruções do Claudio
+6. Ao final: atualizar este HANDOVER com log da sessão, commits, e último commit verde
 
 ---
 
@@ -4229,30 +4226,9 @@ Serviço `fiscal-export.ts` gera planilha profissional com ExcelJS (já no proje
 
 Gaps restantes (< 50%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%) — API routes com Next.js Request/Response, candidatos a Playwright E2E, não unit tests.
 
-### 32.18 Estado do projeto (ground truth final sessão 32)
+### 32.18 Estado do projeto (snapshot intermediário, ver §32.26 para versão final)
 
-| Métrica | Valor |
-|---------|-------|
-| Stories | 105/108 (3 bloqueadas por Mac) |
-| Tabelas | 35 |
-| Políticas RLS | 107 |
-| Functions | 74 |
-| Triggers | 22 |
-| ENUMs | 29 |
-| Indexes | 144 |
-| Migrations MCP | 53 |
-| Migration files (repo) | 60 |
-| pg_cron jobs | 13 |
-| Suítes Jest | 50 (775 assertions) |
-| Cobertura statements | 71.2% |
-| Arquivos TS/TSX | 211 |
-| Hooks | 31 |
-| Schemas Zod | 33 |
-| Páginas autenticadas | 20 |
-| Sidebar | 8+1 |
-| CI | Runners falhando (billing). Validação local: tsc + jest + next lint limpos |
-| Deploy | www.oniefy.com (success) |
-| Design System | Plum Ledger v1.2 |
+_Tabela removida para evitar confusão. Ground truth final em §32.26._
 
 ### Sessão 32 — Commits consolidados (final)
 
@@ -4302,7 +4278,7 @@ Gaps restantes (< 50%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%)
 - GitHub PATs (2): revogados pelo GitHub
 - Supabase anon key (oniefy-prod): legacy keys desabilitadas
 - Supabase service_role key (oniefy-prod): legacy keys desabilitadas
-- Supabase anon key (projeto legado): projeto pausado
+- Supabase anon key (projeto legado): projeto DELETADO
 - VAPID private key: nunca configurada em produção (não há env vars no Vercel)
 - Email pessoal: aceitar (risco = spam)
 - Gemini/Anthropic API keys: NÃO no repo (só em process.env via Vercel)
@@ -4326,32 +4302,9 @@ Componente `human-capital-calculator.tsx` na 7ª aba de Calculadoras:
 - Insight contextualizado: "gap de R$ X descoberto, cobertura Y%"
 - Ref: CFA Institute, Ibbotson et al. 2007
 
-### 32.22 Estado do projeto (ground truth final sessão 32)
+### 32.22 Estado do projeto (snapshot intermediário, ver §32.26 para versão final)
 
-| Métrica | Valor |
-|---------|-------|
-| Stories | 105/108 (3 bloqueadas por Mac) |
-| Tabelas | 35 |
-| Políticas RLS | 107 |
-| Functions | 74 |
-| Triggers | 22 |
-| ENUMs | 29 |
-| Indexes | 144 |
-| Migrations MCP | 53 |
-| Migration files (repo) | 60 |
-| pg_cron jobs | 13 |
-| Suítes Jest | 50 (775 assertions) |
-| Cobertura statements | 71.2% |
-| Arquivos TS/TSX | 213 |
-| Hooks | 31 |
-| Schemas Zod | 33 |
-| Páginas autenticadas | 20 |
-| Sidebar | 8+1 |
-| Calculadoras | 7 tabs |
-| CI | ✅ Verde (repo público, Actions ilimitado) |
-| Deploy | www.oniefy.com (success) |
-| Design System | Plum Ledger v1.2 |
-| Repo | Público (https://github.com/drovsk-cmf/WealthOS) |
+_Tabela removida para evitar confusão. Ground truth final em §32.26._
 
 ### 32.23 Organização do repositório
 
@@ -4447,6 +4400,7 @@ Nomes renomeados para evitar conflito com integração Vercel-Supabase:
 | Deploy | www.oniefy.com (success) |
 | Design System | Plum Ledger v1.2 |
 | Repo | Público (https://github.com/drovsk-cmf/WealthOS) |
-| Supabase keys | Legacy desabilitáveis, novas publishable+secret ativas |
+| Supabase keys | Legacy DESABILITADAS (26/03). Novas publishable+secret ativas |
+| Supabase legado | Projeto hmwdfcsxtmbzlslxgqus DELETADO (26/03) |
 | Env vars | Renomeadas (ONIEFY_DB_*) sem conflito com integrações |
 | Formatação decimal | Padrão BR (vírgula) em toda a plataforma |
