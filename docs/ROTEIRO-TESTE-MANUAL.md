@@ -29,7 +29,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 - **Se falhar:**
   - "Erro ao criar conta" → Console mostra 400/422? Senha fraca ou email já existe
   - Tela branca → Console tem `validateEnv` error? Checar `.env.local`
-  - 500 no Console → `SUPABASE_SERVICE_ROLE_KEY` inválida
+  - 500 no Console → `ONIEFY_DB_SECRET` inválida
 
 ### 1.2 Onboarding
 - [ ] Tela de boas-vindas aparece → clicar "Começar"

@@ -104,9 +104,9 @@ jobs:
         run: npx playwright test smoke.spec.ts --project=chromium
         env:
           PLAYWRIGHT_BASE_URL: ${{ steps.url.outputs.target }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_ONIEFY_DB_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          NEXT_PUBLIC_ONIEFY_DB_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          ONIEFY_DB_SECRET: ${{ secrets.E2E_SERVICE_ROLE_KEY }}
 
       - uses: actions/upload-artifact@v4
         if: failure()

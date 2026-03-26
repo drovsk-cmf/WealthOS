@@ -247,11 +247,11 @@ Selecione tudo (Ctrl+A) e apague. Depois cole o seguinte texto:
 # ============================================
 
 # --- Supabase ---
-NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=COLE_A_ANON_KEY_DO_PROJETO_SP_AQUI
+NEXT_PUBLIC_ONIEFY_DB_URL=https://mngjbrbxapazdddzgoje.supabase.co
+NEXT_PUBLIC_ONIEFY_DB_KEY=COLE_A_ANON_KEY_DO_PROJETO_SP_AQUI
 
 # ATENCAO: cole a service_role key na linha abaixo
-SUPABASE_SERVICE_ROLE_KEY=COLE_A_SERVICE_ROLE_KEY_AQUI
+ONIEFY_DB_SECRET=COLE_A_SERVICE_ROLE_KEY_AQUI
 
 # --- Supabase Project ID ---
 SUPABASE_PROJECT_ID=mngjbrbxapazdddzgoje
@@ -264,13 +264,13 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 Localize a linha:
 ```
-SUPABASE_SERVICE_ROLE_KEY=COLE_A_SERVICE_ROLE_KEY_AQUI
+ONIEFY_DB_SECRET=COLE_A_SERVICE_ROLE_KEY_AQUI
 ```
 
 Selecione apenas o texto `COLE_A_SERVICE_ROLE_KEY_AQUI` e substitua pela chave
 que você copiou no Bloco de Notas na Etapa 2. O resultado deve ficar assim:
 ```
-SUPABASE_SERVICE_ROLE_KEY=<cole a service_role key do Supabase Dashboard>
+ONIEFY_DB_SECRET=<cole a service_role key do Supabase Dashboard>
 ```
 
 **Regras importantes:**

@@ -22,9 +22,9 @@ Adicione todas as variáveis abaixo em Settings > Environment Variables.
 
 | Variável | Onde encontrar |
 |---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard > Settings > API > Project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard > Settings > API > anon public |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard > Settings > API > service_role (NUNCA exponha no frontend) |
+| `NEXT_PUBLIC_ONIEFY_DB_URL` | Supabase Dashboard > Settings > API > Project URL |
+| `NEXT_PUBLIC_ONIEFY_DB_KEY` | Supabase Dashboard > Settings > API > anon public |
+| `ONIEFY_DB_SECRET` | Supabase Dashboard > Settings > API > service_role (NUNCA exponha no frontend) |
 
 ### Cron jobs (necessárias para push e digest funcionar)
 

@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
   const pendingCookies: Array<{ name: string; value: string; options: CookieOptions }> = [];
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_ONIEFY_DB_URL!,
+    process.env.NEXT_PUBLIC_ONIEFY_DB_KEY!,
     {
       cookies: {
         getAll() {

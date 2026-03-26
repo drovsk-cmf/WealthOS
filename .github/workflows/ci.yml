@@ -16,20 +16,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check for service_role key in frontend
+      - name: Check for secret key in frontend
         run: |
-          echo "Checking for service_role key leaks in frontend code..."
-          if grep -r "SUPABASE_SERVICE_ROLE_KEY\|service_role" \
+          echo "Checking for secret key leaks in frontend code..."
+          if grep -r "ONIEFY_DB_SECRET\|service_role" \
             --include="*.tsx" --include="*.ts" \
             src/app src/components src/lib/supabase/client.ts 2>/dev/null | \
             grep -v "server.ts" | \
             grep -v "admin.ts" | \
             grep -v "// " | \
             grep -v "node_modules"; then
-            echo "ERROR: service_role key reference found in frontend code!"
+            echo "ERROR: secret key reference found in frontend code!"
             exit 1
           fi
-          echo "OK: No service_role key leaks detected."
+          echo "OK: No secret key leaks detected."
 
       - name: Check RLS enabled on all tables
         run: |
@@ -119,8 +119,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: "https://placeholder.supabase.co"
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: "placeholder-anon-key"
+          NEXT_PUBLIC_ONIEFY_DB_URL: "https://placeholder.supabase.co"
+          NEXT_PUBLIC_ONIEFY_DB_KEY: "placeholder-key"
 
   e2e:
     name: E2E Tests (Playwright)
@@ -143,9 +143,9 @@ jobs:
       - name: Run E2E tests
         run: npx playwright test --project=chromium
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_ONIEFY_DB_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          NEXT_PUBLIC_ONIEFY_DB_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          ONIEFY_DB_SECRET: ${{ secrets.E2E_SERVICE_ROLE_KEY }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
 

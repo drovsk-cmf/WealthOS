@@ -9,12 +9,12 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+const url = process.env.NEXT_PUBLIC_ONIEFY_DB_URL ?? "";
+const key = process.env.ONIEFY_DB_SECRET ?? "";
 
 export function createAdminClient() {
   if (!url || !key) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+    throw new Error("Missing ONIEFY_DB_URL or ONIEFY_DB_SECRET");
   }
   return createClient<Database>(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },

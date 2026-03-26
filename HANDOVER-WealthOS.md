@@ -1351,7 +1351,7 @@ O ChatGPT foi significativamente mais útil nesta rodada: encontrou o open redir
 - Template HTML inline CSS, responsivo, cores Plum Ledger (summary row, net result, top categories table, alert badges, CTA)
 - POST /api/digest/send: endpoint de cron, admin client, itera todos usuários, envia via Resend API (preview_only sem RESEND_API_KEY). Protegido por DIGEST_CRON_SECRET.
 - GET /api/digest/preview: preview autenticado, renderiza digest do usuário logado como HTML
-- Env vars para produção: RESEND_API_KEY, DIGEST_CRON_SECRET, SUPABASE_SERVICE_ROLE_KEY
+- Env vars para produção: RESEND_API_KEY, DIGEST_CRON_SECRET, ONIEFY_DB_SECRET
 
 **H3 UX: 4/5 itens FEITOS. Apenas H3-05 (teste de corredor) é ação Claudio.**
 **Q: 2/2 itens de qualidade FEITOS.**
@@ -1599,9 +1599,9 @@ Documento formal: `docs/audit/DIVIDA-TECNICA.md` (581 linhas).
 - **Local dev:** `C:\Users\claud\Documents\PC_WealthOS`, `.env.local` apontando para oniefy-prod
 - **.env.local:**
   ```
-  NEXT_PUBLIC_SUPABASE_URL=https://mngjbrbxapazdddzgoje.supabase.co
-  NEXT_PUBLIC_SUPABASE_ANON_KEY=<obter no Supabase Dashboard → Settings → API → anon public>
-  SUPABASE_SERVICE_ROLE_KEY=<obter no Supabase Dashboard → Settings → API → service_role (NUNCA expor no frontend)>
+  NEXT_PUBLIC_ONIEFY_DB_URL=https://mngjbrbxapazdddzgoje.supabase.co
+  NEXT_PUBLIC_ONIEFY_DB_KEY=<obter no Supabase Dashboard → Settings → API → anon public>
+  ONIEFY_DB_SECRET=<obter no Supabase Dashboard → Settings → API → service_role (NUNCA expor no frontend)>
   SUPABASE_PROJECT_ID=mngjbrbxapazdddzgoje
   NEXT_PUBLIC_APP_URL=http://localhost:3000
   ```
@@ -3182,9 +3182,9 @@ Resolução de todos os 12 itens pendentes identificados na varredura de consist
 
 | Var | Obrigatória? | Onde obter |
 |---|---|---|
-| NEXT_PUBLIC_SUPABASE_URL | Sim | Dashboard Supabase |
-| NEXT_PUBLIC_SUPABASE_ANON_KEY | Sim | Dashboard Supabase |
-| SUPABASE_SERVICE_ROLE_KEY | Sim | Dashboard Supabase |
+| NEXT_PUBLIC_ONIEFY_DB_URL | Sim | Dashboard Supabase |
+| NEXT_PUBLIC_ONIEFY_DB_KEY | Sim | Dashboard Supabase |
+| ONIEFY_DB_SECRET | Sim | Dashboard Supabase |
 | NEXT_PUBLIC_APP_URL | Sim | URL do deploy Vercel |
 | SENTRY_DSN | Recomendado | sentry.io (free tier) |
 | NEXT_PUBLIC_TURNSTILE_SITE_KEY | Recomendado | Cloudflare Turnstile |
@@ -3436,9 +3436,9 @@ Varredura completa de ~360 strings user-facing em 20 páginas e 30+ componentes.
 
 | Variável | Target | Nota |
 |---|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | prod/preview/dev | mngjbrbxapazdddzgoje |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | prod/preview/dev | encrypted |
-| `SUPABASE_SERVICE_ROLE_KEY` | prod/preview | encrypted |
+| `NEXT_PUBLIC_ONIEFY_DB_URL` | prod/preview/dev | mngjbrbxapazdddzgoje |
+| `NEXT_PUBLIC_ONIEFY_DB_KEY` | prod/preview/dev | encrypted |
+| `ONIEFY_DB_SECRET` | prod/preview | encrypted |
 | `SUPABASE_PROJECT_ID` | prod/preview/dev | mngjbrbxapazdddzgoje |
 | `NEXT_PUBLIC_APP_URL` | prod | https://www.oniefy.com |
 | `VAPID_EMAIL` | prod/preview | mailto:admin@oniefy.com |

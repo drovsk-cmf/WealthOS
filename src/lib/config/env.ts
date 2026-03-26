@@ -6,12 +6,12 @@
  */
 
 const required = [
-  "NEXT_PUBLIC_SUPABASE_URL",
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "NEXT_PUBLIC_ONIEFY_DB_URL",
+  "NEXT_PUBLIC_ONIEFY_DB_KEY",
 ] as const;
 
 const requiredServer = [
-  "SUPABASE_SERVICE_ROLE_KEY",
+  "ONIEFY_DB_SECRET",
 ] as const;
 
 export function validateEnv(): void {

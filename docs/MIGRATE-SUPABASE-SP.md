@@ -35,9 +35,9 @@ Passe o novo Project ID para o Claude na próxima sessão. Ele vai:
 
 No `.env.local` (desenvolvimento):
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://NOVO_PROJECT_ID.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=NOVA_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY=NOVA_SERVICE_ROLE_KEY
+NEXT_PUBLIC_ONIEFY_DB_URL=https://NOVO_PROJECT_ID.supabase.co
+NEXT_PUBLIC_ONIEFY_DB_KEY=NOVA_ANON_KEY
+ONIEFY_DB_SECRET=NOVA_SERVICE_ROLE_KEY
 ```
 
 Na Vercel (produção, se já fez deploy):
