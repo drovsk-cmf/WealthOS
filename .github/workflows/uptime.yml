@@ -1,17 +1,19 @@
 # ============================================================
 # Uptime Monitor
 #
-# DESABILITADO em 26/03/2026: cron schedule removido para
-# economizar minutos do GitHub Actions (free tier: 2000 min/mês).
-# Mantém workflow_dispatch para execução manual quando necessário.
+# Roda o health check contra produção a cada 6 horas.
+# Se falhar, cria issue automaticamente para visibilidade.
 #
-# Reativar quando: GitHub Pro ativado ou base > 50 usuários.
-# Alternativa: UptimeRobot (free tier, não consome GitHub minutes).
+# Repo público: minutos ilimitados no GitHub Actions.
+# Consumo: ~1 min por execução × 4/dia = ~120 min/mês.
 # ============================================================
 
 name: Uptime Monitor
 
 on:
+  schedule:
+    # A cada 6 horas: 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 env:
