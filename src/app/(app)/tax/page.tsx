@@ -21,7 +21,8 @@
  */
 
 import { useState } from "react";
-import { FileSearch, Building, Landmark } from "lucide-react";
+import { FileSearch, Building, Landmark, Download } from "lucide-react";
+import { toast } from "sonner";
 import {
   useFiscalReport,
   useFiscalProjection,
@@ -45,6 +46,7 @@ function provisionStatus(monthly: number): { label: string; color: string; bg: s
 
 export default function FiscalPage() {
   const [selectedYear, setSelectedYear] = useState(CURRENT_YEAR);
+  const [exporting, setExporting] = useState(false);
 
   const { data: report, isLoading: loadingReport } = useFiscalReport(selectedYear);
   const { data: projection, isLoading: loadingProjection } = useFiscalProjection(selectedYear);
@@ -76,6 +78,49 @@ export default function FiscalPage() {
   const prov = projection;
   const provStatus = prov ? provisionStatus(prov.monthly_provision) : null;
 
+  async function handleExport() {
+    if (!report) return;
+    setExporting(true);
+    try {
+      const { generateIRPFExport } = await import("@/lib/services/fiscal-export");
+      const blob = await generateIRPFExport({
+        year: selectedYear,
+        report,
+        projection: prov?.status ? null : (prov ?? null),
+        assets: (assets ?? []).map((a) => ({
+          name: a.name,
+          category: a.category,
+          acquisition_date: a.acquisition_date,
+          acquisition_value: Number(a.acquisition_value),
+          current_value: Number(a.current_value),
+          currency: a.currency,
+        })),
+        debts: liabilityAccounts.map((a) => ({
+          name: a.name,
+          type: a.type,
+          current_balance: Number(a.current_balance),
+          interest_rate: a.interest_rate ? Number(a.interest_rate) : null,
+          currency: a.currency,
+        })),
+        userName: "Contribuinte",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `oniefy-irpf-${selectedYear}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success(`Relatório IRPF ${selectedYear} exportado.`);
+    } catch (err) {
+      console.error("Export error:", err);
+      toast.error("Erro ao exportar relatório.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="mx-auto max-w-4xl space-y-8 pb-12">
       {/* Header + Year selector (FIS-06) */}
@@ -97,6 +142,16 @@ export default function FiscalPage() {
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={exporting || !report}
+            className="flex items-center gap-1.5 rounded-md btn-cta px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40"
+            title="Exportar XLSX para o contador"
+          >
+            <Download className="h-4 w-4" />
+            {exporting ? "Gerando" : "Exportar"}
+          </button>
         </div>
       </div>
 
