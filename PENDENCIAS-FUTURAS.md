@@ -38,7 +38,7 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 | A9 | Confirmação das 6 decisões IA do adendo v1.5 | P2 | ⏳ | Ver Seção 9 deste documento |
 | A10 | RESEND_API_KEY: cadastrar em resend.com para digest semanal | P2 | ⏳ | Sem a chave, preview_only mode |
 | A11 | Projeto Sentry: criar conta free tier + adicionar DSN nas env vars Vercel | P2 | ⏳ | @sentry/nextjs já integrado, falta o DSN |
-| A12 | Pausar/deletar projeto Supabase legado (`hmwdfcsxtmbzlslxgqus`) | P3 | ⏳ | Nenhum dado exclusivo. Evitar confusão em futuras sessões |
+| A12 | ~~Pausar/deletar projeto Supabase legado~~ — Deletado por Claudio em 26/03/2026. | P3 | ✅ | Concluído |
 
 ---
 
