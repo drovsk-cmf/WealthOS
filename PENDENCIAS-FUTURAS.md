@@ -105,7 +105,7 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E8d | **CFA Pessoal: Calculadoras TVM** — 4 calculadoras implementadas: Independência Financeira (perpetuidade), Comprar vs Alugar (NPV), CET (IRR/Newton-Raphson), SAC vs Price. Front-end only, zero RPC. Página `/calculators` com tabs. Nav 7+1. Ref: HANDOVER §31.7. | Médio | Alto (diferenciação) | ✅ |
 | E8e | **Polymarket / Prediction Markets como input contextual** — Integrar API do Polymarket (ou equivalente) como sinal de mercado na Camada 3 (IA narrativa). Ex: "mercado precifica 72% de chance de Selic cair, o que favoreceria migrar CDB pré para pós-CDI". Analisado e rejeitado para agora: desalinhamento de domínio, cobertura BR ≈ zero, escopo creep. Reavaliar quando Camada 3 for implementada. | Baixo | Baixo (Camada 3 futura) | ⏳ |
 | E10 | **Open Finance com motor de reconciliação maduro** — Fase 2 planejada (adendo v1.3). Só entregar quando: (1) motor de deduplicação por hash, (2) indicador de status de sincronização por conta, (3) fila de transações "suspeitas" para confirmação do usuário. Entregar Open Finance com dados inconsistentes é pior que não ter. | Alto | Alto (aquisição / paridade) | 📌 |
-| E11 | **UX-H2-02: Push notifications triggers** — vencimentos + inatividade 7 dias. CFG-04 (APNs) depende de Mac. Web Push já funciona; criar cron de inatividade é independente. | Médio | Médio (engajamento) | 🔒 (APNs) / ⬜ (inatividade) |
+| E11 | **UX-H2-02: Push notifications triggers** — inatividade 7 dias implementada dentro de `/api/push/send` (Vercel cron diário 11:00 UTC). Texto: "Oniefy sente sua falta". Log em notification_log tipo "inactivity". APNs nativo depende de Mac. | Médio | Médio (engajamento) | ✅ (inatividade) / 🔒 (APNs) |
 
 ---
 
@@ -136,7 +136,7 @@ Itens técnicos que não são bugs, mas afetam qualidade, segurança ou manuteni
 | TEC-04 | SSR prefetch no Dashboard (Gemini audit #5) | Baixa | TTI > 2s medido em produção com dados reais | 📌 |
 | TEC-05 | Rate limiter in-memory não compartilha estado entre instâncias Vercel | Baixa | Quando Vercel escalar para múltiplas regiões | 📌 |
 | TEC-06 | SBOM atualizado automaticamente no CI — npm sbom CycloneDX já no workflow. Verificar periodicidade. | Baixa | Revisão semestral | ⬜ |
-| TEC-07 | Mapeamento LGPD: lacunas L3 (consentimento CPF), L4 (ROPA formal), L5 (RIPD módulo fiscal), L6 (DPO) | Média | Antes de 100 usuários | ⬜ |
+| TEC-07 | Mapeamento LGPD: `docs/LGPD-MAPEAMENTO.md`. 6 lacunas identificadas (L1-L2 ✅, L3-L6 ⬜). Medidas técnicas documentadas (12 itens). Roadmap de conformidade em 4 fases. Ref: HANDOVER §32. | Média | Antes de 100 usuários | ✅ (documento) / ⬜ (L3-L6 implementação) |
 
 ---
 
