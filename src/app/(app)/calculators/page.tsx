@@ -13,12 +13,13 @@
  */
 
 import { useState } from "react";
-import { Target, Home, Percent, Scale, ShoppingCart } from "lucide-react";
+import { Target, Home, Percent, Scale, ShoppingCart, TrendingUp } from "lucide-react";
 import { IndependenceCalculator } from "@/components/calculators/independence-calculator";
 import { BuyVsRentCalculator } from "@/components/calculators/buy-vs-rent-calculator";
 import { CetCalculator } from "@/components/calculators/cet-calculator";
 import { SacVsPriceCalculator } from "@/components/calculators/sac-vs-price-calculator";
 import { AffordabilitySimulator } from "@/components/calculators/affordability-simulator";
+import { ExpenseProjection } from "@/components/calculators/expense-projection";
 
 const TABS = [
   {
@@ -26,6 +27,12 @@ const TABS = [
     label: "Posso comprar?",
     icon: ShoppingCart,
     description: "Simule o impacto de uma compra no seu fôlego financeiro",
+  },
+  {
+    id: "projection",
+    label: "Projeção",
+    icon: TrendingUp,
+    description: "Quanto vou gastar nos próximos 12 meses? Cenários com índices reais (IPCA, IGP-M)",
   },
   {
     id: "independence",
@@ -98,6 +105,7 @@ export default function CalculatorsPage() {
         </div>
 
         {activeTab === "affordability" && <AffordabilitySimulator />}
+        {activeTab === "projection" && <ExpenseProjection />}
         {activeTab === "independence" && <IndependenceCalculator />}
         {activeTab === "buy-vs-rent" && <BuyVsRentCalculator />}
         {activeTab === "cet" && <CetCalculator />}
