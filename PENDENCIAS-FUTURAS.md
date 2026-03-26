@@ -116,8 +116,8 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
 | E11 | **Compartilhamento familiar com permissões granulares** — "cônjuge com acesso total" vs "filho com acesso às próprias contas". Arquitetura multi-user documentada (RLS multi-user backlog). Muda unidade de cobrança de "pessoa" para "família". | Alto | Alto (ticket médio) | 📌 |
-| E12 | **Projeção indexada IPCA/CDI** — cenários pessimista/base/otimista nas despesas recorrentes dos próximos 12 meses. Aluguel por IGP-M, escola por IPCA Educação. Infra BCB/IBGE já pronta. | Médio | Alto (diferenciação BR) | 📌 |
-| E13 | **Capital Humano (DCF da carreira)** — valor presente da carreira até a aposentadoria. Cálculo usa renda histórica já no banco. Argumento direto para seguros de vida: "gap de R$ 3,7M descoberto". | Médio | Alto (diferenciação radical) | 📌 |
+| E12 | **Projeção indexada IPCA/IGP-M** — 3 cenários (pessimista/base/otimista) para despesas recorrentes nos próximos 12 meses. Cada recorrência usa seu adjustment_index. Gráfico Recharts + cards totais. 2ª aba em Calculadoras. Ref: HANDOVER §32. | Médio | Alto (diferenciação BR) | ✅ |
+| E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: CFA Institute, Ibbotson 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
 | E14 | **Shadow Ledger (off-balance sheet)** — milhas, pontos de fidelidade, garantias judiciais, passivos contingentes. Exibidos em seção separada com nota de estimativa. Completa a foto patrimonial sem comprometer o ledger principal. | Médio | Médio (completude patrimonial) | 📌 |
 
 ---

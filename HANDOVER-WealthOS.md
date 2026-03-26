@@ -4275,3 +4275,80 @@ Gaps restantes (< 50%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%)
 | `0eeee01` | HANDOVER: fix Vercel §32.15 |
 | `1435990` | E8: exportação IRPF (XLSX) |
 | `4549cf9` | Q1 batch 3: 12 testes |
+| `b63bd50` | HANDOVER (E8/Q1 final) |
+| `fec8865` | TEC-07: LGPD + E11 inatividade confirmado |
+| `5b26b7c` | chore: desabilitar Uptime Monitor |
+| `b6e75d5` | security: remover secrets do repo |
+| `b98d550` | chore: repo público + Uptime Monitor reativado |
+| `1786548` | E12: projeção indexada IPCA/IGP-M |
+| `c8f2b64` | E13: Capital Humano (DCF da carreira) |
+| `b4b1a7a` | fix(lint): escapar aspas JSX |
+
+### 32.19 Segurança: repo público + rotação de chaves
+
+**Decisão:** Tornar repo público para GitHub Actions ilimitado (free tier: 2000 min/mês para private, ilimitado para public).
+
+**Ações executadas:**
+1. Secrets removidos dos arquivos atuais (HANDOVER, SETUP-LOCAL, .env.example)
+2. Repo tornado público via GitHub API
+3. GitHub PATs antigos revogados automaticamente (GitHub Secret Scanning)
+4. Supabase legacy API keys desabilitadas por Claudio no Dashboard
+5. Novo GitHub PAT gerado por Claudio
+6. Uptime Monitor reativado (minutos ilimitados)
+7. CI verde (Lint + TypeCheck + Tests + Build + Security)
+8. Post-Deploy Check verde
+
+**Secrets no histórico (todos neutralizados):**
+- GitHub PATs (2): revogados pelo GitHub
+- Supabase anon key (oniefy-prod): legacy keys desabilitadas
+- Supabase service_role key (oniefy-prod): legacy keys desabilitadas
+- Supabase anon key (projeto legado): projeto pausado
+- VAPID private key: nunca configurada em produção (não há env vars no Vercel)
+- Email pessoal: aceitar (risco = spam)
+- Gemini/Anthropic API keys: NÃO no repo (só em process.env via Vercel)
+
+### 32.20 E12: Projeção indexada de despesas recorrentes
+
+Componente `expense-projection.tsx` na 2ª aba de Calculadoras (6 → 7 tabs):
+- 3 cenários: pessimista (+2 p.p.), base (índices atuais), otimista (-1 p.p.)
+- Cada recorrência projetada pelo seu adjustment_index (IPCA default)
+- Gráfico Recharts (3 linhas) + cards com totais 12 meses + metodologia
+- Dados do BCB (coleta diária via pg_cron)
+- Zero deps novas, zero schema changes
+
+### 32.21 E13: Capital Humano (DCF da carreira)
+
+Componente `human-capital-calculator.tsx` na 7ª aba de Calculadoras:
+- DCF: PV = Σ (Renda × (1+g)^t) / (1+r)^t para t=1..anos_até_aposentadoria
+- 6 inputs: idade, aposentadoria, renda mensal, crescimento real, desconto, patrimônio
+- 3 outputs: Capital Humano (VP), Gap descoberto, Cobertura seguro recomendada
+- Gráfico barras (VP renda anual + VP acumulado) + linha referência patrimônio
+- Insight contextualizado: "gap de R$ X descoberto, cobertura Y%"
+- Ref: CFA Institute, Ibbotson et al. 2007
+
+### 32.22 Estado do projeto (ground truth final sessão 32)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 74 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 60 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 50 (775 assertions) |
+| Cobertura statements | 71.2% |
+| Arquivos TS/TSX | 213 |
+| Hooks | 31 |
+| Schemas Zod | 33 |
+| Páginas autenticadas | 20 |
+| Sidebar | 8+1 |
+| Calculadoras | 7 tabs |
+| CI | ✅ Verde (repo público, Actions ilimitado) |
+| Deploy | www.oniefy.com (success) |
+| Design System | Plum Ledger v1.2 |
+| Repo | Público (https://github.com/drovsk-cmf/WealthOS) |
