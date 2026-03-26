@@ -109,11 +109,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (209 arquivos TS/TSX em src/, 49 suítes de teste, 763 assertions)
+### 3.4 Código Fonte (211 arquivos TS/TSX em src/, 50 suítes de teste, 775 assertions)
 
 ```
 src/
-├── __tests__/                    # 49 suítes de teste (Jest + RTL), 763 assertions
+├── __tests__/                    # 50 suítes de teste (Jest + RTL), 775 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -147,6 +147,7 @@ src/
 │   ├── p16-asset-categories.test.ts   # 11: 14 categorias, labels, colors, zod
 │   ├── q1-hook-coverage-batch.test.tsx  # 26: recurrences, indices, fiscal, workflows, documents, reconciliation
 │   ├── q1-hook-coverage-batch2.test.tsx # 29: bank-connections, COA, currencies, family-members
+│   ├── q1-hook-coverage-batch3.test.tsx # 12: cost-centers, indices, recurrences, savings-goals
 │   ├── parsers.test.ts
 │   ├── pii-sanitizer.test.ts          # 14: CPF, CNPJ, email, tel, cartão, conta
 │   ├── rate-limiter.test.ts           # checkRateLimit, extractRouteKey, rateLimitHeaders
@@ -243,6 +244,7 @@ src/
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── schemas/rpc.ts            # 33 schemas Zod (todos os RPCs cobertos + JARVIS)
 │   ├── services/
+│   │   ├── fiscal-export.ts      # E8: IRPF XLSX export (ExcelJS, 6 abas)
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
 │   │   └── transaction-engine.ts
 │   ├── stores/privacy.ts         # Zustand store (privacy mode)
@@ -4174,48 +4176,6 @@ Gaps restantes (< 60%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%)
 
 Os 3 configs Sentry já têm `beforeSend: scrubEvent` + PII sanitization. Falta DSN (ação Claudio A11).
 
-### 32.13 Estado do projeto (ground truth final sessão 32)
-
-| Métrica | Valor |
-|---------|-------|
-| Stories | 105/108 (3 bloqueadas por Mac) |
-| Tabelas | 35 |
-| Políticas RLS | 107 |
-| Functions | 74 |
-| Triggers | 22 |
-| ENUMs | 29 |
-| Indexes | 144 |
-| Migrations MCP | 53 |
-| Migration files (repo) | 60 |
-| pg_cron jobs | 13 |
-| Suítes Jest | 49 (763 assertions) |
-| Cobertura statements | 67.9% |
-| Arquivos TS/TSX | 209 |
-| Hooks | 31 |
-| Schemas Zod | 33 |
-| Páginas autenticadas | 20 |
-| Sidebar | 8+1 |
-| CI | Runners falhando (billing). Validação local: tsc + jest limpos |
-| Deploy | www.oniefy.com |
-| Design System | Plum Ledger v1.2 |
-
-### Sessão 32 — Commits consolidados
-
-| Hash | Descrição |
-|------|-----------|
-| `7cbb3fb` | E2: gráfico Patrimônio Líquido ao longo do tempo |
-| `a10b68b` | E9: interpretação de solvência em linguagem direta |
-| `a4418f7` | E7: simulador "Posso comprar?" |
-| `d4507fe` | test(E7+E9): 22 testes |
-| `dda0a44` | HANDOVER §32 + PENDENCIAS (E2/E7/E9) |
-| `0daef6a` | E1: indicador de saúde de saldo |
-| `c36ccad` | E3: gerenciador de assinaturas |
-| `e9cda03` | E6: metas de economia (savings goals) |
-| `bb99620` | test(E1+E3+E6): 20 testes |
-| `32379fb` | HANDOVER §32 (E1/E3/E6) |
-| `df0aa39` | E5: política early adopters + Q1 batch 1 (26 testes) |
-| `82f181d` | Q1 batch 2: 29 testes |
-
 ### 32.15 Fix crítico: deploy Vercel quebrado por ESLint (commit 57bf21b)
 
 **Problema:** Deploys Vercel falharam a partir do commit `82f181d` (Q1 batch 2). Site continuou no ar servindo o último deploy ok (`32379fb`).
@@ -4230,3 +4190,88 @@ Os 3 configs Sentry já têm `beforeSend: scrubEvent` + PII sanitization. Falta 
 **Lição aprendida:** Sempre rodar `npx next lint` (não apenas `npx eslint`) antes de push, pois é o que o Vercel executa. A diferença: `next lint` usa a config do Next.js que pode incluir regras adicionais e paths específicos.
 
 **Verificação:** Deploy `57bf21b` → success. Smoke test: manifest 200, robots 200, sw.js 200, favicon 200.
+
+### 32.16 E8: Exportação IRPF formatada (XLSX)
+
+Serviço `fiscal-export.ts` gera planilha profissional com ExcelJS (já no projeto):
+
+| Aba | Conteúdo |
+|-----|----------|
+| Resumo | Totais consolidados (tributáveis, isentos, deduções, bens, dívidas) |
+| Rendimentos | Agrupados por tratamento fiscal (tributável, isento, exclusivo fonte, ganho capital) |
+| Deduções | Despesas dedutíveis (integral e limitado) |
+| Bens e Direitos | Patrimônio (assets + contas de investimento) com valor de aquisição e atual |
+| Dívidas | Empréstimos, financiamentos e cartões com saldo devedor e taxa |
+| Provisionamento IR | Projeção anual, gap, provisão mensal recomendada (só ano corrente) |
+
+- Headers com cor Plum (#4F2F69), currency format `#,##0.00`
+- Botão "Exportar" na página de IR, lazy import (code splitting)
+- Zero deps novas (ExcelJS já existia)
+- Timing: abril/maio é temporada IRPF, feature de fidelização anual
+
+### 32.17 Q1 finalizado: cobertura 60.9% → 71.2%
+
+3 batches de testes ao longo da sessão:
+
+| Batch | Testes | Hooks cobertos |
+|-------|--------|----------------|
+| Batch 1 | 26 | recurrences, economic-indices, fiscal, workflows, documents, reconciliation |
+| Batch 2 | 29 | bank-connections, chart-of-accounts, currencies, family-members |
+| Batch 3 | 12 | cost-centers (PnL, allocate, overhead), indices (history, multi), recurrences (pending, update), savings-goals (CRUD) |
+| **Total** | **67** | **15 hooks cobertos** |
+
+| Métrica | Início sessão | Fim sessão |
+|---------|--------------|------------|
+| Statements | 60.9% | 71.2% |
+| Branches | 52.1% | 58.7% |
+| Functions | 59.2% | 75.3% |
+| Lines | 63.0% | 74.4% |
+
+Gaps restantes (< 50%): `push/send/route.ts` (21%), `digest/send/route.ts` (23%) — API routes com Next.js Request/Response, candidatos a Playwright E2E, não unit tests.
+
+### 32.18 Estado do projeto (ground truth final sessão 32)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 74 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 60 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 50 (775 assertions) |
+| Cobertura statements | 71.2% |
+| Arquivos TS/TSX | 211 |
+| Hooks | 31 |
+| Schemas Zod | 33 |
+| Páginas autenticadas | 20 |
+| Sidebar | 8+1 |
+| CI | Runners falhando (billing). Validação local: tsc + jest + next lint limpos |
+| Deploy | www.oniefy.com (success) |
+| Design System | Plum Ledger v1.2 |
+
+### Sessão 32 — Commits consolidados (final)
+
+| Hash | Descrição |
+|------|-----------|
+| `7cbb3fb` | E2: gráfico Patrimônio Líquido |
+| `a10b68b` | E9: interpretação de solvência |
+| `a4418f7` | E7: simulador "Posso comprar?" |
+| `d4507fe` | test(E7+E9): 22 testes |
+| `dda0a44` | HANDOVER (E2/E7/E9) |
+| `0daef6a` | E1: saúde de saldo |
+| `c36ccad` | E3: assinaturas |
+| `e9cda03` | E6: metas de economia |
+| `bb99620` | test(E1+E3+E6): 20 testes |
+| `32379fb` | HANDOVER (E1/E3/E6) |
+| `df0aa39` | E5: early adopters + Q1 batch 1 |
+| `82f181d` | Q1 batch 2: 29 testes |
+| `4e0f1d6` | HANDOVER (E5/Q1/Q3) |
+| `57bf21b` | fix(build): ESLint override para testes |
+| `0eeee01` | HANDOVER: fix Vercel §32.15 |
+| `1435990` | E8: exportação IRPF (XLSX) |
+| `4549cf9` | Q1 batch 3: 12 testes |
