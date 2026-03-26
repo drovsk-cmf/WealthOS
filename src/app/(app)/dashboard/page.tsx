@@ -77,6 +77,10 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* ═══ SEÇÃO 0: Resumo Financeiro (sempre visível, topo) ═══ */}
+      {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
+      <SummaryCards data={d?.summary} isLoading={dash.isLoading} />
+
       {/* Error banner */}
       {dash.error && (
         <div className="rounded-lg border border-terracotta/20 bg-terracotta/10 p-4">
@@ -130,9 +134,6 @@ export default function DashboardPage() {
 
       {/* JARVIS CFA: "Limpeza de Disco" Financeira (P5: ativo+) */}
       {showMidTier && <JarvisScanCard />}
-
-      {/* DASH-01 + DASH-02: Saldo consolidado + Receitas vs Despesas */}
-      <SummaryCards data={d?.summary} isLoading={dash.isLoading} />
 
       {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento (P5: ativo+) */}
       {showMidTier && (

@@ -83,7 +83,7 @@ export default function CalculatorsPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 overflow-x-auto rounded-lg bg-muted/50 p-1">
+      <div className="flex gap-1 overflow-x-auto rounded-lg border bg-muted p-1">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.id === activeTab;

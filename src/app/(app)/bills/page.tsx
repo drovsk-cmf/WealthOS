@@ -164,7 +164,7 @@ export default function BillsPage() {
         ] as const).map((t) => (
           <button type="button" key={t.key} onClick={() => setTab(t.key)}
             className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              tab === t.key ? "bg-card shadow-card" : "text-muted-foreground hover:text-foreground"
+              tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}>
             {t.label}
             {t.count !== null && (

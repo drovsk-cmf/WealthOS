@@ -83,7 +83,7 @@ export default function CategoriesPage() {
             onClick={() => setActiveTab(t)}
             className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === t
-                ? "bg-background shadow-card"
+                ? "bg-background shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
