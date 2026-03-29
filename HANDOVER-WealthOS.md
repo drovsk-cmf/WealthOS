@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Última atualização:** 26 de março de 2026
+**Última atualização:** 29 de março de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (público)
 **Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
@@ -4502,5 +4502,56 @@ Varredura completa do repo (21 arquivos, 92 substituições):
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
 | Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| CI | ✅ Verde |
+| Deploy | www.oniefy.com (success) |
+
+
+## 34. Sessão 34 — Auditoria Pré-commit (29/03/2026)
+
+Pacote pré-commit da Matriz de Validação v2.1 (IDs 1.1, 2.1, 2.2, 1.3).
+
+### 34.1 Achados e correções
+
+| ID | Tipo | Descrição | Ação |
+|----|------|-----------|------|
+| S01 | Sujeira | Branch remota órfã `claude/security-audit-373Cl` (já mergeada) | Deletada |
+| S02-S09 | Sujeira | 8 imports/variáveis não usados (ChevronDown, X, Link, Upload, 2x useRouter/router, rentAdjMonthly, buyTotalCost) | Removidos |
+| F01-F04 | Fragilidade | 4x `eslint-disable react-hooks/exhaustive-deps` (onboarding, dashboard, security, profile) | Deps estáveis adicionadas, suppress removido |
+| D01 | Débito | Job E2E Playwright gated por `vars.E2E_ENABLED` | Backlog (requer infra E2E) |
+
+**Resultado:** tsc 0 erros, ESLint 0 warnings (era 8), 52 suítes / 842 assertions passando.
+
+**eslint-disable restantes no código de produção:** 5 (3x no-explicit-any em hooks Supabase, 1x no-console em app-lifecycle, 1x no-console em online-status). Todos justificados.
+
+### 34.2 Commits
+
+| SHA | Descrição |
+|-----|-----------|
+| `0094bda` | fix: resolve 4 exhaustive-deps fragilidades + remove 8 unused vars |
+
+### 34.3 Estado do projeto (ground truth sessão 34)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 76 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 63 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 52 (842 assertions) |
+| Arquivos TS/TSX | 218 |
+| Hooks | 33 |
+| Schemas Zod | 46 |
+| Páginas autenticadas | 23 |
+| Sidebar | 9+1 |
+| Calculadoras | 7 tabs |
+| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| ESLint warnings | 0 (era 8) |
+| eslint-disable (produção) | 5 (era 9) |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com (success) |
