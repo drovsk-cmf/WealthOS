@@ -41,8 +41,7 @@ export default function OnboardingPage() {
   // Track start
   useEffect(() => {
     track("onboarding_started");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [track]);
 
   // ─── Setup: E2E encryption + seeds (silencioso) ────────────
   const runSetup = useCallback(async () => {

@@ -13,7 +13,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Target, Plus, Check, Trash2, Pencil, Trophy, X } from "lucide-react";
+import { Target, Plus, Check, Trash2, Pencil, Trophy } from "lucide-react";
 import {
   useSavingsGoals,
   useCreateGoal,

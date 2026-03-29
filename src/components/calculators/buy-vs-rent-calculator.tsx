@@ -51,8 +51,6 @@ export function BuyVsRentCalculator() {
     const financed = value - downPayment;
     const monthlyMaint = value * maintPct / 12;
     const apprMonthly = (1 + apprAnnual) ** (1 / 12) - 1;
-    const rentAdjMonthly = (1 + rentAdj) ** (1 / 12) - 1;
-
     // Financing payment (Price)
     let fPayment = 0;
     if (financed > 0 && fRate > 0 && fTerm > 0) {
@@ -89,7 +87,6 @@ export function BuyVsRentCalculator() {
       ? financed * ((1 + fRate) ** fTerm - (1 + fRate) ** months) / ((1 + fRate) ** fTerm - 1)
       : 0;
     const buyNetWealth = currentPropertyValue - fRemaining;
-    const buyTotalCost = buyCumulative - (currentPropertyValue - value); // cost minus appreciation
 
     // Renter: investment balance
     const rentNetWealth = rentInvestBalance;

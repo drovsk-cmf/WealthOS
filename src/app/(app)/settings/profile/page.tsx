@@ -55,8 +55,7 @@ export default function ProfileSettingsPage() {
       setLoading(false);
     }
     loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   // ─── CFG-01 + CFG-03: Save profile ────────────────────────
   async function handleSaveProfile() {

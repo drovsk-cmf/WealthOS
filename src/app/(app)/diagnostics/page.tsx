@@ -23,7 +23,6 @@ import {
   Percent,
   BarChart3,
   Layers,
-  ChevronDown,
   ChevronUp,
   Info,
 } from "lucide-react";

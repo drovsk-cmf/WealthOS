@@ -43,8 +43,7 @@ export default function DashboardPage() {
   const { trackDashboardView } = useAnalytics();
 
   // Track dashboard view once per session
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => { trackDashboardView(); }, []);
+  React.useEffect(() => { trackDashboardView(); }, [trackDashboardView]);
 
   // Single RPC: all dashboard data in 1 roundtrip
   const dash = useDashboardAll();

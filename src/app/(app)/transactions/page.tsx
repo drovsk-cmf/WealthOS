@@ -3,8 +3,7 @@
 import { toast } from "sonner";
 
 import { useState, useCallback } from "react";
-import Link from "next/link";
-import { ArrowLeftRight, ArrowUpRight, ArrowDownRight, Repeat, Upload } from "lucide-react";
+import { ArrowLeftRight, ArrowUpRight, ArrowDownRight, Repeat } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useAccounts } from "@/lib/hooks/use-accounts";

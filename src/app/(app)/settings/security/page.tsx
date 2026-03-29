@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getMfaStatus, unenrollTotp, challengeAndVerify } from "@/lib/auth/mfa";
@@ -9,7 +8,6 @@ import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
 import { useBiometricAuth } from "@/lib/auth/use-biometric";
 
 export default function SecuritySettingsPage() {
-  const router = useRouter();
   const supabase = createClient();
   const biometric = useBiometricAuth();
 
@@ -43,8 +41,7 @@ export default function SecuritySettingsPage() {
       }
     }
     checkStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   // ─── Logout all devices (AUTH-07) ──────────────────────────
   async function handleLogoutAllDevices() {
