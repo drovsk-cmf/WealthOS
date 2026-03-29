@@ -67,12 +67,12 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 |---|---|
 | Tabelas | 35 (todas com RLS) |
 | Políticas RLS | 107 |
-| Functions (total) | 75 no schema public. Todas com `SET search_path = public`. 72 SECURITY DEFINER com auth.uid() guard |
+| Functions (total) | 76 no schema public. Todas com `SET search_path = public`. 73 SECURITY DEFINER com auth.uid() guard |
 | Triggers | 22 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
 | Indexes | 144 |
 | Migrations aplicadas (MCP) | 53 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 61 em supabase/migrations/ |
+| Migration files (repo) | 63 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -96,6 +96,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
 | JARVIS | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
 | Diagnostics | get_cfa_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
+| JARVIS v2 | get_jarvis_v2 (máquina de estados: 6 camadas, 6 estados, 4 inputs classificação, resolução de conflitos, ações priorizadas por estado) |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -109,11 +110,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (216 arquivos TS/TSX em src/, 51 suítes de teste, 812 assertions)
+### 3.4 Código Fonte (218 arquivos TS/TSX em src/, 52 suítes de teste, 842 assertions)
 
 ```
 src/
-├── __tests__/                    # 51 suítes de teste (Jest + RTL), 812 assertions
+├── __tests__/                    # 52 suítes de teste (Jest + RTL), 842 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -138,6 +139,7 @@ src/
 │   ├── fiscal-timing-safe.test.ts
 │   ├── hooks-batch-coverage.test.tsx
 │   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
+│   ├── jarvis-v2.test.ts              # 30: jarvisV2Schema, getStateInfo, classificationLabel/Color/Value, ruleLabel
 │   ├── lgpd-account-deletion.test.ts
 │   ├── onboarding-seeds.test.ts
 │   ├── oniefy-template.test.ts
@@ -240,11 +242,12 @@ src/
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
 │   │          budgets, categories, chart-of-accounts, cost-centers, currencies,
 │   │          currency-label, dashboard, dialog-helpers, documents,
-│   │          economic-indices, family-members, fiscal, jarvis, online-status,
+│   │          economic-indices, family-members, fiscal, jarvis, jarvis-v2,
+│   │          cfa-diagnostics, online-status,
 │   │          progressive-disclosure, push-notifications, reconciliation,
 │   │          recurrences, savings-goals, setup-journey, transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 33 schemas Zod (todos os RPCs cobertos + JARVIS)
+│   ├── schemas/rpc.ts            # 46 schemas Zod (todos os RPCs cobertos + JARVIS v1/v2 + Diagnostics)
 │   ├── services/
 │   │   ├── fiscal-export.ts      # E8: IRPF XLSX export (ExcelJS, 6 abas)
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
@@ -4407,3 +4410,97 @@ Nomes renomeados para evitar conflito com integração Vercel-Supabase:
 | Supabase legado | Projeto hmwdfcsxtmbzlslxgqus DELETADO (26/03) |
 | Env vars | Renomeadas (ONIEFY_DB_*) sem conflito com integrações |
 | Formatação decimal | Padrão BR (vírgula) em toda a plataforma |
+
+---
+
+## 33. Sessão 33 — Motor JARVIS v2 + Diagnóstico Financeiro + Limpeza de Marcas (29/03/2026)
+
+### 33.1 Diagnóstico Financeiro (Camada A + B)
+
+RPC `get_cfa_diagnostics` com 11 métricas em uma chamada:
+
+**Camada A (diagnóstico):** savings rate, HHI patrimonial (Markowitz), WACC pessoal, D/E, working capital, breakeven.
+
+**Camada B (temporal):** income CV (volatilidade), DuPont pessoal (3 fatores), category trends (3 meses), warning signs (4 sinais), monthly history (12 snapshots).
+
+Página `/diagnostics` com cards interativos expandíveis. Nav 9+1 (Activity icon). Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest.
+
+### 33.2 Motor JARVIS v2 (máquina de estados + grafo de dependências)
+
+Crítica de Claudio: motor v1 (get_jarvis_scan) era flat, regras independentes sem contexto de estado, sem resolução de conflitos. O redesign implementa 6 camadas:
+
+| Camada | Função |
+|--------|--------|
+| L0 | Dados brutos (transactions, accounts, assets, recurrences, indices) |
+| L1 | Métricas derivadas (avg_income, avg_expense, liquid_assets, total_debt, CDI) |
+| L2 | Indicadores compostos (reserve_ratio, debt_stress, savings_rate, fi_progress, income_cv) |
+| L3 | Classificação de estado (6 estados: SEM_DADOS → CRISE → SOBREVIVENCIA → ESTABILIZACAO → OTIMIZACAO → CRESCIMENTO) |
+| L4 | Fila de prioridades por estado (ações ordenadas, regras filtradas) |
+| L5 | Resolução de conflitos (R07 vs R02, R01 vs D/E, CV → reserve multiplier) |
+
+**4 inputs de classificação:**
+
+| Input | Fórmula | O que captura |
+|-------|---------|---------------|
+| reserve_ratio (RR) | liquid / (burn × base_months × (1 + CV)) | Liquidez ajustada pelo perfil |
+| debt_stress (DS) | Σ(saldo_descoberto × taxa/CDI) / net_worth | Pressão de dívida descoberta ponderada por custo |
+| savings_rate (SR) | (income - expense) / income | Capacidade de acumulação |
+| fi_progress (FI) | net_worth / (despesa_anual / taxa_real) | Progresso para independência financeira |
+
+**Correções estruturais em relação ao v1:**
+
+1. `is_collateralized` (migration 074): campo booleano em accounts. Financiamento com garantia real não entra no debt_stress. Checkbox no formulário.
+2. Thresholds modulados por income_cv: renda volátil (CV > 0.2) sobe base_months de 3 para 6.
+3. Warning signs são input de severidade, não critério de estado.
+4. Reserve ratio unifica runway + reserva em eixo único.
+5. Resolução de conflitos: se WACC > CDI+15pp → dívida antes de reserva (dívida usurária destrói mais rápido).
+6. D/E > 0.6 bloqueia sugestão de novos investimentos.
+
+RPC `get_jarvis_v2` aplicada via MCP. Hook `useJarvisV2`. Schema Zod `jarvisV2Schema`. 30 testes Jest.
+
+### 33.3 Limpeza de marcas registradas de terceiros
+
+Varredura completa do repo (21 arquivos, 92 substituições):
+
+- Arquivo renomeado: `docs/CFA-ONIEFY-MAPPING.md` → `docs/FINANCIAL-METHODOLOGY.md`
+- Todas as strings user-facing limpas (UI, README, docs públicos)
+- COMMENT de functions no Supabase atualizado
+- Referências cruzadas atualizadas em todos os arquivos
+
+**Regra permanente registrada:** zero menções a marcas registradas de terceiros em qualquer texto visível ao usuário final. Nomes internos de código (variáveis, schemas, filenames) são aceitáveis.
+
+### 33.4 Commits
+
+| SHA | Descrição |
+|-----|-----------|
+| `e8a9979` | feat: Diagnóstico Financeiro Camada A+B (11 métricas, /diagnostics, 37 testes) |
+| `d6b85f2` | docs: atualizar HANDOVER, PENDENCIAS e FINANCIAL-METHODOLOGY |
+| `db51d3f` | feat: is_collateralized em accounts (migration 074, checkbox) |
+| `cf5e446` | feat: Motor JARVIS v2 (máquina de estados, 30 testes) |
+| `5660c7e` | fix: remover marcas registradas (UI + README) |
+| `2795a04` | fix: limpeza completa marcas registradas (repo inteiro, rename) |
+
+### 33.5 Estado do projeto (ground truth sessão 33)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 76 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 63 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 52 (842 assertions) |
+| Arquivos TS/TSX | 218 |
+| Hooks | 33 |
+| Schemas Zod | 46 |
+| Páginas autenticadas | 23 |
+| Sidebar | 9+1 |
+| Calculadoras | 7 tabs |
+| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| CI | ✅ Verde |
+| Deploy | www.oniefy.com (success) |
