@@ -110,13 +110,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (218 arquivos TS/TSX em src/, 53 suítes de teste, 849 assertions)
+### 3.4 Código Fonte (221 arquivos TS/TSX em src/, 55 suítes de teste, 871 assertions)
 
 ```
 src/
-├── __tests__/                    # 53 suítes de teste (Jest + RTL), 849 assertions
+├── __tests__/                    # 55 suítes de teste (Jest + RTL), 871 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
+│   ├── api-routes-cron.test.ts        # 9: push/send + digest/send auth paths
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
 │   ├── assets-hooks.test.tsx
 │   ├── audit-calendar-grid.test.ts    # 8: while loop exaustivo do calendário
@@ -138,6 +139,7 @@ src/
 │   ├── e7-e9-affordability-solvency.test.ts  # 22: PMT, reserva, lcrExplanation, runwayExplanation, patrimonyExplanation
 │   ├── e1-e3-e6-features.test.ts  # 20: health badge, subscription filter, savings goals enrichment
 │   ├── fiscal-timing-safe.test.ts
+│   ├── form-primitives.test.tsx       # 13: FormError, FormInput, FormSelect, parseMonetaryAmount
 │   ├── hooks-batch-coverage.test.tsx
 │   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
 │   ├── jarvis-v2.test.ts              # 30: jarvisV2Schema, getStateInfo, classificationLabel/Color/Value, ruleLabel
@@ -4495,8 +4497,8 @@ Varredura completa do repo (21 arquivos, 92 substituições):
 | Migrations MCP | 53 |
 | Migration files (repo) | 63 |
 | pg_cron jobs | 13 |
-| Suítes Jest | 53 (849 assertions) |
-| Arquivos TS/TSX | 218 |
+| Suítes Jest | 55 (871 assertions) |
+| Arquivos TS/TSX | 221 |
 | Hooks | 32 |
 | Schemas Zod | 46 |
 | Páginas autenticadas | 23 |
@@ -4605,6 +4607,7 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | ESLint warnings | 0 (era 8) |
 | eslint-disable (produção) | 5 (era 9) |
+| Cobertura (linhas) | 77.89% |
 | npm audit (prod) | 0 vulnerabilidades |
 | npm audit (dev) | 3 high (tar, não corrigível) |
 | Duplicação | 1.37% (598 linhas / 43.778) |
