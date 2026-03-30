@@ -81,3 +81,33 @@ describe("PII Sanitizer (P11)", () => {
     });
   });
 });
+
+describe("hashPrompt", () => {
+  beforeAll(() => {
+    // jsdom does not expose crypto.subtle; polyfill from Node webcrypto
+    if (!globalThis.crypto?.subtle) {
+      const { webcrypto } = require("node:crypto");
+      Object.defineProperty(globalThis, "crypto", { value: webcrypto });
+    }
+  });
+
+  it("produces a 64-char hex SHA-256 hash", async () => {
+    const { hashPrompt } = await import("@/lib/utils/pii-sanitizer");
+    const hash = await hashPrompt("supermercado pao de acucar");
+    expect(hash).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("is case-insensitive and trim-insensitive", async () => {
+    const { hashPrompt } = await import("@/lib/utils/pii-sanitizer");
+    const h1 = await hashPrompt("Hello World");
+    const h2 = await hashPrompt("  hello world  ");
+    expect(h1).toBe(h2);
+  });
+
+  it("produces different hashes for different inputs", async () => {
+    const { hashPrompt } = await import("@/lib/utils/pii-sanitizer");
+    const h1 = await hashPrompt("alimentação");
+    const h2 = await hashPrompt("transporte");
+    expect(h1).not.toBe(h2);
+  });
+});

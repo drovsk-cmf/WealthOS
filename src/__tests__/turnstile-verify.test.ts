@@ -1,72 +1,82 @@
 /**
- * Tests: Turnstile CAPTCHA verification
+ * Tests: Turnstile CAPTCHA verification (actual function)
  *
- * Covers:
- * - Fail-open behavior when TURNSTILE_SECRET_KEY absent (documented risk)
- * - Token rejection when secret configured but token empty
- * - Token rejection when secret configured but fetch fails
- *
- * Source: ChatGPT audit A2 (Turnstile fail-open)
+ * Covers the real verifyTurnstile export with mocked fetch.
  */
 
-describe("Turnstile verifyTurnstile logic", () => {
-  // Simulate the verifyTurnstile function logic without importing
-  // (import requires DOM context for the component part)
+const originalEnv = process.env;
 
-  function verifyTurnstileLogic(
-    secret: string | undefined,
-    token: string,
-    fetchSuccess: boolean,
-    apiResponse: { success: boolean }
-  ): boolean {
-    if (!secret) return true; // Graceful bypass
-    if (!token) return false;
-    if (!fetchSuccess) return false;
-    return apiResponse.success === true;
-  }
+beforeEach(() => {
+  jest.resetModules();
+  process.env = { ...originalEnv };
+  global.fetch = jest.fn();
+});
 
+afterEach(() => {
+  process.env = originalEnv;
+  jest.restoreAllMocks();
+});
+
+async function loadVerify() {
+  const mod = await import("@/lib/auth/turnstile-verify");
+  return mod.verifyTurnstile;
+}
+
+describe("verifyTurnstile (real import)", () => {
   describe("fail-open when unconfigured", () => {
-    it("returns true when TURNSTILE_SECRET_KEY is undefined", () => {
-      const result = verifyTurnstileLogic(undefined, "", true, { success: false });
-      expect(result).toBe(true);
+    it("returns true when TURNSTILE_SECRET_KEY is undefined", async () => {
+      delete process.env.TURNSTILE_SECRET_KEY;
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("any-token")).toBe(true);
     });
 
-    it("returns true when TURNSTILE_SECRET_KEY is empty string", () => {
-      // In the real code, empty string is falsy, so also bypasses
-      const result = verifyTurnstileLogic("", "", true, { success: false });
-      expect(result).toBe(true);
+    it("returns true when TURNSTILE_SECRET_KEY is empty string", async () => {
+      process.env.TURNSTILE_SECRET_KEY = "";
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("any-token")).toBe(true);
     });
   });
 
   describe("configured (production-like)", () => {
-    const SECRET = "0x4AAAAAABxxxxxxxxxxxxxxx";
-
-    it("rejects empty token", () => {
-      const result = verifyTurnstileLogic(SECRET, "", true, { success: true });
-      expect(result).toBe(false);
+    beforeEach(() => {
+      process.env.TURNSTILE_SECRET_KEY = "0x4AAAAAABxxxxxxxxxxxxxxx";
     });
 
-    it("rejects when fetch fails", () => {
-      const result = verifyTurnstileLogic(SECRET, "valid-token", false, { success: true });
-      expect(result).toBe(false);
+    it("rejects empty token", async () => {
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("")).toBe(false);
+      expect(global.fetch).not.toHaveBeenCalled();
     });
 
-    it("rejects when API says not success", () => {
-      const result = verifyTurnstileLogic(SECRET, "valid-token", true, { success: false });
-      expect(result).toBe(false);
+    it("accepts when Cloudflare says success", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        json: async () => ({ success: true }),
+      });
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("valid-token")).toBe(true);
+      expect(global.fetch).toHaveBeenCalledWith(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        expect.objectContaining({ method: "POST" })
+      );
     });
 
-    it("accepts when API says success", () => {
-      const result = verifyTurnstileLogic(SECRET, "valid-token", true, { success: true });
-      expect(result).toBe(true);
+    it("rejects when Cloudflare says not success", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        json: async () => ({ success: false }),
+      });
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("bad-token")).toBe(false);
+    });
+
+    it("rejects when fetch throws (network error)", async () => {
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error("network"));
+      const verifyTurnstile = await loadVerify();
+      expect(await verifyTurnstile("any-token")).toBe(false);
     });
   });
 
   describe("documentation: fail-open is intentional for dev", () => {
     it("production MUST have TURNSTILE_SECRET_KEY set", () => {
-      // This test exists as documentation, not as a runtime check.
-      // The env validation in env.ts should be extended to require
-      // TURNSTILE_SECRET_KEY in production environments.
       const REQUIRED_FOR_PRODUCTION = [
         "TURNSTILE_SECRET_KEY",
         "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
