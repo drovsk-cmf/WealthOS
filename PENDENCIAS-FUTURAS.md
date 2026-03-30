@@ -1,6 +1,6 @@
 # Oniefy — Pendências e Implementações Futuras
 
-**Última atualização:** 23 de março de 2026
+**Última atualização:** 30 de março de 2026
 **Mantido por:** Claude (atualizar ao final de cada sessão com impacto relevante)
 **Relação com o HANDOVER:** Este documento é complementar ao `HANDOVER-WealthOS.md`. O HANDOVER registra o histórico de sessões e o estado técnico atual. Este documento é a fonte única de verdade para **o que fazer a seguir** — backlog de produto, ações pendentes, dívida técnica e evoluções estratégicas.
 
@@ -85,7 +85,7 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
-| Q1 | **Cobertura de testes: 71.2% statements** (era 60.9%). 67 testes adicionados em 3 batches cobrindo 15 hooks. Functions já em 75.3%. Gaps restantes: API routes push/digest (~20%, requerem Playwright E2E). | Médio | Alto (confiança no deploy) | 🔄 |
+| Q1 | **Cobertura de testes: 76.46% lines** (era 71.2%). 53 suítes, 849 assertions. Target 75% superado (sessão 34). Gaps restantes: API routes push/digest (~20%, requerem mock webpush/resend). | Médio | Alto (confiança no deploy) | 🔄 |
 | Q2 | **E2E Playwright no CI como gate obrigatório** — atualmente condicional (vars.E2E_ENABLED). Requer Supabase de teste isolado para o GitHub Actions. | Médio | Alto (qualidade) | ⬜ |
 | Q3 | **Logging estruturado** — Sentry `beforeSend` + PII scrub implementados nos 3 configs (client/server/edge). Falta DSN (ação Claudio A11: criar conta Sentry free + env var Vercel). | Baixo | Médio (observabilidade) | ✅ (código) / ⏳ (DSN) |
 
@@ -272,5 +272,6 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 25/03/2026 | E1 concluído (✅): indicador de saúde de saldo por conta (3 estados visuais). E3 concluído (✅): gerenciador de assinaturas (aba em Contas a Pagar). E6 concluído (✅): metas de economia com CRUD, progresso, sugestão mensal (migration 072, nova tabela savings_goals, sidebar 8+1). 47 suítes / 708 assertions. | Claude |
 | 25/03/2026 | E5 concluído (✅): política de early adopters (docs/POLITICA-EARLY-ADOPTERS.md). Q1 em progresso (🔄): cobertura 60.9%→67.9% (+55 testes em 2 batches). Q3 concluído (✅ código): Sentry beforeSend + PII scrub nos 3 configs (falta DSN = A11). 49 suítes / 763 assertions. | Claude |
 | 25-26/03/2026 | E8 concluído (✅): exportação IRPF formatada (XLSX 6 abas, ExcelJS). Q1 batch 3 (+12 testes): cobertura 67.9%→71.2% statements, 75.3% functions. Fix Vercel deploy (ESLint override para testes). 50 suítes / 775 assertions. Sessão 32 total: 8 features (E1/E2/E3/E5/E6/E7/E8/E9), 109 testes novos, 17 commits. | Claude |
+| 30/03/2026 | Release Gate Audit 37/37 completa (Matriz de Validação v2.1). DEF-01 corrigido (LGPD savings_goals). Cobertura 74.55%→76.46%. 17 dead exports removidos (475 linhas). S11 corrigido (WealthOS→Oniefy em terms). 7 commits. | Claude |
 | 26/03/2026 | E15 concluído (✅): Diagnóstico Financeiro Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 

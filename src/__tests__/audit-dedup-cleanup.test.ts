@@ -1,7 +1,7 @@
 /**
  * Auditoria: Testes de dedup e cleanup
  *
- * Ref: Problema 5 (useBudgetMonths over-fetch + dedup client-side)
+ * Ref: Problema 5 (budget dedup logic, previously useBudgetMonths - removed session 34)
  * Ref: Rate limiter cleanup (memory leak prevention)
  */
 

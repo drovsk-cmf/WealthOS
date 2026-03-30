@@ -133,6 +133,7 @@ src/
 │   ├── cfa-diagnostics.test.ts           # 37: schema, helpers (savings rate, HHI, WACC, D/E, CV, DuPont, warnings)
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── cost-centers-hooks.test.tsx
+│   ├── coverage-push-session34.test.tsx # 8: reconciliation, currencies, chart-of-accounts, ai-categorize
 │   ├── dialog-helpers.test.ts        # useEscapeClose, useAutoReset
 │   ├── e7-e9-affordability-solvency.test.ts  # 22: PMT, reserva, lcrExplanation, runwayExplanation, patrimonyExplanation
 │   ├── e1-e3-e6-features.test.ts  # 20: health badge, subscription filter, savings goals enrichment
@@ -238,14 +239,14 @@ src/
 │   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
-│   ├── hooks/ (31 hooks: access-logs, accounts, ai-categorize, analytics,
+│   ├── hooks/ (32 hooks: accounts, ai-categorize, analytics,
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
-│   │          budgets, categories, chart-of-accounts, cost-centers, currencies,
-│   │          currency-label, dashboard, dialog-helpers, documents,
+│   │          budgets, categories, cfa-diagnostics, chart-of-accounts, cost-centers,
+│   │          currencies, currency-label, dashboard, dialog-helpers, documents,
 │   │          economic-indices, family-members, fiscal, jarvis, jarvis-v2,
-│   │          cfa-diagnostics, online-status,
-│   │          progressive-disclosure, push-notifications, reconciliation,
-│   │          recurrences, savings-goals, setup-journey, transactions, workflows)
+│   │          online-status, progressive-disclosure, push-notifications,
+│   │          reconciliation, recurrences, savings-goals, setup-journey,
+│   │          transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
 │   ├── schemas/rpc.ts            # 46 schemas Zod (todos os RPCs cobertos + JARVIS v1/v2 + Diagnostics)
 │   ├── services/
