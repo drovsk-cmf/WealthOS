@@ -8,7 +8,7 @@ export {};
  * - CENTER_TYPE_LABELS, CENTER_TYPE_OPTIONS (constants, already tested in p1-divisoes)
  * - exportToCsv (pure function)
  * - useCreateCostCenter, useUpdateCostCenter, useDeleteCostCenter (mutations)
- * - useAllocateToCenters, useDistributeOverhead (mutations)
+ * - useDistributeOverhead (mutations)
  */
 
 import { renderHook, waitFor } from "@testing-library/react";

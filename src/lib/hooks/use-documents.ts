@@ -131,25 +131,6 @@ export function useDocuments(relatedTable: string, relatedId: string | null) {
   });
 }
 
-/** Get signed URL for a document (valid 1h) */
-export function useDocumentUrl(filePath: string | null) {
-  const supabase = createClient();
-
-  return useQuery({
-    queryKey: ["document_url", filePath],
-    enabled: !!filePath,
-    staleTime: 50 * 60 * 1000, // 50 min (URL valid 1h)
-    queryFn: async (): Promise<string> => {
-      const { data, error } = await supabase.storage
-        .from(BUCKET)
-        .createSignedUrl(filePath!, 3600);
-
-      if (error) throw error;
-      return data.signedUrl;
-    },
-  });
-}
-
 /** Delete a document (storage + record) */
 export function useDeleteDocument() {
   const queryClient = useQueryClient();

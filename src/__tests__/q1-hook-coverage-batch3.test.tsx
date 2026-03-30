@@ -3,8 +3,8 @@ export {};
 
 /**
  * Q1 Batch 3: Remaining coverage gaps
- * - cost-centers: useCenterPnl, useCenterExport, useAllocateToCenters, useDistributeOverhead
- * - economic-indices: useIndexHistory, useMultiIndexHistory
+ * - cost-centers: useCenterPnl, useCenterExport, useDistributeOverhead
+ * - economic-indices: useMultiIndexHistory
  * - recurrences: usePendingBills, useUpdateRecurrence
  * - savings-goals: useSavingsGoals, useCreateGoal, useUpdateGoal, useDeleteGoal
  */
@@ -74,7 +74,6 @@ describe("use-cost-centers: query mutations", () => {
   const {
     useCenterPnl,
     useCenterExport,
-    useAllocateToCenters,
     useDistributeOverhead,
   } = require("@/lib/hooks/use-cost-centers");
 
@@ -90,31 +89,6 @@ describe("use-cost-centers: query mutations", () => {
     expect(mockRpc).toHaveBeenCalledWith(
       "get_center_pnl",
       expect.objectContaining({ p_center_id: "center-1" })
-    );
-  });
-
-  it("useAllocateToCenters calls rpc allocate_to_centers", async () => {
-    mockRpc.mockResolvedValueOnce({
-      data: {
-        status: "ok",
-        transaction_id: "00000000-0000-0000-0000-000000000001",
-        allocations: [
-          { cost_center_id: "00000000-0000-0000-0000-000000000010", percentage: 60, amount: 600 },
-          { cost_center_id: "00000000-0000-0000-0000-000000000011", percentage: 40, amount: 400 },
-        ],
-      },
-      error: null,
-    });
-    const client = newQc();
-    const { result } = renderHook(() => useAllocateToCenters(), { wrapper: wrap(client) });
-
-    await result.current.mutateAsync({
-      transactionId: "tx-1",
-      allocations: [{ center_id: "c1", percentage: 60 }, { center_id: "c2", percentage: 40 }],
-    });
-    expect(mockRpc).toHaveBeenCalledWith(
-      "allocate_to_centers",
-      expect.objectContaining({ p_transaction_id: "tx-1" })
     );
   });
 
@@ -137,31 +111,8 @@ describe("use-cost-centers: query mutations", () => {
 // ─── ECONOMIC INDICES: history queries ──────────────────────────
 
 describe("use-economic-indices: history queries", () => {
-  const { useIndexHistory, useMultiIndexHistory } =
+  const { useMultiIndexHistory } =
     require("@/lib/hooks/use-economic-indices");
-
-  it("useIndexHistory calls rpc get_economic_indices with type filter", async () => {
-    mockRpc.mockResolvedValueOnce({
-      data: { data: [{ index_type: "ipca", value: 0.5, reference_date: "2026-03-01", source_primary: "bcb", accumulated_12m: null, accumulated_year: null }] },
-      error: null,
-    });
-    const client = newQc();
-    const { result } = renderHook(() => useIndexHistory("ipca", 12), { wrapper: wrap(client) });
-
-    await waitFor(() => expect(result.current.isSuccess || result.current.isError).toBe(true));
-    expect(mockRpc).toHaveBeenCalledWith(
-      "get_economic_indices",
-      expect.objectContaining({ p_index_type: "ipca" })
-    );
-  });
-
-  it("useIndexHistory with null type is disabled", () => {
-    const client = newQc();
-    const { result } = renderHook(() => useIndexHistory(null, 12), { wrapper: wrap(client) });
-
-    // Query should not execute (enabled: false)
-    expect(result.current.fetchStatus).toBe("idle");
-  });
 
   it("useMultiIndexHistory calls rpc with each type", async () => {
     mockRpc.mockResolvedValue({

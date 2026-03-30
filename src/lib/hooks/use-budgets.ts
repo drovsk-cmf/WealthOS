@@ -155,34 +155,6 @@ export function useBudget(id: string | null) {
   });
 }
 
-/** Check which months have budgets (for navigation) */
-export function useBudgetMonths() {
-  const supabase = createClient();
-
-  return useQuery({
-    queryKey: ["budgets", "months"],
-    staleTime: 10 * 60 * 1000, // 10 min
-    queryFn: async () => {
-      const userId = await getCachedUserId(supabase);
-      // DT-019: Supabase PostgREST doesn't support DISTINCT.
-      // Fetch only month column (minimal payload), dedup client-side.
-      // Limit 500 covers ~40 categories × 12 months before dedup.
-      const { data, error } = await supabase
-        .from("budgets")
-        .select("month")
-        .eq("user_id", userId)
-        .order("month", { ascending: false })
-        .limit(500);
-
-      if (error) throw error;
-
-      // Deduplicate months
-      const uniqueMonths = Array.from(new Set(data.map((b) => b.month)));
-      return uniqueMonths;
-    },
-  });
-}
-
 // ─── Mutations ──────────────────────────────────────────────────
 
 /** ORC-01: Create budget for a category in a month */

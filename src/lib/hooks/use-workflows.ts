@@ -8,7 +8,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
-import { workflowCreateResultSchema, generateTasksResultSchema, completeTaskResultSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { generateTasksResultSchema, completeTaskResultSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 
 import { FileUp, Wallet, Tag, ClipboardCheck } from "lucide-react";
@@ -135,88 +135,7 @@ export function usePendingTasks() {
   });
 }
 
-/** Task count for dashboard badge */
-export function usePendingTaskCount() {
-  const supabase = createClient();
-
-  return useQuery({
-    queryKey: ["workflow_tasks", "count"],
-    staleTime: 2 * 60 * 1000,
-    queryFn: async () => {
-      const userId = await getCachedUserId(supabase);
-      const { count, error } = await supabase
-        .from("workflow_tasks")
-        .select("*, workflows!inner(user_id)", { count: "exact", head: true })
-        .eq("workflows.user_id", userId)
-        .in("status", ["pending", "in_progress"]);
-
-      if (error) throw error;
-      return count ?? 0;
-    },
-  });
-}
-
-/** Tasks for a specific workflow */
-export function useWorkflowTasks(workflowId: string | null) {
-  const supabase = createClient();
-
-  return useQuery({
-    queryKey: ["workflow_tasks", workflowId],
-    enabled: !!workflowId,
-    queryFn: async () => {
-      const userId = await getCachedUserId(supabase);
-      const { data, error } = await supabase
-        .from("workflow_tasks")
-        .select("*, workflows!inner(user_id)")
-        .eq("workflows.user_id", userId)
-        .eq("workflow_id", workflowId!)
-        .order("period_start", { ascending: false })
-        .order("created_at", { ascending: true })
-        .limit(20);
-
-      if (error) throw error;
-      return data as WorkflowTask[];
-    },
-  });
-}
-
 // ─── Mutations ──────────────────────────────────────────────────
-
-/** WKF-01: Auto-create workflow when account is created */
-export function useAutoCreateWorkflow() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      accountId,
-      accountType,
-      accountName,
-    }: {
-      accountId: string;
-      accountType: string;
-      accountName: string;
-    }) => {
-      const supabase = createClient();
-      const userId = await getCachedUserId(supabase);
-      const { data, error } = await supabase.rpc("auto_create_workflow_for_account", {
-        p_user_id: userId,
-        p_account_id: accountId,
-        p_account_type: accountType,
-        p_account_name: accountName,
-      });
-      if (error) throw error;
-      const parsed = workflowCreateResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("auto_create_workflow_for_account", parsed);
-        throw new Error("Resposta inválida ao criar workflow.");
-      }
-      return parsed.data;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["workflows"] });
-    },
-  });
-}
 
 /** WKF-01/02: Generate tasks for current month */
 export function useGenerateTasks() {

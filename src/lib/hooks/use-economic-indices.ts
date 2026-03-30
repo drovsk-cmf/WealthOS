@@ -99,33 +99,6 @@ export function useLatestIndices() {
   });
 }
 
-/** Historical data for a specific index */
-export function useIndexHistory(indexType: string | null, months: number = 12) {
-  const supabase = createClient();
-  const dateFrom = new Date();
-  dateFrom.setMonth(dateFrom.getMonth() - months);
-
-  return useQuery({
-    queryKey: ["indices", "history", indexType, months],
-    enabled: !!indexType,
-    staleTime: 10 * 60 * 1000,
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_economic_indices", {
-        p_index_type: indexType!,
-        p_date_from: dateFrom.toISOString().slice(0, 10),
-        p_limit: months + 2,
-      });
-      if (error) throw error;
-      const parsed = economicIndicesResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("get_economic_indices", parsed);
-        return [];
-      }
-      return parsed.data.data ?? [];
-    },
-  });
-}
-
 /** Historical data for multiple indices (parallel queries) */
 export function useMultiIndexHistory(indexTypes: string[], months: number = 12) {
   const supabase = createClient();

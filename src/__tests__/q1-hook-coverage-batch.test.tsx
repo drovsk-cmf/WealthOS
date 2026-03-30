@@ -252,7 +252,6 @@ describe("use-workflows: mutations and labels", () => {
     TASK_TYPE_LABELS,
     TASK_STATUS_LABELS,
     PERIODICITY_LABELS,
-    useAutoCreateWorkflow,
     useGenerateTasks,
     useCompleteTask,
     useCreateWorkflow,
@@ -282,25 +281,6 @@ describe("use-workflows: mutations and labels", () => {
     expect(PERIODICITY_LABELS.weekly).toBeDefined();
     expect(PERIODICITY_LABELS.biweekly).toBeDefined();
     expect(PERIODICITY_LABELS.monthly).toBeDefined();
-  });
-
-  it("useAutoCreateWorkflow calls rpc", async () => {
-    mockRpc.mockResolvedValueOnce({
-      data: { status: "created", workflow_id: "00000000-0000-0000-0000-000000000010", name: "Test" },
-      error: null,
-    });
-    const client = newQc();
-    const { result } = renderHook(() => useAutoCreateWorkflow(), { wrapper: wrap(client) });
-
-    await result.current.mutateAsync({
-      accountId: "a1",
-      accountName: "Conta Teste",
-      accountType: "checking",
-    });
-    expect(mockRpc).toHaveBeenCalledWith(
-      "auto_create_workflow_for_account",
-      expect.objectContaining({ p_account_id: "a1" })
-    );
   });
 
   it("useGenerateTasks calls rpc", async () => {

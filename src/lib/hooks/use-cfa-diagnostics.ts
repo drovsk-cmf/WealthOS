@@ -21,8 +21,6 @@ import type { z } from "zod";
 
 export type CfaDiagnostics = z.infer<typeof cfaDiagnosticsSchema>;
 
-export type ConcentrationLevel = "critical" | "high" | "moderate" | "diversified";
-export type VolatilityLevel = "critical" | "high" | "moderate" | "low";
 export type TrendDirection = "up" | "down" | "stable";
 
 export interface CategoryTrendItem {

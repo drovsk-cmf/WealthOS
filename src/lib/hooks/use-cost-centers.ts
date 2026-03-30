@@ -7,7 +7,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
-import { centerPnlSchema, centerExportSchema, allocateToCentersResultSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { centerPnlSchema, centerExportSchema, logSchemaError } from "@/lib/schemas/rpc";
 import type { Database } from "@/types/database";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
 
@@ -156,11 +156,6 @@ export interface CenterExport {
   exported_at: string;
 }
 
-export interface AllocationInput {
-  cost_center_id: string;
-  percentage: number;
-}
-
 // ─── CEN-04: P&L by center ─────────────────────────────────────
 
 export function useCenterPnl(
@@ -210,41 +205,6 @@ export function useCenterExport() {
         throw new Error("Resposta inválida ao exportar centro.");
       }
       return parsed.data;
-    },
-  });
-}
-
-// ─── CEN-03: Allocate transaction to centers ────────────────────
-
-export function useAllocateToCenters() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({
-      transactionId,
-      allocations,
-    }: {
-      transactionId: string;
-      allocations: AllocationInput[];
-    }) => {
-      const supabase = createClient();
-      const userId = await getCachedUserId(supabase);
-      const { data, error } = await supabase.rpc("allocate_to_centers", {
-        p_user_id: userId,
-        p_transaction_id: transactionId,
-        p_allocations: JSON.stringify(allocations),
-      });
-      if (error) throw error;
-      const parsed = allocateToCentersResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("allocate_to_centers", parsed);
-        throw new Error("Resposta inválida ao alocar centros.");
-      }
-      return parsed.data;
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["cost_centers"] });
-      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
   });
 }

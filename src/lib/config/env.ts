@@ -10,26 +10,11 @@ const required = [
   "NEXT_PUBLIC_ONIEFY_DB_KEY",
 ] as const;
 
-const requiredServer = [
-  "ONIEFY_DB_SECRET",
-] as const;
-
 export function validateEnv(): void {
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
     throw new Error(
       `[Oniefy] Variáveis de ambiente obrigatórias não configuradas: ${missing.join(", ")}. ` +
-      `Verifique seu arquivo .env.local.`
-    );
-  }
-}
-
-export function validateServerEnv(): void {
-  validateEnv();
-  const missing = requiredServer.filter((key) => !process.env[key]);
-  if (missing.length > 0) {
-    throw new Error(
-      `[Oniefy] Variáveis de ambiente do servidor não configuradas: ${missing.join(", ")}. ` +
       `Verifique seu arquivo .env.local.`
     );
   }

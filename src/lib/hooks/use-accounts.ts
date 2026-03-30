@@ -54,13 +54,6 @@ export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
   { value: "financing", label: "Financiamento" },
 ];
 
-export const LIQUIDITY_TIER_LABELS: Record<string, string> = {
-  T1: "T1 - Liquidez imediata",
-  T2: "T2 - Investimentos resgatáveis",
-  T3: "T3 - Bens e financiamentos",
-  T4: "T4 - Ilíquidos / restritos",
-};
-
 export const LIQUIDITY_TIER_OPTIONS = [
   { value: "T1", label: "N1 - Liquidez imediata" },
   { value: "T2", label: "N2 - Investimentos" },

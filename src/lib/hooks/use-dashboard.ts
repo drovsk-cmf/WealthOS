@@ -115,64 +115,6 @@ async function getUserId() {
   return { supabase, userId };
 }
 
-// ─── 1. Dashboard Summary (DASH-01, DASH-02) ──────────────────
-
-export function useDashboardSummary() {
-  return useQuery({
-    queryKey: ["dashboard", "summary"],
-    staleTime: STALE_TIME,
-    queryFn: async (): Promise<DashboardSummary> => {
-      const { supabase, userId } = await getUserId();
-      const { data, error } = await supabase.rpc("get_dashboard_summary", {
-        p_user_id: userId,
-      });
-      if (error) throw error;
-      const parsed = dashboardSummarySchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("get_dashboard_summary", parsed);
-        return {
-          total_current_balance: 0,
-          total_projected_balance: 0,
-          active_accounts: 0,
-          month_income: 0,
-          month_expense: 0,
-          month_start: "",
-          month_end: "",
-        };
-      }
-      return parsed.data;
-    },
-  });
-}
-
-// ─── 2. Balance Sheet (CTB-05) ─────────────────────────────────
-
-export function useBalanceSheet() {
-  return useQuery({
-    queryKey: ["dashboard", "balance-sheet"],
-    staleTime: STALE_TIME,
-    queryFn: async (): Promise<BalanceSheet> => {
-      const { supabase, userId } = await getUserId();
-      const { data, error } = await supabase.rpc("get_balance_sheet", {
-        p_user_id: userId,
-      });
-      if (error) throw error;
-      const parsed = balanceSheetSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("get_balance_sheet", parsed);
-        return {
-          liquid_assets: 0,
-          illiquid_assets: 0,
-          total_assets: 0,
-          total_liabilities: 0,
-          net_worth: 0,
-        };
-      }
-      return parsed.data;
-    },
-  });
-}
-
 // ─── 3. Solvency Metrics (DASH-09 to DASH-12) ─────────────────
 
 export function useSolvencyMetrics() {
@@ -199,58 +141,6 @@ export function useSolvencyMetrics() {
           lcr: 0,
           months_analyzed: 0,
         };
-      }
-      return parsed.data;
-    },
-  });
-}
-
-// ─── 4. Top Categories (DASH-03) ───────────────────────────────
-
-export function useTopCategories(
-  year?: number,
-  month?: number,
-  limit: number = 5
-) {
-  return useQuery({
-    queryKey: ["dashboard", "top-categories", year, month, limit],
-    staleTime: STALE_TIME,
-    queryFn: async (): Promise<TopCategoriesResult> => {
-      const { supabase, userId } = await getUserId();
-      const { data, error } = await supabase.rpc("get_top_categories", {
-        p_user_id: userId,
-        ...(year !== undefined && { p_year: year }),
-        ...(month !== undefined && { p_month: month }),
-        p_limit: limit,
-      });
-      if (error) throw error;
-      const parsed = topCategoriesResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("get_top_categories", parsed);
-        return { categories: [], total_expense: 0, month: "" };
-      }
-      return parsed.data;
-    },
-  });
-}
-
-// ─── 5. Balance Evolution (DASH-07) ────────────────────────────
-
-export function useBalanceEvolution(months: number = 6) {
-  return useQuery({
-    queryKey: ["dashboard", "evolution", months],
-    staleTime: STALE_TIME,
-    queryFn: async (): Promise<BalanceEvolutionResult> => {
-      const { supabase, userId } = await getUserId();
-      const { data, error } = await supabase.rpc("get_balance_evolution", {
-        p_user_id: userId,
-        p_months: months,
-      });
-      if (error) throw error;
-      const parsed = balanceEvolutionResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("get_balance_evolution", parsed);
-        return { data: [], source: "calculated" as const, months_requested: months };
       }
       return parsed.data;
     },
