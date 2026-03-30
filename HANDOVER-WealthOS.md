@@ -110,11 +110,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (218 arquivos TS/TSX em src/, 52 suítes de teste, 842 assertions)
+### 3.4 Código Fonte (218 arquivos TS/TSX em src/, 53 suítes de teste, 849 assertions)
 
 ```
 src/
-├── __tests__/                    # 52 suítes de teste (Jest + RTL), 842 assertions
+├── __tests__/                    # 53 suítes de teste (Jest + RTL), 849 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-security.test.ts    # 30+ assertions: auth routes, rate limit, error sanitization, cron auth
@@ -4494,9 +4494,9 @@ Varredura completa do repo (21 arquivos, 92 substituições):
 | Migrations MCP | 53 |
 | Migration files (repo) | 63 |
 | pg_cron jobs | 13 |
-| Suítes Jest | 52 (842 assertions) |
+| Suítes Jest | 53 (849 assertions) |
 | Arquivos TS/TSX | 218 |
-| Hooks | 33 |
+| Hooks | 32 |
 | Schemas Zod | 46 |
 | Páginas autenticadas | 23 |
 | Sidebar | 9+1 |
@@ -4540,11 +4540,11 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | DEF-01 | Defeito | 10.1 LGPD | `savings_goals` ausente em `cron_process_account_deletions` | **Corrigido** (migration 076 + DB) |
 | V01 | Vulnerabilidade | 8.1 SCA | `tar` CVE high em dev-deps (supabase CLI, @capacitor/cli) | Não corrigível sem breaking change |
 | F01-F04 | Fragilidade | 2.2 | `eslint-disable react-hooks/exhaustive-deps` (4 arquivos) | **Corrigido** (deps estáveis adicionadas) |
-| F05 | Fragilidade | 6.1 | Cobertura 71.4% (target 75%) | Backlog |
+| F05 | Fragilidade | 6.1 | Cobertura 71.4% (target 75%) | **Corrigido** (76.46%, commit 88802ef) |
 | F06 | Fragilidade | 6.2 | Rastreabilidade story→teste fraca (4/108 stories referenciadas) | Backlog |
-| F07 | Fragilidade | 3.2 | database.ts possivelmente desatualizado vs banco | Verificar com `gen types` |
+| F07 | Fragilidade | 3.2 | database.ts possivelmente desatualizado vs banco | **Verificado** (em sincronia) |
 | S01-S09 | Sujeira | 1.1, 2.2 | Branch órfã + 8 unused vars/imports | **Corrigido** |
-| S10 | Sujeira | 2.3 | 17 exports mortos (hooks dashboard antigos, validateServerEnv, etc.) | Backlog |
+| S10 | Sujeira | 2.3 | 17 exports mortos (hooks dashboard antigos, validateServerEnv, etc.) | **Corrigido** (915f0a0) |
 | S11 | Sujeira | 2.6 | "WealthOS Tecnologia S/A" em terms/page.tsx | Aguarda PJ |
 | S12 | Sujeira | 1.2 | Migration files count desatualizado no HANDOVER | **Corrigido** nesta atualização |
 | D01 | Débito | 1.3 | E2E Playwright desabilitado no CI | Backlog |
@@ -4563,9 +4563,9 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | Defeito | 1 | 1 | 0 |
 | Vulnerabilidade | 1 | 0 | 1 (dev-only) |
 | Performance | 0 | - | - |
-| Fragilidade | 7 | 4 | 3 |
+| Fragilidade | 7 | 6 | 1 |
 | Débito | 11 | 0 | 11 |
-| Sujeira | 12 | 10 | 2 |
+| Sujeira | 12 | 11 | 1 |
 
 **Camadas sem achados:** Segurança (4.1-4.6), Performance (5.1-5.4), Cache invalidation (3.4), Error handling (3.5), Acoplamento (3.3).
 
@@ -4576,6 +4576,9 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | `0094bda` | fix: resolve 4 exhaustive-deps fragilidades + remove 8 unused vars |
 | `309552c` | docs: HANDOVER sessão 34 (parcial) |
 | `7220e43` | fix: LGPD savings_goals deletion + npm audit fix (migration 076) |
+| `f8ff34b` | docs: HANDOVER sessão 34 - release gate audit 37/37 |
+| `88802ef` | test: coverage push 74.55% → 76.46% (target 75% exceeded) |
+| `915f0a0` | refactor: remove 17 dead exports e 475 linhas de dead code |
 
 ### 34.5 Estado do projeto (ground truth sessão 34)
 
@@ -4593,7 +4596,7 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | pg_cron jobs | 13 |
 | Suítes Jest | 52 (842 assertions) |
 | Arquivos TS/TSX | 218 |
-| Hooks | 33 |
+| Hooks | 32 |
 | Schemas Zod | 46 |
 | Páginas autenticadas | 23 |
 | Sidebar | 9+1 |
@@ -4604,7 +4607,7 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | npm audit (prod) | 0 vulnerabilidades |
 | npm audit (dev) | 3 high (tar, não corrigível) |
 | Duplicação | 1.37% (598 linhas / 43.778) |
-| Dead exports | 17 |
+| Dead exports | 0 (era 17; 475 linhas removidas) |
 | Circular deps | 0 |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com (success) |
