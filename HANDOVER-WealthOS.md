@@ -72,7 +72,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
 | Indexes | 144 |
 | Migrations aplicadas (MCP) | 53 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 63 em supabase/migrations/ |
+| Migration files (repo) | 64 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -4529,7 +4529,55 @@ Pacote pré-commit da Matriz de Validação v2.1 (IDs 1.1, 2.1, 2.2, 1.3).
 |-----|-----------|
 | `0094bda` | fix: resolve 4 exhaustive-deps fragilidades + remove 8 unused vars |
 
-### 34.3 Estado do projeto (ground truth sessão 34)
+### 34.3 Release Gate Audit — 37/37 auditorias completas
+
+Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 camadas auditadas.
+
+**Achados consolidados:**
+
+| ID | Tipo | Auditoria | Descrição | Status |
+|----|------|-----------|-----------|--------|
+| DEF-01 | Defeito | 10.1 LGPD | `savings_goals` ausente em `cron_process_account_deletions` | **Corrigido** (migration 076 + DB) |
+| V01 | Vulnerabilidade | 8.1 SCA | `tar` CVE high em dev-deps (supabase CLI, @capacitor/cli) | Não corrigível sem breaking change |
+| F01-F04 | Fragilidade | 2.2 | `eslint-disable react-hooks/exhaustive-deps` (4 arquivos) | **Corrigido** (deps estáveis adicionadas) |
+| F05 | Fragilidade | 6.1 | Cobertura 71.4% (target 75%) | Backlog |
+| F06 | Fragilidade | 6.2 | Rastreabilidade story→teste fraca (4/108 stories referenciadas) | Backlog |
+| F07 | Fragilidade | 3.2 | database.ts possivelmente desatualizado vs banco | Verificar com `gen types` |
+| S01-S09 | Sujeira | 1.1, 2.2 | Branch órfã + 8 unused vars/imports | **Corrigido** |
+| S10 | Sujeira | 2.3 | 17 exports mortos (hooks dashboard antigos, validateServerEnv, etc.) | Backlog |
+| S11 | Sujeira | 2.6 | "WealthOS Tecnologia S/A" em terms/page.tsx | Aguarda PJ |
+| S12 | Sujeira | 1.2 | Migration files count desatualizado no HANDOVER | **Corrigido** nesta atualização |
+| D01 | Débito | 1.3 | E2E Playwright desabilitado no CI | Backlog |
+| D02 | Débito | 8.2 | 11 major bumps pendentes | Backlog |
+| D03 | Débito | 10.2 | Sem mapeamento formal story→teste→código | Backlog |
+| D04-D07 | Débito | 6.4-6.7 | E2E gated, sem load test, sem DAST, sem mutation test | Backlog |
+| D08 | Débito | 2.4 | Duplicação 1.37% (38 clones de formulário) | Backlog |
+| D09 | Débito | 7.3 | WCAG AA compliance formal não verificada | Pré-lançamento |
+| D10 | Débito | 9.2 | Sentry opt-in, sem alertas configurados | Pré-lançamento |
+| D11 | Débito | 9.3 | Sem retry explícito com backoff para Supabase | Backlog |
+
+**Resumo por tipo:**
+
+| Tipo | Total | Corrigidos | Backlog |
+|------|-------|------------|---------|
+| Defeito | 1 | 1 | 0 |
+| Vulnerabilidade | 1 | 0 | 1 (dev-only) |
+| Performance | 0 | - | - |
+| Fragilidade | 7 | 4 | 3 |
+| Débito | 11 | 0 | 11 |
+| Sujeira | 12 | 10 | 2 |
+
+**Camadas sem achados:** Segurança (4.1-4.6), Performance (5.1-5.4), Cache invalidation (3.4), Error handling (3.5), Acoplamento (3.3).
+
+### 34.4 Commits
+
+| SHA | Descrição |
+|-----|-----------|
+| `0094bda` | fix: resolve 4 exhaustive-deps fragilidades + remove 8 unused vars |
+| `309552c` | docs: HANDOVER sessão 34 (parcial) |
+| `7220e43` | fix: LGPD savings_goals deletion + npm audit fix (migration 076) |
+
+### 34.5 Estado do projeto (ground truth sessão 34)
 
 | Métrica | Valor |
 |---------|-------|
@@ -4541,7 +4589,7 @@ Pacote pré-commit da Matriz de Validação v2.1 (IDs 1.1, 2.1, 2.2, 1.3).
 | ENUMs | 29 |
 | Indexes | 144 |
 | Migrations MCP | 53 |
-| Migration files (repo) | 63 |
+| Migration files (repo) | 64 |
 | pg_cron jobs | 13 |
 | Suítes Jest | 52 (842 assertions) |
 | Arquivos TS/TSX | 218 |
@@ -4553,5 +4601,10 @@ Pacote pré-commit da Matriz de Validação v2.1 (IDs 1.1, 2.1, 2.2, 1.3).
 | Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | ESLint warnings | 0 (era 8) |
 | eslint-disable (produção) | 5 (era 9) |
+| npm audit (prod) | 0 vulnerabilidades |
+| npm audit (dev) | 3 high (tar, não corrigível) |
+| Duplicação | 1.37% (598 linhas / 43.778) |
+| Dead exports | 17 |
+| Circular deps | 0 |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com (success) |
