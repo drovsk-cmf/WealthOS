@@ -151,6 +151,11 @@ export function sanitizeRedirectTo(
 }
 
 // ─── Color names for accessibility ──────────────────────────
+
+// ─── Retry / backoff ────────────────────────────────────────
+export { withRetry, isTransientError, exponentialBackoff } from "./retry";
+export type { RetryOptions } from "./retry";
+
 const COLOR_NAME_MAP: Record<string, string> = {
   "#56688F": "Azul ardósia",
   "#2F7A68": "Verde esmeralda",

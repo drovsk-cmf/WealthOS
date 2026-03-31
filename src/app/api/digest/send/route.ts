@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { timingSafeCompare } from "@/lib/auth/timing-safe";
+import { withRetry } from "@/lib/utils/retry";
 import {
   buildWeeklyDigestHtml,
   type WeeklyDigestData,
@@ -35,10 +36,12 @@ export async function POST(request: Request) {
   const supabase = createAdminClient();
 
   // ── Fetch all users with onboarding complete ──
-  const { data: users, error: usersError } = await supabase
-    .from("users_profile")
-    .select("id, full_name")
-    .eq("onboarding_completed", true);
+  const { data: users, error: usersError } = await withRetry(() =>
+    supabase
+      .from("users_profile")
+      .select("id, full_name")
+      .eq("onboarding_completed", true)
+  );
 
   if (usersError || !users) {
     console.error("[digest/send] Falha ao buscar usuários:", usersError?.message);
@@ -53,9 +56,8 @@ export async function POST(request: Request) {
   for (const user of users) {
     try {
       // Fetch digest data (SECURITY DEFINER RPC, works with admin client)
-      const { data: digest, error: digestError } = await supabase.rpc(
-        "get_weekly_digest",
-        { p_user_id: user.id }
+      const { data: digest, error: digestError } = await withRetry(() =>
+        supabase.rpc("get_weekly_digest", { p_user_id: user.id })
       );
 
       if (digestError || !digest) {

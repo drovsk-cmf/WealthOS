@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { timingSafeCompare } from "@/lib/auth/timing-safe";
+import { withRetry } from "@/lib/utils/retry";
 import webpush from "web-push";
 
 /**
@@ -46,14 +47,16 @@ export async function POST(request: NextRequest) {
     const in3Days = new Date(Date.now() + 3 * 86400000).toISOString().split("T")[0];
 
     // Find pending/overdue transactions with due dates
-    const { data: dueBills, error: billsError } = await supabase
-      .from("transactions")
-      .select("user_id, description, amount, date, payment_status")
-      .eq("is_deleted", false)
-      .eq("is_paid", false)
-      .in("payment_status", ["pending", "overdue"])
-      .lte("date", in3Days)
-      .order("date", { ascending: true });
+    const { data: dueBills, error: billsError } = await withRetry(() =>
+      supabase
+        .from("transactions")
+        .select("user_id, description, amount, date, payment_status")
+        .eq("is_deleted", false)
+        .eq("is_paid", false)
+        .in("payment_status", ["pending", "overdue"])
+        .lte("date", in3Days)
+        .order("date", { ascending: true })
+    );
 
     if (billsError) throw billsError;
     if (!dueBills || dueBills.length === 0) {
@@ -147,9 +150,11 @@ export async function POST(request: NextRequest) {
 
     // ── UX-H2-02: Inactivity trigger (7+ days without transaction) ──
     const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
-    const { data: allUsers } = await supabase
-      .from("users_profile")
-      .select("id");
+    const { data: allUsers } = await withRetry(() =>
+      supabase
+        .from("users_profile")
+        .select("id")
+    );
 
     if (allUsers) {
       for (const u of allUsers) {
