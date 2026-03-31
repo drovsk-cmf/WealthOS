@@ -40,6 +40,7 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 | A11 | Projeto Sentry: criar conta free tier + adicionar DSN nas env vars Vercel | P2 | ⏳ | @sentry/nextjs já integrado, falta o DSN |
 | A12 | ~~Pausar/deletar projeto Supabase legado~~ — Deletado por Claudio em 26/03/2026. | P3 | ✅ | Concluído |
 | A13 | CNPJ placeholder "00.000.000/0001-00" em `terms/page.tsx`: substituir quando PJ constituída | P3 | ⏳ | Aguarda constituição da PJ |
+| A14 | Assets de marca: favicon.ico, apple-touch-icon (180×180), PWA icons (192×192 + 512×512), `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`. Diretório `public/brand/` já existe com lockups. Sem esses assets o app usa ícone genérico. Ref: HANDOVER §29. | P1 | ⬜ | Bloqueador visual do lançamento |
 
 ---
 
