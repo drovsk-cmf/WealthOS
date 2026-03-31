@@ -4615,3 +4615,114 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | Circular deps | 0 |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com (success) |
+
+## 35. Sessão 35 — Backlog D02 + D11 (31/03/2026)
+
+### 35.1 Contexto
+
+Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triagem de 11 achados residuais, execução dos 2 atacáveis por código.
+
+### 35.2 Triagem de achados pendentes
+
+| ID | Descrição | Status anterior | Ação nesta sessão | Status atual |
+|----|-----------|----------------|-------------------|-------------|
+| D02 | 11+ major bumps pendentes | ⬜ Backlog | **Lote 1 + 2 executados:** 7 safe bumps + 2 majors (tailwind-merge 3.5, lucide-react 1.7). TS6 tentado e revertido (ts-jest peer dep). 14 major bumps restantes (Lote 3, pós-lançamento). | 🔄 Parcial |
+| D11 | Sem retry com backoff para Supabase | ⬜ Backlog | **Implementado:** `withRetry()` utility + `exponentialBackoff` no QueryProvider + cron routes protegidas. 20 testes. | ✅ Feito |
+| D08 | Duplicação formulários (38 clones) | ✅ (4350cdc) | Verificado, já resolvido sessão anterior | ✅ |
+| D09 | WCAG AA compliance | ✅ (65182ba) | Verificado, já resolvido sessão anterior | ✅ |
+| F06 | Rastreabilidade story→teste | ✅ (65182ba) | Verificado, já resolvido sessão anterior | ✅ |
+| S11 | Branding WealthOS em terms | ✅ (adf5aa5) | Verificado, já resolvido sessão anterior | ✅ |
+| D01 | E2E Playwright no CI | 🔒 | Requer infra E2E isolada | 🔒 |
+| D04-D07 | Load/DAST/mutation testing | 🔒 | Requer infra dedicada | 🔒 |
+| D10 | Sentry alertas | ⏳ | Requer DSN (ação Claudio A11) | ⏳ |
+| V01 | tar CVE dev-only | 📌 | Não corrigível sem breaking change | 📌 |
+
+### 35.3 D11: Retry com exponential backoff
+
+**Componentes implementados:**
+
+1. **`src/lib/utils/retry.ts`** (140 linhas)
+   - `withRetry<T>(fn, opts)`: wrapper genérico, aceita Supabase query builders (PromiseLike)
+   - `isTransientError(error)`: detecta 429, 5xx, PostgreSQL connection errors (08xxx, 57P01/03), PostgREST timeouts, network failures (fetch, ECONNRESET, timeout)
+   - `exponentialBackoff(attemptIndex)`: delay = base × 2^attempt, cap 10s, ±25% jitter
+   - Defaults: 3 tentativas, 500ms base, 10s cap
+
+2. **`src/lib/query-provider.tsx`** atualizado:
+   - Queries: `retry: 2` + `retryDelay: exponentialBackoff` (era `retry: 1` sem backoff)
+   - Mutations: `retry: 1` + `retryDelay: exponentialBackoff` (era sem retry)
+
+3. **Cron routes protegidas:**
+   - `push/send`: queries de bills e users com `withRetry()`
+   - `digest/send`: query de users e RPC `get_weekly_digest` com `withRetry()`
+
+4. **20 testes** em `src/__tests__/retry.test.ts`:
+   - `isTransientError`: 10 testes (429, 5xx, PG codes, network, non-transient rejection)
+   - `exponentialBackoff`: 3 testes (positivity, trend, cap)
+   - `withRetry`: 7 testes (success, retry+succeed, Supabase error pattern, non-transient passthrough, exhaustion, custom predicate)
+
+### 35.4 D02: Dependency bumps
+
+**Lote 1 (safe minors):**
+
+| Pacote | De | Para | Tipo |
+|--------|-----|------|------|
+| @sentry/nextjs | 10.44.0 | 10.47.0 | minor |
+| @supabase/supabase-js | 2.98.0 | 2.101.0 | minor |
+| @supabase/ssr | 0.9.0 | 0.10.0 | minor (0.x) |
+| @tanstack/react-query | 5.90.21 | 5.96.0 | minor |
+| @typescript-eslint/eslint-plugin | 8.56.1 | 8.58.0 | minor |
+| @typescript-eslint/parser | 8.56.1 | 8.58.0 | minor |
+| eslint-config-next | 15.5.12 | 15.5.14 | patch |
+
+**Lote 2 (majors de baixo risco):**
+
+| Pacote | De | Para | Notas |
+|--------|-----|------|-------|
+| tailwind-merge | 2.6.1 | 3.5.0 | Zero breaking changes para padrão `cn()` |
+| lucide-react | 0.441.0 | 1.7.0 | Aliases de compatibilidade mantidos, zero renames |
+
+**TypeScript 6 tentado e revertido:** `ts-jest@29.4.6` requer `typescript >= 4.3 < 6`. Ecossistema imaturo. Movido para Lote 3.
+
+**Restam 14 major bumps** (Lote 3, estrutural, pós-lançamento): next 16, tailwindcss 4, eslint 10, typescript 6, zod 4, recharts 3, zustand 5, date-fns 4, capacitor 8, @types/node 25, supabase CLI 2, eslint-config-next 16.
+
+### 35.5 Commits
+
+| SHA | Descrição |
+|-----|-----------|
+| `d51bdc0` | chore(D02): safe dependency bumps — sentry 10.47, supabase-js 2.101, ssr 0.10, react-query 5.96, ts-eslint 8.58 |
+| `87908aa` | feat(D11): retry with exponential backoff for Supabase — utility + query-provider + cron routes + 20 tests |
+| `339fa1d` | chore(D02): lote 2 — tailwind-merge 3.5, lucide-react 1.7 + docs sessão 35 final |
+
+### 35.6 Estado do projeto (ground truth sessão 35)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 35 |
+| Políticas RLS | 107 |
+| Functions | 76 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 144 |
+| Migrations MCP | 53 |
+| Migration files (repo) | 64 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 56 (891 assertions) |
+| Arquivos TS/TSX | 223 |
+| Hooks | 32 |
+| Schemas Zod | 46 |
+| Páginas autenticadas | 23 |
+| Sidebar | 9+1 |
+| Calculadoras | 7 tabs |
+| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| ESLint warnings | 0 |
+| eslint-disable (produção) | 5 |
+| Cobertura (linhas) | 78.27% |
+| npm audit (prod) | 0 vulnerabilidades |
+| npm audit (dev) | 3 high (tar, não corrigível) |
+| npm outdated (major) | 14 (era 22; lote 1 + lote 2 aplicados, TS6 revertido) |
+| Duplicação | 1.37% |
+| Dead exports | 0 |
+| Circular deps | 0 |
+| CI | ✅ Verde |
+| Deploy | www.oniefy.com |

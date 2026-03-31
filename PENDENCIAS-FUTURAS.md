@@ -1,6 +1,6 @@
 # Oniefy — Pendências e Implementações Futuras
 
-**Última atualização:** 30 de março de 2026
+**Última atualização:** 31 de março de 2026
 **Mantido por:** Claude (atualizar ao final de cada sessão com impacto relevante)
 **Relação com o HANDOVER:** Este documento é complementar ao `HANDOVER-WealthOS.md`. O HANDOVER registra o histórico de sessões e o estado técnico atual. Este documento é a fonte única de verdade para **o que fazer a seguir** — backlog de produto, ações pendentes, dívida técnica e evoluções estratégicas.
 
@@ -85,7 +85,7 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
-| Q1 | **Cobertura de testes: 76.46% lines** (era 71.2%). 53 suítes, 849 assertions. Target 75% superado (sessão 34). Gaps restantes: API routes push/digest (~20%, requerem mock webpush/resend). | Médio | Alto (confiança no deploy) | 🔄 |
+| Q1 | **Cobertura de testes: 78.27% lines** (era 76.46%). 56 suítes, 891 assertions. Target 75% superado (sessão 34). Gaps restantes: API routes push/digest (~20%, requerem mock webpush/resend). | Médio | Alto (confiança no deploy) | 🔄 |
 | Q2 | **E2E Playwright no CI como gate obrigatório** — atualmente condicional (vars.E2E_ENABLED). Requer Supabase de teste isolado para o GitHub Actions. | Médio | Alto (qualidade) | ⬜ |
 | Q3 | **Logging estruturado** — Sentry `beforeSend` + PII scrub implementados nos 3 configs (client/server/edge). Falta DSN (ação Claudio A11: criar conta Sentry free + env var Vercel). | Baixo | Médio (observabilidade) | ✅ (código) / ⏳ (DSN) |
 
@@ -138,6 +138,8 @@ Itens técnicos que não são bugs, mas afetam qualidade, segurança ou manuteni
 | TEC-05 | Rate limiter in-memory não compartilha estado entre instâncias Vercel | Baixa | Quando Vercel escalar para múltiplas regiões | 📌 |
 | TEC-06 | SBOM atualizado automaticamente no CI — npm sbom CycloneDX já no workflow. Verificar periodicidade. | Baixa | Revisão semestral | ⬜ |
 | TEC-07 | Mapeamento LGPD: `docs/LGPD-MAPEAMENTO.md`. 6 lacunas identificadas (L1-L2 ✅, L3-L6 ⬜). Medidas técnicas documentadas (12 itens). Roadmap de conformidade em 4 fases. Ref: HANDOVER §32. | Média | Antes de 100 usuários | ✅ (documento) / ⬜ (L3-L6 implementação) |
+| TEC-08 | Retry com exponential backoff para Supabase (audit D11). `withRetry()` utility, QueryProvider com `retryDelay`, cron routes protegidas. 20 testes. Ref: HANDOVER §35. | Média | Implementado sessão 35 | ✅ |
+| TEC-09 | Dependency bumps: 14 major bumps pendentes. Lote 1 (7 safe minors) + Lote 2 (tailwind-merge 3.5, lucide-react 1.7) aplicados sessão 35. TS6 tentado e revertido (ts-jest peer dep < 6). Lote 3 (Next 16, TW4, ESLint 10, TS6, Zod 4, Recharts 3, Zustand 5, date-fns 4, Capacitor 8) pós-lançamento. Ref: HANDOVER §35. | Baixa | Lote 3: pós-lançamento | 🔄 |
 
 ---
 
