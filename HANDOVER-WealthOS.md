@@ -4694,7 +4694,7 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | `d611cf6` | chore(D02): lote 2 — tailwind-merge 3.5, lucide-react 1.7 + docs sessão 35 final |
 | `81e7a69` | docs: auditoria cruzada HANDOVER×PENDENCIAS — 11 discrepâncias corrigidas |
 | `877a849` | docs: A14 brand assets adicionado ao PENDENCIAS |
-| `9cc7b48` | refactor: calculators monolith → 7 sub-routes com layout + dynamic imports |
+| `5951939` | refactor: calculators monolith → 7 sub-routes com layout + dynamic imports |
 
 ### 35.7 Refactor: Calculadoras (monolito → sub-rotas)
 
