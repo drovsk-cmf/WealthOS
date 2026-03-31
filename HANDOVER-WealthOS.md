@@ -4692,6 +4692,29 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | `d51bdc0` | chore(D02): safe dependency bumps — sentry 10.47, supabase-js 2.101, ssr 0.10, react-query 5.96, ts-eslint 8.58 |
 | `87908aa` | feat(D11): retry with exponential backoff for Supabase — utility + query-provider + cron routes + 20 tests |
 | `d611cf6` | chore(D02): lote 2 — tailwind-merge 3.5, lucide-react 1.7 + docs sessão 35 final |
+| `81e7a69` | docs: auditoria cruzada HANDOVER×PENDENCIAS — 11 discrepâncias corrigidas |
+| `877a849` | docs: A14 brand assets adicionado ao PENDENCIAS |
+| `9cc7b48` | refactor: calculators monolith → 7 sub-routes com layout + dynamic imports |
+
+### 35.7 Refactor: Calculadoras (monolito → sub-rotas)
+
+**Problema:** `/calculators` era uma page.tsx monolítica com `useState` para alternar 7 componentes (2230 linhas carregadas sempre). Sem deep link, sem browser back entre abas, sem analytics por calculadora, sem lazy loading.
+
+**Solução:** padrão idêntico a Settings.
+
+| Arquivo | Função |
+|---|---|
+| `layout.tsx` | Tab bar compartilhada (Link-based, `usePathname`) |
+| `page.tsx` | `redirect("/calculators/affordability")` |
+| `affordability/page.tsx` | `dynamic(() => import(...AffordabilitySimulator))` |
+| `projection/page.tsx` | `dynamic(() => import(...ExpenseProjection))` |
+| `independence/page.tsx` | `dynamic(() => import(...IndependenceCalculator))` |
+| `buy-vs-rent/page.tsx` | `dynamic(() => import(...BuyVsRentCalculator))` |
+| `cet/page.tsx` | `dynamic(() => import(...CetCalculator))` |
+| `sac-vs-price/page.tsx` | `dynamic(() => import(...SacVsPriceCalculator))` |
+| `human-capital/page.tsx` | `dynamic(() => import(...HumanCapitalCalculator))` |
+
+**Ganhos:** deep linking (`/calculators/cet`), browser back funcional, lazy loading por aba (~300 linhas por vez vs 2230), analytics por rota, sidebar highlight automático (layout.tsx usa `startsWith`).
 
 ### 35.6 Estado do projeto (ground truth sessão 35)
 
@@ -4708,10 +4731,10 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | Migration files (repo) | 64 |
 | pg_cron jobs | 13 |
 | Suítes Jest | 56 (891 assertions) |
-| Arquivos TS/TSX | 223 |
+| Arquivos TS/TSX | 231 |
 | Hooks | 32 |
 | Schemas Zod | 43 |
-| Páginas autenticadas | 23 |
+| Páginas autenticadas | 30 |
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
 | Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
