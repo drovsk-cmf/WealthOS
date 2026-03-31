@@ -4691,7 +4691,7 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 |-----|-----------|
 | `d51bdc0` | chore(D02): safe dependency bumps — sentry 10.47, supabase-js 2.101, ssr 0.10, react-query 5.96, ts-eslint 8.58 |
 | `87908aa` | feat(D11): retry with exponential backoff for Supabase — utility + query-provider + cron routes + 20 tests |
-| `339fa1d` | chore(D02): lote 2 — tailwind-merge 3.5, lucide-react 1.7 + docs sessão 35 final |
+| `d611cf6` | chore(D02): lote 2 — tailwind-merge 3.5, lucide-react 1.7 + docs sessão 35 final |
 
 ### 35.6 Estado do projeto (ground truth sessão 35)
 
@@ -4710,7 +4710,7 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | Suítes Jest | 56 (891 assertions) |
 | Arquivos TS/TSX | 223 |
 | Hooks | 32 |
-| Schemas Zod | 46 |
+| Schemas Zod | 43 |
 | Páginas autenticadas | 23 |
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
@@ -4721,7 +4721,7 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | npm audit (prod) | 0 vulnerabilidades |
 | npm audit (dev) | 3 high (tar, não corrigível) |
 | npm outdated (major) | 14 (era 22; lote 1 + lote 2 aplicados, TS6 revertido) |
-| Duplicação | 1.37% |
+| Duplicação | 1.88% (65 clones, 1019 linhas / 54.197) |
 | Dead exports | 0 |
 | Circular deps | 0 |
 | CI | ✅ Verde |

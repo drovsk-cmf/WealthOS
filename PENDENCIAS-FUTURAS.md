@@ -39,6 +39,7 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 | A10 | RESEND_API_KEY: cadastrar em resend.com para digest semanal | P2 | ⏳ | Sem a chave, preview_only mode |
 | A11 | Projeto Sentry: criar conta free tier + adicionar DSN nas env vars Vercel | P2 | ⏳ | @sentry/nextjs já integrado, falta o DSN |
 | A12 | ~~Pausar/deletar projeto Supabase legado~~ — Deletado por Claudio em 26/03/2026. | P3 | ✅ | Concluído |
+| A13 | CNPJ placeholder "00.000.000/0001-00" em `terms/page.tsx`: substituir quando PJ constituída | P3 | ⏳ | Aguarda constituição da PJ |
 
 ---
 
@@ -97,8 +98,8 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
-| E6 | **Metas de economia (savings goals)** — tabela `savings_goals` + CRUD + página `/goals` com progresso visual, valor mensal sugerido, meses restantes, concluir/reabrir. Sidebar 8+1. Migration 072. Ref: HANDOVER §32. | Médio | Alto (retenção longa) | ✅ |
-| E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto Runway, impacto LCR, comparativo reserva 6 meses). Cálculo determinístico com dados reais de solvência. Componente `affordability-simulator.tsx`, 1ª aba nas Calculadoras (5 abas). Ref: HANDOVER §32. | Médio | Alto (diferenciação / marketing) | ✅ |
+| E6 | **Metas de economia (savings goals)** — tabela `savings_goals` + CRUD + página `/goals` com progresso visual, valor mensal sugerido, meses restantes, concluir/reabrir. Sidebar 9+1. Migration 072. Ref: HANDOVER §32. | Médio | Alto (retenção longa) | ✅ |
+| E7 | **Simulador de decisão: "posso comprar?"** — 3 inputs (valor, forma de pagamento, prazo) → 3 outputs (impacto Runway, impacto LCR, comparativo reserva 6 meses). Cálculo determinístico com dados reais de solvência. Componente `affordability-simulator.tsx`, 1ª aba nas Calculadoras (7 tabs). Ref: HANDOVER §32. | Médio | Alto (diferenciação / marketing) | ✅ |
 | E8 | **Exportação IRPF formatada** — XLSX com ExcelJS (6 abas: Resumo, Rendimentos, Deduções, Bens, Dívidas, Provisionamento). Botão "Exportar" na página de IR, lazy import. Zero deps novas. Ref: HANDOVER §32. | Médio | Alto (renovação anual) | ✅ |
 | E8b | **Motor JARVIS: Frente A (zero schema change)** — RPC `get_jarvis_scan` com 8 regras ativas (R02, R03, R03b, R05, R06, R07, R08, R09, R10). Camada 2: combinador com projeção 3/6/12m. UX: JarvisScanCard no dashboard. 40 testes Jest. Ref: HANDOVER §31. | Médio | Alto (diferenciação) | ✅ |
 | E8c | **Motor JARVIS: Frente B (schema evolution)** — Migration aplicada: `investment_class`, `interest_rate`, `rate_type` em accounts + CHECK constraints. FIX: `depreciation_rate` numeric(5,4)→(7,4). Todas 4 regras implementadas: R01 (ativo < CDI), R02 (dívida cara), R04 (veículo TCO), R05 (espiral cartão). Formulário de contas com campos condicionais. **Motor JARVIS Camada 1 completo: 10 regras.** Ref: HANDOVER §31. | Médio | Alto (WACC pessoal, análise de risco) | ✅ |
@@ -115,7 +116,7 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 
 | Código | Item | Esforço | Impacto | Status |
 |--------|------|---------|---------|--------|
-| E11 | **Compartilhamento familiar com permissões granulares** — "cônjuge com acesso total" vs "filho com acesso às próprias contas". Arquitetura multi-user documentada (RLS multi-user backlog). Muda unidade de cobrança de "pessoa" para "família". | Alto | Alto (ticket médio) | 📌 |
+| E16 | **Compartilhamento familiar com permissões granulares** — "cônjuge com acesso total" vs "filho com acesso às próprias contas". Arquitetura multi-user documentada (RLS multi-user backlog). Muda unidade de cobrança de "pessoa" para "família". | Alto | Alto (ticket médio) | 📌 |
 | E12 | **Projeção indexada IPCA/IGP-M** — 3 cenários (pessimista/base/otimista) para despesas recorrentes nos próximos 12 meses. Cada recorrência usa seu adjustment_index. Gráfico Recharts + cards totais. 2ª aba em Calculadoras. Ref: HANDOVER §32. | Médio | Alto (diferenciação BR) | ✅ |
 | E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: Ibbotson et al. 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
 | E15 | **Diagnóstico Financeiro Camada A+B** — RPC `get_cfa_diagnostics` com 11 métricas: savings rate, HHI (Markowitz), WACC pessoal, D/E, working capital, breakeven, income CV, DuPont pessoal (3 fatores), category trends (3 meses), warning signs, monthly history. Página `/diagnostics`, nav 9+1, 37 testes Jest, 8 helpers de interpretação. | Médio | Alto (core financeiro) | ✅ |
@@ -140,6 +141,8 @@ Itens técnicos que não são bugs, mas afetam qualidade, segurança ou manuteni
 | TEC-07 | Mapeamento LGPD: `docs/LGPD-MAPEAMENTO.md`. 6 lacunas identificadas (L1-L2 ✅, L3-L6 ⬜). Medidas técnicas documentadas (12 itens). Roadmap de conformidade em 4 fases. Ref: HANDOVER §32. | Média | Antes de 100 usuários | ✅ (documento) / ⬜ (L3-L6 implementação) |
 | TEC-08 | Retry com exponential backoff para Supabase (audit D11). `withRetry()` utility, QueryProvider com `retryDelay`, cron routes protegidas. 20 testes. Ref: HANDOVER §35. | Média | Implementado sessão 35 | ✅ |
 | TEC-09 | Dependency bumps: 14 major bumps pendentes. Lote 1 (7 safe minors) + Lote 2 (tailwind-merge 3.5, lucide-react 1.7) aplicados sessão 35. TS6 tentado e revertido (ts-jest peer dep < 6). Lote 3 (Next 16, TW4, ESLint 10, TS6, Zod 4, Recharts 3, Zustand 5, date-fns 4, Capacitor 8) pós-lançamento. Ref: HANDOVER §35. | Baixa | Lote 3: pós-lançamento | 🔄 |
+| TEC-10 | Duplicação residual 1.88% (65 clones). Shared FormField criado (D08, commit 4350cdc) reduziu formulários. Clones restantes são padrões repetidos em API routes (auth, error handling) e componentes de listagem. | Baixa | Se duplicação > 3% ou refactor de API routes | 📌 |
+| TEC-11 | WCAG AA compliance: doc de auditoria criado (D09, commit 65182ba) com checklist manual. Verificação formal com axe-core/Lighthouse pendente. | Baixa | Antes do lançamento público (pré-requisito acessibilidade) | ⬜ |
 
 ---
 
@@ -156,7 +159,7 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Motor Investimentos (DARF, isenções, ganho de capital) | Adendo v1.4 | Módulo de investimentos implementado |
 | Arquitetura Local-First (SQLite + WASM + CRDTs) | Adendo v1.4 | Escala para 500+ usuários ou requisito de offline total |
 | Zero-Knowledge expandido (E2E para valores numéricos) | Adendo v1.4 | Parceiro enterprise exigir ou feedback de privacidade relevante |
-| Capital Humano (DCF da carreira) | Adendo v1.4 | Produto maduro com 6+ meses de dados por usuário |
+| Capital Humano (DCF da carreira) | Adendo v1.4 | Calculadora básica implementada (E13 ✅). Expansão (cenários Monte Carlo, integração com dados reais do usuário) requer 6+ meses de dados |
 | Shadow Ledger + Cofre Digital | Adendo v1.4 | Produto maduro com usuários mass affluent ativos |
 | B2B / Open API / Marketplace de Solvência | Adendo v1.4 | Base de usuários estabelecida (500+) |
 | Rateio automático de overhead por centro | Estudo técnico v2.0 | Volume > 50 transações/mês com centros ativos |
@@ -164,7 +167,7 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Assistente conversacional (AI chat) | Adendo v1.5 P17 | Pós-validação de retenção — API route já implementada |
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
 | **Inteligência Ativa (Frente C)** | docs/FINANCIAL-METHODOLOGY.md §3 Fase 3 | Frentes A+B concluídas (E8b/E8c/E15). Gatilho: 3 meses de dados por usuário. Inclui: insights automáticos no dashboard (IA narrativa), benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
-| **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights financeiros) requer Frente A. Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
+| **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights financeiros) requer Frente C (IA narrativa). Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
 
 ---
 
@@ -254,7 +257,7 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | Planejamento de despesas futuras irregulares | YNAB | E6 (metas) + E7 (simulador) — H1/H2 |
 | Net Worth histórico (linha temporal) | Empower, Monarch | E2 — H1, baixo esforço, alto impacto |
 | Gerenciador de assinaturas consolidado | Oinc | E3 — H1, muito baixo esforço |
-| Compartilhamento familiar com permissões | YNAB (6 pessoas, 1 assinatura) | E11 — H3, muda modelo de cobrança |
+| Compartilhamento familiar com permissões | YNAB (6 pessoas, 1 assinatura) | E16 — H3, muda modelo de cobrança |
 | Exportação formatada para contador | Mobills Premium, Organizze | E8 — H2, fideliza no IRPF |
 
 ---
@@ -275,5 +278,6 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 25/03/2026 | E5 concluído (✅): política de early adopters (docs/POLITICA-EARLY-ADOPTERS.md). Q1 em progresso (🔄): cobertura 60.9%→67.9% (+55 testes em 2 batches). Q3 concluído (✅ código): Sentry beforeSend + PII scrub nos 3 configs (falta DSN = A11). 49 suítes / 763 assertions. | Claude |
 | 25-26/03/2026 | E8 concluído (✅): exportação IRPF formatada (XLSX 6 abas, ExcelJS). Q1 batch 3 (+12 testes): cobertura 67.9%→71.2% statements, 75.3% functions. Fix Vercel deploy (ESLint override para testes). 50 suítes / 775 assertions. Sessão 32 total: 8 features (E1/E2/E3/E5/E6/E7/E8/E9), 109 testes novos, 17 commits. | Claude |
 | 30/03/2026 | Release Gate Audit 37/37 completa (Matriz de Validação v2.1). DEF-01 corrigido (LGPD savings_goals). Cobertura 74.55%→76.46%. 17 dead exports removidos (475 linhas). S11 corrigido (WealthOS→Oniefy em terms). 7 commits. | Claude |
+| 31/03/2026 | Sessão 35: D11 retry backoff implementado (withRetry + QueryProvider + cron). D02 lotes 1+2 (9 bumps, TS6 revertido). Auditoria cruzada HANDOVER×PENDENCIAS×codebase: 11 discrepâncias corrigidas (Zod 46→43, duplicação 1.37→1.88%, E11 collision→E16, Frente A→C, Capital Humano anotado, sidebar 8+1→9+1, tabs 5→7, A13/TEC-10/TEC-11 adicionados). | Claude |
 | 26/03/2026 | E15 concluído (✅): Diagnóstico Financeiro Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 
