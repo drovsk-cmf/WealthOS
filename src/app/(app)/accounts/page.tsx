@@ -16,6 +16,7 @@ import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
+type AccountType = Database["public"]["Enums"]["account_type"];
 
 export default function AccountsPage() {
   const { data: accounts, isLoading } = useAccounts();
@@ -121,7 +122,7 @@ export default function AccountsPage() {
           <div className="rounded-lg border bg-card p-4">
             <p className="text-xs text-muted-foreground">Dívida (cartões)</p>
             <p className="mt-1 text-xl font-semibold text-terracotta">
-              <Mv>-{formatCurrency(totals.debt)}</Mv>
+              <Mv>{totals.debt !== 0 ? `-${formatCurrency(Math.abs(totals.debt))}` : formatCurrency(0)}</Mv>
             </p>
           </div>
         </div>
@@ -146,14 +147,30 @@ export default function AccountsPage() {
         </div>
       )}
 
-      {/* Account list */}
+      {/* Account list — grouped by type (FIX #7) */}
       {accounts && accounts.length > 0 && (() => {
         const filtered = search
           ? accounts.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
           : accounts;
+
+        const groups: { key: string; label: string; types: AccountType[]; accounts: Account[] }[] = [
+          { key: "banking", label: "Contas Bancárias", types: ["checking" as AccountType, "savings" as AccountType, "cash" as AccountType], accounts: [] },
+          { key: "investments", label: "Investimentos", types: ["investment" as AccountType], accounts: [] },
+          { key: "cards", label: "Cartões de Crédito", types: ["credit_card" as AccountType], accounts: [] },
+          { key: "debts", label: "Empréstimos e Financiamentos", types: ["loan" as AccountType, "financing" as AccountType], accounts: [] },
+        ];
+
+        for (const a of filtered) {
+          const group = groups.find((g) => g.types.includes(a.type as AccountType));
+          if (group) group.accounts.push(a);
+        }
+
         return (
-        <div className="space-y-3">
-          {filtered.map((account) => (
+        <div className="space-y-6">
+          {groups.filter((g) => g.accounts.length > 0).map((group) => (
+            <div key={group.key} className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{group.label}</h2>
+              {group.accounts.map((account) => (
             <div
               key={account.id}
               className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
@@ -271,6 +288,8 @@ export default function AccountsPage() {
                   </button>
                 )}
               </div>
+            </div>
+          ))}
             </div>
           ))}
         </div>

@@ -125,22 +125,30 @@ export function ImportWizard({ onImportComplete }: { onImportComplete?: (stats: 
   }, [csvRows, mapping]);
 
   const handleImport = useCallback(async () => {
-    if (!accountId) return;
+    if (!accountId) {
+      setParseErrors(prev => ["Erro: Selecione uma conta destino antes de importar.", ...prev]);
+      return;
+    }
     const selectedTxs = transactions.filter((_, i) => selected.has(i));
+    if (selectedTxs.length === 0) return;
 
-    await importBatch.mutateAsync({
-      accountId,
-      bankConnectionId: connectionId,
-      transactions: selectedTxs.map((tx) => ({
-        date: tx.date,
-        amount: tx.amount,
-        description: tx.description,
-        type: tx.type,
-        external_id: tx.externalId,
-      })),
-    });
-
-    setStep("result");
+    try {
+      await importBatch.mutateAsync({
+        accountId,
+        bankConnectionId: connectionId,
+        transactions: selectedTxs.map((tx) => ({
+          date: tx.date,
+          amount: tx.amount,
+          description: tx.description,
+          type: tx.type,
+          external_id: tx.externalId,
+        })),
+      });
+      setStep("result");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro ao importar transações.";
+      setParseErrors(prev => [msg, ...prev]);
+    }
   }, [accountId, connectionId, importBatch, selected, transactions]);
 
   const toggleSelect = (index: number) => {

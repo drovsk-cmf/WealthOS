@@ -9,6 +9,12 @@ interface Props {
   onApply: () => void;
 }
 
+const FIELD_META: Record<string, { label: string; color: string; hint: string }> = {
+  date: { label: "Data", color: "text-info-slate bg-info-slate/10 border-info-slate/30", hint: "Coluna com a data da transação" },
+  description: { label: "Descrição", color: "text-burnished bg-burnished/10 border-burnished/30", hint: "Coluna com o nome/descrição" },
+  amount: { label: "Valor", color: "text-verdant bg-verdant/10 border-verdant/30", hint: "Coluna com o valor (R$)" },
+};
+
 export function ImportStepMapping({
   csvHeaders,
   csvRows,
@@ -27,64 +33,84 @@ export function ImportStepMapping({
       </div>
 
       <p className="text-sm text-muted-foreground">
-        {csvHeaders.length} colunas detectadas, {csvRows.length} linhas. Ajuste se necessário.
+        Seu arquivo tem <strong>{csvHeaders.length} colunas</strong> e <strong>{csvRows.length} linhas</strong>.
+        Indique qual coluna corresponde a cada campo abaixo.
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        {(["date", "amount", "description"] as const).map((field) => (
-          <div key={field} className="space-y-1.5">
-            <label className="text-sm font-medium capitalize">
-              {field === "date" ? "Data" : field === "amount" ? "Valor" : "Descrição"}
-            </label>
-            <select
-              value={mapping?.[field] ?? 0}
-              onChange={(e) =>
-                setMapping((m) => (m ? { ...m, [field]: parseInt(e.target.value, 10) } : null))
-              }
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              {csvHeaders.map((h, i) => (
-                <option key={i} value={i}>
-                  {h || `Coluna ${i + 1}`}
-                </option>
-              ))}
-            </select>
-          </div>
-        ))}
+      {/* Mapping cards */}
+      <div className="space-y-3">
+        {(["date", "description", "amount"] as const).map((field) => {
+          const meta = FIELD_META[field];
+          const selectedIdx = mapping?.[field] ?? 0;
+          return (
+            <div key={field} className={`rounded-lg border p-3 ${meta.color}`}>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">{meta.label}</p>
+                  <p className="text-xs opacity-70">{meta.hint}</p>
+                </div>
+                <select
+                  value={selectedIdx}
+                  onChange={(e) =>
+                    setMapping((m) => (m ? { ...m, [field]: parseInt(e.target.value, 10) } : null))
+                  }
+                  className="h-9 w-48 flex-shrink-0 rounded-md border bg-background px-2 text-sm text-foreground"
+                >
+                  {csvHeaders.map((h, i) => (
+                    <option key={i} value={i}>
+                      {h || `Coluna ${i + 1}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Sample value */}
+              {csvRows[0] && (
+                <p className="mt-1.5 truncate rounded bg-background/50 px-2 py-1 text-xs tabular-nums">
+                  Exemplo: <strong>{csvRows[0][selectedIdx] || "(vazio)"}</strong>
+                </p>
+              )}
+            </div>
+          );
+        })}
       </div>
 
+      {/* Preview table with color coding */}
       {csvRows.length > 0 && (
         <div className="overflow-x-auto rounded border bg-muted/50 p-3">
           <p className="mb-2 text-xs font-medium text-muted-foreground">Preview (3 primeiras linhas)</p>
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b">
-                {csvHeaders.map((h, i) => (
-                  <th scope="col"
-                    key={i}
-                    className={`px-2 py-1 text-left font-medium ${
-                      i === mapping?.date
-                        ? "text-info-slate"
-                        : i === mapping?.amount
-                          ? "text-verdant"
-                          : i === mapping?.description
-                            ? "text-burnished"
-                            : ""
-                    }`}
-                  >
-                    {h || `Col ${i + 1}`}
-                  </th>
-                ))}
+                {csvHeaders.map((h, i) => {
+                  let highlight = "";
+                  if (i === mapping?.date) highlight = "text-info-slate font-bold";
+                  else if (i === mapping?.description) highlight = "text-burnished font-bold";
+                  else if (i === mapping?.amount) highlight = "text-verdant font-bold";
+                  return (
+                    <th scope="col" key={i} className={`px-2 py-1 text-left ${highlight}`}>
+                      {h || `Col ${i + 1}`}
+                      {i === mapping?.date && " ← Data"}
+                      {i === mapping?.description && " ← Descrição"}
+                      {i === mapping?.amount && " ← Valor"}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
               {csvRows.slice(0, 3).map((row, ri) => (
                 <tr key={ri} className="border-b border-muted/50">
-                  {row.map((cell, ci) => (
-                    <td key={ci} className="px-2 py-1 tabular-nums">
-                      {cell}
-                    </td>
-                  ))}
+                  {row.map((cell, ci) => {
+                    let highlight = "";
+                    if (ci === mapping?.date) highlight = "bg-info-slate/5";
+                    else if (ci === mapping?.description) highlight = "bg-burnished/5";
+                    else if (ci === mapping?.amount) highlight = "bg-verdant/5";
+                    return (
+                      <td key={ci} className={`px-2 py-1 tabular-nums ${highlight}`}>
+                        {cell}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>

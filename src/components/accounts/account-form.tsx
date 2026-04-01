@@ -11,6 +11,7 @@ import {
   LIQUIDITY_TIER_OPTIONS,
   COA_PARENT_MAP,
 } from "@/lib/hooks/use-accounts";
+import { useBankInstitutions } from "@/lib/hooks/use-bank-institutions";
 import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
 import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
@@ -39,9 +40,14 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [interestRate, setInterestRate] = useState("");
   const [rateType, setRateType] = useState<string>("");
   const [isCollateralized, setIsCollateralized] = useState(false);
+  const [bankInstitutionId, setBankInstitutionId] = useState("");
+  const [branchNumber, setBranchNumber] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountDigit, setAccountDigit] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const { data: supportedCurrencies } = useSupportedCurrencies();
+  const { data: bankInstitutions } = useBankInstitutions();
   const currencyGroups = supportedCurrencies ? groupCurrenciesByTier(supportedCurrencies) : [];
 
   const createAccount = useCreateAccount();
@@ -62,6 +68,11 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInterestRate(String((account as Record<string, unknown>).interest_rate ?? ""));
       setRateType((account as Record<string, unknown>).rate_type as string ?? "");
       setIsCollateralized(!!(account as Record<string, unknown>).is_collateralized);
+      // Bank details
+      setBankInstitutionId((account as Record<string, unknown>).bank_institution_id as string ?? "");
+      setBranchNumber((account as Record<string, unknown>).branch_number as string ?? "");
+      setAccountNumber((account as Record<string, unknown>).account_number as string ?? "");
+      setAccountDigit((account as Record<string, unknown>).account_digit as string ?? "");
     } else {
       setName("");
       setType("checking");
@@ -74,6 +85,10 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setInterestRate("");
       setRateType("");
       setIsCollateralized(false);
+      setBankInstitutionId("");
+      setBranchNumber("");
+      setAccountNumber("");
+      setAccountDigit("");
     }
     setError(null);
   }, [account, open]);
@@ -87,7 +102,12 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       return;
     }
 
-    const balance = parseFloat(initialBalance) || 0;
+    const balanceRaw = initialBalance.replace(/\./g, "").replace(",", ".");
+    let balance = parseFloat(balanceRaw) || 0;
+    // Auto-negate for debt types: user enters positive, system stores negative
+    if (["credit_card", "loan", "financing"].includes(type) && balance > 0) {
+      balance = -balance;
+    }
 
     try {
       if (isEdit && account) {
@@ -100,9 +120,14 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           currency,
           // Frente B (JARVIS)
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
-          interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate) : null,
+          interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate.replace(",", ".")) : null,
           rate_type: ["loan", "financing"].includes(type) && rateType ? rateType : null,
           is_collateralized: ["loan", "financing"].includes(type) ? isCollateralized : false,
+          // Bank details
+          bank_institution_id: bankInstitutionId || null,
+          branch_number: branchNumber || null,
+          account_number: accountNumber || null,
+          account_digit: accountDigit || null,
         } as Parameters<typeof updateAccount.mutateAsync>[0]);
       } else {
         await createAccount.mutateAsync({
@@ -115,15 +140,22 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           ...(type === "financing" && { coaParentCode: financingSubtype }),
           // Frente B (JARVIS)
           ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
-          ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate) }),
+          ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate.replace(",", ".")) }),
           ...(["loan", "financing"].includes(type) && rateType && { rate_type: rateType }),
           ...(["loan", "financing"].includes(type) && { is_collateralized: isCollateralized }),
+          // Bank details
+          ...(bankInstitutionId && { bank_institution_id: bankInstitutionId }),
+          ...(branchNumber && { branch_number: branchNumber }),
+          ...(accountNumber && { account_number: accountNumber }),
+          ...(accountDigit && { account_digit: accountDigit }),
         } as Parameters<typeof createAccount.mutateAsync>[0]);
       }
       toast.success(isEdit ? "Conta atualizada." : "Conta criada com sucesso.");
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar conta.");
+      const msg = err instanceof Error ? err.message : "Erro ao salvar conta.";
+      setError(msg);
+      toast.error(msg);
     }
   }
 
@@ -198,6 +230,54 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               </p>
             )}
           </div>
+
+          {/* Bank details — FIX #4 (only for types that have a bank) */}
+          {["checking", "savings", "credit_card", "investment", "loan", "financing"].includes(type) && (
+            <>
+              <div className="space-y-1.5">
+                <label htmlFor="acc-bank" className="text-sm font-medium">Banco</label>
+                <select
+                  id="acc-bank"
+                  value={bankInstitutionId}
+                  onChange={(e) => setBankInstitutionId(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <option value="">Selecione o banco</option>
+                  {bankInstitutions?.map((bank) => (
+                    <option key={bank.id} value={bank.id}>
+                      {bank.compe_code} - {bank.short_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {bankInstitutionId && (
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label htmlFor="acc-branch" className="text-xs font-medium">Agência</label>
+                    <input id="acc-branch" type="text" value={branchNumber}
+                      onChange={(e) => setBranchNumber(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      placeholder="0001" maxLength={6}
+                      className="flex h-9 w-full rounded-md border border-input bg-background px-2 py-1 text-sm tabular-nums" />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="acc-number" className="text-xs font-medium">Conta</label>
+                    <input id="acc-number" type="text" value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value.replace(/[^\d-]/g, "").slice(0, 15))}
+                      placeholder="12345678" maxLength={15}
+                      className="flex h-9 w-full rounded-md border border-input bg-background px-2 py-1 text-sm tabular-nums" />
+                  </div>
+                  <div className="space-y-1">
+                    <label htmlFor="acc-digit" className="text-xs font-medium">Dígito</label>
+                    <input id="acc-digit" type="text" value={accountDigit}
+                      onChange={(e) => setAccountDigit(e.target.value.replace(/[^\dXx]/g, "").slice(0, 2))}
+                      placeholder="0" maxLength={2}
+                      className="flex h-9 w-full rounded-md border border-input bg-background px-2 py-1 text-sm tabular-nums" />
+                  </div>
+                </div>
+              )}
+            </>
+          )}
 
           {/* Currency */}
           <div className="space-y-1.5">
@@ -288,18 +368,20 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               </label>
               <input
                 id="acc-interest-rate"
-                type="number"
-                step="0.01"
-                min="0"
+                type="text"
+                inputMode="decimal"
                 value={interestRate}
-                onChange={(e) => setInterestRate(e.target.value)}
-                placeholder="Ex: 1.99"
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^\d.,]/g, "");
+                  setInterestRate(raw);
+                }}
+                placeholder="Ex: 1,99"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <p className="text-xs text-muted-foreground">
                 {type === "credit_card"
-                  ? "Taxa rotativo/parcelamento. Usada para projeção de espiral de juros."
-                  : "Taxa contratual mensal. Usada na análise de dívida cara."}
+                  ? "Taxa do rotativo/parcelamento. Use vírgula como decimal (ex: 14,90)."
+                  : "Taxa contratual mensal. Use vírgula como decimal (ex: 0,65)."}
               </p>
             </div>
           )}
@@ -348,31 +430,44 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </label>
           )}
 
-          {/* Initial Balance */}
+          {/* Initial Balance — FIX #6: formatting + FIX #9: credit card sign */}
           {!isEdit && (
             <div className="space-y-1.5">
               <label htmlFor="acc-balance" className="text-sm font-medium">
-                {type === "credit_card" || type === "loan" || type === "financing"
-                  ? `Saldo devedor atual (${currency})`
-                  : `Saldo inicial (${currency})`}
+                {type === "credit_card"
+                  ? `Quanto você deve neste cartão? (${currency})`
+                  : type === "loan" || type === "financing"
+                    ? `Saldo devedor atual (${currency})`
+                    : `Saldo inicial (${currency})`}
               </label>
               <input
                 id="acc-balance"
-                type="number"
-                step="0.01"
+                type="text"
+                inputMode="decimal"
                 value={initialBalance}
-                onChange={(e) => setInitialBalance(e.target.value)}
+                onChange={(e) => {
+                  // Accept digits, comma and dot only
+                  const raw = e.target.value.replace(/[^\d.,]/g, "");
+                  setInitialBalance(raw);
+                }}
+                onBlur={() => {
+                  // Format on blur: normalize to number then back to display
+                  if (!initialBalance) return;
+                  const normalized = initialBalance.replace(/\./g, "").replace(",", ".");
+                  const num = parseFloat(normalized);
+                  if (!isNaN(num)) {
+                    setInitialBalance(num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                  }
+                }}
                 placeholder="0,00"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
               <p className="text-xs text-muted-foreground">
                 {type === "credit_card"
-                  ? "Fatura atual (valor positivo = dívida)."
-                  : type === "loan"
-                    ? "Saldo devedor total do empréstimo."
-                    : type === "financing"
-                      ? "Saldo devedor total do financiamento."
-                      : "Saldo atual da conta no momento do cadastro."}
+                  ? "Informe o valor total da fatura aberta. Não use sinal negativo."
+                  : type === "loan" || type === "financing"
+                    ? "Informe o saldo devedor total. Não use sinal negativo."
+                    : "Saldo atual da conta no momento do cadastro."}
               </p>
             </div>
           )}
@@ -407,7 +502,8 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </div>
           </div>
 
-          {/* Liquidity Tier */}
+          {/* Liquidity Tier — only for investment (others are deterministic) */}
+          {type === "investment" && (
           <div className="space-y-1.5">
             <label htmlFor="acc-tier" className="text-sm font-medium">Nível de liquidez</label>
             <select
@@ -421,9 +517,10 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              Classificação usada no cálculo de solvência (Índice de liquidez, Fôlego)
+              N1 = liquidez diária (CDB, Tesouro Selic). N2 = curto prazo (fundos D+30). N3 = longo prazo.
             </p>
           </div>
+          )}
 
           {/* Buttons */}
           <div className="flex gap-2 pt-2">

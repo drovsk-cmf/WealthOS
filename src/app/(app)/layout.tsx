@@ -18,6 +18,7 @@ import {
   LogOut,
   Eye,
   EyeOff,
+  TrendingUp,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -40,6 +41,7 @@ import { usePrivacyStore } from "@/lib/stores/privacy";
 const NAV_MAIN: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Início", icon: Home },
   { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
+  { href: "/cash-flow", label: "Fluxo de Caixa", icon: TrendingUp },
   { href: "/connections", label: "Importar", icon: Upload },
   { href: "/accounts", label: "Contas", icon: Wallet },
   { href: "/budgets", label: "Orçamento", icon: PieChart },
