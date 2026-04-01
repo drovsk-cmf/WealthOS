@@ -65,14 +65,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 35 (todas com RLS) |
-| Políticas RLS | 107 |
+| Tabelas | 36 (todas com RLS) |
+| Políticas RLS | 108 |
 | Functions (total) | 76 no schema public. Todas com `SET search_path = public`. 73 SECURITY DEFINER com auth.uid() guard |
 | Triggers | 22 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
-| Indexes | 144 |
-| Migrations aplicadas (MCP) | 53 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 64 em supabase/migrations/ |
+| Indexes | 149 |
+| Migrations aplicadas (MCP) | 54 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 65 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -86,7 +86,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (74 no schema public)
+### 3.3 Functions (76 no schema public)
 
 | Grupo | Functions |
 |---|---|
@@ -110,11 +110,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (221 arquivos TS/TSX em src/, 55 suítes de teste, 871 assertions)
+### 3.4 Código Fonte (233 arquivos TS/TSX em src/, 56 suítes de teste, 891 assertions)
 
 ```
 src/
-├── __tests__/                    # 55 suítes de teste (Jest + RTL), 871 assertions
+├── __tests__/                    # 56 suítes de teste (Jest + RTL), 891 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-cron.test.ts        # 9: push/send + digest/send auth paths
@@ -191,7 +191,7 @@ src/
 │   │   ├── transactions/page.tsx
 │   │   ├── workflows/page.tsx
 │   │   ├── error.tsx              # Error boundary (UX: P3)
-│   │   └── layout.tsx            # Sidebar 7+1 (UX-H1-01 + E8d), auth, offline banner
+│   │   └── layout.tsx            # Sidebar 10+1 (UX-H1-01 + E8d + E15 + Fluxo de Caixa), auth, offline banner
 │   ├── (auth)/                   # Auth flow (6 páginas)
 │   │   ├── login, register, onboarding, mfa-challenge,
 │   │   ├── forgot-password, reset-password
@@ -241,7 +241,7 @@ src/
 │   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
-│   ├── hooks/ (32 hooks: accounts, ai-categorize, analytics,
+│   ├── hooks/ (33 hooks: accounts, ai-categorize, analytics,
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
 │   │          budgets, categories, cfa-diagnostics, chart-of-accounts, cost-centers,
 │   │          currencies, currency-label, dashboard, dialog-helpers, documents,
@@ -312,6 +312,8 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 
 ## 4. Dados do Usuário de Teste
 
+### 4.1 Usuário principal (proprietário)
+
 - ID: fab01037-a437-4394-9d8f-bd84db9ce418
 - Nome: Claudio Filho
 - Email: <email do proprietário>
@@ -321,6 +323,17 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 - Dados seed: 140 contas contábeis, 1 centro (Família Geral), 16 categorias (únicas)
 - Transações: 0 (nenhum dado financeiro de teste ainda)
 - Contas bancárias: 0
+
+### 4.2 Usuário de teste de estresse (sessão 36)
+
+- ID: 1aacab18-57f3-495a-b677-8484380a4b99
+- Nome: Ricardo Mendes (persona fictícia)
+- Email: testeusuario01@oniefy.com
+- Senha: Oniefy@Teste2026!
+- Provider: email (e-mail confirmado manualmente via SQL)
+- onboarding_completed: false (completar manualmente durante teste)
+- Dados de teste: 7.398 registros preparados em 11 CSVs (não importados ainda)
+- Propósito: teste de estresse UX com volume real (63 meses de transações)
 
 ---
 
@@ -4745,6 +4758,137 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | npm audit (dev) | 3 high (tar, não corrigível) |
 | npm outdated (major) | 14 (era 22; lote 1 + lote 2 aplicados, TS6 revertido) |
 | Duplicação | 1.88% (65 clones, 1019 linhas / 54.197) |
+| Dead exports | 0 |
+| Circular deps | 0 |
+| CI | ✅ Verde |
+| Deploy | www.oniefy.com |
+
+## 36. Sessão 36 — Teste de Estresse UX + bank_institutions + 14 fixes (01/04/2026)
+
+### 36.1 Contexto
+
+Primeira sessão de teste de estresse end-to-end com dados fictícios massivos. Objetivo: carregar a plataforma com volume real (7.362 transações, 5 anos de histórico) e avaliar usabilidade, performance e bugs. A sessão expôs 14 problemas graves (3 P0, 5 P1, 4 P2, 2 features ausentes) e todos foram corrigidos na mesma sessão.
+
+### 36.2 Teste de estresse: dados gerados
+
+| Arquivo | Registros | Descrição |
+|---|---|---|
+| `01_nubank_conta_corrente.csv` | 3.381 | Extrato CC pessoal (63 meses) |
+| `02_itau_conta_pj.csv` | 603 | Extrato CC PJ |
+| `03_nubank_cartao_credito.csv` | 1.303 | Fatura cartão pessoal |
+| `04_itau_cartao_credito.csv` | 792 | Fatura cartão secundário |
+| `05_rico_investimentos.csv` | 259 | Renda fixa (CDB, LCI) |
+| `06_xp_investimentos.csv` | 565 | Renda variável (ações, FIIs, dividendos) |
+| `07_carteira_fisica.csv` | 459 | Dinheiro vivo |
+| `08_patrimonio.csv` | 8 | Bens (imóvel, veículo, eletrônicos) |
+| `09_orcamentos.csv` | 9 | Orçamentos por categoria |
+| `10_metas.csv` | 5 | Metas de poupança |
+| `11_recorrencias.csv` | 14 | Recorrências fixas |
+
+**Total:** 7.398 registros. **Persona:** Ricardo Mendes, 38 anos, dev CLT+PJ, São Paulo.
+
+**Usuário de teste:** `testeusuario01@oniefy.com` / `Oniefy@Teste2026!` (ID: `1aacab18-57f3-495a-b677-8484380a4b99`). E-mail confirmado manualmente via SQL (sem SMTP configurado).
+
+### 36.3 Migration 077: bank_institutions + campos em accounts
+
+**Nova tabela `bank_institutions`** (referência, read-only para authenticated):
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| compe_code | TEXT UNIQUE | Código COMPE 3 dígitos (fonte: BCB) |
+| ispb_code | TEXT | Código ISPB 8 dígitos |
+| name | TEXT | Razão social |
+| short_name | TEXT | Nome comercial (para UI) |
+| logo_url | TEXT nullable | URL do logo (futuro) |
+| is_active | BOOLEAN | Ativa/inativa |
+
+**Seed:** 96 instituições (Big 5, digitais, cooperativas, regionais, estrangeiros). Fonte: BCB STR/COMPE mar/2026.
+
+**Novos campos em `accounts`:**
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| bank_institution_id | UUID FK | Instituição financeira |
+| branch_number | TEXT | Agência |
+| account_number | TEXT | Número da conta |
+| account_digit | TEXT | Dígito verificador |
+
+**RLS:** `bank_institutions_select_authenticated` (SELECT para authenticated). **Indexes:** compe_code (B-tree) + short_name (GIN full-text pt).
+
+### 36.4 Diagnóstico UX: 14 pontuações e correções
+
+| # | Sev. | Problema | Fix |
+|---|---|---|---|
+| 1 | P2 | Logo pequena no onboarding (h-10) | `h-10` → `h-16`, width 280 |
+| 2 | P1 | Sem etapa de nome no onboarding | Novo step `profile` com campo nome + update `users_profile` |
+| 3 | P0 | Onboarding trava em "Preparando sua conta" (sem timeout) | `Promise.race` 15s + `setSetupProgress` texto + retry |
+| 4 | P2 | Campos bancários ausentes no form de contas | Select banco (96 instituições) + agência/conta/dígito |
+| 5 | P1 | Nível de liquidez visível para CC (nonsense) | Escondido para tipos com tier determinístico; visível só para `investment` |
+| 6 | P1 | Input de valor: ponto/vírgula não funciona | `type=text inputMode=decimal`, formatação `1.234,56` no blur |
+| 7 | P1 | Cartões misturados com contas bancárias | Lista agrupada: Bancárias, Investimentos, Cartões, Dívidas |
+| 8 | P2 | Input de % ambíguo (ponto vs vírgula) | Placeholder `1,99`, helper "use vírgula", parse comma |
+| 9 | P1 | Saldo cartão: confusão com sinal negativo | Label "Quanto você deve?", auto-negar internamente, helper claro |
+| 10 | P0 | Duplo negativo no resumo de dívida (cartões) | `Math.abs(totals.debt)` na exibição |
+| 11 | P2 | Mapeamento de colunas confuso na importação | Cards coloridos com exemplos + highlight colunas na preview |
+| 12 | P0 | Botão "Importar N transações" não faz nada | Validação `accountId` com feedback + try/catch no `mutateAsync` |
+| 13 | P0 | Edição de conta trava (erro silencioso) | `toast.error` explícito no catch |
+| 14 | P1 | Sem fluxo de caixa (timeline entradas/saídas) | Nova página `/cash-flow` (dia/mês/ano) + nav item |
+
+### 36.5 Novos arquivos
+
+| Arquivo | Linhas | Função |
+|---|---|---|
+| `src/app/(app)/cash-flow/page.tsx` | 248 | Fluxo de Caixa: 3 granularidades, filtro por conta, saldo acumulado |
+| `src/lib/hooks/use-bank-institutions.ts` | 40 | Hook React Query para tabela bank_institutions |
+| `supabase/migrations/077_add_bank_institutions.sql` | 96 seed | DDL + seed 96 instituições BCB |
+
+### 36.6 Commits
+
+| SHA | Descrição |
+|-----|-----------|
+| `b30ae52` | fix: 14 pontuações do teste de estresse UX (Sessão 35) — 8 arquivos, +630/-225 |
+
+**Nota:** O commit message diz "Sessão 35" por erro; trata-se da Sessão 36. O migration file e HANDOVER update foram commitados separadamente abaixo.
+
+### 36.7 Observações pendentes do teste de estresse
+
+Itens identificados mas não corrigidos nesta sessão (movidos para PENDENCIAS-FUTURAS):
+
+1. **Separação completa de Cartões de Crédito:** a pontuação #7 foi parcialmente resolvida (agrupamento visual). A proposta original era criar uma aba/página dedicada para cartões. Requer redesenho mais profundo do modelo de navegação.
+2. **Carga inicial de saldo de cartão de crédito:** usuários geralmente não sabem o saldo devedor total (sabem apenas a parcela mensal). Precisamos de um fluxo alternativo: importar fatura recente ou cadastrar parcelas individualmente.
+3. **Performance da importação com 3.381 linhas:** o botão "Importar" não deu feedback visual suficiente. Verificar se o batch insert no Supabase suporta esse volume em uma única chamada ou se precisa de chunking.
+4. **Regenerar `database.ts`:** a tabela `bank_institutions` e os novos campos em `accounts` não estão nos types gerados. Usar `supabase gen types` na próxima sessão.
+5. **Onboarding: etapa de nome usa `update` mas campo `full_name` já pode vir do signup metadata.** Verificar se há conflito quando ambos são preenchidos.
+
+### 36.8 Estado do projeto (ground truth sessão 36)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 36 |
+| Políticas RLS | 108 |
+| Functions | 76 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 149 |
+| Migrations MCP | 54 |
+| Migration files (repo) | 65 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 56 (891 assertions) |
+| Arquivos TS/TSX | 233 |
+| Hooks | 33 |
+| Schemas Zod | 43 |
+| Páginas autenticadas | 31 |
+| Sidebar | 10+1 |
+| Calculadoras | 7 tabs |
+| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| ESLint warnings | 0 |
+| eslint-disable (produção) | 6 |
+| Cobertura (linhas) | 78.27% |
+| npm audit (prod) | 0 vulnerabilidades |
+| npm audit (dev) | 3 high (tar, não corrigível) |
+| npm outdated (major) | 14 |
+| Duplicação | 1.88% |
 | Dead exports | 0 |
 | Circular deps | 0 |
 | CI | ✅ Verde |
