@@ -11,19 +11,18 @@
 
 ## 1. Conceito
 
-A Onie é a personificação do motor inteligente do Oniefy (codinome interno: JARVIS-CFA). É o maestro de todo o aplicativo, a entidade com quem o usuário interage. Não é uma funcionalidade; é a camada de experiência inteira.
+A Onie é a personificação do motor inteligente do Oniefy. É o maestro de todo o aplicativo, a entidade com quem o usuário interage. Não é uma funcionalidade; é a camada de experiência inteira.
 
 ### 1.1 Identidade
 
 - **Nome:** Onie (derivado de Oniefy)
-- **Gênero:** Sem gênero definido. Seguir o padrão Apple/Siri para referências textuais.
+- **Gênero:** Sem gênero definido. Referências textuais neutras.
 - **Voz narrativa:** Primeira pessoa ("Notei que sua fatura subiu 22%")
-- **Codinome interno:** JARVIS-CFA (nunca exposto ao usuário)
 - **Uso natural:** "a Onie cuida disso", "pergunta pra Onie", "minha Onie disse que não é hora"
 
 ### 1.2 Manifestação Visual
 
-O orb da Onie é uma esfera luminosa contendo voais (véus/faixas de cor) que fluem organicamente, similar ao conceito visual da Siri da Apple, mas com identidade própria usando a paleta Plum Ledger do Oniefy.
+O orb da Onie é uma esfera luminosa contendo voais (véus/faixas de cor) que fluem organicamente, com identidade própria usando a paleta Plum Ledger do Oniefy.
 
 **Referência visual:** Aurora boreal capturada dentro de uma esfera de vidro. Fumaça colorida incandescente com emissão de luz própria.
 
@@ -368,10 +367,10 @@ Para cada frame:
 | # | Decisão | Data | Contexto |
 |---|---------|------|----------|
 | 1 | Onie é o nome do assistente (derivado de Oniefy) | 01/04/2026 | Sessão de redesign conceitual |
-| 2 | Sem gênero definido, padrão Siri | 01/04/2026 | Resposta às 17 perguntas |
+| 2 | Sem gênero definido, referências neutras | 01/04/2026 | Resposta às 17 perguntas |
 | 3 | Fala em primeira pessoa | 01/04/2026 | Resposta às 17 perguntas |
 | 4 | Orb abstrato sem rosto, com voais tipo aurora boreal | 01/04/2026 | Iteração v1-v7 |
-| 5 | Canvas 2D + Simplex Noise (não SVG) | 01/04/2026 | Iteração v8, após análise da Siri |
+| 5 | Canvas 2D + Simplex Noise (não SVG) | 01/04/2026 | Iteração v8, após análise de orbs de referência |
 | 6 | Voais são tecidos orgânicos, não formas rígidas | 01/04/2026 | Feedback v7 → v8 |
 | 7 | Alerta usa vermelho aterrorizante | 01/04/2026 | Feedback v9 |
 | 8 | Positivo usa verde animador | 01/04/2026 | Feedback v9 |
@@ -387,7 +386,7 @@ Para cada frame:
 
 | Item | Descrição | Gatilho |
 |------|-----------|---------|
-| WebGL shader | Migrar de Canvas 2D para WebGL para efeito ainda mais próximo da Siri (blur por pixel, light emission real) | Se Canvas 2D mostrar limitação visual em telas grandes |
+| WebGL shader | Migrar de Canvas 2D para WebGL para efeito visual superior (blur por pixel, light emission real) | Se Canvas 2D mostrar limitação visual em telas grandes |
 | Resposta a áudio real | Espasmos do "falando" sincronizados com amplitude de áudio real (Web Audio API) | Se implementar voz sintética |
 | Interação por toque | Voais reagem ao toque do dedo (deformam na direção do toque) | Quando implementar interface conversacional |
 | Temas sazonais | Paletas especiais para datas (Natal, Ano Novo, aniversário do usuário) | Pós-lançamento, engajamento |
