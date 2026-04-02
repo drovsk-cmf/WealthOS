@@ -36,6 +36,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
   const [dueDay, setDueDay] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [initialBalance, setInitialBalance] = useState("");
+  const [balanceMode, setBalanceMode] = useState<"total" | "last" | "zero">("total");
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +62,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
       setDueDay("");
       setInterestRate("");
       setInitialBalance("");
+      setBalanceMode("total");
       setColor(PRESET_COLORS[0]);
     }
     setError(null);
@@ -288,41 +290,79 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
               </p>
             </div>
 
-            {/* Initial balance (only on create) */}
+            {/* Initial balance - 3 alternatives (E18) */}
             {!isEdit && (
-              <div className="space-y-1.5">
-                <label htmlFor="card-balance" className="text-sm font-medium">
-                  Quanto você deve neste cartão? (R$)
-                </label>
-                <input
-                  id="card-balance"
-                  type="text"
-                  inputMode="decimal"
-                  value={initialBalance}
-                  onChange={(e) => {
-                    setInitialBalance(e.target.value.replace(/[^\d.,]/g, ""));
-                  }}
-                  onBlur={() => {
-                    if (!initialBalance) return;
-                    const n = parseFloat(
-                      initialBalance.replace(/\./g, "").replace(",", ".")
-                    );
-                    if (!isNaN(n)) {
-                      setInitialBalance(
-                        n.toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })
-                      );
-                    }
-                  }}
-                  placeholder="0,00"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Valor total da fatura aberta. Sem sinal negativo. Se não
-                  souber o total exato, coloque o valor da última fatura.
-                </p>
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Como quer informar o saldo?</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { value: "total", label: "Sei o total da fatura aberta", desc: "Informe o valor total que você deve" },
+                    { value: "last", label: "Sei o valor da última fatura", desc: "Usamos como saldo inicial estimado" },
+                    { value: "zero", label: "Não sei / cartão novo", desc: "Começa zerado, ajusta com importações" },
+                  ].map((opt) => (
+                    <label
+                      key={opt.value}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                        balanceMode === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:bg-accent/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="balance-mode"
+                        value={opt.value}
+                        checked={balanceMode === opt.value}
+                        onChange={() => setBalanceMode(opt.value as "total" | "last" | "zero")}
+                        className="mt-0.5 accent-primary"
+                      />
+                      <div>
+                        <span className="text-sm font-medium">{opt.label}</span>
+                        <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+
+                {balanceMode !== "zero" && (
+                  <div className="space-y-1.5">
+                    <label htmlFor="card-balance" className="text-sm font-medium">
+                      {balanceMode === "total"
+                        ? "Valor total da fatura aberta (R$)"
+                        : "Valor da última fatura paga (R$)"}
+                    </label>
+                    <input
+                      id="card-balance"
+                      type="text"
+                      inputMode="decimal"
+                      value={initialBalance}
+                      onChange={(e) => {
+                        setInitialBalance(e.target.value.replace(/[^\d.,]/g, ""));
+                      }}
+                      onBlur={() => {
+                        if (!initialBalance) return;
+                        const n = parseFloat(
+                          initialBalance.replace(/\./g, "").replace(",", ".")
+                        );
+                        if (!isNaN(n)) {
+                          setInitialBalance(
+                            n.toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })
+                          );
+                        }
+                      }}
+                      placeholder="0,00"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                    {balanceMode === "last" && (
+                      <p className="text-xs text-burnished">
+                        Este valor será usado como estimativa inicial. Importe faturas depois para ajustar.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 

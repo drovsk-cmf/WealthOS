@@ -107,6 +107,7 @@ export function useImportBatch() {
       accountId,
       bankConnectionId,
       transactions,
+      onProgress,
     }: {
       accountId: string;
       bankConnectionId: string | null;
@@ -117,33 +118,64 @@ export function useImportBatch() {
         type?: string;
         external_id?: string;
       }[];
+      /** Optional progress callback: (imported, total) */
+      onProgress?: (imported: number, total: number) => void;
     }) => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
       const batchId = crypto.randomUUID();
 
-      const { data, error } = await supabase.rpc("import_transactions_batch", {
-        p_user_id: userId,
-        p_account_id: accountId,
-        p_bank_connection_id: bankConnectionId as unknown as string,
-        p_batch_id: batchId,
-        p_transactions: JSON.stringify(transactions),
-      });
-      if (error) throw error;
-      const parsed = importBatchResultSchema.safeParse(data);
-      if (!parsed.success) {
-        logSchemaError("import_transactions_batch", parsed);
-        return {
-          status: "error",
-          imported: 0,
-          skipped: transactions.length,
-          categorized: 0,
-          matched: 0,
-          aliased: 0,
-          batch_id: batchId,
-        };
+      // TEC-12: Chunk into batches of 500 to avoid timeout
+      const CHUNK_SIZE = 500;
+      const chunks: typeof transactions[] = [];
+      for (let i = 0; i < transactions.length; i += CHUNK_SIZE) {
+        chunks.push(transactions.slice(i, i + CHUNK_SIZE));
       }
-      return parsed.data;
+
+      let totalImported = 0;
+      let totalSkipped = 0;
+      let totalCategorized = 0;
+      let totalMatched = 0;
+      let totalAliased = 0;
+
+      for (let ci = 0; ci < chunks.length; ci++) {
+        const chunk = chunks[ci];
+        const chunkBatchId = chunks.length === 1 ? batchId : `${batchId}-${ci}`;
+
+        const { data, error } = await supabase.rpc("import_transactions_batch", {
+          p_user_id: userId,
+          p_account_id: accountId,
+          p_bank_connection_id: bankConnectionId as unknown as string,
+          p_batch_id: chunkBatchId,
+          p_transactions: JSON.stringify(chunk),
+        });
+
+        if (error) throw new Error(`Erro no lote ${ci + 1}/${chunks.length}: ${error.message}`);
+
+        const parsed = importBatchResultSchema.safeParse(data);
+        if (parsed.success) {
+          totalImported += parsed.data.imported;
+          totalSkipped += parsed.data.skipped;
+          totalCategorized += parsed.data.categorized;
+          totalMatched += parsed.data.matched;
+          totalAliased += parsed.data.aliased;
+        } else {
+          logSchemaError("import_transactions_batch", parsed);
+          totalSkipped += chunk.length;
+        }
+
+        onProgress?.(totalImported, transactions.length);
+      }
+
+      return {
+        status: "ok" as const,
+        imported: totalImported,
+        skipped: totalSkipped,
+        categorized: totalCategorized,
+        matched: totalMatched,
+        aliased: totalAliased,
+        batch_id: batchId,
+      };
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
