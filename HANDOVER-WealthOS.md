@@ -4893,3 +4893,91 @@ Itens identificados mas não corrigidos nesta sessão (movidos para PENDENCIAS-F
 | Circular deps | 0 |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com |
+
+## 38. Sessão 38 — Implementação do Redesign: Fase 1 (02/04/2026)
+
+### 38.1 Contexto
+
+Primeira sessão de implementação após a sessão 37 (conceitual). Foco na Fase 1 do redesign: navegação, tipos, e separação de cartões.
+
+### 38.2 E30: Nova navegação (5 tabs + sininho)
+
+Implementada conforme `docs/NAVIGATION-SPEC.md`:
+
+| Componente | O que faz |
+|---|---|
+| `src/components/navigation/bottom-tab-bar.tsx` | 5 tabs mobile: Início, Movimentações, Patrimônio, Orçamento, Mais. safe-area-inset-bottom para notch. |
+| `src/app/(app)/more/page.tsx` | Hub "Mais": grid organizado com Impostos em destaque (1º item, cor primária). 12 itens. |
+| `src/app/(app)/layout.tsx` | Reescrito: sidebar desktop com 5 seções agrupadas + títulos, mobile header com brand + sininho + privacy toggle, bottom tab bar. Hamburger menu removido. |
+
+**Sininho (E22 placeholder):** bell icon no header mobile e top-right desktop. `pendingCount = 0` (stub). Badge numérico e ponto vermelho prontos para E22.
+
+### 38.3 TEC-13: database.ts atualizado
+
+| Mudança | Detalhe |
+|---|---|
+| Tabela `bank_institutions` | Row/Insert/Update/Relationships adicionados |
+| Campos em `accounts` | `account_digit`, `account_number`, `bank_institution_id`, `branch_number` |
+| FK | `accounts_bank_institution_id_fkey` → `bank_institutions` |
+| Hook | `use-bank-institutions.ts`: removido `as any` e `eslint-disable` |
+| eslint-disable (produção) | 6 → 5 |
+
+### 38.4 E17: Separação completa de cartões de crédito
+
+**Migration 078:** 3 colunas adicionadas em `accounts`:
+
+| Coluna | Tipo | Constraint |
+|---|---|---|
+| `credit_limit` | numeric | nullable |
+| `closing_day` | smallint | CHECK 1-31, nullable |
+| `due_day` | smallint | CHECK 1-31, nullable |
+
+**Novos arquivos:**
+
+| Arquivo | Linhas | Função |
+|---|---|---|
+| `src/app/(app)/cards/page.tsx` | 205 | Página dedicada: lista cartões, resumo (fatura total, limite total, uso %), empty state, CardForm |
+| `src/components/cards/card-form.tsx` | 295 | Formulário card-specific: nome, emissor, limite, fechamento, vencimento, taxa rotativo, saldo devedor, cor |
+| `supabase/migrations/078_add_credit_card_columns.sql` | 30 | DDL com DO block guard |
+
+**Mudanças em arquivos existentes:**
+
+| Arquivo | Mudança |
+|---|---|
+| `src/lib/hooks/use-accounts.ts` | `credit_card` removido de `ACCOUNT_TYPE_OPTIONS`. Exportado `CARD_TYPE_LABEL`. |
+| `src/app/(app)/accounts/page.tsx` | Grupo "Cartões de Crédito" removido. Link para `/cards` no lugar do card de dívida. Totais excluem cartões. |
+| `src/app/(app)/layout.tsx` | `/cards` adicionado na seção Movimentações do sidebar. |
+| `src/components/navigation/bottom-tab-bar.tsx` | `/cards` em matchPrefixes de Movimentações. |
+| `src/types/database.ts` | `credit_limit`, `closing_day`, `due_day` em Row/Insert/Update de accounts. |
+
+### 38.5 Commits
+
+| SHA | Descrição |
+|---|---|
+| `f0cf2be` | feat(E30): nova navegação — 5 tabs mobile + sidebar agrupada desktop + sininho |
+| `881f505` | fix(TEC-13): atualizar database.ts com bank_institutions + campos bancários |
+| `326ee7e` | feat(E17): separação completa de cartões de crédito |
+
+### 38.6 Estado do projeto (ground truth sessão 38)
+
+| Métrica | Valor |
+|---------|-------|
+| Stories | 105/108 (3 bloqueadas por Mac) |
+| Tabelas | 36 (bank_institutions já existia; 3 colunas novas em accounts) |
+| Políticas RLS | 108 |
+| Functions | 76 |
+| Triggers | 22 |
+| ENUMs | 29 |
+| Indexes | 149 |
+| Migration files (repo) | 66 |
+| pg_cron jobs | 13 |
+| Suítes Jest | 56 (891 assertions) |
+| Arquivos TS/TSX | 237 |
+| Hooks | 33 |
+| Schemas Zod | 43 |
+| Páginas autenticadas | 33 (+ /cards, /more) |
+| Navegação | 5 tabs mobile + sidebar 5 seções desktop |
+| ESLint warnings | 0 |
+| eslint-disable (produção) | 5 |
+| Cobertura (linhas) | 78.27% |
+| CI | ✅ Verde |
