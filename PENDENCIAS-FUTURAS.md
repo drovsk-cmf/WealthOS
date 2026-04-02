@@ -48,15 +48,15 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 
 ---
 
-## 2. Stories Bloqueadas por Mac/Xcode (3/108)
+## 2. Stories Anteriormente Bloqueadas por Mac/Xcode (3/108)
 
-Requerem Xcode + Apple Developer Account. Não implementáveis sem ambiente macOS.
+Build chain iOS desbloqueada via GitHub Actions macOS runner (sessão 38). Restam dependências de Apple Developer Account (A2).
 
-| Story | Descrição | Bloqueio | Status |
-|-------|-----------|----------|--------|
-| CFG-04 | Push notifications APNs nativas para iOS | Apple Developer Account + Xcode | 🔒 |
-| FIN-17 | OCR de recibo via Apple Vision Framework (nativo) | Xcode. Web fallback (Tesseract.js) já implementado | 🔒 |
-| FIN-18 | Câmera para comprovante via Capacitor Camera | Xcode | 🔒 |
+| Story | Descrição | Bloqueio restante | Status |
+|-------|-----------|-------------------|--------|
+| CFG-04 | Push notifications APNs nativas para iOS | Apple Developer Account (A2) para APNs certificate | 🔒 (A2) |
+| FIN-17 | OCR de recibo via Apple Vision Framework (nativo) | Apple Developer Account (A2). Web fallback (Tesseract.js) já implementado | 🔒 (A2) |
+| FIN-18 | Câmera para comprovante via Capacitor Camera | Apple Developer Account (A2) para provisioning | 🔒 (A2) |
 
 ---
 
@@ -65,7 +65,7 @@ Requerem Xcode + Apple Developer Account. Não implementáveis sem ambiente macO
 | # | Item | Esforço | Bloqueio | Status |
 |---|------|---------|----------|--------|
 | I1 | Apple Developer Account (US$99/ano) | 5 min | Decisão Claudio | ⏳ |
-| I2 | Capacitor iOS build + teste (Xcode Cloud 25h grátis/mês) | 2h | I1 | 🔒 |
+| I2 | Capacitor iOS build + teste (GitHub Actions macOS runner, grátis) | 2h | ~~I1~~ Apple Dev Account | ✅ (workflow ios-build.yml, build #1 success) |
 | I3 | Biometria real (Capacitor BiometricAuth, substituir stubs) | 4–6h | I2 | 🔒 |
 | I4 | OCR real completo (Apple Vision + Tesseract.js + PDF.js) | 4–6h | I2 | 🔒 |
 | I5 | Submissão App Store (screenshots, descrição, review) | 2h | I1, I2, I3 | 🔒 |
