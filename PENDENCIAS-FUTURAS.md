@@ -139,7 +139,7 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E41 | **Diagrama Sankey (visualização de fluxo de dinheiro)** — representação visual única de para onde o dinheiro vai. Receitas → categorias → subcategorias. Monarch tem e é feature favorita dos usuários. GAP COMPETITIVO. | Baixo | Médio (visual) | ⬜ |
 | E42 | **Valorização automática de imóveis (FipeZap/ZAP Imóveis)** — atualizar valor de mercado de imóveis automaticamente via API FipeZap ou DataZAP. Monarch faz via Zillow (US). Ninguém faz no Brasil. OPORTUNIDADE. | Médio | Médio (patrimônio) | ⬜ |
 | E43 | **Assistente via WhatsApp** — registro de transações e consulta de saldos por texto/áudio no WhatsApp, sem abrir o app. Mobills PRO já tem. Usa WhatsApp Business API. GAP COMPETITIVO. | Alto | Alto (registro rápido) | ⬜ |
-| E44 | **Motor fiscal DARF para investimentos** — cálculo automático de DARF mensal para ganho de capital em renda variável. Apuração de lucro/prejuízo por operação. Isenção de R$ 20k/mês. Kinvo e Investidor10 têm parcialmente. **Reclassificado de H2→H1.** Ref: adendo v1.4 + docs/TAX-ENGINE-SPEC.md | Alto | Alto (fiscal) | ⬜ |
+| E44 | **Motor fiscal DARF para investimentos** — calculateMonthlyDARFs com apuração mensal, loss carryforward por tipo, isenções, DARF codes. 13 testes. Ref: HANDOVER §38. | Alto | Alto (fiscal) | ✅ |
 | E45 | **Motor CLT (bruto → líquido automático)** — `calculateCLTNetSalary` em `src/lib/tax/calculator.ts` + componente `CLTSimulator` na página /tax. Calcula INSS progressivo, IRRF com dependentes, FGTS (custo empregador), alíquotas efetivas. Implementado dentro de E50. Ref: HANDOVER §38. | Médio | Médio (onboarding) | ✅ |
 
 ---
