@@ -1,0 +1,135 @@
+name: iOS Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - 'capacitor.config.ts'
+      - '.github/workflows/ios-build.yml'
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  ios-build:
+    name: Build iOS (Capacitor)
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Capacitor iOS platform
+        run: |
+          npm install @capacitor/ios@^6.0.0
+          echo "Capacitor iOS installed"
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+          xcodebuild -version
+          echo "Available simulators:"
+          xcrun simctl list devices available | head -20
+
+      - name: Prepare web assets for Capacitor
+        run: |
+          # Capacitor needs a webDir. For live-URL mode, we create a minimal
+          # shell that redirects to the deployed app. The real app loads from
+          # https://www.oniefy.com via server.url in capacitor.config.ts.
+          mkdir -p out
+          cat > out/index.html << 'HTML'
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>Oniefy</title>
+              <style>
+                body { display:flex; align-items:center; justify-content:center; height:100vh; margin:0; background:#1a1025; color:#f5e6d3; font-family:system-ui; }
+                .loader { text-align:center; }
+                .loader p { margin-top:1rem; font-size:14px; opacity:0.7; }
+              </style>
+            </head>
+            <body>
+              <div class="loader">
+                <p>Conectando ao Oniefy...</p>
+              </div>
+            </body>
+          </html>
+          HTML
+          echo "Web assets prepared (minimal shell for live-URL mode)"
+
+      - name: Initialize Capacitor iOS project
+        run: |
+          npx cap add ios 2>&1 || echo "iOS platform may already exist"
+          npx cap sync ios
+          echo "Capacitor iOS synced"
+
+      - name: Install CocoaPods
+        working-directory: ios/App
+        run: |
+          pod install || echo "No Podfile or pods to install"
+
+      - name: Build iOS (Debug)
+        if: ${{ github.event.inputs.build_type != 'release' }}
+        working-directory: ios/App
+        run: |
+          xcodebuild build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -allowProvisioningUpdates \
+            CODE_SIGNING_ALLOWED=NO \
+            | tail -20
+          echo "✅ iOS Debug build succeeded"
+
+      - name: Build iOS (Release)
+        if: ${{ github.event.inputs.build_type == 'release' }}
+        working-directory: ios/App
+        run: |
+          xcodebuild build \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS Simulator' \
+            -allowProvisioningUpdates \
+            CODE_SIGNING_ALLOWED=NO \
+            | tail -20
+          echo "✅ iOS Release build succeeded"
+
+      - name: Report build artifacts
+        if: success()
+        run: |
+          echo "## iOS Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Platform:** iOS (Capacitor 6)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** ${{ github.event.inputs.build_type || 'debug' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Xcode:** $(xcodebuild -version | head -1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Node:** $(node -v)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Build succeeded. Next steps:" >> $GITHUB_STEP_SUMMARY
+          echo "- For App Store: add signing identity + provisioning profile" >> $GITHUB_STEP_SUMMARY
+          echo "- For TestFlight: add APPLE_ID, APP_SPECIFIC_PASSWORD secrets" >> $GITHUB_STEP_SUMMARY

@@ -5,9 +5,11 @@ const config: CapacitorConfig = {
   appName: "Oniefy",
   webDir: "out",
   server: {
-    // In production, use the deployed URL for live updates
-    // url: "https://your-app.vercel.app",
-    // androidScheme: "https",
+    // Live-URL mode: iOS app loads from deployed Vercel instance.
+    // All server-side features (API routes, middleware, SSR) work natively.
+    // The native shell provides: push notifications, biometrics, camera, keychain.
+    url: "https://www.oniefy.com",
+    allowNavigation: ["www.oniefy.com", "*.supabase.co"],
   },
   plugins: {
     PushNotifications: {
