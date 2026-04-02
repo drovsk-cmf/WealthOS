@@ -67,6 +67,16 @@ export default function BudgetsPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [confirmCopy, setConfirmCopy] = useState(false);
   const [copyError, setCopyError] = useState("");
+  // E40: Budget method toggle (persisted to localStorage)
+  const [budgetMethod, setBudgetMethod] = useState<"category" | "zero_based">(() => {
+    if (typeof window === "undefined") return "category";
+    return (localStorage.getItem("oniefy-budget-method") as "category" | "zero_based") ?? "category";
+  });
+
+  function toggleBudgetMethod(method: "category" | "zero_based") {
+    setBudgetMethod(method);
+    localStorage.setItem("oniefy-budget-method", method);
+  }
 
   useAutoReset(confirmDelete, setConfirmDelete);
 
@@ -181,6 +191,71 @@ export default function BudgetsPage() {
           + Nova categoria
         </button>
       </div>
+
+      {/* E40: Budget method toggle */}
+      <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
+        <button
+          type="button"
+          onClick={() => toggleBudgetMethod("category")}
+          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            budgetMethod === "category"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Por categoria
+        </button>
+        <button
+          type="button"
+          onClick={() => toggleBudgetMethod("zero_based")}
+          className={`flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            budgetMethod === "zero_based"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          Base zero
+        </button>
+      </div>
+
+      {/* E40: "To Be Budgeted" card (zero-based mode) */}
+      {budgetMethod === "zero_based" && bva && bva.budget_count > 0 && (
+        (() => {
+          const totalPlanned = bva.total_planned ?? 0;
+          const totalSpent = bva.total_actual ?? 0;
+          const remaining = bva.total_remaining ?? 0;
+          const pct = bva.pct_used ?? 0;
+          const isOnTrack = pct <= 80;
+          const isWarning = pct > 80 && pct < 100;
+          const isOver = pct >= 100;
+          return (
+            <div className={`rounded-lg border p-4 text-center ${
+              isOnTrack ? "border-verdant/40 bg-verdant/5" :
+              isWarning ? "border-burnished/40 bg-burnished/5" :
+              "border-terracotta/40 bg-terracotta/5"
+            }`}>
+              <p className="text-xs text-muted-foreground">
+                {isOver ? "Orçamento estourado" : "Disponível para gastar"}
+              </p>
+              <p className={`text-2xl font-bold tabular-nums ${
+                isOnTrack ? "text-verdant" :
+                isWarning ? "text-burnished" :
+                "text-terracotta"
+              }`}>
+                <Mv>{formatCurrency(Math.abs(remaining))}</Mv>
+              </p>
+              <div className="mt-2 flex justify-center gap-6 text-[10px] text-muted-foreground">
+                <span>Alocado: <Mv>{formatCurrency(totalPlanned)}</Mv></span>
+                <span>Gasto: <Mv>{formatCurrency(totalSpent)}</Mv></span>
+                <span>Uso: {pct.toFixed(0)}%</span>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Base zero: cada real alocado tem um destino. Ajuste categorias até que o orçamento reflita suas prioridades.
+              </p>
+            </div>
+          );
+        })()
+      )}
 
       {/* Member filter */}
       {activeMembers.length > 0 && (
