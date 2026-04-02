@@ -34,7 +34,7 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 | A5 | CAPTCHA Cloudflare Turnstile: ativar em produção | P1 | ⏳ | Requer Turnstile site key + secret key nas env vars Vercel |
 | A6 | Apple OAuth: habilitar quando tiver Apple Developer certificate | P2 | ⏳ | Depende de A2 |
 | A7 | Teste de corredor com 3 pessoas (UX-H3-05) | P2 | ⏳ | 5 tarefas, observar hesitações, sem instruções prévias |
-| A8 | Validação fiscal periódica: checar DOU para IRPF, INSS, SM | Recorrente | ⏳ | Portarias mudam anualmente. Próxima: jan/2027 |
+| A8 | Validação fiscal mensal: checar RFB, DOU, Portaria MPS para IRPF, INSS, SM | Recorrente (mensal, dia 1) | ⏳ | Verificação mensal por segurança, mesmo que mudanças ocorram tipicamente em janeiro. Ref: docs/TAX-ENGINE-SPEC.md §6.3 |
 | A9 | Confirmação das 6 decisões IA do adendo v1.5 | P2 | ⏳ | Ver Seção 9 deste documento |
 | A10 | RESEND_API_KEY: cadastrar em resend.com para digest semanal | P2 | ⏳ | Sem a chave, preview_only mode |
 | A11 | Projeto Sentry: criar conta free tier + adicionar DSN nas env vars Vercel | P2 | ⏳ | @sentry/nextjs já integrado, falta o DSN |

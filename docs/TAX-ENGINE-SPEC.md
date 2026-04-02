@@ -131,17 +131,17 @@ Salário mínimo 2025: R$ 1.518,00
 https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados/ultimos/{N}?formato=json
 ```
 
-### 3.2 Dados de atualização manual (1x/ano)
+### 3.2 Dados de atualização manual (verificação mensal)
 
 | Dado | Fonte oficial | Quando atualizar | Quem publica |
 |------|--------------|-----------------|-------------|
-| Tabela progressiva IRPF | gov.br/receitafederal/tabelas/{ano} | Janeiro (quando RFB publicar) | Receita Federal via IN |
-| Limites de deduções (dependente, educação, simplificado) | Mesma página da RFB | Janeiro | Receita Federal |
-| Tabela de redução mensal (Lei 15.270/2025) | Legislação (Planalto) | Quando houver alteração legal | Congresso Nacional |
-| Tabela INSS (faixas + teto) | Portaria MPS | Janeiro | Ministério da Previdência |
-| Prazos da declaração IRPF | IN RFB anual | Fevereiro/Março | Receita Federal |
-| Alíquotas IPVA por UF | SEFAZ de cada estado | Janeiro | 27 Secretarias de Fazenda |
-| Calendário IPVA por UF | DETRAN de cada estado | Janeiro | 27 DETRANs |
+| Tabela progressiva IRPF | gov.br/receitafederal/tabelas/{ano} | Verificar mensalmente. Tipicamente muda em janeiro. | Receita Federal via IN |
+| Limites de deduções (dependente, educação, simplificado) | Mesma página da RFB | Verificar mensalmente. | Receita Federal |
+| Tabela de redução mensal (Lei 15.270/2025) | Legislação (Planalto) | Verificar mensalmente. Muda só por nova lei. | Congresso Nacional |
+| Tabela INSS (faixas + teto) | Portaria MPS | Verificar mensalmente. Tipicamente muda em janeiro. | Ministério da Previdência |
+| Prazos da declaração IRPF | IN RFB anual | Verificar mensalmente a partir de fevereiro. | Receita Federal |
+| Alíquotas IPVA por UF | SEFAZ de cada estado | Verificar mensalmente. Tipicamente muda em janeiro. | 27 Secretarias de Fazenda |
+| Calendário IPVA por UF | DETRAN de cada estado | Verificar mensalmente. | 27 DETRANs |
 
 ### 3.3 Dados que raramente mudam
 
@@ -270,12 +270,23 @@ Cada cálculo tributário precisa de testes com cenários reais:
 
 A Receita Federal disponibiliza simulador de alíquotas efetivas. Após implementar o motor, rodar os mesmos cenários no simulador da RFB e comparar resultados. Divergência = bug.
 
-### 6.3 Alerta de parâmetros desatualizados
+### 6.3 Verificação mensal de parâmetros (cron ou manual)
 
-A Onie verifica anualmente (janeiro) se os parâmetros do novo ano-calendário já foram cadastrados. Se não:
-- Alerta interno para o admin
-- Não exibe cálculos do novo ano até que os parâmetros sejam atualizados
-- Mostra: "Aguardando publicação da tabela IRPF [ano]. Os cálculos serão atualizados assim que disponíveis."
+Frequência: **mensal** (todo dia 1 ou primeiro dia útil do mês).
+
+Checklist de verificação:
+1. Acessar gov.br/receitafederal/tabelas/{ano} - tabela IRPF vigente
+2. Verificar se houve nova IN RFB publicada no DOU (busca: "instrução normativa" + "imposto de renda" + "pessoa física")
+3. Verificar se houve nova Portaria MPS (tabela INSS)
+4. Verificar se houve alteração no salário mínimo
+5. Verificar se houve nova legislação aprovada (Planalto) que afete PF
+6. Comparar com os valores na tabela `tax_parameters` do ano vigente
+
+Se houver divergência: atualizar `tax_parameters` imediatamente e notificar usuários que cálculos foram corrigidos.
+
+Se não houver divergência: registrar a verificação (log com data e resultado "sem alterações").
+
+A Onie pode automatizar parte dessa verificação via web scraping da página da Receita Federal, mas a confirmação final é humana. Não confiar cegamente em scraping para dados fiscais.
 
 ---
 
@@ -319,7 +330,7 @@ A Onie verifica anualmente (janeiro) se os parâmetros do novo ano-calendário j
 |---|---------|------|
 | 1 | Legislação PF muda pouco. Tabela IRPF 1x/ano. Regressiva renda fixa não muda desde 2004. | 02/04/2026 |
 | 2 | Arquitetura: tabela `tax_parameters` versionada por ano-calendário. Código não muda, dados sim. | 02/04/2026 |
-| 3 | Validação anual obrigatória (A8). A Onie alerta se parâmetros estão desatualizados. | 02/04/2026 |
+| 3 | Verificação mensal obrigatória (A8), não anual. Mudança legislativa pode ocorrer a qualquer momento. | 02/04/2026 |
 | 4 | Fontes: BCB/SGS (automático), Receita Federal (manual 1x/ano), IBGE/SIDRA (automático). | 02/04/2026 |
 | 5 | Disclaimer sempre presente: "Consulte seu contador para situações específicas." | 02/04/2026 |
 | 6 | Simulador da RFB como fonte de validação cruzada dos cálculos. | 02/04/2026 |
