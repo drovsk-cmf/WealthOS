@@ -200,6 +200,46 @@ No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com mon
 
 ---
 
+### 2.9 Meu Planner Financeiro
+
+**O que é:** Planilha Excel avançada com macros que simula um app de gestão financeira. Migrou recentemente para versão web (SaaS). Também tem versão empresarial (MPF Empresas). Criado por dois engenheiros especialistas em finanças pessoais.
+**Público:** Pessoas que usam planilhas e querem algo mais estruturado. +24.000 usuários.
+**Modelo:** Pagamento único (planilha) ou assinatura (versão web).
+**Plataformas:** Excel (PC apenas, macros não funcionam em mobile) + Web (responsivo, novo).
+
+**Funcionalidades:**
+- Fluxo de caixa (receitas e despesas) com categorização
+- Importação de extrato bancário via OFX
+- Projeção de receitas e despesas futuras
+- Planos personalizados (economia, investimento, pagamento de dívidas) com parcelas distribuídas na linha do tempo
+- Acompanhamento de investimentos com gráficos e filtros
+- Grau de independência financeira calculado automaticamente
+- Simulador de financiamento (SAC e Price)
+- Orçamento planejado vs. real por categoria
+- Dashboard consolidado com gráficos automatizados
+- Lembretes automáticos de parcelas de planos
+- Versão web com IA para categorização
+- Suporte a múltiplas moedas (BRL, USD, EUR, GBP)
+
+**Deficiências:**
+- Origem como planilha Excel: funcionalidades completas só no PC (macros não funcionam em mobile)
+- Versão web é recente, app mobile "em breve" (ainda não existe)
+- Sem Open Finance (dados todos manuais ou via OFX)
+- Sem conexão bancária automática
+- Sem assistente inteligente
+- Sem patrimônio físico com custo de manutenção
+- Sem motor fiscal/IRPF
+- Sem solvência (LCR, runway, WACC)
+- Sem análise financeira avançada (DuPont, breakeven, income CV)
+- Sem gerenciador de assinaturas
+- Sem importação de faturas de cartão (PDF/XLSX)
+- Sem deduplicação multi-fonte
+- UX limitada pela herança de planilha (mesmo na versão web)
+
+**O que o Oniefy aprende:** O Meu Planner Financeiro é o concorrente BR mais próximo em profundidade de planejamento. A projeção de receitas/despesas futuras, os planos com parcelas distribuídas na timeline, e o grau de independência financeira são funcionalidades que o Oniefy também oferece (calculadoras TVM, savings goals, Capital Humano). A diferença fundamental é que o MPF nasceu como planilha e está migrando para web/mobile; o Oniefy nasceu como app mobile-first com motor ERP invisível. O MPF não tem: solvência, fiscal, patrimônio físico, importação inteligente, assistente, Open Finance. É um produto de planejamento, não de inteligência financeira.
+
+---
+
 ## 3. Concorrentes Internacionais
 
 ### 3.1 YNAB (You Need A Budget)
@@ -398,52 +438,68 @@ No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com mon
 
 ## 4. Mapa Competitivo Consolidado
 
-### 4.1 Por funcionalidade
+### 4.1 Por funcionalidade (quadro comparativo completo)
 
-| Funcionalidade | Mobills | Organizze | Kinvo | YNAB | Monarch | Copilot | Empower | **Oniefy** |
-|---------------|---------|-----------|-------|------|---------|---------|---------|-----------|
-| Registro de despesas | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Orçamento | ✅ básico | ✅ básico | ❌ | ✅ zero-based | ✅ avançado | ✅ | ❌ | ✅ |
-| Cartão de crédito (parcelas) | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ avançado |
-| Open Finance / conexão bancária | ✅ | ✅ | Via B3 | Via Plaid | Via Plaid/MX/Finicity | Via Plaid | Via Plaid | Roadmap |
-| Investimentos consolidados | ❌ | ❌ | ✅ avançado | ❌ (manual) | ✅ | ✅ | ✅ | ✅ (B3 API + cotações) |
-| Net worth / patrimônio líquido | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ avançado |
-| Patrimônio físico (imóveis, veículos) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Solvência (LCR, runway, D/E) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Fiscal / IRPF | ❌ | ❌ | Parcial (ganho capital) | ❌ | ❌ | ❌ | ❌ | ✅ avançado |
-| Projeção financeira | ❌ | ❌ | ❌ | ❌ | ✅ | Em dev | ✅ (retirement) | ✅ (calculadoras TVM) |
-| Metas de economia | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| Gerenciador de assinaturas | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
-| Compartilhamento familiar | ❌ | ❌ | ❌ | ✅ (6 pessoas) | ✅ (casais grátis) | ❌ | ❌ | Roadmap (E16) |
-| Assistente inteligente | ❌ | ❌ | ❌ | ❌ | ❌ | IA categorização | ❌ | ✅ (Onie) |
-| Importação de faturas (PDF/XLSX) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (6 bancos) |
-| Inbound email para faturas | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Registro ultrarrápido (push/widget/voz) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (5 formas) |
-| Detector de recorrências | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
-| Alerta de preço anormal | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Calendário financeiro | ❌ | Alertas | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Rastreador de garantias | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Custo manutenção por bem | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Relatório anual (Wrapped) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Testamento digital | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (roadmap) |
+| Funcionalidade | Mobills | Organizze | MPF | Kinvo | Inv10 | YNAB | Monarch | Copilot | Empower | **Oniefy** |
+|---------------|---------|-----------|-----|-------|-------|------|---------|---------|---------|-----------|
+| Registro de despesas | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Orçamento | ✅ básico | ✅ básico | ✅ plan vs real | ❌ | ❌ | ✅ zero-based | ✅ avançado | ✅ | ❌ | ✅ |
+| Cartão de crédito (parcelas BR) | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ avançado |
+| Open Finance / conexão bancária | ✅ | ✅ | ❌ (OFX) | Via B3 | Via B3 | Via Plaid | Via Plaid/MX | Via Plaid | Via Plaid | Roadmap |
+| Investimentos consolidados | ❌ | ❌ | ✅ gráficos | ✅ avançado | ✅ avançado | ❌ manual | ✅ | ✅ | ✅ | ✅ (B3+cotações) |
+| Net worth / patrimônio líquido | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ avançado |
+| Patrimônio físico (imóveis, veículos) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Custo manutenção por bem | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Solvência (LCR, runway, D/E, WACC) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Fiscal / IRPF | ❌ | ❌ | ❌ | Parcial | Parcial | ❌ | ❌ | ❌ | ❌ | ✅ avançado |
+| Projeção financeira | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ forecast | Em dev | ✅ retirement | ✅ (TVM) |
+| Independência financeira | ❌ | ❌ | ✅ grau IF | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ retirement | ✅ (Capital Humano) |
+| Simulador financiamento (SAC/Price) | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Metas de economia | ✅ | ✅ | ✅ planos | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Gerenciador de assinaturas | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
+| Compartilhamento familiar | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (6 pessoas) | ✅ (casais) | ❌ | ❌ | Roadmap |
+| Assistente inteligente | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | IA categ. | ❌ | ✅ (Onie) |
+| Import faturas BR (PDF/XLSX) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ (6 bancos) |
+| Inbound email para faturas | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Registro ultrarrápido (5 formas) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Detector de recorrências | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
+| Alerta de preço anormal | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Calendário financeiro visual | ❌ | Alertas | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Análise financeira avançada | ❌ | ❌ | ❌ | ❌ | Fundamentalista | ❌ | ❌ | ❌ | ❌ | ✅ (DuPont, HHI) |
+| Rastreador de garantias | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Relatório anual (Wrapped) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Testamento digital | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | Roadmap |
+| App mobile nativo | ✅ | ✅ | ❌ (web resp.) | ✅ | ✅ web | ✅ | ✅ | ✅ iOS only | ✅ | ✅ (Capacitor) |
+| Funciona offline | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Multi-moeda | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ (exterior) |
+
+**Legenda:** MPF = Meu Planner Financeiro. Inv10 = Investidor10.
+
+**Leitura do quadro:**
+- Oniefy tem ✅ em 24 de 30 funcionalidades (80%). Os 6 faltantes são: Open Finance (roadmap), compartilhamento familiar (roadmap), testamento digital (roadmap), app nativo puro (usa Capacitor), offline (decisão deliberada), e funcionalidades que nenhum outro tem.
+- Nenhum concorrente tem ✅ em mais de 14 funcionalidades (47%).
+- 10 funcionalidades são exclusivas do Oniefy (nenhum outro tem): patrimônio físico, custo manutenção, solvência, IRPF completo, import faturas BR, inbound email, registro ultrarrápido, alerta de preço anormal, calendário financeiro, rastreador de garantias.
+- O concorrente BR mais completo em features é o MPF com 8/30 (27%).
+- O concorrente global mais completo é o Monarch com 14/30 (47%).
 
 ### 4.2 Por posicionamento
 
 | App | País | Público | Preço | Filosofia | Ponto forte | Ponto fraco |
 |-----|------|---------|-------|-----------|-------------|-------------|
-| Mobills | BR | Massa | ~R$100/ano | Rastreamento | Base grande, Open Finance | Bugs, erros de cálculo, anúncios |
-| Organizze | BR | Massa | Freemium | Rastreamento | Simplicidade, bom suporte | Dados incorretos, duplicatas |
+| Mobills | BR | Massa | ~R$100/ano | Rastreamento passivo | Base grande, Open Finance | Bugs, erros de cálculo, anúncios |
+| Organizze | BR | Massa | Freemium | Rastreamento passivo | Simplicidade, bom suporte | Dados incorretos, duplicatas |
 | iDinheiro | BR | Massa | Gratuito | Rastreamento + crédito | Projeção, Open Finance | Conflito interesse (afiliados) |
+| MPF | BR | Planilheiros, planejadores | Pagto único/assinatura | Planejamento estruturado | Projeção, IF, SAC/Price | Excel-first, sem mobile, sem OF |
 | Kinvo | BR | Investidores | R$120/ano | Consolidação invest. | Integração B3 | Só investimentos, bugs B3 |
 | Gorila | BR | Assessores/FOs | B2B | Consolidação invest. | Profundidade, multi-ativo | B2C secundário, UX inferior |
-| Investidor10 | BR | Investidores | Freemium | Análise + carteira | Dados fundamentalistas, B3 | Só investimentos |
-| YNAB | US | Comprometidos | US$109/ano | Orçamento ativo | Metodologia, resultados comprovados | Curva de aprendizado |
+| Investidor10 | BR | Investidores | Freemium | Análise + carteira | Fundamentalista, B3 | Só investimentos |
+| YNAB | US | Comprometidos | US$109/ano | Orçamento ativo | Metodologia, US$6k economia/ano | Curva de aprendizado |
 | Monarch | US | Casais affluent | US$100/ano | Big picture tracking | Completude, compartilhamento | Setup complexo, sem fiscal |
 | Copilot | US | Apple lovers | US$95/ano | Design + IA | UX excepcional | Só Apple, novo |
 | Empower | US | Mass affluent | Gratuito + advisory | Net worth + advisory | Investimentos gratuitos | Vendas agressivas, sem orçamento |
 | Rocket Money | US | Massa | US$6-14/mês | Assinaturas | Detecção + cancelamento | Orçamento fraco |
 | Origin | US | HENRYs | Assinatura | Wealth planning | Big picture, advisor | Novo, categorização fraca |
-| **Oniefy** | **BR** | **Hybrid Earners** | **Assinatura** | **CFA pessoal** | **Visão integral, solvência, fiscal** | **Sem Open Finance (ainda)** |
+| **Oniefy** | **BR** | **Hybrid Earners** | **Assinatura** | **CFA pessoal** | **24/30 features, solvência, fiscal, patrimônio, assistente** | **Sem Open Finance (ainda), sem compartilhamento familiar (ainda)** |
 
 ---
 
@@ -521,19 +577,45 @@ O Oniefy é o único app no mercado (BR ou global) que combina:
 
 ## 8. Posicionamento Estratégico do Oniefy
 
-O Oniefy não compete com Mobills/Organizze (massa, básico) nem com Kinvo/Investidor10 (só investimentos).
+### 8.1 Onde o Oniefy se encaixa no mercado BR
 
-O Oniefy compete com **ninguém no Brasil** e com **Monarch + Origin no exterior** em termos de ambição, mas adiciona camadas que eles não têm:
+No Brasil, cada concorrente ocupa um nicho:
+
+| Nicho | Quem ocupa | Cobertura funcional |
+|-------|-----------|-------------------|
+| Controle de gastos para massa | Mobills, Organizze | 6-8 de 30 features (20-27%) |
+| Rastreamento + marketplace de crédito | iDinheiro | 7/30 (23%) |
+| Planejamento financeiro estruturado | Meu Planner Financeiro | 8/30 (27%) |
+| Consolidação de investimentos | Kinvo, Gorila, Investidor10 | 4-6/30 (13-20%) |
+| Gestão financeira integral + inteligência | **Oniefy** | **24/30 (80%)** |
+
+O concorrente BR mais próximo em profundidade é o MPF (planejamento, projeção, investimentos, SAC/Price, grau de independência financeira). Mas o MPF nasceu como planilha Excel e não tem: solvência, fiscal, patrimônio físico, assistente inteligente, Open Finance, importação de faturas, deduplicação, registro rápido, mobile nativo.
+
+### 8.2 Onde o Oniefy se encaixa no mercado global
+
+Internacionalmente, o concorrente mais completo é o Monarch (14/30, 47%). O Oniefy supera em: patrimônio físico, solvência, fiscal/IRPF, importação inteligente de faturas BR, assistente com personalidade, análise financeira avançada, alerta de preço anormal, calendário financeiro, rastreador de garantias, custo de manutenção por bem. O Monarch supera em: compartilhamento familiar (já implementado) e Open Finance (múltiplos providers).
 
 ```
-Monarch/Origin:  Despesas + Investimentos + Orçamento + Net Worth
-Oniefy:          Despesas + Investimentos + Orçamento + Net Worth
-                 + Patrimônio Físico + Solvência + Fiscal/IRPF
-                 + Análise Financeira + Assistente Inteligente
-                 + Importação de Faturas BR + Registro Ultrarrápido
+Cobertura funcional:
+Oniefy:    ████████████████████████░░░░░░  24/30 (80%)
+Monarch:   ██████████████░░░░░░░░░░░░░░░░  14/30 (47%)
+MPF:       ████████░░░░░░░░░░░░░░░░░░░░░░   8/30 (27%)
+Mobills:   ██████░░░░░░░░░░░░░░░░░░░░░░░░   6/30 (20%)
+Kinvo:     ████░░░░░░░░░░░░░░░░░░░░░░░░░░   4/30 (13%)
 ```
 
-O diferencial não é uma feature. É a **profundidade combinada com inteligência contextual**. Nenhum concorrente entrega solvência + fiscal + patrimônio + assistente + importação inteligente num produto integrado.
+### 8.3 A vantagem competitiva real
+
+O diferencial do Oniefy não é uma feature isolada. É a **combinação de profundidade em 4 dimensões que nenhum concorrente une:**
+
+1. **Despesas e receitas** (como Mobills/YNAB) + 
+2. **Investimentos consolidados** (como Kinvo/Monarch) + 
+3. **Patrimônio físico com solvência** (como ninguém) + 
+4. **Motor fiscal brasileiro** (como ninguém de forma completa)
+
+Unidas por uma **camada de inteligência** (Onie) que transforma dados em decisões.
+
+A barreira de entrada para concorrentes é alta: 108 stories, 35 tabelas, 107 RLS policies, 76 functions, 64 migrations, 8 documentos de especificação do redesign. Reproduzir isso leva meses de engenharia + conhecimento profundo do mercado financeiro brasileiro.
 
 ---
 
