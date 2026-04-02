@@ -6,6 +6,7 @@ import { useAccounts, useDeactivateAccount } from "@/lib/hooks/use-accounts";
 import { useBankInstitutions } from "@/lib/hooks/use-bank-institutions";
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
+import { OnieLoader } from "@/components/ui/onie-loader";
 import { CardForm } from "@/components/cards/card-form";
 import type { Database } from "@/types/database";
 
@@ -82,7 +83,7 @@ export default function CardsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+        <OnieLoader size="md" />
       </div>
     );
   }

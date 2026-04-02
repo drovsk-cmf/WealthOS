@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Upload, PenLine, Compass, ArrowRight, Sparkles, User } from "lucide-react";
+import { OnieLoader } from "@/components/ui/onie-loader";
 import { createClient } from "@/lib/supabase/client";
 import { initializeEncryption } from "@/lib/auth/encryption-manager";
 import { completeOnboardingSeeds } from "@/lib/services/onboarding-seeds";
@@ -200,7 +201,9 @@ export default function OnboardingPage() {
         {/* Step 4: Setup — FIX #3: timeout + progress */}
         {step === "setup" && !error && (
           <div className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
+            <div className="mx-auto mb-4">
+              <OnieLoader size="lg" state="processing" />
+            </div>
             <h1 className="text-2xl font-bold tracking-tight">Preparando sua conta</h1>
             <p className="mt-2 text-sm text-muted-foreground">{setupProgress || "Iniciando..."}</p>
           </div>

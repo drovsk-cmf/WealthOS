@@ -36,6 +36,7 @@ import { clearAuthCache } from "@/lib/supabase/cached-auth";
 import { useAuthInit } from "@/lib/hooks/use-auth-init";
 import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status";
 import { usePrivacyStore } from "@/lib/stores/privacy";
+import { OnieLoader } from "@/components/ui/onie-loader";
 import { BottomTabBar } from "@/components/navigation/bottom-tab-bar";
 
 /**
@@ -139,7 +140,7 @@ export default function AppLayout({
   if (!ready) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+        <OnieLoader size="lg" state="processing" />
       </div>
     );
   }
