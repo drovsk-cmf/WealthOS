@@ -1,6 +1,6 @@
 # Oniefy — Pendências e Implementações Futuras
 
-**Última atualização:** 02 de abril de 2026
+**Última atualização:** 02 de Abril de 2026 (lista mestre unificada com gaps competitivos)
 **Mantido por:** Claude (atualizar ao final de cada sessão com impacto relevante)
 **Relação com o HANDOVER:** Este documento é complementar ao `HANDOVER-WealthOS.md`. O HANDOVER registra o histórico de sessões e o estado técnico atual. Este documento é a fonte única de verdade para **o que fazer a seguir** — backlog de produto, ações pendentes, dívida técnica e evoluções estratégicas.
 
@@ -100,6 +100,10 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 | E28 | **Calendário financeiro visual** — visualização de vencimentos no mês com concentração e projeção de saldo. A Onie projeta saldo por dia. Alimentado por recorrências + parcelas + faturas + boletos importados. Ref: docs/FEATURES-ROADMAP-SPEC.md #3 | Médio | Alto (controle) | ⬜ |
 | E29 | **Consolidação saúde + educação (IRPF)** — categorias vinculadas a deduções fiscais. Saúde: dedução ilimitada. Educação: dedução com limite. Exporta total por membro da família na época do IRPF. Ref: docs/FEATURES-ROADMAP-SPEC.md #7 | Médio | Alto (fiscal) | ⬜ |
 | E30 | **Estrutura de navegação (5 tabs + sininho)** — redistribuição das 10 zonas mentais em 5 tabs. Sininho no topo direito libera posição. Impostos, Orçamento e Dívidas disputam espaço. **Discussão pendente.** | Baixo | Crítico (arquitetura) | ⏳ |
+| E37 | **Plano de quitação de dívidas (snowball/avalanche)** — motor que calcula estratégia ótima para quitar dívidas: qual pagar primeiro, quanto alocar por mês, projeção de data de quitação. Monarch e WalletHub têm. Essencial para Zona 4 (dívidas bancárias). GAP COMPETITIVO. | Médio | Alto (dívidas) | ⬜ |
+| E38 | **AI Forecasting (projeção automática de saldos futuros)** — projeta saldos futuros com base em tendências de gasto, recorrências e receitas. Diferente das calculadoras TVM que são simulação manual. Monarch tem. GAP COMPETITIVO. | Médio | Alto (inteligência) | ⬜ |
+| E39 | **Foto de recibo/NF por transação** — anexar imagem de recibo, nota fiscal ou comprovante a cada transação. Monarch e Mobills têm. Alimenta rastreador de garantias (E31) e módulo fiscal. GAP COMPETITIVO. | Baixo | Médio (documentação) | ⬜ |
+| E40 | **Múltiplos métodos de orçamento** — oferecer ao menos 2 métodos: category budgeting (padrão atual) + flex budgeting (Monarch) ou zero-based (YNAB). WalletHub oferece 5 métodos. Monarch oferece 2. GAP COMPETITIVO. | Médio | Médio (orçamento) | ⬜ |
 
 ### 4.2 Infra e Qualidade
 
@@ -130,6 +134,11 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E32 | **Comparativo anual + detector de reajustes** — "2025: R$ 184k. 2026 projeta R$ 198k. +7,6%, acima da inflação." Compara cada reajuste de recorrência com inflação oficial. Ref: docs/FEATURES-ROADMAP-SPEC.md #10 | Médio | Médio (orçamento) | ⬜ |
 | E33 | **Provisão de gastos sazonais** — consta no orçamento. Se não houver, alerta 3 meses antes: supermercado em dezembro, matrícula em janeiro. Ref: docs/FEATURES-ROADMAP-SPEC.md #11 | Baixo | Médio (planejamento) | ⬜ |
 | E34 | **Relatório anual consolidado** — duas versões: (a) PDF formal para consultor/contador, (b) estilo Spotify Wrapped ("este fornecedor foi seu sócio... 20% da receita entregue a ele"). Ref: docs/FEATURES-ROADMAP-SPEC.md #14 | Médio | Médio (fidelização) | ⬜ |
+| E41 | **Diagrama Sankey (visualização de fluxo de dinheiro)** — representação visual única de para onde o dinheiro vai. Receitas → categorias → subcategorias. Monarch tem e é feature favorita dos usuários. GAP COMPETITIVO. | Baixo | Médio (visual) | ⬜ |
+| E42 | **Valorização automática de imóveis (FipeZap/ZAP Imóveis)** — atualizar valor de mercado de imóveis automaticamente via API FipeZap ou DataZAP. Monarch faz via Zillow (US). Ninguém faz no Brasil. OPORTUNIDADE. | Médio | Médio (patrimônio) | ⬜ |
+| E43 | **Assistente via WhatsApp** — registro de transações e consulta de saldos por texto/áudio no WhatsApp, sem abrir o app. Mobills PRO já tem. Usa WhatsApp Business API. GAP COMPETITIVO. | Alto | Alto (registro rápido) | ⬜ |
+| E44 | **Motor fiscal DARF para investimentos** — cálculo automático de DARF mensal para ganho de capital em renda variável. Apuração de lucro/prejuízo por operação. Isenção de R$ 20k/mês. Kinvo e Investidor10 têm parcialmente. Ref: adendo v1.4. | Alto | Alto (fiscal) | ⬜ |
+| E45 | **Motor CLT (bruto → líquido automático)** — cálculo automático de INSS, IRRF, VT, VR, FGTS a partir do salário bruto. Facilita onboarding de usuários CLT. Ref: adendo v1.4. | Médio | Médio (onboarding) | ⬜ |
 
 ---
 
@@ -146,6 +155,10 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 | E14 | **Shadow Ledger (off-balance sheet)** — milhas, pontos de fidelidade, garantias judiciais, passivos contingentes. Exibidos em seção separada com nota de estimativa. Completa a foto patrimonial sem comprometer o ledger principal. | Médio | Médio (completude patrimonial) | 📌 |
 | E35 | **Acesso read-only para o contador** — link seguro, temporário, mostra só módulo fiscal. "Compartilhar com meu contador." Charme profissional. Ref: docs/FEATURES-ROADMAP-SPEC.md #12 | Baixo | Baixo (diferenciação) | ⬜ |
 | E36 | **Testamento digital / dead man's switch** — se usuário não acessar por X meses, contato de confiança recebe acesso. Requer consultoria jurídica antes de implementar. Ref: docs/FEATURES-ROADMAP-SPEC.md #13 | Médio | Médio (diferenciação radical) | ⬜ |
+| E46 | **Score de crédito integrado** — mostrar score do usuário (Serasa/Boa Vista APIs) dentro do app. WalletHub e NerdWallet têm. Contexto valioso para a Onie ("seu score é 780, excelente para negociar taxas"). GAP COMPETITIVO. | Médio | Baixo (diferenciação) | ⬜ |
+| E47 | **Benchmark contra outros usuários** — "Você gasta 30% mais em alimentação que pessoas com renda similar." Copilot está desenvolvendo. Requer base de usuários significativa (500+). GAP COMPETITIVO FUTURO. | Baixo | Médio (engajamento) | 📌 |
+| E48 | **Motor PJ / Simples Nacional** — separação completa de finanças PJ, cálculo de DAS, controle de faturamento mensal vs. limite do Simples. Ref: adendo v1.4. Gatilho: demanda recorrente de usuários PJ. | Alto | Médio (expansão) | 📌 |
+| E49 | **Modo offline completo** — funcionar sem internet com sincronização posterior. Organizze, YNAB e Copilot têm. Decisão atual: não servir dados stale. Reavaliar se usuários reportarem necessidade. GAP COMPETITIVO (decisão deliberada). | Alto | Baixo (decisão deliberada) | 📌 |
 
 ---
 
@@ -311,5 +324,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 31/03/2026 | Sessão 35: D11 retry backoff implementado (withRetry + QueryProvider + cron). D02 lotes 1+2 (9 bumps, TS6 revertido). Auditoria cruzada HANDOVER×PENDENCIAS×codebase: 11 discrepâncias corrigidas (Zod 46→43, duplicação 1.37→1.88%, E11 collision→E16, Frente A→C, Capital Humano anotado, sidebar 8+1→9+1, tabs 5→7, A13/TEC-10/TEC-11 adicionados). | Claude |
 | 26/03/2026 | E15 concluído (✅): Diagnóstico Financeiro Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 | 01/04/2026 | Sessão 36: Teste de estresse UX (7.398 registros fictícios, 63 meses). Migration 077: tabela `bank_institutions` (96 instituições BCB) + 4 campos bancários em `accounts`. Usuário de teste criado (`testeusuario01@oniefy.com`). 14 pontuações UX corrigidas: 3 P0 (onboarding trava, duplo negativo cartões, import sem feedback), 5 P1 (etapa nome, liquidez CC, formatação BRL, cartões misturados, sinal negativo cartão), 4 P2 (logo, campos bancários, % ambíguo, mapping confuso), 2 features (Fluxo de Caixa `/cash-flow`, agrupamento de contas). E4 atualizado (🔄). E17 e E18 adicionados (separação cartões, carga inicial cartão). TEC-12 e TEC-13 adicionados (chunking import, regenerar types). Sidebar 10+1. 36 tabelas, 108 RLS, 233 TS/TSX, 33 hooks, 31 páginas. | Claude |
-| 02/04/2026 | Sessão 37: Redesign conceitual completo. Zero alterações de código. 8 documentos de especificação commitados (ONIE-ORB-SPEC, IMPORT-ENGINE-SPEC, B3-API-INTEGRATION-SPEC, INVESTMENTS-MODULE-SPEC, QUICK-REGISTER-SPEC, DEDUP-ENGINE-SPEC, FEATURES-ROADMAP-SPEC, NOTIFICATION-BELL-SPEC). Novos itens: E19-E30 (H1), E31-E34 (H2), E35-E36 (H3), A15-A18 (ações Claudio B3 API). 10 zonas mentais definidas, Onie como assistente, 5 tabs + sininho, motor de importação para 6 bancos, motor de deduplicação multi-fonte, registro ultrarrápido (5 formas), módulo de investimentos com 9 tipos e cascata de fallback, integração B3 API especificada, 14 funcionalidades avaliadas. Discussão pendente: estrutura final das 5 tabs. | Claude |
+| 02/04/2026 | Sessão 37: Redesign conceitual completo. Zero alterações de código. 9 documentos commitados (8 specs + COMPETITIVE-ANALYSIS). Novos itens: E19-E30 (H1), E31-E34 (H2), E35-E36 (H3), A15-A18 (B3 API). Análise competitiva profunda: 15 concorrentes (8 BR + 7 INT). Gaps competitivos adicionados como novos itens: E37-E40 (H1: quitação dívidas, AI forecasting, foto recibo, métodos orçamento), E41-E45 (H2: Sankey, FipeZap imóveis, WhatsApp, DARF, CLT), E46-E49 (H3: score crédito, benchmark, PJ, offline). Total de itens pendentes não concluídos: ~55. Discussão pendente: estrutura final das 5 tabs. | Claude |
 
