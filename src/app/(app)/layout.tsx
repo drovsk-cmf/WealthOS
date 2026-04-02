@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -38,6 +39,8 @@ import { useOnlineStatus, useServiceWorker } from "@/lib/hooks/use-online-status
 import { usePrivacyStore } from "@/lib/stores/privacy";
 import { OnieLoader } from "@/components/ui/onie-loader";
 import { BottomTabBar } from "@/components/navigation/bottom-tab-bar";
+import { NotificationPanel } from "@/components/navigation/notification-panel";
+import { useNotificationItems } from "@/lib/hooks/use-notification-items";
 
 /**
  * Navigation v2 (E30 — NAVIGATION-SPEC.md)
@@ -124,8 +127,11 @@ export default function AppLayout({
   useServiceWorker();
   const { valuesHidden, toggleValues } = usePrivacyStore();
 
-  // Pending notification count placeholder (E22 will populate this)
-  const pendingCount = 0;
+  // Notification bell (E22)
+  const notifications = useNotificationItems();
+  const pendingCount = notifications.actionCount;
+  const hasInfo = notifications.infoCount > 0;
+  const [bellOpen, setBellOpen] = useState(false);
 
   async function handleLogout() {
     clearEncryptionKey();
@@ -287,35 +293,41 @@ export default function AppLayout({
             >
               {valuesHidden ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
-            {/* Sininho (E22 placeholder) */}
+            {/* Sininho (E22) */}
             <button
               type="button"
+              onClick={() => setBellOpen(true)}
               className="relative rounded-md p-2 text-muted-foreground hover:bg-accent"
               aria-label={`Pendências${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
             >
               <Bell className="h-5 w-5" />
-              {pendingCount > 0 && (
+              {pendingCount > 0 ? (
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
                   {pendingCount > 99 ? "99+" : pendingCount}
                 </span>
-              )}
+              ) : hasInfo ? (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+              ) : null}
             </button>
           </div>
         </header>
 
-        {/* Desktop sininho (top-right, persistent) */}
+        {/* Desktop sininho (E22, top-right, persistent) */}
         <div className="absolute right-6 top-10 z-20 hidden lg:block">
           <button
             type="button"
+            onClick={() => setBellOpen(true)}
             className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent"
             aria-label={`Pendências${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
           >
             <Bell className="h-5 w-5" />
-            {pendingCount > 0 && (
+            {pendingCount > 0 ? (
               <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
                 {pendingCount > 99 ? "99+" : pendingCount}
               </span>
-            )}
+            ) : hasInfo ? (
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+            ) : null}
           </button>
         </div>
 
@@ -345,6 +357,17 @@ export default function AppLayout({
           {children}
         </div>
       </main>
+
+      {/* ============================================================ */}
+      {/*  Notification panel (E22)                                    */}
+      {/* ============================================================ */}
+      <NotificationPanel
+        items={notifications.items}
+        actionCount={notifications.actionCount}
+        isLoading={notifications.isLoading}
+        open={bellOpen}
+        onClose={() => setBellOpen(false)}
+      />
 
       {/* ============================================================ */}
       {/*  Mobile bottom tab bar                                       */}
