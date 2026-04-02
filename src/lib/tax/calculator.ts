@@ -107,7 +107,7 @@ export function calculateMonthlyIRPF(
   const taxableBase = Math.max(0, grossSalary - inssResult - depDeduction - alimony);
 
   // Step 4: Apply progressive table
-  let irpfBefore = applyProgressiveTable(taxableBase, irpfParams.brackets);
+  const irpfBefore = applyProgressiveTable(taxableBase, irpfParams.brackets);
 
   // Step 5: Apply Lei 15.270/2025 reduction (2026+)
   const reduction = calculateMonthlyReduction(taxableBase, limits);

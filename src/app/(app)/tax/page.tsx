@@ -34,6 +34,7 @@ import { useAssets, ASSET_CATEGORY_LABELS } from "@/lib/hooks/use-assets";
 import { useAccounts, ACCOUNT_TYPE_LABELS } from "@/lib/hooks/use-accounts";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
+import { CLTSimulator } from "@/components/tax/clt-simulator";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -532,6 +533,9 @@ export default function FiscalPage() {
           <p className="text-sm text-muted-foreground">Nenhum parâmetro fiscal carregado.</p>
         )}
       </div>
+
+      {/* CLT Simulator (E45) */}
+      <CLTSimulator />
 
       {/* Info note */}
       <div className="rounded-lg border bg-muted/50 p-4">
