@@ -34,22 +34,35 @@ Todos os dados são atualizados até D-1 (dia útil anterior).
 
 ## 3. Cobertura por tipo de investimento
 
-| Tipo | Coberto pela B3 API | Observação |
-|------|---------------------|-----------|
-| Ações (PETR4, VALE3, etc.) | Sim | Custodiadas na B3 |
-| FIIs (HGLG11, XPLG11, etc.) | Sim | Custodiados na B3 |
-| ETFs (BOVA11, IVVB11, etc.) | Sim | Custodiados na B3 |
-| BDRs (AAPL34, AMZO34, etc.) | Sim | Custodiados na B3 |
-| Tesouro Direto | Sim | Custodiado na B3/Selic |
-| Debêntures | Sim | Registradas na B3 (CETIP) |
-| CDB, LCI, LCA | Parcial | CDBs registrados na B3 (CETIP) aparecem; nem todos estão registrados |
+| Tipo | Cobertura | Condição |
+|------|----------|---------|
+| Ações (PETR4, VALE3, etc.) | 100% | Todos custodiados na B3 |
+| FIIs (HGLG11, XPLG11, etc.) | 100% | Todos custodiados na B3 |
+| ETFs (BOVA11, IVVB11, etc.) | 100% | Todos custodiados na B3 |
+| BDRs (AAPL34, AMZO34, etc.) | 100% | Todos custodiados na B3 |
+| Tesouro Direto | 100% | Todos custodiados na B3/Selic |
+| Debêntures | ~90% | As registradas na B3. A ferramenta cobre 90% das debêntures. |
+| CRI/CRA | Parcial (principais) | Os negociados no mercado secundário |
+| CDB | Parcial | Depende de o banco + ativo possuírem selo "Certifica" da B3 |
+| LCI/LCA | Parcial | Mesma regra do selo "Certifica" |
 | Fundos abertos | Parcial | Depende de registro na B3 |
+| "Caixinhas"/cofrinhos/rendimento automático | Não | Explicitamente excluídos pela B3 |
 | Criptomoedas | Não | Não custodiadas na B3 |
 | Previdência (PGBL/VGBL) | Não | Custódia na seguradora |
 | Poupança | Não | Custódia no banco |
 | Investimentos no exterior | Não | Fora da jurisdição B3 |
-| COE | Parcial | Registrado na B3 (CETIP), mas cobertura a confirmar |
+| COE | Parcial | Registrado na B3 (CETIP), cobertura a confirmar |
 | Consórcio | Não | Custódia na administradora |
+
+### 3.1 Selo "Certifica" (coberturas parciais)
+
+A cobertura de CDB, LCI, LCA e fundos na Área do Investidor depende de o ativo e a instituição financeira possuírem o selo "Certifica". Trata-se de uma certificação que comprova o registro na B3, possibilitando que o investimento apareça na plataforma.
+
+Se o investidor acessar a Área do Investidor e não encontrar algum investimento de renda fixa, a razão é que o ativo ou a instituição não possui o selo "Certifica".
+
+**Na prática:** bancos grandes (Itaú, Bradesco, BB, Santander, BTG, XP, Inter, Nubank) registram seus títulos na B3. Bancos menores e digitais podem não registrar todos. Para o perfil Hybrid Earner (que investe via corretoras grandes), a cobertura é muito alta.
+
+**Aplicações excluídas:** "Caixinhas", cofrinhos e contas remuneradas (Nubank caixinha, Inter cofrinhos, PicPay rendimento automático) não são disponibilizadas na Área do Investidor.
 
 ### Estratégia para tipos não cobertos
 
