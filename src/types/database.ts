@@ -1570,6 +1570,7 @@ export type Database = {
           payment_status: Database["public"]["Enums"]["payment_status"]
           posted_at: string | null
           recurrence_id: string | null
+          receipt_path: string | null
           source: Database["public"]["Enums"]["entry_source"]
           tags: string[] | null
           transfer_pair_id: string | null
@@ -1604,6 +1605,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"]
           posted_at?: string | null
           recurrence_id?: string | null
+          receipt_path?: string | null
           source?: Database["public"]["Enums"]["entry_source"]
           tags?: string[] | null
           transfer_pair_id?: string | null
@@ -1638,6 +1640,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"]
           posted_at?: string | null
           recurrence_id?: string | null
+          receipt_path?: string | null
           source?: Database["public"]["Enums"]["entry_source"]
           tags?: string[] | null
           transfer_pair_id?: string | null
