@@ -4950,20 +4950,46 @@ Implementada conforme `docs/NAVIGATION-SPEC.md`:
 | `src/components/navigation/bottom-tab-bar.tsx` | `/cards` em matchPrefixes de Movimentações. |
 | `src/types/database.ts` | `credit_limit`, `closing_day`, `due_day` em Row/Insert/Update de accounts. |
 
-### 38.5 Commits
+### 38.5 E23: Onie orb (Canvas 2D + Simplex Noise)
+
+Implementado conforme `docs/ONIE-ORB-SPEC.md`:
+
+| Aspecto | Detalhe |
+|---|---|
+| Arquivo | `src/components/ui/onie-loader.tsx` (320 linhas) |
+| Tecnologia | Canvas 2D + Simplex Noise inline (zero dependências externas) |
+| Estados | 6: idle, listening, processing, speaking, alert, positive |
+| Voais | 5 camadas com 3 níveis de noise (deformação principal, detalhe, turbulência) |
+| Tamanhos | sm (44px/120 canvas), md (88px/240), lg (160px/360) — retina 2x |
+| Blending | `screen` (globalCompositeOperation) — cores se mesclam luminosamente |
+| Transições | Interpolação linear fator 0.03 por frame (~2-3s para transição completa) |
+| Color cycling | Estado `processing`: 10 cores, defasagem de 2 unidades por voal |
+| Paletas | default (Plum Ledger), listening (escurecida), alert (vermelho), positive (verde) |
+| Core | Radial gradient com cor interpolada por estado |
+| Highlight | Reflexo de vidro sutil (branco 10% opacity) no canto superior esquerdo |
+
+**Substituições feitas:**
+- Layout boot (app load) → `<OnieLoader size="lg" state="processing" />`
+- Cards page loading → `<OnieLoader size="md" />`
+- Onboarding "Preparando sua conta" → `<OnieLoader size="lg" state="processing" />`
+- Skeletons (`animate-pulse`) mantidos em páginas de dados (UX superior para content layout hints)
+- `Loader2 animate-spin` em botões mantidos (inline indicators)
+
+### 38.6 Commits
 
 | SHA | Descrição |
 |---|---|
 | `f0cf2be` | feat(E30): nova navegação — 5 tabs mobile + sidebar agrupada desktop + sininho |
 | `881f505` | fix(TEC-13): atualizar database.ts com bank_institutions + campos bancários |
 | `326ee7e` | feat(E17): separação completa de cartões de crédito |
+| `19bf3c3` | feat(E23): Onie orb — Canvas 2D + Simplex Noise loader universal |
 
-### 38.6 Estado do projeto (ground truth sessão 38)
+### 38.7 Estado do projeto (ground truth sessão 38)
 
 | Métrica | Valor |
 |---------|-------|
 | Stories | 105/108 (3 bloqueadas por Mac) |
-| Tabelas | 36 (bank_institutions já existia; 3 colunas novas em accounts) |
+| Tabelas | 36 |
 | Políticas RLS | 108 |
 | Functions | 76 |
 | Triggers | 22 |
@@ -4972,7 +4998,7 @@ Implementada conforme `docs/NAVIGATION-SPEC.md`:
 | Migration files (repo) | 66 |
 | pg_cron jobs | 13 |
 | Suítes Jest | 56 (891 assertions) |
-| Arquivos TS/TSX | 237 |
+| Arquivos TS/TSX | 238 |
 | Hooks | 33 |
 | Schemas Zod | 43 |
 | Páginas autenticadas | 33 (+ /cards, /more) |
