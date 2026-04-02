@@ -3,9 +3,6 @@
  *
  * Provides lookup for bank_institutions reference table.
  * Used in account form for bank selection.
- *
- * Note: bank_institutions added in migration 065, not yet in
- * generated database.ts. Uses explicit type cast.
  */
 
 import { useQuery } from "@tanstack/react-query";
@@ -25,8 +22,7 @@ export function useBankInstitutions() {
   return useQuery({
     queryKey: ["bank_institutions"],
     queryFn: async () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("bank_institutions")
         .select("id, compe_code, ispb_code, name, short_name")
         .eq("is_active", true)

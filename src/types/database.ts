@@ -46,7 +46,11 @@ export type Database = {
       }
       accounts: {
         Row: {
+          account_digit: string | null
+          account_number: string | null
           bank_connection_id: string | null
+          bank_institution_id: string | null
+          branch_number: string | null
           coa_id: string | null
           color: string | null
           created_at: string
@@ -70,7 +74,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_digit?: string | null
+          account_number?: string | null
           bank_connection_id?: string | null
+          bank_institution_id?: string | null
+          branch_number?: string | null
           coa_id?: string | null
           color?: string | null
           created_at?: string
@@ -94,7 +102,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_digit?: string | null
+          account_number?: string | null
           bank_connection_id?: string | null
+          bank_institution_id?: string | null
+          branch_number?: string | null
           coa_id?: string | null
           color?: string | null
           created_at?: string
@@ -123,6 +135,13 @@ export type Database = {
             columns: ["bank_connection_id"]
             isOneToOne: false
             referencedRelation: "bank_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accounts_bank_institution_id_fkey"
+            columns: ["bank_institution_id"]
+            isOneToOne: false
+            referencedRelation: "bank_institutions"
             referencedColumns: ["id"]
           },
           {
@@ -442,6 +461,39 @@ export type Database = {
           sync_status?: Database["public"]["Enums"]["sync_status"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      bank_institutions: {
+        Row: {
+          compe_code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          ispb_code: string | null
+          logo_url: string | null
+          name: string
+          short_name: string
+        }
+        Insert: {
+          compe_code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          ispb_code?: string | null
+          logo_url?: string | null
+          name: string
+          short_name: string
+        }
+        Update: {
+          compe_code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          ispb_code?: string | null
+          logo_url?: string | null
+          name?: string
+          short_name?: string
         }
         Relationships: []
       }
