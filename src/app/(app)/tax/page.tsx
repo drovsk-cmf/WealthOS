@@ -35,6 +35,7 @@ import { useAccounts, ACCOUNT_TYPE_LABELS } from "@/lib/hooks/use-accounts";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import { CLTSimulator } from "@/components/tax/clt-simulator";
+import { IRPFDeductionsCard } from "@/components/tax/irpf-deductions-card";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -533,6 +534,9 @@ export default function FiscalPage() {
           <p className="text-sm text-muted-foreground">Nenhum parâmetro fiscal carregado.</p>
         )}
       </div>
+
+      {/* Deductions consolidation (E29) */}
+      <IRPFDeductionsCard year={selectedYear} />
 
       {/* CLT Simulator (E45) */}
       <CLTSimulator />
