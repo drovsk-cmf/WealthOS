@@ -4975,7 +4975,21 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 - Skeletons (`animate-pulse`) mantidos em páginas de dados (UX superior para content layout hints)
 - `Loader2 animate-spin` em botões mantidos (inline indicators)
 
-### 38.6 Commits
+### 38.6 E50/E45: Motor tributário PF + CLT bruto→líquido
+
+**Arquivos:**
+
+| Arquivo | Linhas | Função |
+|---|---|---|
+| `src/lib/tax/types.ts` | 145 | Tipos: TaxBracket, TaxLimits, IRPF/INSS/CapitalGains Input/Result |
+| `src/lib/tax/calculator.ts` | 340 | Funções puras: calculateINSS, calculateMonthlyIRPF, calculateAnnualIRPF, calculateCapitalGains, calculateFixedIncomeTax, calculateCLTNetSalary |
+| `src/lib/hooks/use-tax-parameters.ts` | 90 | Hook: busca tax_parameters por ano, retorna bundle tipado |
+| `src/components/tax/clt-simulator.tsx` | 170 | CLTSimulator: bruto + dependentes → breakdown (INSS, IRRF, líquido, FGTS) |
+| `src/__tests__/tax-calculator.test.ts` | 300 | 28 testes com parâmetros reais 2025/2026 |
+
+**Lei 15.270/2025:** Isenção total até R$5.000/mês. Redução parcial R$5.001-R$7.350. Sem redução acima.
+
+### 38.7 Commits
 
 | SHA | Descrição |
 |---|---|
@@ -4983,8 +4997,10 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | `881f505` | fix(TEC-13): atualizar database.ts com bank_institutions + campos bancários |
 | `326ee7e` | feat(E17): separação completa de cartões de crédito |
 | `19bf3c3` | feat(E23): Onie orb — Canvas 2D + Simplex Noise loader universal |
+| `d48b0f4` | feat(E50/E45): motor tributário PF — calculadora + 28 testes |
+| `f814487` | feat(E50/E45): hook useTaxParameters + CLTSimulator na página de impostos |
 
-### 38.7 Estado do projeto (ground truth sessão 38)
+### 38.8 Estado do projeto (ground truth sessão 38)
 
 | Métrica | Valor |
 |---------|-------|
@@ -4997,13 +5013,13 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Indexes | 149 |
 | Migration files (repo) | 66 |
 | pg_cron jobs | 13 |
-| Suítes Jest | 56 (891 assertions) |
-| Arquivos TS/TSX | 238 |
-| Hooks | 33 |
+| Suítes Jest | 57 (919 assertions) |
+| Arquivos TS/TSX | 242 |
+| Hooks | 34 |
 | Schemas Zod | 43 |
-| Páginas autenticadas | 33 (+ /cards, /more) |
+| Páginas autenticadas | 33 |
 | Navegação | 5 tabs mobile + sidebar 5 seções desktop |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | 5 |
-| Cobertura (linhas) | 78.27% |
+| Cobertura (linhas) | ~78% |
 | CI | ✅ Verde |
