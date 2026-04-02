@@ -35,7 +35,7 @@ const TABS: Tab[] = [
     href: "/transactions",
     label: "Movimentações",
     icon: ArrowLeftRight,
-    matchPrefixes: ["/cash-flow", "/bills"],
+    matchPrefixes: ["/cash-flow", "/bills", "/cards"],
   },
   {
     href: "/assets",

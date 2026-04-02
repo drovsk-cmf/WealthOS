@@ -13,6 +13,7 @@ import {
   PieChart,
   Target,
   Receipt,
+  Repeat,
   Activity,
   Calculator,
   Upload,
@@ -68,8 +69,9 @@ const SIDEBAR_SECTIONS: NavSection[] = [
     title: "Movimentações",
     items: [
       { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
+      { href: "/cards", label: "Cartões", icon: CreditCard },
       { href: "/cash-flow", label: "Fluxo de caixa", icon: TrendingUp },
-      { href: "/bills", label: "Contas a pagar", icon: CreditCard },
+      { href: "/bills", label: "Contas a pagar", icon: Repeat },
     ],
   },
   {

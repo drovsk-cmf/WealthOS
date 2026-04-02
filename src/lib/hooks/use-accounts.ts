@@ -48,11 +48,13 @@ export const ACCOUNT_TYPE_OPTIONS: { value: AccountType; label: string }[] = [
   { value: "checking", label: "Conta Corrente" },
   { value: "savings", label: "Poupança" },
   { value: "cash", label: "Carteira Digital" },
-  { value: "credit_card", label: "Cartão de Crédito" },
   { value: "investment", label: "Investimento" },
   { value: "loan", label: "Empréstimo" },
   { value: "financing", label: "Financiamento" },
 ];
+
+/** Credit card moved to dedicated /cards page (E17). */
+export const CARD_TYPE_LABEL = "Cartão de Crédito";
 
 export const LIQUIDITY_TIER_OPTIONS = [
   { value: "T1", label: "N1 - Liquidez imediata" },

@@ -3,7 +3,8 @@
 import { toast } from "sonner";
 
 import { useState } from "react";
-import { Wallet, Archive } from "lucide-react";
+import Link from "next/link";
+import { Wallet, Archive, CreditCard } from "lucide-react";
 import {
   useAccounts,
   useDeactivateAccount,
@@ -29,19 +30,16 @@ export default function AccountsPage() {
 
   useAutoReset(confirmDelete, setConfirmDelete);
 
-  // ─── Totals ───────────────────────────────────────────────
-  const totals = accounts?.reduce(
+  // ─── Totals (credit cards excluded — see /cards) ─────────
+  const nonCardAccounts = accounts?.filter((a) => a.type !== "credit_card") ?? [];
+  const totals = nonCardAccounts.reduce(
     (acc, a) => {
-      if (a.type === "credit_card") {
-        acc.debt += a.current_balance;
-      } else {
-        acc.current += a.current_balance;
-        acc.projected += a.projected_balance;
-      }
+      acc.current += a.current_balance;
+      acc.projected += a.projected_balance;
       return acc;
     },
-    { current: 0, projected: 0, debt: 0 }
-  ) ?? { current: 0, projected: 0, debt: 0 };
+    { current: 0, projected: 0 }
+  );
 
   function handleEdit(account: Account) {
     setEditingAccount(account);
@@ -119,12 +117,15 @@ export default function AccountsPage() {
               inclui pendentes
             </p>
           </div>
-          <div className="rounded-lg border bg-card p-4">
-            <p className="text-xs text-muted-foreground">Dívida (cartões)</p>
-            <p className="mt-1 text-xl font-semibold text-terracotta">
-              <Mv>{totals.debt !== 0 ? `-${formatCurrency(Math.abs(totals.debt))}` : formatCurrency(0)}</Mv>
+          <Link href="/cards" className="group rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50">
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground">Cartões de crédito</p>
+            </div>
+            <p className="mt-1 text-sm font-medium text-primary group-hover:underline">
+              Gerenciar cartões →
             </p>
-          </div>
+          </Link>
         </div>
       )}
 
@@ -134,29 +135,34 @@ export default function AccountsPage() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Wallet className="h-7 w-7 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold">Adicione suas contas e cartões</h2>
+          <h2 className="text-lg font-semibold">Adicione suas contas</h2>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
-            Cadastre suas contas bancárias, cartões de crédito e investimentos para ver saldos consolidados em tempo real. A maioria dos usuários começa com conta corrente + cartão.
+            Cadastre suas contas bancárias e investimentos para ver saldos consolidados. Para cartões de crédito, use a página dedicada.
           </p>
-          <button type="button"
-            onClick={handleNew}
-            className="mt-5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            + Adicionar conta
-          </button>
+          <div className="mt-5 flex gap-3">
+            <button type="button"
+              onClick={handleNew}
+              className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              + Adicionar conta
+            </button>
+            <Link href="/cards" className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent">
+              Cadastrar cartão
+            </Link>
+          </div>
         </div>
       )}
 
-      {/* Account list — grouped by type (FIX #7) */}
+      {/* Account list — grouped by type (FIX #7, E17: cards moved to /cards) */}
       {accounts && accounts.length > 0 && (() => {
+        const nonCards = accounts.filter((a) => a.type !== "credit_card");
         const filtered = search
-          ? accounts.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
-          : accounts;
+          ? nonCards.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+          : nonCards;
 
         const groups: { key: string; label: string; types: AccountType[]; accounts: Account[] }[] = [
           { key: "banking", label: "Contas Bancárias", types: ["checking" as AccountType, "savings" as AccountType, "cash" as AccountType], accounts: [] },
           { key: "investments", label: "Investimentos", types: ["investment" as AccountType], accounts: [] },
-          { key: "cards", label: "Cartões de Crédito", types: ["credit_card" as AccountType], accounts: [] },
           { key: "debts", label: "Empréstimos e Financiamentos", types: ["loan" as AccountType, "financing" as AccountType], accounts: [] },
         ];
 
@@ -233,16 +239,12 @@ export default function AccountsPage() {
               <div className="text-right">
                 <p
                   className={`font-semibold ${
-                    account.type === "credit_card"
-                      ? account.current_balance > 0
-                        ? "text-terracotta"
-                        : ""
-                      : account.current_balance >= 0
-                        ? "text-verdant"
-                        : "text-terracotta"
+                    account.current_balance >= 0
+                      ? "text-verdant"
+                      : "text-terracotta"
                   }`}
                 >
-                  <Mv>{account.current_balance > 0 && account.type !== "credit_card" ? "+" : ""}{formatCurrency(account.current_balance)}</Mv>
+                  <Mv>{account.current_balance > 0 ? "+" : ""}{formatCurrency(account.current_balance)}</Mv>
                 </p>
                 {account.current_balance !== account.projected_balance && (
                   <p className="text-xs text-muted-foreground">

@@ -52,10 +52,13 @@ export type Database = {
           bank_institution_id: string | null
           branch_number: string | null
           coa_id: string | null
+          closing_day: number | null
           color: string | null
           created_at: string
+          credit_limit: number | null
           currency: string
           current_balance: number
+          due_day: number | null
           external_account_id: string | null
           id: string
           initial_balance: number
@@ -80,10 +83,13 @@ export type Database = {
           bank_institution_id?: string | null
           branch_number?: string | null
           coa_id?: string | null
+          closing_day?: number | null
           color?: string | null
           created_at?: string
+          credit_limit?: number | null
           currency?: string
           current_balance?: number
+          due_day?: number | null
           external_account_id?: string | null
           id?: string
           initial_balance?: number
@@ -108,10 +114,13 @@ export type Database = {
           bank_institution_id?: string | null
           branch_number?: string | null
           coa_id?: string | null
+          closing_day?: number | null
           color?: string | null
           created_at?: string
+          credit_limit?: number | null
           currency?: string
           current_balance?: number
+          due_day?: number | null
           external_account_id?: string | null
           id?: string
           initial_balance?: number
