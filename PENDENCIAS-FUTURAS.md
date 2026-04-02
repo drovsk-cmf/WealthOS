@@ -1,6 +1,6 @@
 # Oniefy — Pendências e Implementações Futuras
 
-**Última atualização:** 01 de abril de 2026
+**Última atualização:** 02 de abril de 2026
 **Mantido por:** Claude (atualizar ao final de cada sessão com impacto relevante)
 **Relação com o HANDOVER:** Este documento é complementar ao `HANDOVER-WealthOS.md`. O HANDOVER registra o histórico de sessões e o estado técnico atual. Este documento é a fonte única de verdade para **o que fazer a seguir** — backlog de produto, ações pendentes, dívida técnica e evoluções estratégicas.
 
@@ -41,6 +41,10 @@ Itens que só avançam com ação manual do Claudio. Não requerem sessão Claud
 | A12 | ~~Pausar/deletar projeto Supabase legado~~ — Deletado por Claudio em 26/03/2026. | P3 | ✅ | Concluído |
 | A13 | CNPJ placeholder "00.000.000/0001-00" em `terms/page.tsx`: substituir quando PJ constituída | P3 | ⏳ | Aguarda constituição da PJ |
 | A14 | Assets de marca: favicon.ico, apple-touch-icon (180×180), PWA icons (192×192 + 512×512), `oniefy-logomark-full.svg`, `oniefy-logomark-simplified.svg`. Diretório `public/brand/` já existe com lockups. Sem esses assets o app usa ícone genérico. Ref: HANDOVER §29. | P1 | ⬜ | Bloqueador visual do lançamento |
+| A15 | B3 API: criar conta em developers.b3.com.br | P2 | ⬜ | 10 min. Gratuito. Ref: docs/B3-API-INTEGRATION-SPEC.md |
+| A16 | B3 API: gerar Kit de Acesso no sandbox | P2 | ⬜ | 30 min. Depende de A15. |
+| A17 | B3 API: explorar APIs com dados fictícios no sandbox | P2 | ⬜ | 2-4h. Depende de A16. |
+| A18 | B3 API: contatar equipe comercial (preço, requisitos, timeline) | P2 | ⬜ | 1 e-mail. Independente de A15-A17. |
 
 ---
 
@@ -84,6 +88,18 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 | E9 | **Interpretação de solvência em linguagem direta** — cada métrica do Cockpit de Fôlego com estado (Confortável/Saudável/Atenção/Crítico) + frase explicativa contextual. Funções: lcrExplanation, runwayExplanation, patrimonyExplanation, burnRateExplanation. Ref: HANDOVER §32. | Baixo | Médio (adoção das métricas) | ✅ |
 | E17 | **Separação completa de Cartões de Crédito** — criar página/aba dedicada para cartões, separada de Contas bancárias. Sessão 36 aplicou agrupamento visual (fix #7: seções Bancárias/Investimentos/Cartões/Dívidas), mas o formulário e a lógica de navegação ainda tratam cartão como "conta". Requer: formulário próprio (sem campos de agência/conta/dígito, com campos de limite, vencimento, melhor dia de compra), página `/cards` dedicada, e remoção de `credit_card` do select de tipo em `/accounts`. Ref: HANDOVER §36.4 fix #7, §36.7 item 1. | Médio | Alto (usabilidade) | ⬜ |
 | E18 | **Fluxo de carga inicial de saldo de cartão de crédito** — usuários não sabem o saldo devedor total; sabem apenas a parcela mensal. Propor 3 alternativas: (a) importar última fatura (CSV/PDF), (b) informar valor da última fatura paga, (c) cadastrar parcelas abertas individualmente. O sistema calcula o saldo devedor a partir dos dados. Fix #9 da sessão 36 resolveu o problema do sinal negativo, mas não a questão conceitual. Ref: HANDOVER §36.7 item 2. | Médio | Alto (ativação) | ⬜ |
+| E19 | **Motor de importação de faturas e cobranças** — parsers para 6 bancos (BTG, XP, Mercado Pago, Itaú, Porto Bank, Bradescard). Inbound email (`{hash}@faturas.oniefy.com`) com allowlist de remetentes e workflows de erro. Derivação automática de senhas via CPF/CEP. Extensão para concessionárias (água, luz, gás, condomínio). Campo `zip_code` necessário no perfil. Ref: docs/IMPORT-ENGINE-SPEC.md | Alto | Alto (usabilidade) | ⬜ |
+| E20 | **Motor de deduplicação multi-fonte** — 3 filtros (match exato, similaridade, código de autorização). Fingerprint de transação. Hierarquia de fontes. Princípio: cada push é real, ambiguidade resolvida imediatamente. Tabela `dedup_decisions` para auditoria e aprendizado. Ref: docs/DEDUP-ENGINE-SPEC.md | Alto | Crítico (confiança) | ⬜ |
+| E21 | **Registro ultrarrápido de despesas** — 5 formas de captura (notificação push, share extension, widget, mensagem de texto, voz). Sugestões contextuais por horário, localização, histórico e faixa de valor. Forma 4 (texto) disponível desde o dia 1. Ref: docs/QUICK-REGISTER-SPEC.md | Alto | Alto (problema diário) | ⬜ |
+| E22 | **Sininho de pendências (painel de atenção da Onie)** — ícone persistente topo direito. Badge numérico para ações, ponto vermelho para informativos. Overlay/modal, não tab. Consolida: duplicatas, faturas importadas, workflows de erro, parcelas, alertas, aprovações, vencimentos, garantias. Ref: docs/NOTIFICATION-BELL-SPEC.md | Médio | Alto (UX) | ⬜ |
+| E23 | **Onie: assistente do app (orb animado)** — Canvas 2D + Simplex Noise. 6 estados emocionais (neutro, ouvindo, processando, falando, alerta, positivo). 5 voais com paletas específicas. Substitui todos os loaders do app. Ref: docs/ONIE-ORB-SPEC.md | Médio | Alto (identidade) | ⬜ |
+| E24 | **Módulo de investimentos (cadastro manual + cotações)** — 9 tipos de investimento. Crons diários com cascata de fallback (mínimo 2 fontes por tipo). APIs gratuitas: Brapi, Binance, BCB/SGS, CoinGecko, CVM, Tesouro Direto, Yahoo Finance. Marcação a mercado para Tesouro (precisa) e CDB (estimativa). Ref: docs/INVESTMENTS-MODULE-SPEC.md | Alto | Alto (zona 7) | ⬜ |
+| E25 | **Integração B3 API (Área do Investidor)** — fonte primária futura. Posição, transações, eventos corporativos, consolidação cross-corretora. Cobertura: 100% renda variável + Tesouro, ~90% debêntures, parcial CDB/LCI/LCA (selo Certifica). Alimenta motor fiscal. Depende de A15-A18 + security review. Ref: docs/B3-API-INTEGRATION-SPEC.md | Alto | Alto (automação) | 🔒 (A15-A18) |
+| E26 | **Detector automático de recorrências** — quando cobrança aparece ≥3 meses com valor e descrição similares, sugere como recorrente. Alimenta gerenciador de assinaturas, calendário financeiro e alerta de preço anormal. Ref: docs/FEATURES-ROADMAP-SPEC.md #4 | Médio | Alto (inteligência) | ⬜ |
+| E27 | **Alerta de preço anormal em cobranças recorrentes** — compara valor atual com média 6 meses. Âmbar >15%, vermelho >30%. Limiares configuráveis. Ref: docs/FEATURES-ROADMAP-SPEC.md #5 | Baixo | Alto (proteção) | ⬜ |
+| E28 | **Calendário financeiro visual** — visualização de vencimentos no mês com concentração e projeção de saldo. A Onie projeta saldo por dia. Alimentado por recorrências + parcelas + faturas + boletos importados. Ref: docs/FEATURES-ROADMAP-SPEC.md #3 | Médio | Alto (controle) | ⬜ |
+| E29 | **Consolidação saúde + educação (IRPF)** — categorias vinculadas a deduções fiscais. Saúde: dedução ilimitada. Educação: dedução com limite. Exporta total por membro da família na época do IRPF. Ref: docs/FEATURES-ROADMAP-SPEC.md #7 | Médio | Alto (fiscal) | ⬜ |
+| E30 | **Estrutura de navegação (5 tabs + sininho)** — redistribuição das 10 zonas mentais em 5 tabs. Sininho no topo direito libera posição. Impostos, Orçamento e Dívidas disputam espaço. **Discussão pendente.** | Baixo | Crítico (arquitetura) | ⏳ |
 
 ### 4.2 Infra e Qualidade
 
@@ -110,6 +126,10 @@ Itens que agregam valor significativo mas não são bloqueadores do lançamento 
 | E8e | **Polymarket / Prediction Markets como input contextual** — Integrar API do Polymarket (ou equivalente) como sinal de mercado na Camada 3 (IA narrativa). Ex: "mercado precifica 72% de chance de Selic cair, o que favoreceria migrar CDB pré para pós-CDI". Analisado e rejeitado para agora: desalinhamento de domínio, cobertura BR ≈ zero, escopo creep. Reavaliar quando Camada 3 for implementada. | Baixo | Baixo (Camada 3 futura) | ⏳ |
 | E10 | **Open Finance com motor de reconciliação maduro** — Fase 2 planejada (adendo v1.3). Só entregar quando: (1) motor de deduplicação por hash, (2) indicador de status de sincronização por conta, (3) fila de transações "suspeitas" para confirmação do usuário. Entregar Open Finance com dados inconsistentes é pior que não ter. | Alto | Alto (aquisição / paridade) | 📌 |
 | E11 | **UX-H2-02: Push notifications triggers** — inatividade 7 dias implementada dentro de `/api/push/send` (Vercel cron diário 11:00 UTC). Texto: "Oniefy sente sua falta". Log em notification_log tipo "inactivity". APNs nativo depende de Mac. | Médio | Médio (engajamento) | ✅ (inatividade) / 🔒 (APNs) |
+| E31 | **Rastreador de garantias** — alerta 30 dias antes do vencimento. Especialmente garantias estendidas do cartão de crédito. Recibo/NF no vault do patrimônio. Garantia total = fabricante + extensão cartão. Ref: docs/FEATURES-ROADMAP-SPEC.md #8 | Baixo | Médio (diferencial) | ⬜ |
+| E32 | **Comparativo anual + detector de reajustes** — "2025: R$ 184k. 2026 projeta R$ 198k. +7,6%, acima da inflação." Compara cada reajuste de recorrência com inflação oficial. Ref: docs/FEATURES-ROADMAP-SPEC.md #10 | Médio | Médio (orçamento) | ⬜ |
+| E33 | **Provisão de gastos sazonais** — consta no orçamento. Se não houver, alerta 3 meses antes: supermercado em dezembro, matrícula em janeiro. Ref: docs/FEATURES-ROADMAP-SPEC.md #11 | Baixo | Médio (planejamento) | ⬜ |
+| E34 | **Relatório anual consolidado** — duas versões: (a) PDF formal para consultor/contador, (b) estilo Spotify Wrapped ("este fornecedor foi seu sócio... 20% da receita entregue a ele"). Ref: docs/FEATURES-ROADMAP-SPEC.md #14 | Médio | Médio (fidelização) | ⬜ |
 
 ---
 
@@ -124,6 +144,8 @@ Itens com alto potencial, mas justificados apenas com base de usuários estabele
 | E13 | **Capital Humano (DCF da carreira)** — VP da renda até aposentadoria, gap descoberto, cobertura seguro. 6 inputs, gráfico barras + linha patrimônio. 7ª aba em Calculadoras. Ref: Ibbotson et al. 2007. Ref: HANDOVER §32. | Médio | Alto (diferenciação radical) | ✅ |
 | E15 | **Diagnóstico Financeiro Camada A+B** — RPC `get_cfa_diagnostics` com 11 métricas: savings rate, HHI (Markowitz), WACC pessoal, D/E, working capital, breakeven, income CV, DuPont pessoal (3 fatores), category trends (3 meses), warning signs, monthly history. Página `/diagnostics`, nav 9+1, 37 testes Jest, 8 helpers de interpretação. | Médio | Alto (core financeiro) | ✅ |
 | E14 | **Shadow Ledger (off-balance sheet)** — milhas, pontos de fidelidade, garantias judiciais, passivos contingentes. Exibidos em seção separada com nota de estimativa. Completa a foto patrimonial sem comprometer o ledger principal. | Médio | Médio (completude patrimonial) | 📌 |
+| E35 | **Acesso read-only para o contador** — link seguro, temporário, mostra só módulo fiscal. "Compartilhar com meu contador." Charme profissional. Ref: docs/FEATURES-ROADMAP-SPEC.md #12 | Baixo | Baixo (diferenciação) | ⬜ |
+| E36 | **Testamento digital / dead man's switch** — se usuário não acessar por X meses, contato de confiança recebe acesso. Requer consultoria jurídica antes de implementar. Ref: docs/FEATURES-ROADMAP-SPEC.md #13 | Médio | Médio (diferenciação radical) | ⬜ |
 
 ---
 
@@ -173,6 +195,9 @@ Catalogadas nos adendos v1.3 e v1.4. Não implementar antes dos gatilhos listado
 | Insights narrativos mensais (Claude Haiku) | Adendo v1.5 P13 | Provider confirmado + custo validado — endpoint já implementado |
 | **Inteligência Ativa (Frente C)** | docs/FINANCIAL-METHODOLOGY.md §3 Fase 3 | Frentes A+B concluídas (E8b/E8c/E15). Gatilho: 3 meses de dados por usuário. Inclui: insights automáticos no dashboard (IA narrativa), benchmarks pessoais vs médias BR (BCB/IBGE), mapa de riscos pessoal, IPS pessoal (onboarding expandido com perfil de risco). |
 | **Suporte Contextual Silencioso (framework completo)** | Sessão 30 | Tipo 1 (empty states) parcialmente implementado. Tipo 2 (fricção) parcial. Tipo 3 (insights financeiros) requer Frente C (IA narrativa). Tipo 4 (progresso) requer 1+ mês de dados. Framework documentado no HANDOVER §30. |
+| **B3 API (Área do Investidor)** | Sessão 37 | Homologação B3 (A15-A18) + security review. Ref: docs/B3-API-INTEGRATION-SPEC.md |
+| **Inbound email para faturas e cobranças** | Sessão 37 | Requer serviço de inbound email (Resend/AWS SES) + domínio faturas.oniefy.com. Ref: docs/IMPORT-ENGINE-SPEC.md |
+| **Redesign conceitual completo** | Sessão 37 | 10 zonas mentais, Onie, 5 tabs, sininho, motor de importação, deduplicação, registro rápido, investimentos. 8 docs de especificação. Nenhuma alteração de código até fechar discussão. |
 
 ---
 
@@ -286,4 +311,5 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 31/03/2026 | Sessão 35: D11 retry backoff implementado (withRetry + QueryProvider + cron). D02 lotes 1+2 (9 bumps, TS6 revertido). Auditoria cruzada HANDOVER×PENDENCIAS×codebase: 11 discrepâncias corrigidas (Zod 46→43, duplicação 1.37→1.88%, E11 collision→E16, Frente A→C, Capital Humano anotado, sidebar 8+1→9+1, tabs 5→7, A13/TEC-10/TEC-11 adicionados). | Claude |
 | 26/03/2026 | E15 concluído (✅): Diagnóstico Financeiro Camada A+B. RPC `get_cfa_diagnostics` (11 métricas em 1 chamada). Página `/diagnostics` com cards interativos. Nav 9+1. Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest. 51 suítes / 812 assertions. Migration 073. | Claude |
 | 01/04/2026 | Sessão 36: Teste de estresse UX (7.398 registros fictícios, 63 meses). Migration 077: tabela `bank_institutions` (96 instituições BCB) + 4 campos bancários em `accounts`. Usuário de teste criado (`testeusuario01@oniefy.com`). 14 pontuações UX corrigidas: 3 P0 (onboarding trava, duplo negativo cartões, import sem feedback), 5 P1 (etapa nome, liquidez CC, formatação BRL, cartões misturados, sinal negativo cartão), 4 P2 (logo, campos bancários, % ambíguo, mapping confuso), 2 features (Fluxo de Caixa `/cash-flow`, agrupamento de contas). E4 atualizado (🔄). E17 e E18 adicionados (separação cartões, carga inicial cartão). TEC-12 e TEC-13 adicionados (chunking import, regenerar types). Sidebar 10+1. 36 tabelas, 108 RLS, 233 TS/TSX, 33 hooks, 31 páginas. | Claude |
+| 02/04/2026 | Sessão 37: Redesign conceitual completo. Zero alterações de código. 8 documentos de especificação commitados (ONIE-ORB-SPEC, IMPORT-ENGINE-SPEC, B3-API-INTEGRATION-SPEC, INVESTMENTS-MODULE-SPEC, QUICK-REGISTER-SPEC, DEDUP-ENGINE-SPEC, FEATURES-ROADMAP-SPEC, NOTIFICATION-BELL-SPEC). Novos itens: E19-E30 (H1), E31-E34 (H2), E35-E36 (H3), A15-A18 (ações Claudio B3 API). 10 zonas mentais definidas, Onie como assistente, 5 tabs + sininho, motor de importação para 6 bancos, motor de deduplicação multi-fonte, registro ultrarrápido (5 formas), módulo de investimentos com 9 tipos e cascata de fallback, integração B3 API especificada, 14 funcionalidades avaliadas. Discussão pendente: estrutura final das 5 tabs. | Claude |
 
