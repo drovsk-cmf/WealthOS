@@ -48,6 +48,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${dmSans.variable} ${jetbrainsMono.variable} font-sans`}>
+        <a href="#main-content" className="skip-to-content">
+          Pular para o conteúdo
+        </a>
         <QueryProvider>{children}</QueryProvider>
         <Toaster position="bottom-right" richColors closeButton />
       </body>

@@ -12,16 +12,16 @@
     --sage:         145 9% 54%;
     --brass:        29 36% 48%;
 
-    /* ── Semantic (v1.1 calibrado) ── */
-    --verdant:      162 44% 33%;
+    /* ── Semantic (v1.2 WCAG AA small-text compliant) ── */
+    --verdant:      152 55% 31%;
     --terracotta:   3 40% 46%;
-    --burnished:    35 66% 40%;
+    --burnished:    35 66% 34%;
     --slate:        218 24% 45%;
 
     /* ── Tiers ── */
-    --tier-1:       162 44% 33%;
+    --tier-1:       152 55% 31%;
     --tier-2:       218 24% 45%;
-    --tier-3:       35 66% 40%;
+    --tier-3:       35 66% 34%;
     --tier-4:       268 8% 44%;
 
     /* ── Light Mode ── */
@@ -172,15 +172,48 @@
 
   /* Micro-gradient progress bars (Plum Ledger v1.2) */
   .bar-verdant {
-    background: linear-gradient(90deg, hsl(162 44% 28%), hsl(162 44% 38%));
+    background: linear-gradient(90deg, hsl(152 55% 26%), hsl(152 55% 36%));
   }
   .bar-terracotta {
     background: linear-gradient(90deg, hsl(3 40% 40%), hsl(3 40% 50%));
   }
   .bar-burnished {
-    background: linear-gradient(90deg, hsl(35 66% 34%), hsl(35 66% 44%));
+    background: linear-gradient(90deg, hsl(35 66% 28%), hsl(35 66% 40%));
   }
   .bar-primary {
     background: linear-gradient(90deg, hsl(273 38% 26%), hsl(273 38% 34%));
   }
+}
+
+/* ── WCAG: prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── WCAG: Skip to content link ── */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  padding: 0.75rem 1.5rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0;
+  text-decoration: none;
+}
+
+.skip-to-content:focus {
+  left: 0;
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
 }
