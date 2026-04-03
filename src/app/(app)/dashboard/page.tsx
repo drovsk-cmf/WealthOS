@@ -35,7 +35,7 @@ import {
   SetupJourneyCard,
   ImportCTA,
   MfaReminderBanner,
-  JarvisScanCard,
+  ScannerCard,
   NetWorthChart,
 } from "@/components/dashboard";
 
@@ -131,8 +131,8 @@ export default function DashboardPage() {
 
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 
-      {/* JARVIS: "Limpeza de Disco" Financeira (P5: ativo+) */}
-      {showMidTier && <JarvisScanCard />}
+      {/* Scanner: "Limpeza de Disco" Financeira (P5: ativo+) */}
+      {showMidTier && <ScannerCard />}
 
       {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento (P5: ativo+) */}
       {showMidTier && (

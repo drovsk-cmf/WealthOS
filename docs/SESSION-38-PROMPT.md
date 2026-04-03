@@ -123,7 +123,7 @@ A sessão 37 foi inteiramente conceitual: 12 documentos de especificação, zero
 - **Execução autônoma:** se o item está identificado e não tem dependência externa, implementar sem perguntar.
 - **DB changes:** sempre via `execute_sql`, nunca `apply_migration`. Salvar SQL como migration file no repo.
 - **Commits:** lógicos, descritivos, CI green antes de declarar sessão fechada.
-- **Zero marcas de terceiros** em texto user-facing (CFA Institute, Bloomberg, Apple, etc.).
+- **Zero marcas de terceiros** em texto user-facing (marcas de terceiros, Bloomberg, Apple, etc.).
 - **Ao finalizar:** atualizar PENDENCIAS-FUTURAS.md (marcar ✅, adicionar novos se surgiram), atualizar HANDOVER seção da sessão.
 
 ## Estimativa total

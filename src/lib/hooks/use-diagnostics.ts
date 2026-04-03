@@ -1,7 +1,7 @@
 /**
  * Oniefy - Financial Diagnostics Hook
  *
- * React Query hook for get_cfa_diagnostics RPC.
+ * React Query hook for get_financial_diagnostics RPC.
  * Returns 11 financial metrics: 6 Camada A (diagnósticos) + 5 Camada B (análises temporais).
  *
  * Conceitos: Savings Rate, HHI (Markowitz), WACC, D/E, Working Capital,
@@ -19,7 +19,7 @@ import type { z } from "zod";
 
 // ─── Types ─────────────────────────────────────────────────
 
-export type CfaDiagnostics = z.infer<typeof cfaDiagnosticsSchema>;
+export type FinancialDiagnostics = z.infer<typeof cfaDiagnosticsSchema>;
 
 export type TrendDirection = "up" | "down" | "stable";
 
@@ -45,7 +45,7 @@ export interface WarningSignsData {
 
 // ─── Empty state ───────────────────────────────────────────
 
-const EMPTY_DIAGNOSTICS: CfaDiagnostics = {
+const EMPTY_DIAGNOSTICS: FinancialDiagnostics = {
   savings_rate: { value: 0, monthly_surplus: 0, avg_income: 0, avg_expense: 0, months_analyzed: 0 },
   patrimony_hhi: { value: 0, concentration: "diversified", top_item: "", top_pct: 0, total_patrimony: 0 },
   wacc_personal: { value: 0, debt_count: 0, total_debt: 0 },
@@ -65,22 +65,22 @@ const EMPTY_DIAGNOSTICS: CfaDiagnostics = {
  * Fetches financial diagnostics (11 financial metrics).
  * staleTime: 10 min (data changes slowly, RPC is moderately expensive).
  */
-export function useCfaDiagnostics() {
+export function useFinancialDiagnostics() {
   return useQuery({
-    queryKey: ["cfa", "diagnostics"],
+    queryKey: ["financial", "diagnostics"],
     staleTime: 10 * 60 * 1000,
-    queryFn: async (): Promise<CfaDiagnostics> => {
+    queryFn: async (): Promise<FinancialDiagnostics> => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase.rpc as any)(
-        "get_cfa_diagnostics",
+        "get_financial_diagnostics",
         { p_user_id: userId },
       );
       if (error) throw error;
       const parsed = cfaDiagnosticsSchema.safeParse(data);
       if (!parsed.success) {
-        logSchemaError("get_cfa_diagnostics", parsed);
+        logSchemaError("get_financial_diagnostics", parsed);
         return EMPTY_DIAGNOSTICS;
       }
       return parsed.data;
@@ -135,7 +135,7 @@ export function volatilityExplanation(cv: number): string {
 }
 
 /** DuPont explanation */
-export function dupontExplanation(d: CfaDiagnostics["dupont_personal"]): string {
+export function dupontExplanation(d: FinancialDiagnostics["dupont_personal"]): string {
   const parts: string[] = [];
   if (d.savings_margin > 0) parts.push(`Margem de poupança: ${(d.savings_margin * 100).toFixed(1)}%`);
   else parts.push("Margem de poupança negativa");

@@ -2,13 +2,13 @@
 export {};
 
 /**
- * Tests: Motor JARVIS - useJarvisScan hook + helper functions
+ * Tests: Motor Financeiro - useScannerScan hook + helper functions
  *
  * Covers:
- * - useJarvisScan: RPC call, schema validation, error handling, empty state
- * - sortFindings: severity ordering (critical > warning > info)
+ * - useScannerScan: RPC call, schema validation, error handling, empty state
+ * - sortScanFindings: severity ordering (critical > warning > info)
  * - getRuleLabel: all 11 rules + unknown fallback
- * - Schema validation: jarvisScanSchema with realistic payloads per rule
+ * - Schema validation: scannerSchema with realistic payloads per rule
  *
  * Ref: FINANCIAL-METHODOLOGY.md §6, HANDOVER §30.10
  */
@@ -16,13 +16,13 @@ export {};
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
-  useJarvisScan,
-  sortFindings,
+  useScannerScan,
+  sortScanFindings,
   getRuleLabel,
-  type JarvisFinding,
-  type JarvisScanResult,
-} from "@/lib/hooks/use-jarvis";
-import { jarvisScanSchema, jarvisFindingSchema } from "@/lib/schemas/rpc";
+  type ScanFinding,
+  type ScanResult,
+} from "@/lib/hooks/use-scanner";
+import { scannerSchema, scanFindingSchema } from "@/lib/schemas/rpc";
 
 // ─── Mocks ─────────────────────────────────────────────────────
 
@@ -40,7 +40,7 @@ jest.mock("@/lib/supabase/cached-auth", () => ({
 
 // ─── Test fixtures ─────────────────────────────────────────────
 
-const FINDING_R01: JarvisFinding = {
+const FINDING_R01: ScanFinding = {
   rule_id: "R01",
   severity: "warning",
   title: '"Rico Invest" rende 0.29% a.m. (CDI: 1.20%)',
@@ -59,7 +59,7 @@ const FINDING_R01: JarvisFinding = {
   },
 };
 
-const FINDING_R04: JarvisFinding = {
+const FINDING_R04: ScanFinding = {
   rule_id: "R04",
   severity: "info",
   title: '"Civic 2022": TCO R$ 1966.67/mes',
@@ -79,7 +79,7 @@ const FINDING_R04: JarvisFinding = {
   },
 };
 
-const FINDING_R02: JarvisFinding = {
+const FINDING_R02: ScanFinding = {
   rule_id: "R02",
   severity: "critical",
   title: '"Emprestimo Pessoal" a 3.50% a.m.',
@@ -97,7 +97,7 @@ const FINDING_R02: JarvisFinding = {
   },
 };
 
-const FINDING_R03: JarvisFinding = {
+const FINDING_R03: ScanFinding = {
   rule_id: "R03",
   severity: "warning",
   title: '3 assinaturas em "Streaming"',
@@ -111,7 +111,7 @@ const FINDING_R03: JarvisFinding = {
   ],
 };
 
-const FINDING_R05: JarvisFinding = {
+const FINDING_R05: ScanFinding = {
   rule_id: "R05",
   severity: "critical",
   title: '"Nubank Cartao": juros de R$ 630.00/mes',
@@ -129,7 +129,7 @@ const FINDING_R05: JarvisFinding = {
   },
 };
 
-const FINDING_R06: JarvisFinding = {
+const FINDING_R06: ScanFinding = {
   rule_id: "R06",
   severity: "warning",
   title: '"Delivery" em escalada',
@@ -145,7 +145,7 @@ const FINDING_R06: JarvisFinding = {
   },
 };
 
-const FINDING_R07: JarvisFinding = {
+const FINDING_R07: ScanFinding = {
   rule_id: "R07",
   severity: "warning",
   title: "Runway de 3.2 meses",
@@ -160,7 +160,7 @@ const FINDING_R07: JarvisFinding = {
   },
 };
 
-const FINDING_R08: JarvisFinding = {
+const FINDING_R08: ScanFinding = {
   rule_id: "R08",
   severity: "info",
   title: '"Civic 2022" perde R$ 400.00/mes',
@@ -177,7 +177,7 @@ const FINDING_R08: JarvisFinding = {
   },
 };
 
-const FINDING_R09: JarvisFinding = {
+const FINDING_R09: ScanFinding = {
   rule_id: "R09",
   severity: "warning",
   title: '95.0% da renda em "Salario CLT"',
@@ -186,7 +186,7 @@ const FINDING_R09: JarvisFinding = {
   potential_savings_monthly: 0,
 };
 
-const FINDING_R10: JarvisFinding = {
+const FINDING_R10: ScanFinding = {
   rule_id: "R10",
   severity: "warning",
   title: "3 meses com fluxo negativo",
@@ -198,7 +198,7 @@ const FINDING_R10: JarvisFinding = {
   ],
 };
 
-const FULL_SCAN_RESULT: JarvisScanResult = {
+const FULL_SCAN_RESULT: ScanResult = {
   scan_date: "2026-03-24T22:00:00.000000+00:00",
   findings_count: 10,
   findings: [
@@ -279,16 +279,16 @@ function wrap(client: QueryClient) {
 // Tests
 // ═══════════════════════════════════════════════════════════════
 
-describe("sortFindings", () => {
+describe("sortScanFindings", () => {
   it("sorts critical → warning → info", () => {
-    const unsorted: JarvisFinding[] = [
+    const unsorted: ScanFinding[] = [
       FINDING_R06, // warning
       FINDING_R08, // info
       FINDING_R02, // critical
       FINDING_R07, // warning
       FINDING_R05, // critical
     ];
-    const sorted = sortFindings(unsorted);
+    const sorted = sortScanFindings(unsorted);
 
     expect(sorted[0].severity).toBe("critical");
     expect(sorted[1].severity).toBe("critical");
@@ -298,18 +298,18 @@ describe("sortFindings", () => {
   });
 
   it("handles empty array", () => {
-    expect(sortFindings([])).toEqual([]);
+    expect(sortScanFindings([])).toEqual([]);
   });
 
   it("handles single item", () => {
-    const result = sortFindings([FINDING_R03]);
+    const result = sortScanFindings([FINDING_R03]);
     expect(result).toHaveLength(1);
     expect(result[0].rule_id).toBe("R03");
   });
 
   it("does not mutate original array", () => {
     const original = [FINDING_R08, FINDING_R02];
-    const sorted = sortFindings(original);
+    const sorted = sortScanFindings(original);
     expect(original[0].rule_id).toBe("R08"); // unchanged
     expect(sorted[0].rule_id).toBe("R02"); // critical first
   });
@@ -343,75 +343,75 @@ describe("getRuleLabel", () => {
   });
 });
 
-describe("jarvisFindingSchema", () => {
+describe("scanFindingSchema", () => {
   it("validates R01 finding (investment yield)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R01);
+    const result = scanFindingSchema.safeParse(FINDING_R01);
     expect(result.success).toBe(true);
   });
 
   it("validates R02 finding (debt with rate)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R02);
+    const result = scanFindingSchema.safeParse(FINDING_R02);
     expect(result.success).toBe(true);
   });
 
   it("validates R03 finding (subscriptions with array items)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R03);
+    const result = scanFindingSchema.safeParse(FINDING_R03);
     expect(result.success).toBe(true);
   });
 
   it("validates R04 finding (vehicle TCO)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R04);
+    const result = scanFindingSchema.safeParse(FINDING_R04);
     expect(result.success).toBe(true);
   });
 
   it("validates R05 finding (credit card spiral)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R05);
+    const result = scanFindingSchema.safeParse(FINDING_R05);
     expect(result.success).toBe(true);
   });
 
   it("validates R09 finding (no affected_items)", () => {
-    const result = jarvisFindingSchema.safeParse(FINDING_R09);
+    const result = scanFindingSchema.safeParse(FINDING_R09);
     expect(result.success).toBe(true);
   });
 
   it("validates finding with null affected_items", () => {
     const finding = { ...FINDING_R09, affected_items: null };
-    const result = jarvisFindingSchema.safeParse(finding);
+    const result = scanFindingSchema.safeParse(finding);
     expect(result.success).toBe(true);
   });
 
   it("rejects invalid severity", () => {
     const bad = { ...FINDING_R02, severity: "urgent" };
-    const result = jarvisFindingSchema.safeParse(bad);
+    const result = scanFindingSchema.safeParse(bad);
     expect(result.success).toBe(false);
   });
 
   it("rejects missing rule_id", () => {
     const { rule_id: _, ...bad } = FINDING_R02;
-    const result = jarvisFindingSchema.safeParse(bad);
+    const result = scanFindingSchema.safeParse(bad);
     expect(result.success).toBe(false);
   });
 });
 
-describe("jarvisScanSchema", () => {
+describe("scannerSchema", () => {
   it("validates full scan result with 10 findings", () => {
-    const result = jarvisScanSchema.safeParse(FULL_SCAN_RESULT);
+    const result = scannerSchema.safeParse(FULL_SCAN_RESULT);
     expect(result.success).toBe(true);
   });
 
   it("validates empty scan result", () => {
-    const result = jarvisScanSchema.safeParse(EMPTY_SCAN_RESULT);
+    const result = scannerSchema.safeParse(EMPTY_SCAN_RESULT);
     expect(result.success).toBe(true);
   });
 
   it("validates scan with null solvency", () => {
     const scan = { ...EMPTY_SCAN_RESULT, solvency: null };
-    const result = jarvisScanSchema.safeParse(scan);
+    const result = scannerSchema.safeParse(scan);
     expect(result.success).toBe(true);
   });
 
   it("validates summary projections are consistent", () => {
-    const result = jarvisScanSchema.safeParse(FULL_SCAN_RESULT);
+    const result = scannerSchema.safeParse(FULL_SCAN_RESULT);
     expect(result.success).toBe(true);
     if (result.success) {
       const s = result.data.summary;
@@ -422,7 +422,7 @@ describe("jarvisScanSchema", () => {
   });
 
   it("validates severity counts sum to findings count", () => {
-    const result = jarvisScanSchema.safeParse(FULL_SCAN_RESULT);
+    const result = scannerSchema.safeParse(FULL_SCAN_RESULT);
     expect(result.success).toBe(true);
     if (result.success) {
       const s = result.data.summary;
@@ -433,14 +433,14 @@ describe("jarvisScanSchema", () => {
   });
 });
 
-describe("useJarvisScan", () => {
+describe("useScannerScan", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("returns full scan data on success", async () => {
     mockRpc.mockResolvedValue({ data: FULL_SCAN_RESULT, error: null });
 
     const client = qc();
-    const { result } = renderHook(() => useJarvisScan(), {
+    const { result } = renderHook(() => useScannerScan(), {
       wrapper: wrap(client),
     });
 
@@ -456,10 +456,10 @@ describe("useJarvisScan", () => {
     mockRpc.mockResolvedValue({ data: EMPTY_SCAN_RESULT, error: null });
 
     const client = qc();
-    renderHook(() => useJarvisScan(), { wrapper: wrap(client) });
+    renderHook(() => useScannerScan(), { wrapper: wrap(client) });
 
     await waitFor(() => expect(mockRpc).toHaveBeenCalled());
-    expect(mockRpc).toHaveBeenCalledWith("get_jarvis_scan", {
+    expect(mockRpc).toHaveBeenCalledWith("get_financial_scan", {
       p_user_id: "user-123",
     });
   });
@@ -471,7 +471,7 @@ describe("useJarvisScan", () => {
     });
 
     const client = qc();
-    const { result } = renderHook(() => useJarvisScan(), {
+    const { result } = renderHook(() => useScannerScan(), {
       wrapper: wrap(client),
     });
 
@@ -486,7 +486,7 @@ describe("useJarvisScan", () => {
     });
 
     const client = qc();
-    const { result } = renderHook(() => useJarvisScan(), {
+    const { result } = renderHook(() => useScannerScan(), {
       wrapper: wrap(client),
     });
 
@@ -499,7 +499,7 @@ describe("useJarvisScan", () => {
     mockRpc.mockResolvedValue({ data: EMPTY_SCAN_RESULT, error: null });
 
     const client = qc();
-    const { result } = renderHook(() => useJarvisScan(), {
+    const { result } = renderHook(() => useScannerScan(), {
       wrapper: wrap(client),
     });
 

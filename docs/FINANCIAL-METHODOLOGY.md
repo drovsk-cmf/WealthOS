@@ -125,7 +125,7 @@ Implementação: RPC `get_cfa_diagnostics` + página `/diagnostics` (sessão 33,
 | Income Volatility (CV) | QM (CV) | ✅ `income_volatility` |
 | Monthly History | Múltiplos | ✅ `monthly_history` |
 
-Motor JARVIS (10 regras R01-R10): ✅ `get_jarvis_scan` (sessão 31).
+Motor Financeiro (10 regras R01-R10): ✅ `get_financial_scan` (sessão 31).
 
 ### Fase 2 - Calculadoras (input do usuário + cálculos financeiros) ✅ CONCLUÍDA
 
@@ -227,7 +227,7 @@ D/E = Dívidas totais / Patrimônio líquido
 
 ---
 
-## 6. Motor de Inteligência: "JARVIS"
+## 6. Motor de Inteligência Financeira
 
 ### 6.1 Os 3 Pilares
 

@@ -94,9 +94,9 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | handle_new_user, handle_updated_at, recalculate_account_balance, recalculate_account_balance_for, activate_account_on_use, rls_auto_enable, validate_journal_balance, sync_payment_status |
 | Transaction Engine | create_transaction_with_journal, create_transfer_with_journal, reverse_transaction, edit_transaction, edit_transfer |
 | Dashboard | get_dashboard_summary, get_dashboard_all, get_balance_sheet, get_solvency_metrics, get_top_categories, get_balance_evolution, get_budget_vs_actual (2 overloads), get_weekly_digest |
-| JARVIS | get_jarvis_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
-| Diagnostics | get_cfa_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
-| JARVIS v2 | get_jarvis_v2 (máquina de estados: 6 camadas, 6 estados, 4 inputs classificação, resolução de conflitos, ações priorizadas por estado) |
+| Motor Financeiro | get_financial_scan (10 regras: R01-R10 + R03b, Camada 2 combinador) |
+| Diagnostics | get_financial_diagnostics (11 métricas: savings rate, HHI, WACC, D/E, working capital, breakeven, income CV, DuPont, trends, warnings, history) |
+| Motor Financeiro v2 | get_financial_engine_v2 (máquina de estados: 6 camadas, 6 estados, 4 inputs classificação, resolução de conflitos, ações priorizadas por estado) |
 | Recurrence/Asset | generate_next_recurrence, depreciate_asset, get_assets_summary, distribute_overhead |
 | Centers | allocate_to_centers, get_center_pnl, get_center_export |
 | Workflows | auto_create_workflow_for_account, generate_tasks_for_period, complete_workflow_task |
@@ -131,7 +131,7 @@ src/
 │   ├── budgets-hooks.test.tsx
 │   ├── budgets-mutations-extended.test.tsx
 │   ├── categories-mutations.test.tsx
-│   ├── cfa-diagnostics.test.ts           # 37: schema, helpers (savings rate, HHI, WACC, D/E, CV, DuPont, warnings)
+│   ├── diagnostics.test.ts           # 37: schema, helpers (savings rate, HHI, WACC, D/E, CV, DuPont, warnings)
 │   ├── cfg-settings.test.ts          # settings groups, data export config, toCsv
 │   ├── cost-centers-hooks.test.tsx
 │   ├── coverage-push-session34.test.tsx # 8: reconciliation, currencies, chart-of-accounts, ai-categorize
@@ -141,8 +141,8 @@ src/
 │   ├── fiscal-timing-safe.test.ts
 │   ├── form-primitives.test.tsx       # 13: FormError, FormInput, FormSelect, parseMonetaryAmount
 │   ├── hooks-batch-coverage.test.tsx
-│   ├── jarvis-scan.test.tsx           # 44: sortFindings, getRuleLabel, schema, hook, rule data contracts
-│   ├── jarvis-v2.test.ts              # 30: jarvisV2Schema, getStateInfo, classificationLabel/Color/Value, ruleLabel
+│   ├── scanner.test.tsx           # 44: sortScanFindings, getRuleLabel, schema, hook, rule data contracts
+│   ├── engine-v2.test.ts              # 30: engineV2Schema, getStateInfo, classificationLabel/Color/Value, ruleLabel
 │   ├── lgpd-account-deletion.test.ts
 │   ├── onboarding-seeds.test.ts
 │   ├── oniefy-template.test.ts
@@ -229,7 +229,7 @@ src/
 │   │   # upcoming-bills-card, budget-summary-card, solvency-panel,
 │   │   # balance-evolution-chart, quick-entry-fab, narrative-card,
 │   │   # attention-queue, setup-journey-card, import-cta, mfa-reminder-banner,
-│   │   # cutoff-date-modal, jarvis-scan-card (Motor JARVIS),
+│   │   # cutoff-date-modal, scanner-card (Motor Financeiro),
 │   │   # net-worth-chart (E2: patrimônio líquido ao longo do tempo)
 │   ├── onboarding/ (4 step components + index.ts: route-choice, route-manual, route-snapshot, celebration)
 │   ├── recurrences/recurrence-form.tsx
@@ -243,14 +243,14 @@ src/
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
 │   ├── hooks/ (33 hooks: accounts, ai-categorize, analytics,
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
-│   │          budgets, categories, cfa-diagnostics, chart-of-accounts, cost-centers,
+│   │          budgets, categories, diagnostics, chart-of-accounts, cost-centers,
 │   │          currencies, currency-label, dashboard, dialog-helpers, documents,
-│   │          economic-indices, family-members, fiscal, jarvis, jarvis-v2,
+│   │          economic-indices, family-members, fiscal, scanner, engine-v2,
 │   │          online-status, progressive-disclosure, push-notifications,
 │   │          reconciliation, recurrences, savings-goals, setup-journey,
 │   │          transactions, workflows)
 │   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 46 schemas Zod (todos os RPCs cobertos + JARVIS v1/v2 + Diagnostics)
+│   ├── schemas/rpc.ts            # 46 schemas Zod (todos os RPCs cobertos + Motor v1/v2 + Diagnostics)
 │   ├── services/
 │   │   ├── fiscal-export.ts      # E8: IRPF XLSX export (ExcelJS, 6 abas)
 │   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
@@ -3859,7 +3859,7 @@ Esses checks teriam pego os bugs das sessões 30.7 (turnstile "use client") e 30
 
 **Commit:** `f23b297` | CI + Post-Deploy Check: success
 
-### 30.10 Especificação completa do Motor JARVIS
+### 30.10 Especificação completa do Motor Financeiro
 
 Sessão encerrada com especificação técnica detalhada do motor de inteligência do Oniefy. Documentos atualizados:
 
@@ -3907,7 +3907,7 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 **Princípio arquitetural: algoritmo primeiro, IA depois.** Garante reprodutibilidade, auditabilidade, custo controlado.
 
 **Documentos de referência:**
-- `docs/FINANCIAL-METHODOLOGY.md` §5 (princípios) e §6 (motor JARVIS) — fonte de verdade
+- `docs/FINANCIAL-METHODOLOGY.md` §5 (princípios) e §6 (motor financeiro) — fonte de verdade
 - `PENDENCIAS-FUTURAS.md` E8b-E8d (backlog de implementação)
 
 **Próximo passo:** Implementar as 6 regras que funcionam com zero schema change (R03, R06, R07, R08, R09, R10) + Frente B (migration para interest_rate/rate_type/investment_class) + 4 regras restantes.
@@ -3929,19 +3929,19 @@ Sessão encerrada com especificação técnica detalhada do motor de inteligênc
 | `b2b79c3` | Benchmark com iDinheiro |
 | `3c6f080` | Descartar 50/30/20 |
 | `ed56a59` | Princípios análise financeira revisados |
-| `0a2958d` | Motor JARVIS especificação |
+| `0a2958d` | Motor Financeiro especificação |
 
 ---
 
-## 31. Sessão 31 — Motor JARVIS: Implementação (24/03/2026)
+## 31. Sessão 31 — Motor Financeiro: Implementação (24/03/2026)
 
-### 31.1 Motor JARVIS implementado (Frentes A + B + parcial C)
+### 31.1 Motor Financeiro implementado (Frentes A + B + parcial C)
 
-Implementação completa do Motor JARVIS conforme especificação da sessão 30 (§30.10) e `docs/FINANCIAL-METHODOLOGY.md` §6.
+Implementação completa do Motor Financeiro conforme especificação da sessão 30 (§30.10) e `docs/FINANCIAL-METHODOLOGY.md` §6.
 
 **Frente A (zero schema change): 6 regras iniciais**
 
-RPC `get_jarvis_scan(p_user_id UUID)` criada com as regras:
+RPC `get_financial_scan(p_user_id UUID)` criada com as regras:
 
 | Regra | Descrição | Pilar |
 |-------|-----------|-------|
@@ -3986,24 +3986,24 @@ Adicionados na mesma sessão, completando o scanner:
 | R01 | Ativo com retorno líquido < CDI (compara yield mensal vs CDI dinâmico; degradação graceful sem income data) | Taxa |
 | R04 | Veículo TCO (depreciação + despesas operacionais via asset_id; peso na renda como %) | Fluxo+Tempo |
 
-**Total final: 10 regras + R03b = 11 findings possíveis. Motor JARVIS Camada 1 completo.**
+**Total final: 10 regras + R03b = 11 findings possíveis. Motor Financeiro Camada 1 completo.**
 
-### 31.3 Frontend JARVIS
+### 31.3 Frontend Motor Financeiro
 
-- `src/lib/schemas/rpc.ts` - 2 schemas Zod: `jarvisFindingSchema`, `jarvisScanSchema`
-- `src/lib/hooks/use-jarvis.ts` - Hook `useJarvisScan` (staleTime 10min) + helpers `sortFindings`, `getRuleLabel`
-- `src/components/dashboard/jarvis-scan-card.tsx` - Card "Limpeza de Disco" com severity colors (verdant/burnished/terracotta), expansion toggle, projeção 3/6/12m
+- `src/lib/schemas/rpc.ts` - 2 schemas Zod: `scanFindingSchema`, `scannerSchema`
+- `src/lib/hooks/use-scanner.ts` - Hook `useScannerScan` (staleTime 10min) + helpers `sortScanFindings`, `getRuleLabel`
+- `src/components/dashboard/scanner-card.tsx` - Card "Limpeza de Disco" com severity colors (verdant/burnished/terracotta), expansion toggle, projeção 3/6/12m
 - `src/components/accounts/account-form.tsx` - Campos condicionais da Frente B (investment_class, interest_rate, rate_type)
-- Dashboard page: JarvisScanCard visível para maturity level "ativo+" (11+ transações)
+- Dashboard page: ScannerCard visível para maturity level "ativo+" (11+ transações)
 
 ### 31.4 Testes
 
-Suite `jarvis-scan.test.tsx` com 44 assertions:
-- `sortFindings`: ordering, empty, single, immutability
+Suite `scanner.test.tsx` com 44 assertions:
+- `sortScanFindings`: ordering, empty, single, immutability
 - `getRuleLabel`: todos os 11 labels + fallback
-- `jarvisFindingSchema`: validação por regra (R02, R03, R05, R09), null items, rejeição severity inválida, rejeição campo ausente
-- `jarvisScanSchema`: full scan, empty scan, null solvency, consistência de projeções, soma de severity counts
-- `useJarvisScan`: success, RPC args, error, schema failure, empty findings
+- `scanFindingSchema`: validação por regra (R02, R03, R05, R09), null items, rejeição severity inválida, rejeição campo ausente
+- `scannerSchema`: full scan, empty scan, null solvency, consistência de projeções, soma de severity counts
+- `useScannerScan`: success, RPC args, error, schema failure, empty findings
 - Rule data contracts: R02 rate comparison, R03 subscription array, R05 compound projection, R06 growth trajectory, R08 net_loss math, R09 concentration %, R10 negative flow
 
 ### 31.5 Types regenerados
@@ -4040,12 +4040,12 @@ Navegação atualizada: 7+1 items (Calculadoras adicionado na sidebar).
 
 | Hash | Descrição |
 |------|-----------|
-| `6eb60a6` | Motor JARVIS: scanner 6 regras + Frente B schema + UX card |
-| `1690761` | JARVIS: adiciona R02 (dívida cara) e R05 (espiral cartão) |
-| `cc1f1bb` | JARVIS: 40 testes + types regenerados + fix bank-connections |
+| `6eb60a6` | Motor Financeiro: scanner 6 regras + Frente B schema + UX card |
+| `1690761` | Motor Financeiro: adiciona R02 (dívida cara) e R05 (espiral cartão) |
+| `cc1f1bb` | Motor Financeiro: 40 testes + types regenerados + fix bank-connections |
 | `7137a3c` | CI: re-trigger (runner provisioning failure) |
 | `3251b20` | HANDOVER §31 + PENDENCIAS atualizados |
-| `80e4603` | JARVIS completo: R01 + R04 + 44 testes + HANDOVER §31 final |
+| `80e4603` | Motor Financeiro completo: R01 + R04 + 44 testes + HANDOVER §31 final |
 | `464efc5` | E8d: Calculadoras financeiras (4 ferramentas TVM, front-end only) |
 | `183563b` | HANDOVER + PENDENCIAS: E8d ✅, bloco E8 fechado |
 | `e92b8f3` | HANDOVER §3: corrige todas as discrepâncias numéricas |
@@ -4354,7 +4354,7 @@ docs/
   AUDIT-CODE-DUMP.md           # Snapshot de código para auditoria (histórico, 852KB)
   AUDIT-PROMPT-GEMINI.md       # Prompt usado na auditoria Gemini
   AUDITORIA-TECNICA-*.md       # Auditoria contra projeto legado
-  FINANCIAL-METHODOLOGY.md        # Metodologia Financeira + Motor JARVIS
+  FINANCIAL-METHODOLOGY.md        # Metodologia Financeira + Motor Financeiro
   DEPLOY-VERCEL.md             # Guia de deploy
   LGPD-MAPEAMENTO.md           # Conformidade LGPD (TEC-07)
   MATRIZ-VALIDACAO.md          # Matriz de validação de stories
@@ -4429,11 +4429,11 @@ Nomes renomeados para evitar conflito com integração Vercel-Supabase:
 
 ---
 
-## 33. Sessão 33 — Motor JARVIS v2 + Diagnóstico Financeiro + Limpeza de Marcas (29/03/2026)
+## 33. Sessão 33 — Motor Financeiro v2 + Diagnóstico Financeiro + Limpeza de Marcas (29/03/2026)
 
 ### 33.1 Diagnóstico Financeiro (Camada A + B)
 
-RPC `get_cfa_diagnostics` com 11 métricas em uma chamada:
+RPC `get_financial_diagnostics` com 11 métricas em uma chamada:
 
 **Camada A (diagnóstico):** savings rate, HHI patrimonial (Markowitz), WACC pessoal, D/E, working capital, breakeven.
 
@@ -4441,9 +4441,9 @@ RPC `get_cfa_diagnostics` com 11 métricas em uma chamada:
 
 Página `/diagnostics` com cards interativos expandíveis. Nav 9+1 (Activity icon). Hook `useCfaDiagnostics`. 13 sub-schemas Zod. 8 helpers de interpretação textual. 37 testes Jest.
 
-### 33.2 Motor JARVIS v2 (máquina de estados + grafo de dependências)
+### 33.2 Motor Financeiro v2 (máquina de estados + grafo de dependências)
 
-Crítica de Claudio: motor v1 (get_jarvis_scan) era flat, regras independentes sem contexto de estado, sem resolução de conflitos. O redesign implementa 6 camadas:
+Crítica de Claudio: motor v1 (get_financial_scan) era flat, regras independentes sem contexto de estado, sem resolução de conflitos. O redesign implementa 6 camadas:
 
 | Camada | Função |
 |--------|--------|
@@ -4472,13 +4472,13 @@ Crítica de Claudio: motor v1 (get_jarvis_scan) era flat, regras independentes s
 5. Resolução de conflitos: se WACC > CDI+15pp → dívida antes de reserva (dívida usurária destrói mais rápido).
 6. D/E > 0.6 bloqueia sugestão de novos investimentos.
 
-RPC `get_jarvis_v2` aplicada via MCP. Hook `useJarvisV2`. Schema Zod `jarvisV2Schema`. 30 testes Jest.
+RPC `get_financial_engine_v2` aplicada via MCP. Hook `useEngineV2`. Schema Zod `engineV2Schema`. 30 testes Jest.
 
 ### 33.3 Limpeza de marcas registradas de terceiros
 
 Varredura completa do repo (21 arquivos, 92 substituições):
 
-- Arquivo renomeado: `docs/CFA-ONIEFY-MAPPING.md` → `docs/FINANCIAL-METHODOLOGY.md`
+- Arquivo renomeado: `docs/[antigo-mapeamento-metodologico].md` → `docs/FINANCIAL-METHODOLOGY.md`
 - Todas as strings user-facing limpas (UI, README, docs públicos)
 - COMMENT de functions no Supabase atualizado
 - Referências cruzadas atualizadas em todos os arquivos
@@ -4492,7 +4492,7 @@ Varredura completa do repo (21 arquivos, 92 substituições):
 | `e8a9979` | feat: Diagnóstico Financeiro Camada A+B (11 métricas, /diagnostics, 37 testes) |
 | `d6b85f2` | docs: atualizar HANDOVER, PENDENCIAS e FINANCIAL-METHODOLOGY |
 | `db51d3f` | feat: is_collateralized em accounts (migration 074, checkbox) |
-| `cf5e446` | feat: Motor JARVIS v2 (máquina de estados, 30 testes) |
+| `cf5e446` | feat: Motor Financeiro v2 (máquina de estados, 30 testes) |
 | `5660c7e` | fix: remover marcas registradas (UI + README) |
 | `2795a04` | fix: limpeza completa marcas registradas (repo inteiro, rename) |
 
@@ -4517,7 +4517,7 @@ Varredura completa do repo (21 arquivos, 92 substituições):
 | Páginas autenticadas | 23 |
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
-| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| Motor Financeiro | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com (success) |
 
@@ -4617,7 +4617,7 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 | Páginas autenticadas | 23 |
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
-| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| Motor Financeiro | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | ESLint warnings | 0 (era 8) |
 | eslint-disable (produção) | 5 (era 9) |
 | Cobertura (linhas) | 77.89% |
@@ -4750,7 +4750,7 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | Páginas autenticadas | 30 |
 | Sidebar | 9+1 |
 | Calculadoras | 7 tabs |
-| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| Motor Financeiro | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | 5 |
 | Cobertura (linhas) | 78.27% |
@@ -4881,7 +4881,7 @@ Itens identificados mas não corrigidos nesta sessão (movidos para PENDENCIAS-F
 | Páginas autenticadas | 31 |
 | Sidebar | 10+1 |
 | Calculadoras | 7 tabs |
-| Motor JARVIS | v2 (6 camadas, 6 estados, resolução de conflitos) |
+| Motor Financeiro | v2 (6 camadas, 6 estados, resolução de conflitos) |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | 6 |
 | Cobertura (linhas) | 78.27% |

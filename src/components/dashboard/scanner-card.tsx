@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * JarvisScanCard - Motor JARVIS (UX: "Limpeza de Disco" Financeira)
+ * ScannerCard - Motor Financeiro (UX: "Limpeza de Disco" Financeira)
  *
  * Card compacto no dashboard: "Otimizações disponíveis (N) — Economia potencial: R$ X/mês"
  * Expandido: lista de findings com severity, números concretos, projeção.
@@ -23,17 +23,17 @@ import {
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import {
-  useJarvisScan,
-  sortFindings,
+  useScannerScan,
+  sortScanFindings,
   getRuleLabel,
-  type JarvisFinding,
-  type JarvisSeverity,
-} from "@/lib/hooks/use-jarvis";
+  type ScanFinding,
+  type ScanSeverity,
+} from "@/lib/hooks/use-scanner";
 
 // ─── Severity Styles ───────────────────────────────────────
 
 const severityConfig: Record<
-  JarvisSeverity,
+  ScanSeverity,
   { icon: typeof AlertTriangle; colorClass: string; bgClass: string; label: string }
 > = {
   critical: {
@@ -58,7 +58,7 @@ const severityConfig: Record<
 
 // ─── Finding Row ───────────────────────────────────────────
 
-function FindingRow({ finding }: { finding: JarvisFinding }) {
+function FindingRow({ finding }: { finding: ScanFinding }) {
   const [open, setOpen] = useState(false);
   const cfg = severityConfig[finding.severity];
   const Icon = cfg.icon;
@@ -125,8 +125,8 @@ function ProjectionBar({ monthly }: { monthly: number }) {
 
 // ─── Main Card ─────────────────────────────────────────────
 
-export function JarvisScanCard() {
-  const { data, isLoading, error } = useJarvisScan();
+export function ScannerCard() {
+  const { data, isLoading, error } = useScannerScan();
   const [expanded, setExpanded] = useState(false);
 
   // Don't render if loading or no findings
@@ -141,9 +141,9 @@ export function JarvisScanCard() {
 
   if (error || !data || data.findings_count === 0) return null;
 
-  const sorted = sortFindings(data.findings);
+  const sorted = sortScanFindings(data.findings);
   const hasSavings = data.summary.total_potential_savings_monthly > 0;
-  const maxSeverity: JarvisSeverity =
+  const maxSeverity: ScanSeverity =
     data.summary.critical_count > 0
       ? "critical"
       : data.summary.warning_count > 0

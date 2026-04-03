@@ -17,7 +17,7 @@ O mercado de apps de finanças pessoais se divide em duas filosofias claras:
 
 Dado relevante: 70% dos usuários abandonam apps financeiros em 3 meses. O problema não é o app, é o hábito. O app que resolve a barreira de entrada (registro fácil) e entrega valor rápido (insight, não dados) vence.
 
-No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com monetização via anúncios e freemium. Não existe concorrente direto para o posicionamento do Oniefy (CFA pessoal para Hybrid Earners).
+No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com monetização via anúncios e freemium. Não existe concorrente direto para o posicionamento do Oniefy (analista financeiro pessoal para Hybrid Earners).
 
 ---
 
@@ -86,7 +86,7 @@ No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com mon
 
 **Legado relevante:** O GuiaBolso provou que conexão automática com bancos é a funcionalidade mais desejada pelo usuário brasileiro. Também provou que marketplace de crédito dentro de app financeiro gera conflito de interesse (recomendar empréstimo a quem está endividado).
 
-**O que o Oniefy aprende:** Não monetizar via afiliados de crédito. A independência de recomendação é o diferencial do "CFA pessoal".
+**O que o Oniefy aprende:** Não monetizar via afiliados de crédito. A independência de recomendação é o diferencial do "analista financeiro pessoal".
 
 ---
 
@@ -266,7 +266,7 @@ No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com mon
 - Sem gerenciador de assinaturas
 - Sem fiscal/impostos
 
-**O que o Oniefy aprende:** YNAB prova que uma metodologia forte fideliza. O "CFA pessoal" do Oniefy é a nossa metodologia. Mas a curva de aprendizado do YNAB é o principal motivo de abandono. O Oniefy precisa ser intuitivo desde o primeiro minuto ("Suporte Contextual Silencioso").
+**O que o Oniefy aprende:** YNAB prova que uma metodologia forte fideliza. O "analista financeiro pessoal" do Oniefy é a nossa metodologia. Mas a curva de aprendizado do YNAB é o principal motivo de abandono. O Oniefy precisa ser intuitivo desde o primeiro minuto ("Suporte Contextual Silencioso").
 
 ---
 
@@ -499,7 +499,7 @@ No Brasil, o cenário é dominado por apps de massa (Mobills, Organizze) com mon
 | Empower | US | Mass affluent | Gratuito + advisory | Net worth + advisory | Investimentos gratuitos | Vendas agressivas, sem orçamento |
 | Rocket Money | US | Massa | US$6-14/mês | Assinaturas | Detecção + cancelamento | Orçamento fraco |
 | Origin | US | HENRYs | Assinatura | Wealth planning | Big picture, advisor | Novo, categorização fraca |
-| **Oniefy** | **BR** | **Hybrid Earners** | **Assinatura** | **CFA pessoal** | **24/30 features, solvência, fiscal, patrimônio, assistente** | **Sem Open Finance (ainda), sem compartilhamento familiar (ainda)** |
+| **Oniefy** | **BR** | **Hybrid Earners** | **Assinatura** | **analista financeiro pessoal** | **24/30 features, solvência, fiscal, patrimônio, assistente** | **Sem Open Finance (ainda), sem compartilhamento familiar (ainda)** |
 
 ---
 
@@ -509,7 +509,7 @@ O Oniefy é o único app no mercado (BR ou global) que combina:
 
 | Lacuna | Quem mais tem? | Status Oniefy |
 |--------|---------------|--------------|
-| Solvência pessoal (LCR, runway, D/E, WACC pessoal) | Ninguém | Implementado (E15, JARVIS) |
+| Solvência pessoal (LCR, runway, D/E, WACC pessoal) | Ninguém | Implementado (E15, Motor Financeiro) |
 | Patrimônio físico com custo de manutenção por bem | Ninguém | Especificado (Zona 6) |
 | Motor fiscal brasileiro completo (IRPF, deduções saúde/educação, ganho de capital) | Kinvo e Investidor10 (parcial, só investimentos) | Implementado parcialmente |
 | Importação de faturas de 6+ bancos brasileiros (PDF/XLSX/CSV) com parsing inteligente | Ninguém | Especificado (IMPORT-ENGINE-SPEC) |
@@ -543,7 +543,7 @@ O Oniefy é o único app no mercado (BR ou global) que combina:
 
 | De quem | O que | Por quê | Onde no Oniefy |
 |---------|-------|---------|---------------|
-| YNAB | Metodologia forte que muda comportamento | Fideliza mais que features | "CFA pessoal" como filosofia |
+| YNAB | Metodologia forte que muda comportamento | Fideliza mais que features | "analista financeiro pessoal" como filosofia |
 | Monarch | Projeção financeira + compartilhamento familiar | Features mais desejadas pelo público affluent | E28 (calendário) + E16 (família) |
 | Copilot | Design excepcional | O padrão visual do mercado | Onie orb + Plum Ledger design system |
 | Rocket Money | Detecção + alerta de assinaturas | Economia passiva sem esforço | E3 (assinaturas) + E26 (recorrências) + E27 (alertas) |
@@ -569,7 +569,7 @@ O Oniefy é o único app no mercado (BR ou global) que combina:
 |-------------|--------------------|--------------------|
 | Patrimônio físico com custo de manutenção | Complexidade de modelagem | Motor ERP já existe como infraestrutura |
 | Fiscal BR completo (IRPF) | Complexidade tributária brasileira | Motor fiscal já implementado |
-| Solvência pessoal (métricas financeiras de empresa aplicadas a PF) | Conceito novo, requer formação financeira | Metodologia CFA pessoal documentada |
+| Solvência pessoal (métricas financeiras de empresa aplicadas a PF) | Conceito novo, requer formação financeira | Metodologia analista financeiro pessoal documentada |
 | Importação inteligente de faturas BR | Cada banco tem formato diferente | Análise de 6 bancos reais já feita |
 | Assistente com personalidade (não chatbot genérico) | Requer investimento em design e identidade | Onie especificada com 6 estados emocionais |
 

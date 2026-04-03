@@ -63,7 +63,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setColor(account.color || PRESET_COLORS[0]);
       setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
       setCurrency(account.currency || "BRL");
-      // Frente B fields (JARVIS)
+      // Frente B fields (Motor Financeiro)
       setInvestmentClass((account as Record<string, unknown>).investment_class as string ?? "");
       setInterestRate(String((account as Record<string, unknown>).interest_rate ?? ""));
       setRateType((account as Record<string, unknown>).rate_type as string ?? "");
@@ -118,7 +118,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           color,
           liquidity_tier: liquidityTier,
           currency,
-          // Frente B (JARVIS)
+          // Frente B (Motor Financeiro)
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
           interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate.replace(",", ".")) : null,
           rate_type: ["loan", "financing"].includes(type) && rateType ? rateType : null,
@@ -138,7 +138,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           liquidity_tier: liquidityTier,
           currency,
           ...(type === "financing" && { coaParentCode: financingSubtype }),
-          // Frente B (JARVIS)
+          // Frente B (Motor Financeiro)
           ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
           ...(["loan", "financing", "credit_card"].includes(type) && interestRate && { interest_rate: parseFloat(interestRate.replace(",", ".")) }),
           ...(["loan", "financing"].includes(type) && rateType && { rate_type: rateType }),
@@ -332,7 +332,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </div>
           )}
 
-          {/* ═══ Frente B: Campos JARVIS ═══ */}
+          {/* ═══ Frente B: Campos Motor Financeiro ═══ */}
 
           {/* Investment class (only for type=investment) */}
           {type === "investment" && (
@@ -355,7 +355,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                 <option value="outro">Outro</option>
               </select>
               <p className="text-xs text-muted-foreground">
-                Usada na análise JARVIS para comparar retorno vs TMA.
+                Usada na análise do Motor Financeiro para comparar retorno vs TMA.
               </p>
             </div>
           )}
@@ -405,7 +405,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
                 <option value="pos_tr">Pós-fixada (TR)</option>
               </select>
               <p className="text-xs text-muted-foreground">
-                Determina como o JARVIS calcula o custo real da dívida.
+                Determina como o Motor Financeiro calcula o custo real da dívida.
               </p>
             </div>
           )}

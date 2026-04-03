@@ -1,8 +1,8 @@
 /**
- * Oniefy - JARVIS Hook
+ * Oniefy - Scanner Financeiro Hook
  *
- * React Query hook for Motor JARVIS (Camada 1 Scanner + Camada 2 Combinador).
- * Calls get_jarvis_scan RPC which runs 6 deterministic rules (R03,R06,R07,R08,R09,R10)
+ * React Query hook for Motor Financeiro (Camada 1 Scanner + Camada 2 Combinador).
+ * Calls get_financial_scan RPC which runs 6 deterministic rules (R03,R06,R07,R08,R09,R10)
  * and returns findings with severity, savings projections, and solvency context.
  *
  * Ref: FINANCIAL-METHODOLOGY.md §6, PENDENCIAS-FUTURAS E8b
@@ -11,22 +11,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
-import { jarvisScanSchema, logSchemaError } from "@/lib/schemas/rpc";
+import { scannerSchema, logSchemaError } from "@/lib/schemas/rpc";
 
 // ─── Types ─────────────────────────────────────────────────
 
-export type JarvisSeverity = "info" | "warning" | "critical";
+export type ScanSeverity = "info" | "warning" | "critical";
 
-export interface JarvisFinding {
+export interface ScanFinding {
   rule_id: string;
-  severity: JarvisSeverity;
+  severity: ScanSeverity;
   title: string;
   description: string;
   potential_savings_monthly: number;
   affected_items?: unknown;
 }
 
-export interface JarvisScanSummary {
+export interface ScanSummary {
   total_potential_savings_monthly: number;
   projected_3m: number;
   projected_6m: number;
@@ -36,11 +36,11 @@ export interface JarvisScanSummary {
   info_count: number;
 }
 
-export interface JarvisScanResult {
+export interface ScanResult {
   scan_date: string;
   findings_count: number;
-  findings: JarvisFinding[];
-  summary: JarvisScanSummary;
+  findings: ScanFinding[];
+  summary: ScanSummary;
   solvency: {
     tier1_total: number;
     tier2_total: number;
@@ -56,7 +56,7 @@ export interface JarvisScanResult {
 
 // ─── Empty state ───────────────────────────────────────────
 
-const EMPTY_SCAN: JarvisScanResult = {
+const EMPTY_SCAN: ScanResult = {
   scan_date: "",
   findings_count: 0,
   findings: [],
@@ -75,28 +75,28 @@ const EMPTY_SCAN: JarvisScanResult = {
 // ─── Hook ──────────────────────────────────────────────────
 
 /**
- * Fetches JARVIS scan results.
+ * Fetches financial scan results.
  * staleTime: 10 min (scan is expensive and data changes slowly).
  */
-export function useJarvisScan() {
+export function useScannerScan() {
   return useQuery({
-    queryKey: ["jarvis", "scan"],
+    queryKey: ["scanner", "scan"],
     staleTime: 10 * 60 * 1000,
-    queryFn: async (): Promise<JarvisScanResult> => {
+    queryFn: async (): Promise<ScanResult> => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase.rpc as any)(
-        "get_jarvis_scan",
+        "get_financial_scan",
         { p_user_id: userId },
       );
       if (error) throw error;
-      const parsed = jarvisScanSchema.safeParse(data);
+      const parsed = scannerSchema.safeParse(data);
       if (!parsed.success) {
-        logSchemaError("get_jarvis_scan", parsed);
+        logSchemaError("get_financial_scan", parsed);
         return EMPTY_SCAN;
       }
-      return parsed.data as unknown as JarvisScanResult;
+      return parsed.data as unknown as ScanResult;
     },
   });
 }
@@ -104,8 +104,8 @@ export function useJarvisScan() {
 // ─── Helpers ───────────────────────────────────────────────
 
 /** Sort findings: critical first, then warning, then info */
-export function sortFindings(findings: JarvisFinding[]): JarvisFinding[] {
-  const order: Record<JarvisSeverity, number> = { critical: 0, warning: 1, info: 2 };
+export function sortScanFindings(findings: ScanFinding[]): ScanFinding[] {
+  const order: Record<ScanSeverity, number> = { critical: 0, warning: 1, info: 2 };
   return [...findings].sort((a, b) => order[a.severity] - order[b.severity]);
 }
 

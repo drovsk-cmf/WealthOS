@@ -380,9 +380,9 @@ export const dashboardAllSchema = z.object({
   attention: attentionQueueSchema,
 });
 
-// ─── JARVIS Scan (Motor JARVIS Camada 1+2) ─────────────
+// ─── Financial Scan (Motor Financeiro Camada 1+2) ─────────────
 
-export const jarvisFindingSchema = z.object({
+export const scanFindingSchema = z.object({
   rule_id: z.string(),
   severity: z.enum(["info", "warning", "critical"]),
   title: z.string(),
@@ -391,10 +391,10 @@ export const jarvisFindingSchema = z.object({
   affected_items: z.any().nullable().optional(),
 });
 
-export const jarvisScanSchema = z.object({
+export const scannerSchema = z.object({
   scan_date: z.string(),
   findings_count: z.number(),
-  findings: z.array(jarvisFindingSchema),
+  findings: z.array(scanFindingSchema),
   summary: z.object({
     total_potential_savings_monthly: z.number(),
     projected_3m: z.number(),
@@ -509,13 +509,13 @@ export const cfaDiagnosticsSchema = z.object({
   monthly_history: z.array(monthlyHistoryItemSchema),
 });
 
-// ─── JARVIS v2 (State Machine + Dependency Graph) ────────
+// ─── Financial Engine v2 (State Machine + Dependency Graph) ────────
 
-const jarvisV2StateSchema = z.enum([
+const engineV2StateSchema = z.enum([
   "SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO",
 ]);
 
-const jarvisV2ClassificationSchema = z.object({
+const engineV2ClassificationSchema = z.object({
   reserve_ratio: z.number(),
   debt_stress: z.number(),
   savings_rate: z.number(),
@@ -525,7 +525,7 @@ const jarvisV2ClassificationSchema = z.object({
   reserve_target: z.number(),
 });
 
-const jarvisV2MetricsSchema = z.object({
+const engineV2MetricsSchema = z.object({
   avg_income: z.number(),
   avg_expense: z.number(),
   surplus: z.number(),
@@ -544,7 +544,7 @@ const jarvisV2MetricsSchema = z.object({
   months_analyzed: z.number(),
 });
 
-const jarvisV2ActionSchema = z.object({
+const engineV2ActionSchema = z.object({
   priority: z.number(),
   rule: z.string(),
   action: z.string(),
@@ -552,11 +552,11 @@ const jarvisV2ActionSchema = z.object({
   rationale: z.string(),
 });
 
-export const jarvisV2Schema = z.object({
-  state: jarvisV2StateSchema,
-  classification_inputs: jarvisV2ClassificationSchema,
-  metrics: jarvisV2MetricsSchema,
-  actions: z.array(jarvisV2ActionSchema),
+export const engineV2Schema = z.object({
+  state: engineV2StateSchema,
+  classification_inputs: engineV2ClassificationSchema,
+  metrics: engineV2MetricsSchema,
+  actions: z.array(engineV2ActionSchema),
   actions_count: z.number(),
 });
 

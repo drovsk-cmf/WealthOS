@@ -1,7 +1,7 @@
 /**
- * Oniefy - JARVIS v2 Hook (Motor com Máquina de Estados)
+ * Oniefy - Motor Financeiro v2 Hook (Máquina de Estados)
  *
- * Substitui get_jarvis_scan (flat) por get_jarvis_v2 (grafo de dependências).
+ * Substitui get_financial_scan (flat) por get_financial_engine_v2 (grafo de dependências).
  * 6 camadas: dados → métricas → indicadores → estado → prioridades → conflitos → ações.
  *
  * Estados: SEM_DADOS | CRISE | SOBREVIVENCIA | ESTABILIZACAO | OTIMIZACAO | CRESCIMENTO
@@ -13,20 +13,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
-import { jarvisV2Schema, logSchemaError } from "@/lib/schemas/rpc";
+import { engineV2Schema, logSchemaError } from "@/lib/schemas/rpc";
 import type { z } from "zod";
 
 // ─── Types ─────────────────────────────────────────────────
 
-export type JarvisV2Result = z.infer<typeof jarvisV2Schema>;
-export type JarvisState = JarvisV2Result["state"];
-export type JarvisAction = JarvisV2Result["actions"][number];
-export type JarvisClassification = JarvisV2Result["classification_inputs"];
-export type JarvisMetrics = JarvisV2Result["metrics"];
+export type EngineV2Result = z.infer<typeof engineV2Schema>;
+export type EngineState = EngineV2Result["state"];
+export type EngineAction = EngineV2Result["actions"][number];
+export type EngineClassification = EngineV2Result["classification_inputs"];
+export type EngineMetrics = EngineV2Result["metrics"];
 
 // ─── Empty state ───────────────────────────────────────────
 
-const EMPTY_RESULT: JarvisV2Result = {
+const EMPTY_RESULT: EngineV2Result = {
   state: "SEM_DADOS",
   classification_inputs: {
     reserve_ratio: 0, debt_stress: 0, savings_rate: 0,
@@ -46,25 +46,25 @@ const EMPTY_RESULT: JarvisV2Result = {
 // ─── Hook ──────────────────────────────────────────────────
 
 /**
- * Fetches JARVIS v2 motor result (state machine + dependency graph).
+ * Fetches financial engine v2 result (state machine + dependency graph).
  * staleTime: 10 min (data changes slowly, RPC is moderately expensive).
  */
-export function useJarvisV2() {
+export function useEngineV2() {
   return useQuery({
-    queryKey: ["jarvis", "v2"],
+    queryKey: ["scanner", "engine-v2"],
     staleTime: 10 * 60 * 1000,
-    queryFn: async (): Promise<JarvisV2Result> => {
+    queryFn: async (): Promise<EngineV2Result> => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase.rpc as any)(
-        "get_jarvis_v2",
+        "get_financial_engine_v2",
         { p_user_id: userId },
       );
       if (error) throw error;
-      const parsed = jarvisV2Schema.safeParse(data);
+      const parsed = engineV2Schema.safeParse(data);
       if (!parsed.success) {
-        logSchemaError("get_jarvis_v2", parsed);
+        logSchemaError("get_financial_engine_v2", parsed);
         return EMPTY_RESULT;
       }
       return parsed.data;
@@ -83,7 +83,7 @@ interface StateInfo {
   icon: "alert-triangle" | "shield-alert" | "shield" | "trending-up" | "rocket" | "help-circle";
 }
 
-const STATE_MAP: Record<JarvisState, StateInfo> = {
+const STATE_MAP: Record<EngineState, StateInfo> = {
   SEM_DADOS: {
     label: "Sem dados",
     description: "Registre transações e contas para ativar o diagnóstico.",
@@ -134,12 +134,12 @@ const STATE_MAP: Record<JarvisState, StateInfo> = {
   },
 };
 
-export function getStateInfo(state: JarvisState): StateInfo {
+export function getStateInfo(state: EngineState): StateInfo {
   return STATE_MAP[state];
 }
 
 /** Human-readable label for classification inputs */
-export function classificationLabel(key: keyof JarvisClassification): string {
+export function classificationLabel(key: keyof EngineClassification): string {
   const labels: Record<string, string> = {
     reserve_ratio: "Reserve Ratio (RR)",
     debt_stress: "Debt Stress (DS)",
@@ -153,7 +153,7 @@ export function classificationLabel(key: keyof JarvisClassification): string {
 }
 
 /** Format classification value for display */
-export function formatClassificationValue(key: keyof JarvisClassification, value: number): string {
+export function formatClassificationValue(key: keyof EngineClassification, value: number): string {
   switch (key) {
     case "reserve_ratio":
     case "debt_stress":
@@ -174,7 +174,7 @@ export function formatClassificationValue(key: keyof JarvisClassification, value
 }
 
 /** Color for classification input based on health */
-export function classificationColor(key: keyof JarvisClassification, value: number): string {
+export function classificationColor(key: keyof EngineClassification, value: number): string {
   switch (key) {
     case "reserve_ratio":
       if (value >= 1.5) return "text-verdant-600 dark:text-verdant-400";

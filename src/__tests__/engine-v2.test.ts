@@ -1,26 +1,26 @@
 /**
- * Tests for JARVIS v2 (State Machine + Dependency Graph)
+ * Tests for Financial Engine v2 (State Machine + Dependency Graph)
  *
  * Covers:
- * - Zod schema validation (jarvisV2Schema)
+ * - Zod schema validation (engineV2Schema)
  * - State helper functions (getStateInfo, classificationLabel, etc.)
  * - Edge cases (SEM_DADOS, extremes, conflict states)
  */
 
 import { z } from "zod";
-import { jarvisV2Schema } from "@/lib/schemas/rpc";
+import { engineV2Schema } from "@/lib/schemas/rpc";
 import {
   getStateInfo,
   classificationLabel,
   formatClassificationValue,
   classificationColor,
   ruleLabel,
-} from "@/lib/hooks/use-jarvis-v2";
-import type { JarvisState, JarvisClassification } from "@/lib/hooks/use-jarvis-v2";
+} from "@/lib/hooks/use-engine-v2";
+import type { EngineState, EngineClassification } from "@/lib/hooks/use-engine-v2";
 
 // ─── Valid test data ───────────────────────────────────────
 
-const validSemDados: z.infer<typeof jarvisV2Schema> = {
+const validSemDados: z.infer<typeof engineV2Schema> = {
   state: "SEM_DADOS",
   classification_inputs: {
     reserve_ratio: 0, debt_stress: 0, savings_rate: 0,
@@ -37,7 +37,7 @@ const validSemDados: z.infer<typeof jarvisV2Schema> = {
   actions_count: 0,
 };
 
-const validOtimizacao: z.infer<typeof jarvisV2Schema> = {
+const validOtimizacao: z.infer<typeof engineV2Schema> = {
   state: "OTIMIZACAO",
   classification_inputs: {
     reserve_ratio: 1.32, debt_stress: 0.1, savings_rate: 18.5,
@@ -59,40 +59,40 @@ const validOtimizacao: z.infer<typeof jarvisV2Schema> = {
 
 // ─── Schema Validation ─────────────────────────────────────
 
-describe("jarvisV2Schema", () => {
+describe("engineV2Schema", () => {
   it("accepts SEM_DADOS state", () => {
-    expect(jarvisV2Schema.safeParse(validSemDados).success).toBe(true);
+    expect(engineV2Schema.safeParse(validSemDados).success).toBe(true);
   });
 
   it("accepts OTIMIZACAO with actions", () => {
-    expect(jarvisV2Schema.safeParse(validOtimizacao).success).toBe(true);
+    expect(engineV2Schema.safeParse(validOtimizacao).success).toBe(true);
   });
 
   it("accepts all 6 states", () => {
-    const states: JarvisState[] = ["SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO"];
+    const states: EngineState[] = ["SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO"];
     for (const s of states) {
       const data = { ...validSemDados, state: s };
-      expect(jarvisV2Schema.safeParse(data).success).toBe(true);
+      expect(engineV2Schema.safeParse(data).success).toBe(true);
     }
   });
 
   it("rejects invalid state", () => {
     const data = { ...validSemDados, state: "INVALID" };
-    expect(jarvisV2Schema.safeParse(data).success).toBe(false);
+    expect(engineV2Schema.safeParse(data).success).toBe(false);
   });
 
   it("rejects missing classification_inputs", () => {
     const { classification_inputs: _, ...incomplete } = validSemDados;
-    expect(jarvisV2Schema.safeParse(incomplete).success).toBe(false);
+    expect(engineV2Schema.safeParse(incomplete).success).toBe(false);
   });
 
   it("rejects missing metrics", () => {
     const { metrics: _, ...incomplete } = validSemDados;
-    expect(jarvisV2Schema.safeParse(incomplete).success).toBe(false);
+    expect(engineV2Schema.safeParse(incomplete).success).toBe(false);
   });
 
   it("accepts empty actions array", () => {
-    expect(jarvisV2Schema.safeParse(validSemDados).success).toBe(true);
+    expect(engineV2Schema.safeParse(validSemDados).success).toBe(true);
     expect(validSemDados.actions).toHaveLength(0);
   });
 
@@ -105,12 +105,12 @@ describe("jarvisV2Schema", () => {
       ],
       actions_count: 3,
     };
-    expect(jarvisV2Schema.safeParse(data).success).toBe(true);
+    expect(engineV2Schema.safeParse(data).success).toBe(true);
   });
 
   it("validates action shape", () => {
     const badAction = { ...validOtimizacao, actions: [{ priority: 1 }] };
-    expect(jarvisV2Schema.safeParse(badAction).success).toBe(false);
+    expect(engineV2Schema.safeParse(badAction).success).toBe(false);
   });
 
   it("accepts negative values (surplus, net_worth)", () => {
@@ -119,7 +119,7 @@ describe("jarvisV2Schema", () => {
       state: "CRISE" as const,
       metrics: { ...validOtimizacao.metrics, surplus: -3000, net_worth: -50000 },
     };
-    expect(jarvisV2Schema.safeParse(data).success).toBe(true);
+    expect(engineV2Schema.safeParse(data).success).toBe(true);
   });
 });
 
@@ -127,7 +127,7 @@ describe("jarvisV2Schema", () => {
 
 describe("getStateInfo", () => {
   it("returns info for all 6 states", () => {
-    const states: JarvisState[] = ["SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO"];
+    const states: EngineState[] = ["SEM_DADOS", "CRISE", "SOBREVIVENCIA", "ESTABILIZACAO", "OTIMIZACAO", "CRESCIMENTO"];
     for (const s of states) {
       const info = getStateInfo(s);
       expect(info.label).toBeTruthy();
@@ -154,7 +154,7 @@ describe("getStateInfo", () => {
 
 describe("classificationLabel", () => {
   it("maps all known keys", () => {
-    const keys: (keyof JarvisClassification)[] = [
+    const keys: (keyof EngineClassification)[] = [
       "reserve_ratio", "debt_stress", "savings_rate",
       "fi_progress", "income_cv", "base_months", "reserve_target",
     ];

@@ -20,7 +20,7 @@
 | **Metas** | Objetivos de economia com progresso, sugestão de quanto poupar/mês. |
 | **Dashboard** | Solvência em linguagem direta ("Você sobrevive 14 meses sem renda"), patrimônio líquido temporal, gráfico evolutivo. |
 | **Calculadoras** | 7 ferramentas de análise financeira: simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, capital humano (DCF da carreira). |
-| **Motor JARVIS** | 10 regras automáticas de inteligência financeira (alertas de solvência, distribuição de custos, reconciliação). |
+| **Motor Financeiro** | 10 regras automáticas de inteligência financeira (alertas de solvência, distribuição de custos, reconciliação). |
 
 ## Stack
 

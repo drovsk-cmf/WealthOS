@@ -27,7 +27,7 @@ import {
   Info,
 } from "lucide-react";
 import {
-  useCfaDiagnostics,
+  useFinancialDiagnostics,
   savingsRateExplanation,
   hhiExplanation,
   waccExplanation,
@@ -35,8 +35,8 @@ import {
   volatilityExplanation,
   dupontExplanation,
   warningLabel,
-} from "@/lib/hooks/use-cfa-diagnostics";
-import type { CfaDiagnostics, CategoryTrendItem } from "@/lib/hooks/use-cfa-diagnostics";
+} from "@/lib/hooks/use-diagnostics";
+import type { FinancialDiagnostics, CategoryTrendItem } from "@/lib/hooks/use-diagnostics";
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 
@@ -97,7 +97,7 @@ function MetricCard({
 
 // ─── Warning Signs ─────────────────────────────────────────
 
-function WarningSignsCard({ data }: { data: CfaDiagnostics["warning_signs"] }) {
+function WarningSignsCard({ data }: { data: FinancialDiagnostics["warning_signs"] }) {
   const activeWarnings = (
     Object.entries(data) as [string, boolean | number][]
   ).filter(([key, val]) => key !== "count" && val === true);
@@ -203,7 +203,7 @@ function CategoryTrendsCard({ trends }: { trends: CategoryTrendItem[] }) {
 
 // ─── DuPont ────────────────────────────────────────────────
 
-function DuPontCard({ data }: { data: CfaDiagnostics["dupont_personal"] }) {
+function DuPontCard({ data }: { data: FinancialDiagnostics["dupont_personal"] }) {
   const explanation = dupontExplanation(data);
   const roePercent = (data.roe * 100).toFixed(1);
 
@@ -235,7 +235,7 @@ function DuPontCard({ data }: { data: CfaDiagnostics["dupont_personal"] }) {
 
 // ─── Monthly History Sparkline ─────────────────────────────
 
-function MonthlyHistoryCard({ history }: { history: CfaDiagnostics["monthly_history"] }) {
+function MonthlyHistoryCard({ history }: { history: FinancialDiagnostics["monthly_history"] }) {
   if (history.length < 2) {
     return (
       <div className="rounded-lg border bg-card p-5 shadow-card card-alive col-span-full">
@@ -324,7 +324,7 @@ function EmptyState() {
 // ─── Page ──────────────────────────────────────────────────
 
 export default function DiagnosticsPage() {
-  const { data, isLoading, error } = useCfaDiagnostics();
+  const { data, isLoading, error } = useFinancialDiagnostics();
 
   if (isLoading) {
     return (

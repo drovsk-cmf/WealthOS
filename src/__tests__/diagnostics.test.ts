@@ -18,8 +18,8 @@ import {
   volatilityExplanation,
   dupontExplanation,
   warningLabel,
-} from "@/lib/hooks/use-cfa-diagnostics";
-import type { CfaDiagnostics } from "@/lib/hooks/use-cfa-diagnostics";
+} from "@/lib/hooks/use-diagnostics";
+import type { FinancialDiagnostics } from "@/lib/hooks/use-diagnostics";
 
 // ─── Schema Validation ─────────────────────────────────────
 
