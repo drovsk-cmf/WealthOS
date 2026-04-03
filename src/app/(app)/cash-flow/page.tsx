@@ -12,7 +12,9 @@ import { useTransactions } from "@/lib/hooks/use-transactions";
 import { useAccounts } from "@/lib/hooks/use-accounts";
 import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
-import { TrendingUp, ArrowRight } from "lucide-react";
+import { TrendingUp, ArrowRight, GitFork } from "lucide-react";
+import { SankeyFlowChart } from "@/components/charts/sankey-flow-chart";
+import type { TransactionForSankey } from "@/lib/services/sankey-data";
 
 type Granularity = "daily" | "monthly" | "yearly";
 
@@ -51,7 +53,8 @@ function getPeriodKey(dateStr: string, gran: Granularity): string {
 export default function CashFlowPage() {
   const [granularity, setGranularity] = useState<Granularity>("monthly");
   const [accountFilter, setAccountFilter] = useState<string>("all");
-  const [showCount, setShowCount] = useState(24); // initial periods to show
+  const [showCount, setShowCount] = useState(24);
+  const [showSankey, setShowSankey] = useState(false);
 
   const { data: transactions, isLoading: txLoading } = useTransactions();
   const { data: accounts } = useAccounts();
@@ -110,6 +113,20 @@ export default function CashFlowPage() {
     );
   }, [displayRows]);
 
+  // Sankey data (E41) — transform current transactions for flow diagram
+  const sankeyTxs: TransactionForSankey[] = useMemo(() => {
+    if (!transactions) return [];
+    return transactions
+      .filter((t) => t.type === "income" || t.type === "expense")
+      .filter((t) => accountFilter === "all" || t.account_id === accountFilter)
+      .map((t) => ({
+        amount: t.amount,
+        category_name: t.category_name ?? null,
+        description: t.description,
+        type: t.type as "income" | "expense",
+      }));
+  }, [transactions, accountFilter]);
+
   if (txLoading) {
     return (
       <div className="mx-auto max-w-4xl space-y-4">
@@ -155,6 +172,30 @@ export default function CashFlowPage() {
           </select>
         </div>
       </div>
+
+      {/* Sankey toggle (E41) */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowSankey((v) => !v)}
+          className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+            showSankey
+              ? "bg-primary text-primary-foreground"
+              : "border bg-card text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          <GitFork className="h-3.5 w-3.5" />
+          Diagrama de fluxo
+        </button>
+      </div>
+
+      {/* Sankey chart (E41) */}
+      {showSankey && (
+        <div className="rounded-lg border bg-card p-4">
+          <p className="mb-2 text-sm font-medium">Para onde vai seu dinheiro</p>
+          <SankeyFlowChart transactions={sankeyTxs} height={350} />
+        </div>
+      )}
 
       {/* Summary cards */}
       {displayRows.length > 0 && (
