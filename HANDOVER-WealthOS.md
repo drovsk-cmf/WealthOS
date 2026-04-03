@@ -4897,7 +4897,77 @@ Itens identificados mas não corrigidos nesta sessão (movidos para PENDENCIAS-F
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com |
 
-## 38. Sessão 38 — Redesign completo: 37 itens, 17 engines, 70 commits (02-03/04/2026)
+## 37. Sessão 37 — Redesign Conceitual: 12 specs, 0 código (02/04/2026)
+
+### 37.1 Contexto
+
+Sessão inteiramente conceitual. Zero alterações de código. Produziu as especificações que guiaram toda a sessão 38. Análise competitiva profunda de 15 concorrentes (8 BR + 7 internacionais). Definição de gaps competitivos convertidos em itens de backlog.
+
+### 37.2 Documentos criados (12 specs + 1 análise)
+
+| # | Documento | Linhas | Feature/Escopo |
+|---|-----------|--------|----------------|
+| 1 | `docs/ONIE-ORB-SPEC.md` | 392 | E23: Onie orb (Canvas 2D + Simplex Noise, 6 estados, 5 voais, 3 tamanhos) |
+| 2 | `docs/IMPORT-ENGINE-SPEC.md` | 537 | E19: Motor de importação de faturas (6 bancos, inbound email, derivação de senhas) |
+| 3 | `docs/B3-API-INTEGRATION-SPEC.md` | 325 | E25: Integração B3 Área do Investidor (posição, transações, eventos corporativos) |
+| 4 | `docs/INVESTMENTS-MODULE-SPEC.md` | 685 | E24: Módulo de investimentos (9 tipos, crons fallback, marcação a mercado) |
+| 5 | `docs/DEDUP-ENGINE-SPEC.md` | 264 | E20: Motor de deduplicação multi-fonte (3 filtros, fingerprint, 8 princípios) |
+| 6 | `docs/FEATURES-ROADMAP-SPEC.md` | 136 | Roadmap de 14 features (E26-E36) com avaliação e prioridade |
+| 7 | `docs/NOTIFICATION-BELL-SPEC.md` | 113 | E22: Sininho de pendências (overlay, badge numérico/ponto, inbox zero) |
+| 8 | `docs/QUICK-REGISTER-SPEC.md` | 182 | E21: Registro ultrarrápido (5 formas de captura, sugestões contextuais) |
+| 9 | `docs/COMPETITIVE-ANALYSIS.md` | 632 | Análise de 15 concorrentes: Mobills, Organizze, Guiabolso, Wisecash, Fortuno, Monarch, Copilot, YNAB, Lunch Money, Toshl, etc. |
+| 10 | `docs/INSTALLMENT-SYSTEM-SPEC.md` | 239 | Sistema de parcelamento de cartão de crédito |
+| 11 | `docs/NAVIGATION-SPEC.md` | 85 | E30: Estrutura de navegação (5 tabs mobile, sidebar desktop, sininho) |
+| 12 | `docs/TAX-ENGINE-SPEC.md` | 338 | E50/E44/E51: Motor tributário PF (IRPF, INSS, CG, DARF, Lei 15.270/2025) |
+| 13 | `docs/SESSION-38-PROMPT.md` | 137 | Prompt de início da sessão 38 |
+
+### 37.3 Decisões de produto registradas
+
+| Decisão | Racional |
+|---------|----------|
+| 5 tabs mobile (Início, Movimentações, Patrimônio, Orçamento, Mais) | Cobertura das 5 zonas mentais do usuário. "Mais" como hub para funcionalidades secundárias. |
+| Sininho no topo direito, não tab dedicada | Acessível de qualquer tela sem consumir espaço na tab bar. Padrão universal. |
+| E16 (compartilhamento familiar) reclassificado H3→H1 | Decisão do Claudio: "Se temos tempo para fazer isso hoje, façamos hoje mesmo." Muda unidade de cobrança de pessoa para família. |
+| Motor tributário baseado em Lei 15.270/2025 | Nova faixa de isenção R$ 5.000, redução parcial R$ 5.000-7.000. Tabelas IRPF 2025+2026 simultaneamente. |
+| Onie orb substitui spinners genéricos | Identidade visual: o orb é a manifestação visual da Onie. Canvas 2D + Simplex Noise (zero deps externas). |
+| Algorithm-first, AI-last | Motores puros determinísticos para 95% dos casos. IA só para edge cases (narrativas, classificação ambígua). |
+| 8 bancos BR na auto-detecção | Nubank (fatura+extrato), BTG, XP, Mercado Pago, Itaú, Inter, C6, Porto Bank. Cobre ~80% do mercado-alvo. |
+
+### 37.4 Novos itens de backlog criados
+
+28 novos itens adicionados ao PENDENCIAS-FUTURAS.md:
+
+| Prioridade | Itens | Exemplos |
+|------------|-------|----------|
+| H1 (fazer agora) | E19-E30 | Import engine, dedup, quick register, sininho, navegação, cartões, Onie orb, investimentos, B3, calendário, recorrências |
+| H2 (próximo ciclo) | E31-E34 | Garantias, comparativo anual, provisão sazonal, relatório anual |
+| H3 (backlog) | E35-E36 | Acesso contador, testamento digital |
+| Gaps competitivos H1 | E37-E40 | Quitação dívidas, AI forecasting, foto recibo, métodos orçamento |
+| Gaps competitivos H2 | E41-E45 | Sankey, FipeZap imóveis, WhatsApp, DARF, CLT bruto→líquido |
+| Gaps competitivos H3 | E46-E49 | Score crédito, benchmark, PJ, offline |
+| B3 API | A15-A18 | Conta developer, kit sandbox, exploração, contato comercial |
+
+### 37.5 Commits
+
+| Hash | Mensagem |
+|------|----------|
+| `253008b` | docs: B3-API-INTEGRATION-SPEC.md |
+| `2bfb482` | docs: INVESTMENTS-MODULE-SPEC.md + atualização B3-API |
+| `164edb1` | docs: IMPORT-ENGINE-SPEC.md |
+| `8b8f1f4` | docs: ONIE-ORB-SPEC.md |
+| `176e91f` | docs: remove referências a marcas de terceiros do ONIE-ORB-SPEC |
+| `3435e5d` | docs: INVESTMENTS-MODULE-SPEC.md (revisão) |
+| `fa6ff5d` | docs: 4 specs pendentes (QUICK-REGISTER, DEDUP, FEATURES-ROADMAP, NOTIFICATION-BELL) |
+| `f303554` | docs: PENDENCIAS-FUTURAS.md atualizado |
+| `acb5d88` | docs: COMPETITIVE-ANALYSIS.md |
+| `2865c47` | docs: COMPETITIVE-ANALYSIS.md atualizado com MPF + quadro comparativo |
+| `7b4b513` | docs: PENDENCIAS-FUTURAS.md lista mestre com gaps competitivos |
+| `f7dd3a5` | docs: INSTALLMENT-SYSTEM-SPEC.md |
+| `09b2ea4` | docs: TAX-ENGINE-SPEC.md + NAVIGATION-SPEC.md + reclassificação prioridades |
+| `de2e8c1` | docs: verificação fiscal mensal (não anual) |
+| `17676db` | docs: SESSION-38-PROMPT.md |
+
+## 38. Sessão 38 — Redesign completo: 30 itens + 7 visual wiring, 70 commits (02-03/04/2026)
 
 ### 38.1 Contexto
 

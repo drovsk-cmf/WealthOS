@@ -7,6 +7,8 @@ PAT: usar o token vigente do memory/userMemories. Git user: `Claude (Anthropic) 
 Supabase: projeto `mngjbrbxapazdddzgoje` (sa-east-1). MCP via OAuth.
 Todas as operações de schema via `execute_sql` (não `apply_migration`).
 
+Sessão 37 (conceitual) definiu o redesign: 12 specs, 28 novos itens de backlog, decisões de navegação e prioridade. Sessão 38 implementou 30 itens + 7 visual wiring. Ambas documentadas no HANDOVER §37 e §38.
+
 ## Ground truth (sessão 38, CI green)
 
 | Métrica | Valor |
