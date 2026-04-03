@@ -14,6 +14,7 @@ import {
   TrendingUp,
   BarChart3,
   Landmark,
+  Shield,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -98,6 +99,12 @@ const HUB_ITEMS: HubItem[] = [
     label: "Relatórios",
     description: "Exportações e workflows",
     icon: FileText,
+  },
+  {
+    href: "/more/warranties",
+    label: "Garantias",
+    description: "Rastreie garantias de produtos",
+    icon: Shield,
   },
   {
     href: "/settings",
