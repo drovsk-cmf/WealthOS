@@ -5013,9 +5013,9 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Indexes | 149 |
 | Migration files (repo) | 68 (65 + 078, 079, 080) |
 | pg_cron jobs | 13 |
-| Suítes Jest | **67** (1.022 assertions) |
-| Arquivos TS/TSX | ~275 |
-| Hooks | 38 |
+| Suítes Jest | **71** (1.064 assertions) |
+| Arquivos TS/TSX | ~285 |
+| Hooks | 40 |
 | Schemas Zod | 43 |
 | Páginas autenticadas | 33 |
 | Navegação | 5 tabs mobile + sidebar 5 seções desktop |
@@ -5061,4 +5061,18 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Sankey data | `src/lib/services/sankey-data.ts` | 9 | Income → Central → Categories → Surplus |
 | Alerta preço | `src/lib/services/price-anomaly-detector.ts` | 8 | Amber >15%, red >30% |
 | Rastreador garantias | `src/lib/services/warranty-tracker.ts` | 8 | Fabricante + extensão cartão |
+| DARF investimentos | `src/lib/services/darf-investment.ts` | 13 | Apuração mensal, loss carryforward, isenções |
+| Deduplicação | `src/lib/services/dedup-engine.ts` | 13 | 3 filtros: exact, fuzzy Levenshtein, same-source skip |
+| Calendário financeiro | `src/lib/services/financial-calendar.ts` | 10 | Dia a dia, saldo projetado, peakDays |
+| Relatório anual | `src/lib/services/annual-report.ts` | 10 | Totais, monthly, top items, wrapped insights |
+| Registro rápido | `src/lib/services/quick-register.ts` | 9 | Sugestões contextuais: hora/dia/frequência/refeição |
+
+### 38.27 Sessão 38 — Total: 28 itens concluídos
+
+| Bloco | Itens | Detalhe |
+|-------|-------|---------|
+| Fase 1 (nav/types) | E30, TEC-13, E17, E23 | Navegação, database.ts, cartões, Onie orb |
+| Fase 2 (fiscal) | E50, E45, E29, E51, E44 | Motor tributário, CLT, IRPF deductions, calendário fiscal, DARF |
+| Fase 3 (inteligência) | E26, E27, E37, E22, E33, E32, E38, E40, E31, E41 | Recorrências, alertas, dívidas, sininho, sazonal, anual, forecast, budget, garantias, Sankey |
+| Infra/UX | I2, E18, TEC-12, E39, E20, E28, E34, E21 | iOS, carga cartão, chunking, receipts, dedup, calendário, relatório, registro rápido |
 
