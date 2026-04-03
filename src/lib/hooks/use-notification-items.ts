@@ -17,6 +17,7 @@ import { useMemo } from "react";
 import { useDetectedRecurrences } from "@/lib/hooks/use-detected-recurrences";
 import { usePendingBills, useRecurrences } from "@/lib/hooks/use-recurrences";
 import { checkAllPriceAnomalies } from "@/lib/services/price-anomaly-detector";
+import { generateFiscalCalendar, getUpcomingFiscalEvents } from "@/lib/services/fiscal-calendar";
 
 export type NotificationPriority = "urgent" | "action" | "info";
 
@@ -121,9 +122,21 @@ export function useNotificationItems(): NotificationSummary {
       }
     }
 
-    // 4. Budget alerts — deferred: requires transaction aggregation to compute
-    // spent vs planned. Will be added when dashboard summary data is available
-    // as a shared hook. See: useBudgets returns planned_amount but not spent.
+    // 4. Fiscal calendar events (E51) — upcoming tax deadlines within 14 days
+    const fiscalEvents = generateFiscalCalendar({ year: now.getFullYear() });
+    const upcoming = getUpcomingFiscalEvents(fiscalEvents, 14);
+    for (const fe of upcoming.slice(0, 3)) {
+      notifications.push({
+        id: `fiscal-${fe.id}`,
+        type: "fiscal_deadline",
+        priority: fe.isUrgent ? "urgent" : "info",
+        title: fe.title,
+        description: `${fe.description} (${fe.date})`,
+        requiresAction: false,
+        createdAt: now,
+        href: "/tax",
+      });
+    }
 
     // Sort: urgent first, then action, then info
     const priorityOrder: Record<NotificationPriority, number> = {

@@ -49,6 +49,11 @@ const TABS = [
     label: "Capital Humano",
     description: "Quanto vale sua capacidade de gerar renda até a aposentadoria?",
   },
+  {
+    href: "/calculators/debt-payoff",
+    label: "Quitar Dívidas",
+    description: "Snowball vs Avalanche: qual estratégia elimina suas dívidas mais rápido?",
+  },
 ] as const;
 
 export default function CalculatorsLayout({ children }: { children: ReactNode }) {
