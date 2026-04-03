@@ -13,3 +13,4 @@ export { ImportCTA } from "./import-cta";
 export { MfaReminderBanner } from "./mfa-reminder-banner";
 export { ScannerCard } from "./scanner-card";
 export { NetWorthChart } from "./net-worth-chart";
+export { ForecastCard } from "./forecast-card";

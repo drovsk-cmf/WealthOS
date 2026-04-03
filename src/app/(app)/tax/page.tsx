@@ -36,6 +36,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import { CLTSimulator } from "@/components/tax/clt-simulator";
 import { IRPFDeductionsCard } from "@/components/tax/irpf-deductions-card";
+import { FiscalCalendarCard } from "@/components/tax/fiscal-calendar-card";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -537,6 +538,9 @@ export default function FiscalPage() {
 
       {/* Deductions consolidation (E29) */}
       <IRPFDeductionsCard year={selectedYear} />
+
+      {/* Fiscal calendar (E51) */}
+      <FiscalCalendarCard year={selectedYear} />
 
       {/* CLT Simulator (E45) */}
       <CLTSimulator />

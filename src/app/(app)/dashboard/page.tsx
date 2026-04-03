@@ -37,6 +37,7 @@ import {
   MfaReminderBanner,
   ScannerCard,
   NetWorthChart,
+  ForecastCard,
 } from "@/components/dashboard";
 
 export default function DashboardPage() {
@@ -181,6 +182,16 @@ export default function DashboardPage() {
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Níveis */}
       {showFullTier && (
         <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
+      )}
+
+      {/* E38: Projeção de saldo 6 meses */}
+      {showMidTier && d?.summary && (
+        <ForecastCard
+          currentBalance={d.summary.total_current_balance}
+          avgMonthlyIncome={d.summary.month_income}
+          avgMonthlyExpenses={d.summary.month_expense}
+          isLoading={dash.isLoading}
+        />
       )}
 
       {/* DASH-08: FAB lançamento rápido */}
