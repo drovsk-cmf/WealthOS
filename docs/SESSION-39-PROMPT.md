@@ -77,6 +77,20 @@ Todas as operações de schema via `execute_sql` (não `apply_migration`).
 
 1. Ler `HANDOVER-WealthOS.md` §38 para contexto completo.
 2. Ler `PENDENCIAS-FUTURAS.md` para backlog detalhado.
-3. Executar autonomamente contra o backlog P1 acima.
-4. Manter ground truth no HANDOVER.
-5. CI green antes de encerrar.
+3. **Antes de começar a executar:** apresentar uma tabela consolidada com TODAS as pendências, separando:
+   - ✅ Concluídas (com sessão em que foram feitas)
+   - ⬜ Pendentes (com estimativa de esforço)
+   - 🔒 Bloqueadas (com dependência explícita)
+   - 📌 Adiadas (com critério de quando reativar)
+4. Executar autonomamente contra o backlog P1.
+5. Manter ground truth no HANDOVER e status atualizado no PENDENCIAS.
+6. CI green antes de encerrar.
+
+## Inventário de referência (sessão 38)
+
+| Status | Qtd | Itens |
+|--------|-----|-------|
+| ✅ Concluídos | 59 | Todas as stories originais (105/108) + itens técnicos |
+| ⬜ Pendentes | 15 | A14-A18, E16, E24, E35, E36, E42, E43, E46, Q2, TEC-06, TEC-07 |
+| 🔒 Bloqueados | 8 | CFG-04, FIN-17, FIN-18, I3, I4, I5, E25, E11(APNs) |
+| 📌 Adiados | 11 | E10, E14, E47-E49, TEC-01 a TEC-05, TEC-10 |
