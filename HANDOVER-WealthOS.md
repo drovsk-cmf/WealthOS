@@ -5216,7 +5216,7 @@ Modelo 2 documentos: PENDENCIAS-FUTURAS (single source of truth para backlog) + 
 
 | Hash | Mensagem |
 |------|----------|
-| (pending) | docs: sessão 39 — auditoria de coerência documental |
+| `5355341` | docs: sessão 39 — auditoria de coerência documental |
 
 ### 39.7 Ground truth (inalterado desde §38.8, verificado)
 
