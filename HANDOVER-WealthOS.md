@@ -5005,22 +5005,23 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Métrica | Valor |
 |---------|-------|
 | Stories | 105/108 (3 bloqueadas por Apple Developer Account) |
-| Tabelas | 36 |
-| Políticas RLS | 111 (108 + 3 storage receipts) |
-| Functions | 77 (76 + get_irpf_deductions) |
-| Triggers | 22 |
+| Tabelas | **37** |
+| Políticas RLS | **119** (112 public + 7 storage) |
+| Functions | **77** |
+| Triggers | **23** |
 | ENUMs | 29 |
-| Indexes | 149 |
-| Migration files (repo) | 68 (65 + 078, 079, 080) |
+| Indexes | **151** |
+| Migration files (repo) | **70** |
 | pg_cron jobs | 13 |
-| Suítes Jest | **71** (1.064 assertions) |
-| Arquivos TS/TSX | ~285 |
-| Hooks | 40 |
+| Suítes Jest | **72** (1.079 assertions) |
+| Arquivos TS/TSX | **285** |
+| Hooks | **42** |
 | Schemas Zod | 43 |
-| Páginas autenticadas | 33 |
-| Navegação | 5 tabs mobile + sidebar 5 seções desktop |
+| Páginas autenticadas | **35** |
+| Calculadoras | **8** + diagnostics + Sankey |
+| Navegação | 5 tabs mobile + sidebar 5 seções desktop + sininho |
 | ESLint warnings | 0 |
-| eslint-disable (produção) | 5 |
+| eslint-disable (produção) | 9 |
 | iOS build | ✅ GitHub Actions macOS runner (grátis, repo público) |
 | CI | ✅ Verde |
 
@@ -5046,7 +5047,7 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | 38.24 | E39: Foto recibo/NF | Migration 080 (bucket receipts, receipt_path), `src/lib/hooks/use-receipts.ts` | — |
 | 38.25 | E41: Diagrama Sankey | `src/lib/services/sankey-data.ts`, testes | 9 |
 
-### 38.26 Engines construídos (11 bibliotecas puras, zero deps)
+### 38.26 Engines construídos (17 bibliotecas puras)
 
 | Engine | Arquivo | Testes | Função |
 |--------|---------|--------|--------|
@@ -5061,18 +5062,19 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Sankey data | `src/lib/services/sankey-data.ts` | 9 | Income → Central → Categories → Surplus |
 | Alerta preço | `src/lib/services/price-anomaly-detector.ts` | 8 | Amber >15%, red >30% |
 | Rastreador garantias | `src/lib/services/warranty-tracker.ts` | 8 | Fabricante + extensão cartão |
-| DARF investimentos | `src/lib/services/darf-investment.ts` | 13 | Apuração mensal, loss carryforward, isenções |
 | Deduplicação | `src/lib/services/dedup-engine.ts` | 13 | 3 filtros: exact, fuzzy Levenshtein, same-source skip |
 | Calendário financeiro | `src/lib/services/financial-calendar.ts` | 10 | Dia a dia, saldo projetado, peakDays |
 | Relatório anual | `src/lib/services/annual-report.ts` | 10 | Totais, monthly, top items, wrapped insights |
 | Registro rápido | `src/lib/services/quick-register.ts` | 9 | Sugestões contextuais: hora/dia/frequência/refeição |
+| Bank detection | `src/lib/parsers/bank-detection.ts` | 15 | Auto-detecção de 8 bancos BR por header CSV |
 
-### 38.27 Sessão 38 — Total: 28 itens concluídos
+### 38.27 Sessão 38 — Total: 35 itens concluídos
 
 | Bloco | Itens | Detalhe |
 |-------|-------|---------|
 | Fase 1 (nav/types) | E30, TEC-13, E17, E23 | Navegação, database.ts, cartões, Onie orb |
 | Fase 2 (fiscal) | E50, E45, E29, E51, E44 | Motor tributário, CLT, IRPF deductions, calendário fiscal, DARF |
-| Fase 3 (inteligência) | E26, E27, E37, E22, E33, E32, E38, E40, E31, E41 | Recorrências, alertas, dívidas, sininho, sazonal, anual, forecast, budget, garantias, Sankey |
-| Infra/UX | I2, E18, TEC-12, E39, E20, E28, E34, E21 | iOS, carga cartão, chunking, receipts, dedup, calendário, relatório, registro rápido |
+| Fase 3 (inteligência) | E26, E27, E37, E22, E33, E32, E38, E40, E31, E41, E20, E28, E34, E21 | Recorrências, alertas, dívidas, sininho, sazonal, anual, forecast, budget, garantias, Sankey, dedup, calendário financeiro, relatório anual, registro rápido |
+| Infra/UX | I2, E18, TEC-12, E39, TEC-11, E19 | iOS, carga cartão, chunking, receipts, WCAG, bank detection |
+| Visual wiring | Debt Payoff calc, Sankey→/cash-flow, Forecast→dashboard, FiscalCalendar→/tax, Fiscal→sininho, Warranties page+table | 6 engines conectados a UI |
 
