@@ -14,6 +14,7 @@ import { formatCurrency } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import { TrendingUp, ArrowRight, GitFork } from "lucide-react";
 import { SankeyFlowChart } from "@/components/charts/sankey-flow-chart";
+import { AnnualComparisonCard } from "@/components/charts/annual-comparison-card";
 import type { TransactionForSankey } from "@/lib/services/sankey-data";
 
 type Granularity = "daily" | "monthly" | "yearly";
@@ -195,6 +196,16 @@ export default function CashFlowPage() {
           <p className="mb-2 text-sm font-medium">Para onde vai seu dinheiro</p>
           <SankeyFlowChart transactions={sankeyTxs} height={350} />
         </div>
+      )}
+
+      {/* Annual comparison (E32) */}
+      {granularity === "monthly" && transactions && transactions.length > 0 && (
+        <AnnualComparisonCard
+          transactions={transactions
+            .filter((t) => t.type === "income" || t.type === "expense")
+            .filter((t) => accountFilter === "all" || t.account_id === accountFilter)
+            .map((t) => ({ amount: t.amount, date: t.date }))}
+        />
       )}
 
       {/* Summary cards */}
