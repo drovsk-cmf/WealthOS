@@ -117,6 +117,29 @@ Itens com alta relação impacto/esforço. Devem ser resolvidos antes de abrir p
 
 ---
 
+### 4.3 Migrados de PENDENCIAS-DECISAO (sessão 39)
+
+Itens decididos como FAZER pelo Claudio em 16/03/2026 (PENDENCIAS-DECISAO §2-5). Migrados para tracking centralizado na sessão 39.
+
+| Código | Item | Esforço | Origem PD | Status |
+|--------|------|---------|-----------|--------|
+| E52 | **CAP-05: Visão calendário de vencimentos** — calendário visual para bills/contas a pagar. Hoje só lista com tabs. | 3-4h | PD §1.3 | ⬜ |
+| E53 | **Export criptografado com senha** — export JSON/CSV protegido com ZIP AES-256. Decisão: FAZER. | 2-3h | PD §1.4 | ⬜ |
+| E54 | **Logs de acesso (90 dias)** — tabela access_logs + triggers. Supabase Auth cobre logins, mas falta audit trail no app. | 2-3h | PD §1.5 | ⬜ |
+| E55 | **liquidity_tier editável** — dropdown no AccountForm para reclassificar tier de liquidez manualmente. Hoje é auto-atribuído. | 30 min | PD §2.1 | ⬜ |
+| E56 | **Focus trap em 6 dialogs inline** — 6 dialogs de confirmação/criação sem focus trap. Forms (6) já têm. | 1h | PD §2.2 | ⬜ |
+| E57 | **Testes SQL para RPCs novas** — zero testes para edit_transaction, cron_generate_recurring, cron_generate_monthly_snapshots, recalculate_account_balance_for. | 2-3h | PD §3.2 | ⬜ |
+| E58 | **Sparklines de solvência** — monthly_snapshots popula, mas SolvencyPanel não mostra tendência visual. | 2-3h | PD §3.3 | ⬜ |
+| E59 | **Edição de transferências** — edit_transaction funciona para income/expense. Botão Editar não aparece para type=transfer. | 2-3h | PD §3.4 | ⬜ |
+| E60 | **Rateio overhead UI** — tabela center_allocations + RPC allocate_to_centers existem. Zero UI. | 2-3h | PD §3.5 | ⬜ |
+| E61 | **Reajuste automático IPCA/IGP-M** — opções removidas da UI (DT-018). Índices coletados por cron. Reconectar dados → ajuste. | 3-4h | PD §4.1 | ⬜ |
+| E62 | **Upload de documentos WKF-03** — tabela documents + Storage bucket existem. Implementar upload para Storage + vínculo. | 2-3h | PD §4.2 | ⬜ |
+| E63 | **PAT-06: Anexar documentos a bens** — depende de E62 (upload genérico). | +1h | PD §4.3 | ⬜ (depende E62) |
+| E64 | **OCR web (Tesseract.js + PDF.js)** — depende de E62 (upload). Zero código. Viável sem Mac. | 4-6h | PD §5.1 | ⬜ (depende E62) |
+| E65 | **Web Push notifications** — tabelas existem. Settings mostra "Em breve". Web Push API via service worker. | 4-6h | PD §5.2 | ⬜ |
+
+---
+
 ## 5. Backlog de Produto — Horizonte 2 (primeiros 3 meses pós-lançamento)
 
 Itens que agregam valor significativo mas não são bloqueadores do lançamento inicial.
@@ -329,3 +352,4 @@ O iDinheiro opera em dois eixos: portal de conteúdo financeiro (idinheiro.com.b
 | 02/04/2026 | Sessão 37: Redesign conceitual completo. Zero alterações de código. 9 documentos commitados (8 specs + COMPETITIVE-ANALYSIS). Novos itens: E19-E30 (H1), E31-E34 (H2), E35-E36 (H3), A15-A18 (B3 API). Análise competitiva profunda: 15 concorrentes (8 BR + 7 INT). Gaps competitivos adicionados como novos itens: E37-E40 (H1: quitação dívidas, AI forecasting, foto recibo, métodos orçamento), E41-E45 (H2: Sankey, FipeZap imóveis, WhatsApp, DARF, CLT), E46-E49 (H3: score crédito, benchmark, PJ, offline). Total de itens pendentes não concluídos: ~55. Discussão pendente: estrutura final das 5 tabs. | Claude |
 | 02-03/04/2026 | Sessão 38: Redesign completo. 30 itens + 7 visual wiring, 70 commits. Fases 1-3: E30 TEC-13 E17 E23 (F1), E50 E45 E29 E51 E44 (F2), E26 E27 E37 E22 E33 E32 E38 E40 E31 E41 E20 E28 E34 E21 (F3). Infra: I2 E18 TEC-12 E39 TEC-11 E19. Visual: DebtPayoff→calc, Sankey→CF, Forecast→dash, FiscalCal→tax, Fiscal→sininho, Warranties page, AnnualComp→CF. TEC-10 cleanup. 72 suítes / 1.079 assertions. | Claude |
 
+| 03/04/2026 | Sessão 39: Auditoria de coerência documental. 27 achados catalogados. Correções HANDOVER: §3.3 76→77, §3.2 migrations ~58→53, §38.8 Zod 58→61, sidebar 19→18. DIVIDA-TECNICA: DT-026/027/028 marcados ✅. 15 itens FAZER migrados de PENDENCIAS-DECISAO como E52-E65 (§4.3). DIVIDA-TECNICA e PENDENCIAS-DECISAO convertidos em arquivo histórico. Relatório: docs/audit/AUDITORIA-COERENCIA-2026-04-03.md. | Claude |

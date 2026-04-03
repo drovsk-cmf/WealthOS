@@ -1,5 +1,8 @@
 # Oniefy - Pendências para Decisão
 
+> **ARQUIVO HISTÓRICO.** 15 itens FAZER (grupos 2-5) migrados para `PENDENCIAS-FUTURAS.md` como E52-E65 em 03/04/2026 (sessão 39).
+> Este documento permanece como referência das decisões tomadas pelo Claudio. Grupo 1 (17/17) concluído na sessão 19.
+
 **Data:** 2026-03-16 (atualizado 2026-03-17)
 **Contexto:** Pós-auditoria completa (118 arquivos + 8 specs cruzados). 32 itens pendentes em 10 grupos.
 **Status:** ✅ **17/17 itens FAZER concluídos na sessão 19 (17/03/2026).**

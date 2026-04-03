@@ -1,5 +1,9 @@
 # Oniefy - Auditoria de Dívida Técnica (Linha por Linha)
 
+> **ARQUIVO HISTÓRICO.** Itens ativos migrados para `PENDENCIAS-FUTURAS.md` em 03/04/2026 (sessão 39).
+> Este documento permanece como referência de achados e decisões. DT-001 a DT-025 resolvidos (sessão 19).
+> DT-026, DT-027, DT-028 resolvidos (sessão 38). DT-007, DT-014 adiados (tracked em PENDENCIAS-FUTURAS).
+
 **Data início:** 2026-03-16
 **Auditor:** Claude (sessão com Claudio)
 **Escopo:** 118 arquivos TypeScript/TSX em `src/`, 22.045 linhas
@@ -408,21 +412,21 @@ Para cada arquivo do `src/`, verificar:
 ### TIER 3 - Menor, cleanup
 | DT-002, DT-003, DT-013, DT-020, DT-021, DT-024 | ~1h total |
 
-### DT-026 | S2 GRAVE | CORRIGIR
+### DT-026 | S2 GRAVE | ✅ RESOLVIDO (sessão 38)
 **Arquivo:** `src/app/(app)/transactions/page.tsx` L71-72
 **Descrição:** A função `getAmountDisplay` retorna JSX-like strings em template literals: `` `+ $<Mv>{formatCurrency(tx.amount)}</Mv>` ``. O `<Mv>` é um componente React, mas dentro de uma template string é tratado como texto literal. O usuário vê literalmente `+ $<Mv>R$ 1.234,56</Mv>` na tela em vez do valor mascarado.
 **Evidência:** L71: `` return { text: `+ $<Mv>{formatCurrency(tx.amount)}</Mv>`, ... }; ``
 **Impacto:** Bug visual em toda a lista de transações. Valores de receita e despesa renderizam com tags HTML literais visíveis.
 **Correção proposta:** Converter `getAmountDisplay` para retornar um ReactNode em vez de string, ou retornar apenas o valor numérico e aplicar `<Mv>` no JSX de renderização.
 
-### DT-027 | S3 MODERADO | CORRIGIR
+### DT-027 | S3 MODERADO | ✅ RESOLVIDO (sessão 38)
 **Arquivo:** `src/components/transactions/transaction-form.tsx` L96-112
 **Descrição:** O `useEffect` de reset executa quando `open` muda para `true`, mas ignora completamente a prop `prefill`. Reseta todos os campos para os valores padrão (tipo=expense, amount="", etc.). A feature "Duplicar transação" (D7.07) passa `prefill` com os dados da transação original, mas eles são imediatamente sobrescritos pelo reset.
 **Evidência:** L96: `if (open) { setType(defaultType); ... }` sem considerar `prefill`.
 **Impacto:** O botão "Duplicar" na lista de transações abre o form vazio em vez de pré-preenchido.
 **Correção proposta:** Condicionar o reset: se `prefill` é fornecido, usar seus valores; caso contrário, usar os defaults.
 
-### DT-028 | S2 GRAVE | CORRIGIR
+### DT-028 | S2 GRAVE | ✅ RESOLVIDO (sessão 38)
 **Arquivo:** `src/app/(app)/settings/data/page.tsx` L48
 **Descrição:** O export de dados usa `full_name` como coluna de `family_members`, mas a coluna real no banco é `name`. A query `select("id, user_id, full_name, ...")` vai falhar silenciosamente (Supabase retorna erro ou null), e o export omite os membros familiares sem feedback ao usuário.
 **Evidência:** L48: `family_members: "id, user_id, full_name, relationship, avatar_emoji, is_active, created_at, updated_at"` — coluna `full_name` não existe; deve ser `name`.

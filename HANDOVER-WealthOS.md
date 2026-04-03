@@ -71,7 +71,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Triggers | 23 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
 | Indexes | 151 |
-| Migrations aplicadas (MCP) | ~58 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migrations aplicadas (MCP) | 53 rastreadas em schema_migrations; ~17 adicionais aplicadas via execute_sql (padrão do projeto: execute_sql, não apply_migration) |
 | Migration files (repo) | 70 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
@@ -86,7 +86,7 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | Supabase security advisories | 0 code-level (1 Dashboard: leaked password protection, requer Pro) |
 | Supabase perf advisories | 0 WARN |
 
-### 3.3 Functions (76 no schema public)
+### 3.3 Functions (77 no schema public)
 
 | Grupo | Functions |
 |---|---|
@@ -4634,6 +4634,8 @@ Execução completa da Matriz de Validação v2.1 (release gate). Todas as 10 ca
 
 ## 35. Sessão 35 — Backlog D02 + D11 (31/03/2026)
 
+> *Snapshot da época. Números nesta seção refletem o estado do projeto ao final da sessão 35, não o estado atual. Ver §38.8 para ground truth vigente.*
+
 ### 35.1 Contexto
 
 Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triagem de 11 achados residuais, execução dos 2 atacáveis por código.
@@ -4767,6 +4769,8 @@ Sessão de saneamento do backlog pendente da Release Gate Audit (§34.3). Triage
 | Deploy | www.oniefy.com |
 
 ## 36. Sessão 36 — Teste de Estresse UX + bank_institutions + 14 fixes (01/04/2026)
+
+> *Snapshot da época. Números nesta seção refletem o estado do projeto ao final da sessão 36, não o estado atual. Ver §38.8 para ground truth vigente.*
 
 ### 36.1 Contexto
 
@@ -5089,10 +5093,10 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Suítes Jest | **72** (1.079 assertions) |
 | Arquivos TS/TSX | **286** |
 | Hooks | **42** |
-| Schemas Zod | **58** |
+| Schemas Zod | **61** |
 | Páginas autenticadas | **35** |
 | Calculadoras | **8** + diagnostics |
-| Navegação | 5 tabs mobile + sidebar 19 links desktop + sininho |
+| Navegação | 5 tabs mobile + sidebar 18 links desktop + sininho |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | **6** |
 | iOS build | ✅ GitHub Actions macOS runner (grátis, repo público) |
@@ -5165,3 +5169,55 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Infra/UX | I2, E18, TEC-12, E39, TEC-11, E19 | iOS, carga cartão, chunking, receipts, WCAG, bank detection |
 | Visual wiring | Debt Payoff calc, Sankey→/cash-flow, Forecast→dashboard, FiscalCalendar→/tax, Fiscal→sininho, Warranties page+table | 6 engines conectados a UI |
 
+## 39. Sessão 39 — Auditoria de Coerência Documental (03/04/2026)
+
+### 39.1 Contexto
+
+Auditoria completa de coerência entre documentação e implementação. Zero alterações de código funcional. Todas as métricas do ground truth (§38.8) verificadas contra fonte primária (`execute_sql`, `find`, `grep`). Framework: MATRIZ-VALIDACAO-v2_1.md.
+
+### 39.2 Achados (27 catalogados)
+
+| Categoria | Qtd | Exemplos |
+|-----------|-----|----------|
+| Sujeira documental | 8 | §3.3 título 76→77, DT-026/027/028 não marcados como resolvidos |
+| Fragilidade rastreamento | 5 | RASTREABILIDADE 65/108 stories, 3 fontes de pendências sobrepostas |
+| Débito técnico | 3 | 4 hooks com `as any`, seções históricas sem nota |
+| Divergência numérica | 5 | Zod 58→61, migrations ~58→53, sidebar 19→18 |
+| Confirmado OK | 14 | Tabelas, RLS, functions, enums, indexes, cron, hooks, pages |
+
+Segurança: 77/77 functions com search_path. 119 RLS confirmadas. 0 vulnerabilidades.
+
+### 39.3 Correções aplicadas nesta sessão
+
+| Ação | Arquivo | Detalhe |
+|------|---------|---------|
+| D1 | HANDOVER §3.3 | Título: "76" → "77" functions |
+| D2 | HANDOVER §3.2 | Migrations: "~58" → "53 rastreadas + ~17 via execute_sql" |
+| D3 | HANDOVER §38.8 | Zod schemas: "58" → "61" |
+| D4 | HANDOVER §38.8 | Sidebar links: "19" → "18" |
+| D5 | DIVIDA-TECNICA | DT-026, DT-027, DT-028 marcados ✅ RESOLVIDO |
+| D6 | DIVIDA-TECNICA, PENDENCIAS-DECISAO | Header "ARQUIVO HISTÓRICO" adicionado |
+| D7 | PENDENCIAS-FUTURAS | 15 itens FAZER migrados como E52-E65 (§4.3) |
+| D9 | HANDOVER §35, §36 | Nota "snapshot da época" adicionada |
+
+### 39.4 Proposta de consolidação (aceita e executada)
+
+Modelo 2 documentos: PENDENCIAS-FUTURAS (single source of truth para backlog) + HANDOVER (contexto + ground truth). DIVIDA-TECNICA e PENDENCIAS-DECISAO convertidos em arquivo histórico read-only.
+
+### 39.5 Pendente (não executado nesta sessão)
+
+| Item | Motivo | Esforço |
+|------|--------|---------|
+| D8: Regenerar RASTREABILIDADE-STORY-TESTE (108 stories) | Escopo de ~2-3h, sessão dedicada | 2-3h |
+| C1: Resolver `as any` em 4 hooks | Requer regenerar database.ts types | 1-2h |
+| C2: Reconciliar bank-detection patterns com IMPORT-ENGINE-SPEC | Baixa prioridade | 15 min |
+
+### 39.6 Commits
+
+| Hash | Mensagem |
+|------|----------|
+| (pending) | docs: sessão 39 — auditoria de coerência documental |
+
+### 39.7 Ground truth (inalterado desde §38.8, verificado)
+
+Todas as métricas de §38.8 confirmadas contra fonte primária, exceto ajustes documentais aplicados (D1-D4). Nenhuma alteração de código ou banco nesta sessão.
