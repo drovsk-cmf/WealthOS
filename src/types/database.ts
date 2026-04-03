@@ -1901,6 +1901,63 @@ export type Database = {
           },
         ]
       }
+      warranties: {
+        Row: {
+          id: string
+          user_id: string
+          product_name: string
+          purchase_date: string
+          manufacturer_months: number
+          card_extension_months: number
+          receipt_path: string | null
+          notes: string | null
+          transaction_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          product_name: string
+          purchase_date: string
+          manufacturer_months?: number
+          card_extension_months?: number
+          receipt_path?: string | null
+          notes?: string | null
+          transaction_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          product_name?: string
+          purchase_date?: string
+          manufacturer_months?: number
+          card_extension_months?: number
+          receipt_path?: string | null
+          notes?: string | null
+          transaction_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warranties_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranties_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

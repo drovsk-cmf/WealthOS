@@ -8,17 +8,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { getCachedUserId } from "@/lib/supabase/cached-auth";
 import { getWarrantyStatus, type Warranty, type WarrantyStatus } from "@/lib/services/warranty-tracker";
+import type { Database } from "@/types/database";
 
-export interface WarrantyRow {
-  id: string;
-  product_name: string;
-  purchase_date: string;
-  manufacturer_months: number;
-  card_extension_months: number;
-  receipt_path: string | null;
-  notes: string | null;
-  transaction_id: string | null;
-}
+type WarrantyRow = Database["public"]["Tables"]["warranties"]["Row"];
 
 export interface WarrantyWithStatus extends WarrantyRow {
   status: WarrantyStatus;
@@ -32,8 +24,7 @@ export function useWarranties() {
     staleTime: 1000 * 60 * 5,
     queryFn: async () => {
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from("warranties")
         .select("*")
         .eq("user_id", userId)
@@ -41,7 +32,7 @@ export function useWarranties() {
 
       if (error) throw error;
 
-      return ((data ?? []) as WarrantyRow[]).map((row) => {
+      return (data ?? []).map((row) => {
         const w: Warranty = {
           id: row.id,
           productName: row.product_name,
@@ -68,8 +59,7 @@ export function useCreateWarranty() {
       notes?: string;
     }) => {
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("warranties")
         .insert({ ...input, user_id: userId });
       if (error) throw error;
@@ -87,8 +77,7 @@ export function useDeleteWarranty() {
   return useMutation({
     mutationFn: async (id: string) => {
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from("warranties")
         .delete()
         .eq("id", id)
