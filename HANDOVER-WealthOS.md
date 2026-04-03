@@ -65,14 +65,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 36 (todas com RLS) |
-| Políticas RLS | 108 |
-| Functions (total) | 76 no schema public. Todas com `SET search_path = public`. 73 SECURITY DEFINER com auth.uid() guard |
-| Triggers | 22 |
+| Tabelas | 37 (todas com RLS) |
+| Políticas RLS | 119 (112 public + 7 storage) |
+| Functions (total) | 77 no schema public. Todas com `SET search_path = public`. SECURITY DEFINER com auth.uid() guard |
+| Triggers | 23 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
-| Indexes | 149 |
-| Migrations aplicadas (MCP) | 54 no projeto ativo (mngjbrbxapazdddzgoje) |
-| Migration files (repo) | 65 em supabase/migrations/ |
+| Indexes | 151 |
+| Migrations aplicadas (MCP) | ~58 no projeto ativo (mngjbrbxapazdddzgoje) |
+| Migration files (repo) | 70 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -110,11 +110,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (233 arquivos TS/TSX em src/, 56 suítes de teste, 891 assertions)
+### 3.4 Código Fonte (286 arquivos TS/TSX em src/, 72 suítes de teste, 1.079 assertions)
 
 ```
 src/
-├── __tests__/                    # 56 suítes de teste (Jest + RTL), 891 assertions
+├── __tests__/                    # 72 suítes de teste (Jest + RTL), 1.079 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-cron.test.ts        # 9: push/send + digest/send auth paths
@@ -241,20 +241,23 @@ src/
 │   ├── config/env.ts             # Startup env validation (validateEnv, validateServerEnv)
 │   ├── crypto/index.ts
 │   ├── email/weekly-digest-template.ts  # HTML template Plum Ledger (escapeHtml)
-│   ├── hooks/ (33 hooks: accounts, ai-categorize, analytics,
+│   ├── hooks/ (42 hooks: accounts, ai-categorize, analytics,
 │   │          asset-templates, assets, auth-init, auto-category, bank-connections,
-│   │          budgets, categories, diagnostics, chart-of-accounts, cost-centers,
-│   │          currencies, currency-label, dashboard, dialog-helpers, documents,
-│   │          economic-indices, family-members, fiscal, scanner, engine-v2,
-│   │          online-status, progressive-disclosure, push-notifications,
-│   │          reconciliation, recurrences, savings-goals, setup-journey,
-│   │          transactions, workflows)
-│   ├── parsers/ (csv-parser.ts, ofx-parser.ts, xlsx-parser.ts)
-│   ├── schemas/rpc.ts            # 46 schemas Zod (todos os RPCs cobertos + Motor v1/v2 + Diagnostics)
-│   ├── services/
-│   │   ├── fiscal-export.ts      # E8: IRPF XLSX export (ExcelJS, 6 abas)
-│   │   ├── onboarding-seeds.ts   # Seeds extraído de page.tsx (WEA-003)
-│   │   └── transaction-engine.ts
+│   │          bank-institutions, budgets, categories, diagnostics, chart-of-accounts,
+│   │          cost-centers, currencies, currency-label, dashboard, detected-recurrences,
+│   │          dialog-helpers, documents, economic-indices, family-members, fiscal,
+│   │          irpf-deductions, notification-items, online-status, progressive-disclosure,
+│   │          push-notifications, receipts, reconciliation, recurrences, savings-goals,
+│   │          scanner, engine-v2, setup-journey, tax-parameters, transactions,
+│   │          warranties, workflows)
+│   ├── parsers/ (bank-detection.ts, csv-parser.ts, ofx-parser.ts, oniefy-template.ts, xlsx-parser.ts)
+│   ├── schemas/rpc.ts            # 58 schemas Zod (todos os RPCs + Motor v1/v2 + Diagnostics)
+│   ├── services/ (18 arquivos: annual-comparison, annual-report, balance-forecast,
+│   │             darf-investment, debt-payoff-planner, dedup-engine, financial-calendar,
+│   │             fiscal-calendar, fiscal-export, ocr-service, onboarding-seeds,
+│   │             price-anomaly-detector, quick-register, recurrence-detector,
+│   │             sankey-data, seasonal-provisioning, transaction-engine, warranty-tracker)
+│   ├── tax/ (calculator.ts, types.ts)
 │   ├── stores/privacy.ts         # Zustand store (privacy mode)
 │   ├── supabase/ (client.ts, server.ts, admin.ts, cached-auth.ts)
 │   ├── utils/index.ts            # cn, formatCurrency, formatDate, formatRelativeDate, sanitizeRedirectTo
@@ -5014,12 +5017,12 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Migration files (repo) | **70** |
 | pg_cron jobs | 13 |
 | Suítes Jest | **72** (1.079 assertions) |
-| Arquivos TS/TSX | **285** |
+| Arquivos TS/TSX | **286** |
 | Hooks | **42** |
-| Schemas Zod | 43 |
+| Schemas Zod | **58** |
 | Páginas autenticadas | **35** |
-| Calculadoras | **8** + diagnostics + Sankey |
-| Navegação | 5 tabs mobile + sidebar 5 seções desktop + sininho |
+| Calculadoras | **8** + diagnostics |
+| Navegação | 5 tabs mobile + sidebar 19 links desktop + sininho |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | **6** |
 | iOS build | ✅ GitHub Actions macOS runner (grátis, repo público) |
@@ -5061,7 +5064,7 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | 38.38 | TEC-10: Cleanup types | warranties em database.ts, eslint-disable 9→6 | — |
 | 38.39 | E32→cash-flow | `AnnualComparisonCard` em `/cash-flow` | — |
 
-### 38.40 Engines construídos (17 bibliotecas puras)
+### 38.40 Engines construídos na sessão (16 bibliotecas puras)
 
 | Engine | Arquivo | Testes | Função |
 |--------|---------|--------|--------|
@@ -5082,7 +5085,7 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Registro rápido | `src/lib/services/quick-register.ts` | 9 | Sugestões contextuais: hora/dia/frequência/refeição |
 | Bank detection | `src/lib/parsers/bank-detection.ts` | 15 | Auto-detecção de 8 bancos BR por header CSV |
 
-### 38.41 Sessão 38 — Total: 35 itens concluídos
+### 38.41 Sessão 38 — Total: 30 itens + 7 visual wiring
 
 | Bloco | Itens | Detalhe |
 |-------|-------|---------|

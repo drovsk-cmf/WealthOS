@@ -7,7 +7,7 @@ PAT: usar o token vigente do memory/userMemories. Git user: `Claude (Anthropic) 
 Supabase: projeto `mngjbrbxapazdddzgoje` (sa-east-1). MCP via OAuth.
 Todas as operações de schema via `execute_sql` (não `apply_migration`).
 
-## Ground truth (sessão 38, commit `84e200a`, CI green)
+## Ground truth (sessão 38, CI green)
 
 | Métrica | Valor |
 |---------|-------|
@@ -19,15 +19,16 @@ Todas as operações de schema via `execute_sql` (não `apply_migration`).
 | Indexes | 151 |
 | Migrations (repo) | 70 |
 | Suítes Jest | 72 (1.079 assertions) |
-| TS/TSX | 285 |
+| TS/TSX | 286 |
 | Hooks | 42 |
+| Schemas Zod | 58 |
 | Páginas | 35 |
 | Calculadoras | 8 + diagnostics |
 | eslint-disable (prod) | 6 |
-| Engines puros | 17 |
+| Engines puros (sessão 38) | 16 |
 | iOS build | ✅ (GitHub Actions macOS, grátis) |
 
-## O que foi feito na sessão 38 (37 itens, 70 commits)
+## O que foi feito na sessão 38 (30 itens + 7 visual wiring, 70 commits)
 
 **Fase 1 (nav):** E30 navegação, TEC-13 database.ts, E17 cartões separados, E23 Onie orb.
 **Fase 2 (fiscal):** E50 motor tributário, E45 CLT, E29 IRPF deductions, E51 calendário fiscal, E44 DARF investimentos.
