@@ -5000,26 +5000,65 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | `d48b0f4` | feat(E50/E45): motor tributário PF — calculadora + 28 testes |
 | `f814487` | feat(E50/E45): hook useTaxParameters + CLTSimulator na página de impostos |
 
-### 38.8 Estado do projeto (ground truth sessão 38)
+### 38.8 Ground truth (atualizado final sessão 38)
 
 | Métrica | Valor |
 |---------|-------|
-| Stories | 105/108 (3 bloqueadas por Mac) |
+| Stories | 105/108 (3 bloqueadas por Apple Developer Account) |
 | Tabelas | 36 |
-| Políticas RLS | 108 |
-| Functions | 76 |
+| Políticas RLS | 111 (108 + 3 storage receipts) |
+| Functions | 77 (76 + get_irpf_deductions) |
 | Triggers | 22 |
 | ENUMs | 29 |
 | Indexes | 149 |
-| Migration files (repo) | 66 |
+| Migration files (repo) | 68 (65 + 078, 079, 080) |
 | pg_cron jobs | 13 |
-| Suítes Jest | 57 (919 assertions) |
-| Arquivos TS/TSX | 242 |
-| Hooks | 34 |
+| Suítes Jest | **67** (1.022 assertions) |
+| Arquivos TS/TSX | ~275 |
+| Hooks | 38 |
 | Schemas Zod | 43 |
 | Páginas autenticadas | 33 |
 | Navegação | 5 tabs mobile + sidebar 5 seções desktop |
 | ESLint warnings | 0 |
 | eslint-disable (produção) | 5 |
-| Cobertura (linhas) | ~78% |
+| iOS build | ✅ GitHub Actions macOS runner (grátis, repo público) |
 | CI | ✅ Verde |
+
+### 38.9-38.20 Itens implementados (continuação)
+
+| § | Item | Arquivos criados | Testes |
+|---|------|-----------------|--------|
+| 38.9 | E26: Detector automático de recorrências | `src/lib/services/recurrence-detector.ts`, testes | 13 |
+| 38.10 | E27: Alerta de preço anormal | `src/lib/services/price-anomaly-detector.ts`, testes | 8 |
+| 38.11 | E37: Quitação dívidas snowball/avalanche | `src/lib/services/debt-payoff-planner.ts`, testes | 13 |
+| 38.12 | I2: iOS build chain | `.github/workflows/ios-build.yml`, `capacitor.config.ts` (live URL) | Build #1 success |
+| 38.13 | E22: Sininho de pendências | `src/lib/hooks/use-notification-items.ts`, `src/components/navigation/notification-panel.tsx`, layout wired | — |
+| 38.14 | E29: Consolidação saúde + educação | Migration 079 (dirpf_group + RPC), `src/lib/hooks/use-irpf-deductions.ts`, `src/components/tax/irpf-deductions-card.tsx` | — |
+| 38.15 | E51: Calendário fiscal | `src/lib/services/fiscal-calendar.ts`, testes | 10 |
+| 38.16 | E18: Carga inicial cartão | `src/components/cards/card-form.tsx` (3 modos: total/última fatura/zero) | — |
+| 38.17 | TEC-12: Chunking import | `src/lib/hooks/use-bank-connections.ts` (CHUNK_SIZE=500, onProgress) | — |
+| 38.18 | E40: Métodos de orçamento | `src/app/(app)/budgets/page.tsx` (toggle categoria/base zero, card "Disponível") | — |
+| 38.19 | E33: Provisão sazonal | `src/lib/services/seasonal-provisioning.ts`, testes | 10 |
+| 38.20 | E32: Comparativo anual | `src/lib/services/annual-comparison.ts`, testes | 10 |
+| 38.21 | E38: AI Forecasting | `src/lib/services/balance-forecast.ts`, testes | 9 |
+| 38.22 | E31: Rastreador de garantias | `src/lib/services/warranty-tracker.ts`, testes | 8 |
+| 38.23 | E44: Motor DARF investimentos | `src/lib/services/darf-investment.ts`, testes | 13 |
+| 38.24 | E39: Foto recibo/NF | Migration 080 (bucket receipts, receipt_path), `src/lib/hooks/use-receipts.ts` | — |
+| 38.25 | E41: Diagrama Sankey | `src/lib/services/sankey-data.ts`, testes | 9 |
+
+### 38.26 Engines construídos (11 bibliotecas puras, zero deps)
+
+| Engine | Arquivo | Testes | Função |
+|--------|---------|--------|--------|
+| Motor tributário | `src/lib/tax/calculator.ts` | 28 | INSS, IRPF, CG (Lei 15.270/2025) |
+| DARF investimentos | `src/lib/services/darf-investment.ts` | 13 | Apuração mensal, loss carryforward |
+| Detector recorrências | `src/lib/services/recurrence-detector.ts` | 13 | Normalização, ≥3 meses, CV<30% |
+| Quitação dívidas | `src/lib/services/debt-payoff-planner.ts` | 13 | Snowball vs avalanche |
+| Calendário fiscal | `src/lib/services/fiscal-calendar.ts` | 10 | IRPF, IPVA/UF, IPTU, DARF, carnê-leão |
+| Provisão sazonal | `src/lib/services/seasonal-provisioning.ts` | 10 | Spike >2x, alerta 3 meses antes |
+| Comparativo anual | `src/lib/services/annual-comparison.ts` | 10 | Projeção anualizada, reajustes vs inflação |
+| Projeção de saldos | `src/lib/services/balance-forecast.ts` | 9 | Determinístico: recorrências + tendência + sazonalidade |
+| Sankey data | `src/lib/services/sankey-data.ts` | 9 | Income → Central → Categories → Surplus |
+| Alerta preço | `src/lib/services/price-anomaly-detector.ts` | 8 | Amber >15%, red >30% |
+| Rastreador garantias | `src/lib/services/warranty-tracker.ts` | 8 | Fabricante + extensão cartão |
+
