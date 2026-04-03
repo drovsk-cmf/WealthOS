@@ -4894,7 +4894,7 @@ Itens identificados mas não corrigidos nesta sessão (movidos para PENDENCIAS-F
 | CI | ✅ Verde |
 | Deploy | www.oniefy.com |
 
-## 38. Sessão 38 — Implementação do Redesign: Fase 1 (02/04/2026)
+## 38. Sessão 38 — Redesign completo: 37 itens, 17 engines, 70 commits (02-03/04/2026)
 
 ### 38.1 Contexto
 
@@ -5021,7 +5021,7 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Calculadoras | **8** + diagnostics + Sankey |
 | Navegação | 5 tabs mobile + sidebar 5 seções desktop + sininho |
 | ESLint warnings | 0 |
-| eslint-disable (produção) | 9 |
+| eslint-disable (produção) | **6** |
 | iOS build | ✅ GitHub Actions macOS runner (grátis, repo público) |
 | CI | ✅ Verde |
 
@@ -5046,8 +5046,22 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | 38.23 | E44: Motor DARF investimentos | `src/lib/services/darf-investment.ts`, testes | 13 |
 | 38.24 | E39: Foto recibo/NF | Migration 080 (bucket receipts, receipt_path), `src/lib/hooks/use-receipts.ts` | — |
 | 38.25 | E41: Diagrama Sankey | `src/lib/services/sankey-data.ts`, testes | 9 |
+| 38.26 | E20: Motor deduplicação | `src/lib/services/dedup-engine.ts`, testes | 13 |
+| 38.27 | E28: Calendário financeiro | `src/lib/services/financial-calendar.ts`, testes | 10 |
+| 38.28 | E34: Relatório anual | `src/lib/services/annual-report.ts`, testes | 10 |
+| 38.29 | E21: Registro rápido | `src/lib/services/quick-register.ts`, testes | 9 |
+| 38.30 | E19: Bank detection | `src/lib/parsers/bank-detection.ts`, testes | 15 |
+| 38.31 | TEC-11: WCAG AA | Cores verdant/burnished, prefers-reduced-motion, skip-link | — |
+| 38.32 | Debt Payoff calc | `/calculators/debt-payoff` (wires E37) | — |
+| 38.33 | Sankey→cash-flow | `SankeyFlowChart` toggle em `/cash-flow` | — |
+| 38.34 | Forecast→dashboard | `ForecastCard` com sparkline no dashboard | — |
+| 38.35 | FiscalCal→/tax | `FiscalCalendarCard` em `/tax` | — |
+| 38.36 | Fiscal→sininho | E51 events como fonte #4 em useNotificationItems | — |
+| 38.37 | E31-UI: Garantias | Migration 081 (tabela warranties), `/more/warranties`, useWarranties hook | — |
+| 38.38 | TEC-10: Cleanup types | warranties em database.ts, eslint-disable 9→6 | — |
+| 38.39 | E32→cash-flow | `AnnualComparisonCard` em `/cash-flow` | — |
 
-### 38.26 Engines construídos (17 bibliotecas puras)
+### 38.40 Engines construídos (17 bibliotecas puras)
 
 | Engine | Arquivo | Testes | Função |
 |--------|---------|--------|--------|
@@ -5068,7 +5082,7 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 | Registro rápido | `src/lib/services/quick-register.ts` | 9 | Sugestões contextuais: hora/dia/frequência/refeição |
 | Bank detection | `src/lib/parsers/bank-detection.ts` | 15 | Auto-detecção de 8 bancos BR por header CSV |
 
-### 38.27 Sessão 38 — Total: 35 itens concluídos
+### 38.41 Sessão 38 — Total: 35 itens concluídos
 
 | Bloco | Itens | Detalhe |
 |-------|-------|---------|
