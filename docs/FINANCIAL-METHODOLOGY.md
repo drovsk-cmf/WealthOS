@@ -109,7 +109,7 @@
 
 ### Fase 1 - Diagnóstico (dados que já existem no banco) ✅ CONCLUÍDA
 
-Implementação: RPC `get_cfa_diagnostics` + página `/diagnostics` (sessão 33, 26/03/2026).
+Implementação: RPC `get_financial_diagnostics` + página `/diagnostics` (sessão 33, 26/03/2026).
 
 | Feature | Conceitos | Status |
 |---|---|---|
