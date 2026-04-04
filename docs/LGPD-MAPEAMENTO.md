@@ -33,6 +33,8 @@ O Oniefy coleta dados financeiros pessoais sensíveis. A conformidade com a LGPD
 | Patrimônio (bens, veículos) | Execução contratual | Alta |
 | Dados fiscais (IRPF) | Execução contratual | Alta |
 | Dívidas, financiamentos | Execução contratual | Alta |
+| Garantias de bens (warranties) | Execução contratual | Média |
+| Metas de economia (savings_goals) | Execução contratual | Média |
 
 ### 2.3 Dados Técnicos
 

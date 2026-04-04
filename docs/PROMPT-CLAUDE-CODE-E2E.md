@@ -1,3 +1,5 @@
+> **OBSOLETO.** Números desatualizados (dizia 208 testes/15 suítes; real: 72 suítes/1079 assertions). Path local Windows stale. Reescrever se E2E Playwright for retomado (Q2).
+
 # Oniefy - Prompt para Claude Code: Testes E2E com Playwright
 
 ## Contexto

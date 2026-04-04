@@ -50,7 +50,7 @@
 
 | Item | Severidade | Ação |
 |---|---|---|
-| Verdant/Burnished em texto < 14px bold | Média | Escurecer cores ou aumentar tamanho mínimo |
-| Sem skip-to-content link | Baixa | Adicionar `<a href="#main" class="sr-only focus:not-sr-only">` |
-| Sem `lang="pt-BR"` verificado | Baixa | Confirmar no `<html>` tag |
-| Sem reduced-motion media query | Baixa | Adicionar `@media (prefers-reduced-motion: reduce)` |
+| Verdant/Burnished em texto < 14px bold | Média | Cores escurecidas na sessão 38 (HSL ajustado). Verificar com ferramenta de contraste. |
+| ~~Sem skip-to-content link~~ | ~~Baixa~~ | ✅ Resolvido sessão 38: `layout.tsx` L51 |
+| ~~Sem `lang="pt-BR"` verificado~~ | ~~Baixa~~ | ✅ Confirmado: `<html lang="pt-BR">` em layout.tsx |
+| ~~Sem reduced-motion media query~~ | ~~Baixa~~ | ✅ Resolvido sessão 38: `globals.css` L188-189 |

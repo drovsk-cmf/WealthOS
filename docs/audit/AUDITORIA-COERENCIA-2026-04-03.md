@@ -384,3 +384,155 @@ Verificações originalmente omitidas e executadas após revisão.
 | A038 | B3 | NOTIFICATION-BELL-SPEC | ~18 tipos de notificação no painel | 4/18 implementados | Parcial (por design) | Expandir conforme features alimentadoras forem implementadas |
 
 **Total de achados atualizado: 31 (era 27).**
+
+---
+
+## Adendo 2: Verificações restantes (inventário completo, B2 sistemático, B3/B4 finais)
+
+### A. Inventário per-document (44 markdowns)
+
+| # | Documento | Linhas | Status | Nota |
+|---|-----------|--------|--------|------|
+| 1 | HANDOVER-WealthOS.md | 5225 | Ativo | Source of truth. Atualizado sessão 39. |
+| 2 | PENDENCIAS-FUTURAS.md | 358 | Ativo | Single source of truth para backlog. Atualizado sessão 39. |
+| 3 | README.md | 127 | Ativo (stale parcial) | Coverage badge diz 71.2%, real ~78%. Repo name WealthOS OK (é o nome do repo). |
+| 4 | CLAUDE.md | 37 | Ativo (stale parcial) | Referencia PENDENCIAS-DECISAO como "pendências de decisão" sem indicar que é arquivo histórico. |
+| 5 | docs/AUDIT-CODE-DUMP.md | 25022 | Histórico | Dump de código da sessão 16 para auditoria externa. Read-only. |
+| 6 | docs/AUDIT-PROMPT-GEMINI.md | 211 | Histórico | Prompt enviado ao Gemini para auditoria externa (sessão 16). Read-only. |
+| 7 | docs/AUDITORIA-TECNICA-2026-03-13.md | 410 | Histórico | Auditoria técnica sessão 14. Achados superseded por auditorias posteriores. |
+| 8 | docs/B3-API-INTEGRATION-SPEC.md | 325 | Ativo | E25 bloqueado (A15-A18). Spec sem implementação. |
+| 9 | docs/COMPETITIVE-ANALYSIS.md | 632 | Ativo | 14/14 features rastreadas em PENDENCIAS. Gaps competitivos mapeados como E37-E49. |
+| 10 | docs/DEDUP-ENGINE-SPEC.md | 264 | Ativo (parcial) | Engine implementado. Learning loop e sinal oposto pendentes (A035). |
+| 11 | docs/DEPLOY-VERCEL.md | 118 | Ativo | Env vars corretos (ONIEFY_DB_*). Procedimento atual. |
+| 12 | docs/FEATURES-ROADMAP-SPEC.md | 136 | Ativo | 14/14 features rastreadas em PENDENCIAS (verificado). |
+| 13 | docs/FINANCIAL-METHODOLOGY.md | 324 | Ativo | R01-R10 documentados. RPCs get_financial_scan, get_cfa_diagnostics, get_financial_engine_v2 existem. Alinhado com código. |
+| 14 | docs/IMPORT-ENGINE-SPEC.md | 537 | Ativo (parcial) | Bank-detection ✅. Parsers genéricos ✅. Bank-specific parsers, password derivation, inbound email: não implementados. |
+| 15 | docs/INSTALLMENT-SYSTEM-SPEC.md | 239 | Ativo (parcial) | Apenas schema (3 colunas). Motor de parcelamento não implementado (A036/E67). |
+| 16 | docs/INVESTMENTS-MODULE-SPEC.md | 685 | Ativo | E24 ⬜ pendente. Spec aguardando implementação. |
+| 17 | docs/LGPD-MAPEAMENTO.md | 144 | Ativo (stale) | Não inclui tabelas warranties, savings_goals, bank_institutions (adicionadas pós-doc). |
+| 18 | docs/MATRIZ-VALIDACAO.md | 412 | Ativo | Cópia idêntica da versão em Project Knowledge (v2.1). |
+| 19 | docs/MIGRATE-SUPABASE-SP.md | 83 | **Obsoleto** | Diz "projeto atual está em us-east-1". Falso: projeto sempre esteve em sa-east-1. Migração nunca ocorreu (premissa falsa, documentada em HANDOVER §23). |
+| 20 | docs/NAVIGATION-SPEC.md | 85 | Ativo | Implementação confere (B3.01-B3.02). |
+| 21 | docs/NOTIFICATION-BELL-SPEC.md | 113 | Ativo | 4/18 tipos implementados. Estrutura confere (B3.14). |
+| 22 | docs/ONIE-ORB-SPEC.md | 392 | Ativo | Canvas 2D + Simplex confere (B3.06). |
+| 23 | docs/PLANO-REVISAO-ONIEFY.md | 667 | Histórico | Plano de revisão da sessão 19. Estado do repositório descrito é da sessão 19, números stale. |
+| 24 | docs/POLITICA-EARLY-ADOPTERS.md | 45 | Ativo | Documento de política, sem dependência de código. |
+| 25 | docs/PROMPT-CLAUDE-CODE-E2E.md | 316 | **Obsoleto** | Diz "208 testes Jest (15 suítes)". Real: 72 suítes / 1079 assertions. Path Windows stale. |
+| 26 | docs/QUICK-REGISTER-SPEC.md | 182 | Ativo | Engine ✅. 0/5 formas de captura (A037). |
+| 27 | docs/RASTREABILIDADE-STORY-TESTE.md | 137 | Ativo (stale) | 65/108 stories. Datado sessão 34. Sem E-items (A024). |
+| 28 | docs/RELATORIO-AUDITORIA-2026-03-19.md | 192 | Histórico | Auditoria do projeto legado. Warning no header já indica isso. |
+| 29 | docs/ROTEIRO-TESTE-MANUAL.md | 220 | Ativo (revisar) | Referencia preflight.ps1. Fluxos descritos podem estar desatualizados (navegação mudou na sessão 38). |
+| 30 | docs/SESSION-39-PROMPT.md | ~180 | Ativo | Este prompt. Será histórico após a sessão. |
+| 31 | docs/SETUP-LOCAL.md | 495 | Ativo | Env vars corretos (ONIEFY_DB_*). Project ID correto. |
+| 32 | docs/TAX-ENGINE-SPEC.md | 338 | Ativo | Implementação confere (B3.03-B3.04). |
+| 33 | docs/WCAG-AA-AUDIT.md | 56 | Ativo (stale parcial) | 4 gaps listados. 3/4 já corrigidos: skip-to-content ✅, lang=pt-BR ✅, prefers-reduced-motion ✅. Apenas cor Verdant/Burnished pendente de verificação com ferramenta. |
+| 34-42 | docs/audit/00-SUMMARY a 08-accessibility | 80 achados | Histórico | Sessão 16-18. 66/80 achados marcados resolvidos no próprio doc. 14 restantes podem estar resolvidos sem atualização. |
+| 43 | docs/audit/DIVIDA-TECNICA.md | 585 | **Arquivo histórico** | Header adicionado sessão 39. DT-001-028 todos resolvidos ou adiados. |
+| 44 | docs/audit/PENDENCIAS-DECISAO.md | 243 | **Arquivo histórico** | Header adicionado sessão 39. Itens migrados para PENDENCIAS-FUTURAS. |
+
+**Resumo: 28 ativos, 8 históricos, 2 obsoletos (MIGRATE-SUPABASE-SP, PROMPT-CLAUDE-CODE-E2E), 6 stale parciais.**
+
+---
+
+### B. B2 sistemático: verificação de ~59 itens ✅
+
+Todos os itens marcados ✅ em PENDENCIAS-FUTURAS foram verificados por `find`/`grep` contra o filesystem. Resultado:
+
+- **38 features (E-items):** arquivo de implementação confirmado para cada um (engine, hook, componente ou página).
+- **8 infra/quality (TEC, Q, A, D, I):** arquivo confirmado. TEC-08 em `src/lib/utils/pii-sanitizer.ts` (não `parsers/`). Q3 (Sentry) em error boundaries (lazy import), sem config file dedicado (DSN pendente).
+- **3 falsas ausências na verificação inicial:** E12 em `expense-projection.tsx`, TEC-08 em `utils/pii-sanitizer.ts`, Q3 em error boundaries. Paths incorretos na busca, não arquivos ausentes.
+
+**Nenhum item ✅ está falsamente marcado como completo.**
+
+Itens ⬜/🔒/📌 verificados por ausência:
+- E24 (investimentos): nenhum módulo de investimentos. ⬜ correto.
+- E16 (compartilhamento familiar): 0 refs a RBAC/family permissions. ⬜ correto.
+- E42 (FipeZap), E43 (WhatsApp), E46 (Score crédito): 0 implementação. ⬜ correto.
+
+---
+
+### C. B2: DT-001 a DT-025 verificados contra código (não HANDOVER)
+
+Spot-check de 5 itens representativos contra fonte primária:
+
+| DT | Descrição | Verificação | Resultado |
+|----|-----------|-------------|-----------|
+| DT-001 | loadEncryptionKey silently re-init | `grep` encryption-manager.ts L119: "skip silently" | ✅ Resolvido |
+| DT-004 | Biometria available:false | `grep` use-biometric.ts L36: `available: false` + comentário DT-004 L44 | ✅ Resolvido |
+| DT-010 | Import trigger O(n²) | `execute_sql` prosrc: `DISABLE TRIGGER` + `ENABLE TRIGGER` + `recalculate_account_balance_for` | ✅ Resolvido |
+| DT-012 | edit_transaction RPC | `grep` rpc.ts L260: editTransactionResultSchema + editTransferResultSchema | ✅ Resolvido |
+| DT-026/027/028 | Já verificados anteriormente | Código corrigido na sessão 38 | ✅ Resolvidos |
+
+Dos 28 DT-items: 25 resolvidos (DT-001 a DT-025 + DT-026/027/028), 2 adiados com tracking (DT-007, DT-014 em PENDENCIAS 📌), 1 aceito (DT-015 informativo).
+
+---
+
+### D. B3 final: COMPETITIVE-ANALYSIS e FEATURES-ROADMAP
+
+**COMPETITIVE-ANALYSIS (632L):** 15 concorrentes analisados. Gaps competitivos geraram E37-E49 em PENDENCIAS-FUTURAS. Cross-reference completo: 0 gaps perdidos.
+
+**FEATURES-ROADMAP-SPEC (136L):** 14 features listadas. 14/14 rastreadas em PENDENCIAS (12 ✅, 2 ⬜). 0 itens perdidos.
+
+**IMPORT-ENGINE-SPEC (537L) — verificação completa:**
+
+| Componente da spec | Implementado? | Tracking |
+|-------------------|--------------|----------|
+| Auto-detecção de banco (8 bancos) | ✅ (9 patterns) | E19 ✅ |
+| Parsers genéricos (CSV, OFX, XLSX) | ✅ | Parte de E19 |
+| Bank-specific parsers (BTG, XP, Porto, etc.) | ❌ | Implícito em E19 "próxima sessão". Não tem item separado. |
+| Password derivation (CPF/CEP) | ❌ | Não rastreado |
+| Inbound email processing | ❌ | Rastreado em "Evoluções Estratégicas" (sem ID) |
+| Authorized sender allowlist | ❌ | Não rastreado |
+| Workflow para falhas de import | ❌ | Não rastreado |
+
+→ **Novo achado A039:** 4 componentes da IMPORT-ENGINE-SPEC sem tracking individual em PENDENCIAS.
+
+---
+
+### E. B4 final: documentos operacionais e audit chapters
+
+**docs/MIGRATE-SUPABASE-SP.md:** OBSOLETO. Premissa falsa (us-east-1). Migração nunca ocorreu. Projeto sempre esteve em sa-east-1. Recomendação: deletar ou adicionar header "OBSOLETO".
+
+**docs/PROMPT-CLAUDE-CODE-E2E.md:** OBSOLETO. Números stale (208 testes / 15 suítes → 72 / 1079). Path Windows local. Recomendação: deletar ou reescrever se E2E for retomado.
+
+**docs/WCAG-AA-AUDIT.md:** 3/4 gaps corrigidos (skip-to-content, lang=pt-BR, prefers-reduced-motion). Apenas cores Verdant/Burnished pendentes de verificação com ferramenta.
+
+**docs/LGPD-MAPEAMENTO.md:** Faltam 3 tabelas pós-doc: warranties (user_id + dados de bens), savings_goals (user_id + metas financeiras), bank_institutions (referência, sem dados pessoais).
+
+**docs/audit/00-SUMMARY a 08-accessibility:** 80 achados históricos da sessão 16-18. 66 marcados resolvidos. Os 14 restantes são predominantemente de UX polish e acessibilidade, muitos possivelmente resolvidos em sessões subsequentes sem atualização do doc. Tratados como arquivo histórico.
+
+**CLAUDE.md:** Referencia PENDENCIAS-DECISAO sem indicar que é arquivo histórico. Corrigir.
+
+**README.md:** Badge de coverage stale (71.2% → ~78%).
+
+---
+
+### F. Novos achados (A039-A046)
+
+| ID | Bloco | Origem | Status | Categoria | Ação |
+|----|-------|--------|--------|-----------|------|
+| A039 | B3 | IMPORT-ENGINE-SPEC | 4 componentes sem tracking (parsers, password, allowlist, workflow) | Fragilidade | Criar E68-E71 ou agrupar em E19 |
+| A040 | Inv | MIGRATE-SUPABASE-SP | Documento obsoleto (premissa falsa us-east-1) | Sujeira | Deletar ou marcar OBSOLETO |
+| A041 | Inv | PROMPT-CLAUDE-CODE-E2E | Documento obsoleto (números stale, path stale) | Sujeira | Deletar ou reescrever |
+| A042 | Inv | WCAG-AA-AUDIT | 3/4 gaps resolvidos sem atualização do doc | Sujeira | Atualizar gaps 2-4 como ✅ |
+| A043 | Inv | LGPD-MAPEAMENTO | 3 tabelas pós-doc não mapeadas | Fragilidade | Adicionar warranties, savings_goals |
+| A044 | Inv | CLAUDE.md | PENDENCIAS-DECISAO referenciado como ativo | Sujeira | Atualizar referência |
+| A045 | Inv | README.md | Badge coverage 71.2% (real ~78%) | Sujeira | Atualizar badge |
+| A046 | Inv | ROTEIRO-TESTE-MANUAL.md | Fluxos podem estar stale pós-redesign (sessão 38) | Fragilidade | Revisar fluxos contra UI atual |
+
+**Total final de achados: 39.**
+
+---
+
+### G. Ações consolidadas (atualização)
+
+| # | Ação | Arquivo | Esforço | Prioridade |
+|---|------|---------|---------|-----------|
+| D10 | Deletar ou marcar OBSOLETO | MIGRATE-SUPABASE-SP.md | 1 min | Alta |
+| D11 | Deletar ou marcar OBSOLETO | PROMPT-CLAUDE-CODE-E2E.md | 1 min | Alta |
+| D12 | Atualizar 3/4 gaps como ✅ | WCAG-AA-AUDIT.md | 5 min | Média |
+| D13 | Adicionar warranties + savings_goals ao mapeamento | LGPD-MAPEAMENTO.md | 15 min | Média |
+| D14 | Corrigir referência PENDENCIAS-DECISAO | CLAUDE.md | 1 min | Baixa |
+| D15 | Atualizar badge coverage | README.md | 1 min | Baixa |
+| D16 | Registrar 4 componentes import sem tracking | PENDENCIAS-FUTURAS.md | 5 min | Média |
+| D17 | Revisar fluxos vs UI atual | ROTEIRO-TESTE-MANUAL.md | 1h | Baixa |

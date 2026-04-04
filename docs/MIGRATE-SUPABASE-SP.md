@@ -1,3 +1,5 @@
+> **OBSOLETO.** Este documento descreve uma migração que nunca ocorreu. O projeto sempre esteve em sa-east-1 (São Paulo). A premissa de us-east-1 era falsa (ver HANDOVER §23). Mantido como referência histórica.
+
 # Oniefy - Migrar Supabase para São Paulo (sa-east-1)
 
 ## Por que migrar

@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml/badge.svg)](https://github.com/drovsk-cmf/WealthOS/actions/workflows/ci.yml)
 [![Deploy](https://img.shields.io/badge/deploy-www.oniefy.com-5C2D91)](https://www.oniefy.com)
-[![Coverage](https://img.shields.io/badge/coverage-71.2%25-yellow)](https://github.com/drovsk-cmf/WealthOS)
+[![Coverage](https://img.shields.io/badge/coverage-78%25-brightgreen)](https://github.com/drovsk-cmf/WealthOS)
 
 > **Status:** Beta fechado. O Oniefy não é um app de controle de gastos. É um sistema patrimonial que trata seu dinheiro como um analista financeiro certificado faria: com clareza contábil, métricas de solvência e inteligência fiscal real.
 

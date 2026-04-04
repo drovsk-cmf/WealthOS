@@ -10,7 +10,7 @@ Next.js 15 / React 19 / TypeScript / Supabase (PostgreSQL + Auth + RLS) / Capaci
 ## Documentos-chave
 - `HANDOVER-WealthOS.md` — source of truth do projeto (contexto, histórico, ground truth)
 - `PENDENCIAS-FUTURAS.md` — backlog com status (✅/⬜/🔒/📌)
-- `docs/audit/PENDENCIAS-DECISAO.md` — pendências de decisão
+- `docs/audit/PENDENCIAS-DECISAO.md` — arquivo histórico (itens migrados para PENDENCIAS-FUTURAS na sessão 39)
 - `docs/RASTREABILIDADE-STORY-TESTE.md` — mapa story→teste
 
 ## Comandos úteis
