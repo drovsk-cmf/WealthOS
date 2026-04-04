@@ -536,3 +536,37 @@ Dos 28 DT-items: 25 resolvidos (DT-001 a DT-025 + DT-026/027/028), 2 adiados com
 | D15 | Atualizar badge coverage | README.md | 1 min | Baixa |
 | D16 | Registrar 4 componentes import sem tracking | PENDENCIAS-FUTURAS.md | 5 min | Média |
 | D17 | Revisar fluxos vs UI atual | ROTEIRO-TESTE-MANUAL.md | 1h | Baixa |
+
+---
+
+## Adendo 3: Consolidação de documentos executada
+
+### Deletados (3)
+
+| Arquivo | Linhas | Motivo |
+|---------|--------|--------|
+| docs/AUDIT-CODE-DUMP.md | 25.022 | Dump de código-fonte da sessão 16. Conteúdo é o próprio repo. |
+| docs/MIGRATE-SUPABASE-SP.md | 83 | Premissa falsa (us-east-1). Migração nunca ocorreu. |
+| docs/PROMPT-CLAUDE-CODE-E2E.md | 316 | Números stale, path Windows local. |
+
+### Movidos para docs/archive/ (6)
+
+| Arquivo | Sessão original | Motivo |
+|---------|----------------|--------|
+| AUDIT-PROMPT-GEMINI.md | 16 | Prompt de auditoria externa. Referência histórica. |
+| AUDITORIA-TECNICA-WEALTHOS-2026-03-13.md | 14 | Superseded por auditorias posteriores. |
+| RELATORIO-AUDITORIA-2026-03-19.md | 19 | Auditoria do projeto legado deletado. |
+| PLANO-REVISAO-ONIEFY.md | 19 | Superseded por MATRIZ-VALIDACAO v2.1. |
+| DIVIDA-TECNICA.md | 18-24 | Arquivo histórico. Todos os 28 itens resolvidos ou adiados. |
+| PENDENCIAS-DECISAO.md | 19 | Arquivo histórico. 15 itens FAZER migrados como E52-E65. |
+
+### Resultado
+
+| Diretório | Antes | Depois |
+|-----------|-------|--------|
+| docs/ (markdown) | 29 | 22 ativos |
+| docs/audit/ | 12 | 10 (9 capítulos + esta auditoria) |
+| docs/archive/ | 0 | 6 |
+| **Total repo markdown** | 44 | 41 (3 deletados) |
+
+Referências atualizadas: HANDOVER §3, §32 file tree, CLAUDE.md.

@@ -275,7 +275,8 @@ src/
 - `.github/workflows/ci.yml` - 4 jobs: Security + Lint/TypeCheck + Unit Tests + Build
 - `supabase/migrations/` - 59 SQL files (001 a 071, com gaps)
 - `supabase/tests/test_rls_isolation.sql` - Suíte de testes RLS (50 assertions, 4 batches)
-- `docs/audit/` - 9 arquivos de relatório + DIVIDA-TECNICA.md
+- `docs/audit/` - 9 capítulos de auditoria (00-08) + auditoria de coerência (sessão 39)
+- `docs/archive/` - 6 documentos históricos (DIVIDA-TECNICA, PENDENCIAS-DECISAO, PLANO-REVISAO, etc.)
 
 ### 3.5 Design System "Plum Ledger"
 
@@ -4348,26 +4349,35 @@ _Tabela removida para evitar confusão. Ground truth final em §32.26._
 
 **Referências internas atualizadas** em HANDOVER e PENDENCIAS para refletir novos paths.
 
-**Estrutura docs/ final:**
+**Estrutura docs/ final (atualizada sessão 39):**
 ```
 docs/
-  audit/           # 11 arquivos de auditoria de segurança (sessões 18-19)
-  data/            # Catálogos BCB SGS e IBGE SIDRA (.xlsx)
-  specs/           # 8 documentos de especificação (.docx)
-  AUDIT-CODE-DUMP.md           # Snapshot de código para auditoria (histórico, 852KB)
-  AUDIT-PROMPT-GEMINI.md       # Prompt usado na auditoria Gemini
-  AUDITORIA-TECNICA-*.md       # Auditoria contra projeto legado
-  FINANCIAL-METHODOLOGY.md        # Metodologia Financeira + Motor Financeiro
-  DEPLOY-VERCEL.md             # Guia de deploy
-  LGPD-MAPEAMENTO.md           # Conformidade LGPD (TEC-07)
-  MATRIZ-VALIDACAO.md          # Matriz de validação de stories
-  MIGRATE-SUPABASE-SP.md       # Guia migração para sa-east-1
-  PLANO-REVISAO-ONIEFY.md      # Plano de revisão pré-lançamento
-  POLITICA-EARLY-ADOPTERS.md   # Política early adopters (E5)
-  PROMPT-CLAUDE-CODE-E2E.md    # Prompt para testes E2E
-  RELATORIO-AUDITORIA-*.md     # Relatório de auditoria
-  ROTEIRO-TESTE-MANUAL.md      # Roteiro de teste manual
-  SETUP-LOCAL.md               # Setup desenvolvimento local
+  archive/          # 6 documentos históricos (movidos sessão 39)
+  audit/            # 9 capítulos de auditoria (sessões 18-19) + auditoria coerência (sessão 39)
+  data/             # Catálogos BCB SGS e IBGE SIDRA (.xlsx)
+  specs/            # 8 documentos de especificação (.docx)
+  B3-API-INTEGRATION-SPEC.md    # Spec B3 API (E25, bloqueado)
+  COMPETITIVE-ANALYSIS.md       # Análise de 15 concorrentes
+  DEDUP-ENGINE-SPEC.md          # Spec motor deduplicação
+  DEPLOY-VERCEL.md              # Guia de deploy
+  FEATURES-ROADMAP-SPEC.md      # Roadmap 14 features
+  FINANCIAL-METHODOLOGY.md      # Metodologia Financeira + Motor Financeiro
+  IMPORT-ENGINE-SPEC.md         # Spec motor importação
+  INSTALLMENT-SYSTEM-SPEC.md    # Spec motor parcelamento
+  INVESTMENTS-MODULE-SPEC.md    # Spec módulo investimentos
+  LGPD-MAPEAMENTO.md            # Conformidade LGPD (TEC-07)
+  MATRIZ-VALIDACAO.md           # Matriz de validação v2.1
+  NAVIGATION-SPEC.md            # Spec navegação (5 tabs)
+  NOTIFICATION-BELL-SPEC.md     # Spec sininho
+  ONIE-ORB-SPEC.md              # Spec Onie orb
+  POLITICA-EARLY-ADOPTERS.md    # Política early adopters (E5)
+  QUICK-REGISTER-SPEC.md        # Spec registro rápido
+  RASTREABILIDADE-STORY-TESTE.md # Mapa story→teste (stale, D8 pendente)
+  ROTEIRO-TESTE-MANUAL.md       # Roteiro de teste manual
+  SESSION-39-PROMPT.md          # Prompt da sessão 39
+  SETUP-LOCAL.md                # Setup desenvolvimento local
+  TAX-ENGINE-SPEC.md            # Spec motor tributário
+  WCAG-AA-AUDIT.md              # Auditoria WCAG AA
 ```
 
 ### 32.24 Padronização decimal BR (vírgula) e correções UI
