@@ -2204,6 +2204,7 @@ export type Database = {
       get_financial_diagnostics: { Args: { p_user_id: string }; Returns: Json }
       get_financial_scan: { Args: { p_user_id: string }; Returns: Json }
       get_financial_engine_v2: { Args: { p_user_id: string }; Returns: Json }
+      get_irpf_deductions: { Args: { p_user_id: string; p_year: number }; Returns: Json }
       get_rate_to_brl: { Args: { p_currency: string }; Returns: number }
       get_retention_metrics: { Args: never; Returns: Json }
       get_setup_journey: { Args: { p_user_id: string }; Returns: Json }

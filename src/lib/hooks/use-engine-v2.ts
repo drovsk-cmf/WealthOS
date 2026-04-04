@@ -56,8 +56,7 @@ export function useEngineV2() {
     queryFn: async (): Promise<EngineV2Result> => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)(
+      const { data, error } = await supabase.rpc(
         "get_financial_engine_v2",
         { p_user_id: userId },
       );

@@ -72,8 +72,7 @@ export function useFinancialDiagnostics() {
     queryFn: async (): Promise<FinancialDiagnostics> => {
       const supabase = createClient();
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)(
+      const { data, error } = await supabase.rpc(
         "get_financial_diagnostics",
         { p_user_id: userId },
       );

@@ -33,8 +33,7 @@ export function useIRPFDeductions(year?: number) {
     staleTime: 1000 * 60 * 10, // 10 min
     queryFn: async () => {
       const userId = await getCachedUserId(supabase);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase.rpc as any)(
+      const { data, error } = await supabase.rpc(
         "get_irpf_deductions",
         { p_user_id: userId, p_year: targetYear }
       );

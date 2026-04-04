@@ -257,16 +257,14 @@ export function recordUserDecision(
   if (decision.decision === "different") {
     // User says these are NOT duplicates (e.g., two coffees same day same amount)
     // Learn: this description + amount can appear multiple times same day
+    const amount = parseFloat(decision.fingerprint.split("|")[1]) || 0;
+
     const existing = patterns.find(
       (p) =>
         p.type === "allow_same_day_duplicates" &&
         p.descriptionPattern === desc &&
-        p.amount === decision.fingerprint
-          ? parseFloat(decision.fingerprint.split("|")[1])
-          : -1
+        Math.abs(p.amount - amount) < 0.01
     );
-
-    const amount = parseFloat(decision.fingerprint.split("|")[1]) || 0;
 
     if (existing) {
       existing.occurrences++;
