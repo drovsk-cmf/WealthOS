@@ -5222,6 +5222,8 @@ Novos itens registrados em PENDENCIAS-FUTURAS a partir de B3.10-B3.14:
 | Hash | Mensagem |
 |------|----------|
 | `5355341` | docs: sessão 39 — auditoria de coerência documental |
+| `da993ee` | docs: HANDOVER §39.6 commit hash atualizado |
+| `de67d3e` | docs: sessão 39 adendo — B3.10-B3.14 verificados, E66/E67 registrados |
 
 ### 39.7 Ground truth (inalterado desde §38.8, verificado)
 
