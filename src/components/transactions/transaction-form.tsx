@@ -250,10 +250,10 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
           <div className="mt-2">
             <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-md btn-alive border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent ${scanning ? "opacity-60" : ""}`}>
               <Camera className="h-3.5 w-3.5" />
-              {scanning ? "Escaneando..." : "Preencher por foto de recibo"}
+              {scanning ? "Escaneando..." : "Preencher por foto ou PDF"}
               <input
                 type="file"
-                accept="image/jpeg,image/png"
+                accept="image/jpeg,image/png,application/pdf"
                 className="hidden"
                 disabled={scanning}
                 onChange={async (e) => {

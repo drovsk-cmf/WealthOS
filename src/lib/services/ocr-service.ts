@@ -4,9 +4,11 @@
  * OCR Service - FIN-17 (web version)
  *
  * Uses Tesseract.js for client-side OCR on receipt images.
+ * Uses PDF.js for text extraction from PDFs (E64).
  * Extracts: amount (R$ values), date, vendor/description.
  *
- * Supported: JPG, PNG. PDF support requires PDF.js (future).
+ * Supported: JPG, PNG, PDF.
+ * PDF strategy: text extraction first (fast), OCR fallback for scanned PDFs.
  * Language: Portuguese (por).
  */
 
@@ -29,6 +31,8 @@ const AMOUNT_PATTERNS = [
   /R\$\s?([\d.]+,\d{2})/gi,
   // TOTAL: 1.234,56 or VALOR: 1234,56
   /(?:TOTAL|VALOR|VLR|SUBTOTAL|V\.?\s?TOTAL)\s*:?\s*R?\$?\s?([\d.]+,\d{2})/gi,
+  // VALOR DO DOCUMENTO: 456,78 or VALOR DA NOTA: 1.234,56 (PDF boletos/NF-e)
+  /(?:VALOR\s+D[OAE]\s+\w+)\s*:?\s*R?\$?\s?([\d.]+,\d{2})/gi,
 ];
 
 const DATE_PATTERNS = [
@@ -94,38 +98,130 @@ export function parseDescription(text: string): string | null {
   return null;
 }
 
+// ─── PDF text extraction (E64) ─────────────────────────────────
+
+/** Extract text from PDF using PDF.js. Falls back to OCR if text is sparse. */
+async function extractPdfText(file: File): Promise<{ text: string; isTextBased: boolean }> {
+  const pdfjsLib = await import("pdfjs-dist");
+
+  // Worker via CDN (evita bundlar o worker no build)
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+  // Extract text from all pages (max 10 for receipts)
+  const maxPages = Math.min(pdf.numPages, 10);
+  const texts: string[] = [];
+
+  for (let i = 1; i <= maxPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item) => ("str" in item ? item.str : ""))
+      .join(" ");
+    texts.push(pageText);
+  }
+
+  const fullText = texts.join("\n");
+  // If text has meaningful content (>30 chars), it's a text-based PDF
+  return { text: fullText, isTextBased: fullText.replace(/\s/g, "").length > 30 };
+}
+
+/** Rasterize first page of PDF to image blob for OCR */
+async function rasterizePdfPage(file: File): Promise<Blob> {
+  const pdfjsLib = await import("pdfjs-dist");
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const page = await pdf.getPage(1);
+
+  const scale = 2; // 2x for better OCR quality
+  const viewport = page.getViewport({ scale });
+
+  const canvas = document.createElement("canvas");
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  await page.render({ canvas, viewport }).promise;
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("Falha ao rasterizar PDF."))),
+      "image/png"
+    );
+  });
+}
+
 // ─── OCR Hook ───────────────────────────────────────────────────
 
-/** Run OCR on an image file and extract receipt data */
+/** Run OCR on an image or PDF file and extract receipt data */
 export function useOcrReceipt() {
   return useMutation({
     mutationFn: async (file: File): Promise<OcrResult> => {
-      if (!file.type.startsWith("image/")) {
-        throw new Error("OCR disponível apenas para imagens (JPG, PNG). PDF em breve.");
+      const isImage = file.type.startsWith("image/");
+      const isPdf = file.type === "application/pdf" || file.name.endsWith(".pdf");
+
+      if (!isImage && !isPdf) {
+        throw new Error("OCR disponível para imagens (JPG, PNG) e PDF.");
       }
 
-      // Dynamic import to avoid loading 20MB+ Tesseract in every page
-      const { createWorker } = await import("tesseract.js");
+      // ── PDF path ──────────────────────────────────────────────
+      if (isPdf) {
+        // Step 1: try text extraction (fast path for text-based PDFs)
+        const { text, isTextBased } = await extractPdfText(file);
 
-      const worker = await createWorker("por", 1, {
-        logger: () => {}, // suppress progress logs
-      });
+        if (isTextBased) {
+          return {
+            rawText: text,
+            confidence: 95, // text extraction is reliable
+            parsed: {
+              amount: parseAmount(text),
+              date: parseDate(text),
+              description: parseDescription(text),
+            },
+          };
+        }
 
-      try {
-        const { data } = await worker.recognize(file);
-        const rawText = data.text;
-        const confidence = data.confidence;
-
-        const parsed = {
-          amount: parseAmount(rawText),
-          date: parseDate(rawText),
-          description: parseDescription(rawText),
-        };
-
-        return { rawText, confidence, parsed };
-      } finally {
-        await worker.terminate();
+        // Step 2: scanned PDF → rasterize + OCR
+        const blob = await rasterizePdfPage(file);
+        const imageFile = new File([blob], "page.png", { type: "image/png" });
+        // Fall through to image OCR below
+        return await ocrImage(imageFile);
       }
+
+      // ── Image path ────────────────────────────────────────────
+      return await ocrImage(file);
     },
   });
+}
+
+/** @internal OCR an image file via Tesseract.js */
+async function ocrImage(file: File | Blob): Promise<OcrResult> {
+  const { createWorker } = await import("tesseract.js");
+
+  const worker = await createWorker("por", 1, {
+    logger: () => {},
+  });
+
+  try {
+    const { data } = await worker.recognize(file);
+    const rawText = data.text;
+    const confidence = data.confidence;
+
+    return {
+      rawText,
+      confidence,
+      parsed: {
+        amount: parseAmount(rawText),
+        date: parseDate(rawText),
+        description: parseDescription(rawText),
+      },
+    };
+  } finally {
+    await worker.terminate();
+  }
 }

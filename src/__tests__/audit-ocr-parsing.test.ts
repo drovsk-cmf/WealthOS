@@ -156,3 +156,45 @@ describe("OCR parseDescription", () => {
     expect(parseDescription(text)).toBeNull();
   });
 });
+
+// ─── E64: PDF text extraction patterns ──────────────────────────
+
+describe("OCR parseAmount (PDF text patterns)", () => {
+  it("extrai de fatura de cartão com V.TOTAL", () => {
+    expect(parseAmount("V. TOTAL R$ 2.347,89")).toBe(2347.89);
+  });
+
+  it("extrai de boleto com VALOR DO DOCUMENTO", () => {
+    expect(parseAmount("VALOR DO DOCUMENTO: 456,78")).toBe(456.78);
+  });
+
+  it("extrai de NF-e com valor entre tags", () => {
+    expect(parseAmount("Valor Total da Nota R$ 1.099,00 DADOS")).toBe(1099);
+  });
+
+  it("lida com espaços extras de extração PDF", () => {
+    expect(parseAmount("T O T A L    R $   150 , 00")).toBeNull(); // espaçamento quebra regex — esperado
+  });
+});
+
+describe("OCR parseDate (PDF text patterns)", () => {
+  it("extrai data de emissão de NF-e", () => {
+    expect(parseDate("DATA DE EMISSÃO: 25/03/2026")).toBe("2026-03-25");
+  });
+
+  it("extrai data de boleto com formato DD-MM-YYYY", () => {
+    expect(parseDate("Vencimento: 10-04-2026")).toBe("2026-04-10");
+  });
+});
+
+describe("OCR parseDescription (PDF text patterns)", () => {
+  it("extrai razão social de NF-e", () => {
+    const text = "NF-e\n000123456\nSUPERMERCADO EXTRA LTDA\nCNPJ: 12.345.678/0001-99";
+    expect(parseDescription(text)).toBe("SUPERMERCADO EXTRA LTDA");
+  });
+
+  it("extrai de fatura com cabeçalho longo", () => {
+    const text = "FATURA DO CARTÃO\nNUBANK S.A.\nFatura fechada em 15/03/2026";
+    expect(parseDescription(text)).toBe("FATURA DO CARTÃO");
+  });
+});

@@ -5349,6 +5349,31 @@ Variável `original` não usada renomeada para `_original`. Warning introduzido 
 | `67d2746` | docs(D17): reescrever ROTEIRO-TESTE-MANUAL para navegação sessão 38+ |
 | `a63a049` | feat(E55): liquidity_tier editável para todos os tipos de conta |
 | `4d47b60` | docs(D8): regenerar RASTREABILIDADE-STORY-TESTE (108 stories) |
+| `9102e3b` | docs: HANDOVER §40 + PENDENCIAS atualizados |
+| `e1f517c` | docs: auditoria PENDENCIAS — 11 stale removidos, A19 adicionado |
+| `ab5291d` | feat(E56): FocusTrap no notification-panel |
+
+### 40.10 Auditoria PENDENCIAS-FUTURAS
+
+Varredura sistemática do backlog contra código e DB. 11 itens listados como pendentes já estavam implementados:
+
+| Item | Evidência |
+|------|-----------|
+| E52 | Tab calendário em /bills (grid, cores, navegação mensal) |
+| E53 | AES-256-GCM encryption no export (Settings > Dados) |
+| E54 | Tabela access_logs + logging em login e export |
+| E58 | SolvencyPanel com sparklines + monthly_snapshots |
+| E59 | RPC edit_transfer + UI com pre-fill toAccountId |
+| E60 | Botão "Ratear overhead" em cost-centers |
+| E61 | adjustment_index enum em recorrências |
+| E62 | Hook use-documents.ts + UI em assets e workflows |
+| E63 | AssetDocuments component (PAT-06) |
+| E65 | SW push handler + hook + API routes + Settings UI (falta VAPID keys → A19) |
+| E56 | 15/16 modals tinham FocusTrap; último (notification-panel) adicionado |
+
+### 40.11 E56: FocusTrap notification-panel
+
+Auditoria de 16 modals overlay no app. 15 já tinham FocusTrap. Adicionado no último (notification-panel) com `clickOutsideDeactivates: true, initialFocus: false`.
 
 ### 40.9 Ground truth (atualizado final sessão 40)
 
