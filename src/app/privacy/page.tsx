@@ -168,12 +168,18 @@ export default function PrivacyPage() {
           por meio do aplicativo. Recomendamos revisar esta página regularmente.
         </p>
 
-        <h2>11. Contato</h2>
+        <h2>11. Contato e encarregado de dados</h2>
         <p>
-          Para dúvidas, solicitações ou exercício de direitos previstos na LGPD, entre em contato:
+          Para dúvidas, solicitações ou exercício de direitos previstos na LGPD, entre em contato
+          com nosso encarregado de dados (DPO):
         </p>
         <p>
           <strong>E-mail:</strong> privacidade@oniefy.com
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Nos termos do Art. 41 da LGPD e da Resolução CD/ANPD nº 2/2022, o encarregado é
+          responsável por aceitar reclamações e comunicações dos titulares, prestar esclarecimentos
+          e adotar providências. Tempo de resposta: até 15 dias úteis.
         </p>
 
         <div className="mt-12 flex items-center justify-center gap-4 rounded-lg border bg-card p-4">

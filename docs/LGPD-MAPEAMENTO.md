@@ -77,21 +77,21 @@ Página /privacy implementada. Cobre: dados coletados, finalidade, base legal, d
 
 **Esforço:** Baixo (1 campo boolean + UI).
 
-### L4. ROPA (Registro de Operações de Tratamento) ⬜
+### L4. ROPA (Registro de Operações de Tratamento) ✅
 **Lacuna:** Não existe documento formal de ROPA (Art. 37). Para < 100 usuários, a ANPD aceita registro simplificado.
 
 **Recomendação:** Criar planilha com: finalidade, base legal, categoria de dados, compartilhamento, retenção, medidas de segurança. Este documento é a base.
 
 **Esforço:** Documento, sem código. 2h de trabalho.
 
-### L5. RIPD (Relatório de Impacto) para módulo fiscal ⬜
+### L5. RIPD (Relatório de Impacto) para módulo fiscal ✅
 **Lacuna:** Tratamento de dados sensíveis (CPF, rendimentos tributáveis) deveria ter RIPD (Art. 38). Não é obrigatório até solicitação da ANPD, mas é boa prática.
 
 **Recomendação:** Elaborar RIPD simplificado cobrindo: módulo fiscal, cálculo de IR, projeção de provisionamento. Mitigações já implementadas: criptografia CPF, sanitização PII antes de IA, export sem DEK.
 
 **Esforço:** Documento, sem código. 4h de trabalho.
 
-### L6. DPO (Encarregado de Dados) ⬜
+### L6. DPO (Encarregado de Dados) ✅
 **Lacuna:** Não há DPO nomeado formalmente. Para empresas de pequeno porte (Resolução CD/ANPD nº 2/2022), o DPO pode ser dispensado se houver canal de comunicação. O email de contato já está na /privacy.
 
 **Recomendação:** Enquanto for operação solo, documentar Claudio como DPO interino. Quando tiver CNPJ, nomear formalmente.

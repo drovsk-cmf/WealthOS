@@ -99,8 +99,8 @@ Itens que só o Claudio pode resolver. Sem código.
 | Q1 | Cobertura ~78% lines. Gaps: API routes push/digest. Rastreabilidade story→teste: 85/108 (78%). | 🔄 |
 | Q2 | E2E Playwright como CI gate. Requer Supabase de teste isolado. | ⬜ |
 | E57 | Testes SQL para RPCs novas (edit_transaction, cron_generate_recurring, etc.) | ⬜ |
-| TEC-06 | SBOM no CI. npm sbom CycloneDX já no workflow. | ⬜ |
-| TEC-07 | LGPD: doc ✅, lacunas L3-L6 implementação pendente. | ⬜ |
+| TEC-06 | SBOM no CI. npm sbom CycloneDX já no workflow. | ✅ |
+| TEC-07 | LGPD: ROPA (L4) ✅, RIPD fiscal (L5) ✅, DPO interino (L6) ✅. L3 (consentimento CPF) pendente quando campo for adicionado à UI. | 🔄 |
 
 ---
 
@@ -218,6 +218,14 @@ Decisões IA do adendo v1.5:
 | E56 | FocusTrap em notification-panel (último modal sem trap, 16/16 cobertos) | 40 |
 | E64 | OCR web: PDF.js text extraction + rasterize fallback + Tesseract.js. Regex boleto/NF-e | 40 |
 | E35 | Acesso read-only contador: tabela + RPC + hook + página pública + UI | 40 |
+| NAV-V3 | Navigation v3: sidebar 4 seções, tab bar Inteligência, /more eliminada | 42 |
+| UX-PD | Progressive disclosure: moeda (account), depreciação+seguro (asset), juros (card), reajuste (budget) | 42 |
+| UX-PA | Padrão A: GoalForm, CostCenterForm, WarrantyForm extraídos para componentes | 42 |
+| D6-MIG | FormError migrado para 9 form components (accounts, assets, budgets, cards, categories, cost-centers, family, recurrences, transactions) | 42 |
+| L4 | ROPA simplificado (docs/LGPD-ROPA.md) | 42 |
+| L5 | RIPD fiscal (docs/LGPD-RIPD-FISCAL.md) | 42 |
+| L6 | DPO interino designado na /privacy | 42 |
+| UX-XL | Cross-links contextuais: Bens→Garantias, Categorias→Divisões | 42 |
 
 ---
 
@@ -230,3 +238,4 @@ Decisões IA do adendo v1.5:
 | 03/04/2026 | Sessão 38: 30 itens implementados + 7 visual wiring. |
 | 03/04/2026 | Sessão 39: Auditoria de coerência. +20 itens (E52-E71). Documento reorganizado: pendentes primeiro, concluídos no final. §11 Benchmark removido (vive em COMPETITIVE-ANALYSIS.md). Docs obsoletos deletados/arquivados. |
 | 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). Auditoria PENDENCIAS: 11 entradas stale removidas (E52, E53, E54, E58, E59, E60, E61, E62, E63, E65 já implementados). A19 (VAPID keys) adicionado. |
+| 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD: ROPA (L4), RIPD fiscal (L5), DPO interino (L6). Cross-links contextuais. 7 commits, 24 arquivos. |
