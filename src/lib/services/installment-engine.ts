@@ -149,7 +149,7 @@ export function parseInstallmentInfo(
   typeColumn?: string,
   installmentColumn?: string
 ): InstallmentInfo {
-  const original = description;
+  const _original = description;
 
   // Etapa 1: Coluna dedicada (XP tem "14 de 18")
   if (installmentColumn) {
