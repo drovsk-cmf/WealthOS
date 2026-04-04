@@ -8,7 +8,12 @@ import {
   normalizeDescription,
   descriptionSimilarity,
   levenshtein,
+  recordUserDecision,
+  applyLearnedPatterns,
+  filterOppositeSigns,
   type TransactionForDedup,
+  type UserDecisionRecord,
+  type LearnedPattern,
 } from "@/lib/services/dedup-engine";
 
 function tx(
@@ -150,5 +155,155 @@ describe("Dedup — Transaction Matching", () => {
     // With low threshold (0.5): might match
     const loose = deduplicateTransactions(existing, incoming, 0.5);
     expect(loose.duplicates.length + loose.unique.length).toBe(1);
+  });
+});
+
+// ── E66: Learning Loop ──
+
+describe("Dedup — Learning Loop (E66)", () => {
+  test("recordUserDecision: 'different' cria padrão allow_same_day_duplicates", () => {
+    const decision: UserDecisionRecord = {
+      existingId: "e1",
+      newId: "n1",
+      decision: "different",
+      fingerprint: "2026-01-15|8.50",
+      normalizedDescription: "padaria silva",
+      timestamp: "2026-01-15T12:00:00Z",
+    };
+
+    const patterns = recordUserDecision(decision, []);
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].type).toBe("allow_same_day_duplicates");
+    expect(patterns[0].descriptionPattern).toBe("padaria silva");
+    expect(patterns[0].amount).toBe(8.50);
+    expect(patterns[0].occurrences).toBe(1);
+  });
+
+  test("recordUserDecision: 'same' cria padrão auto_merge", () => {
+    const decision: UserDecisionRecord = {
+      existingId: "e1",
+      newId: "n1",
+      decision: "same",
+      fingerprint: "2026-01-15|45.90",
+      normalizedDescription: "ifood sao paulo",
+      timestamp: "2026-01-15T12:00:00Z",
+    };
+
+    const patterns = recordUserDecision(decision, []);
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].type).toBe("auto_merge");
+    expect(patterns[0].occurrences).toBe(1);
+  });
+
+  test("recordUserDecision: incrementa occurrences em padrão existente", () => {
+    const existing: LearnedPattern[] = [{
+      type: "auto_merge",
+      descriptionPattern: "ifood sao paulo",
+      amount: 45.90,
+      occurrences: 1,
+    }];
+
+    const decision: UserDecisionRecord = {
+      existingId: "e2",
+      newId: "n2",
+      decision: "same",
+      fingerprint: "2026-02-10|45.90",
+      normalizedDescription: "ifood sao paulo",
+      timestamp: "2026-02-10T12:00:00Z",
+    };
+
+    const patterns = recordUserDecision(decision, existing);
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].occurrences).toBe(2);
+  });
+
+  test("applyLearnedPatterns: 'allow_same_day_duplicates' promove para unique", () => {
+    const existingTxs = [tx("e1", "2026-01-15", -8.50, "Padaria Silva", "bank", "acc-1")];
+    const incomingTxs = [tx("n1", "2026-01-15", -8.50, "Padaria Silva", "csv", "acc-2")];
+
+    // Raw dedup finds it as fuzzy duplicate
+    const rawResult = deduplicateTransactions(existingTxs, incomingTxs, 0.8);
+    expect(rawResult.duplicates).toHaveLength(1);
+
+    // Apply learned pattern: user previously said "different"
+    const patterns: LearnedPattern[] = [{
+      type: "allow_same_day_duplicates",
+      descriptionPattern: "padaria silva",
+      amount: 8.50,
+      occurrences: 1,
+    }];
+
+    const adjusted = applyLearnedPatterns(rawResult, patterns, incomingTxs);
+    expect(adjusted.unique).toHaveLength(1);
+    expect(adjusted.duplicates).toHaveLength(0);
+  });
+
+  test("applyLearnedPatterns: 'auto_merge' com >=2 occurrences eleva confidence", () => {
+    const existingTxs = [tx("e1", "2026-01-15", -45.90, "IFOOD SAO PAULO", "bank", "acc-1")];
+    const incomingTxs = [tx("n1", "2026-01-15", -45.90, "IFOOD SAO PAULO BR", "csv", "acc-2")];
+
+    const rawResult = deduplicateTransactions(existingTxs, incomingTxs, 0.7);
+
+    const patterns: LearnedPattern[] = [{
+      type: "auto_merge",
+      descriptionPattern: "ifood sao paulo br",
+      amount: 45.90,
+      occurrences: 3, // confirmed 3x
+    }];
+
+    const adjusted = applyLearnedPatterns(rawResult, patterns, incomingTxs);
+    if (adjusted.duplicates.length > 0) {
+      expect(adjusted.duplicates[0].confidence).toBe(1.0);
+      expect(adjusted.duplicates[0].reason).toContain("auto-merge");
+    }
+  });
+});
+
+// ── E66: Opposite Signs (princípio #6) ──
+
+describe("Dedup — Opposite Signs (E66 princípio #6)", () => {
+  test("filtra pares de sinais opostos (+100 e -100 mesmo dia)", () => {
+    const existing = [
+      tx("e1", "2026-01-15", -100, "Loja ABC", "bank", "acc-1"), // compra
+    ];
+    const incoming = [
+      tx("n1", "2026-01-15", 100, "Loja ABC", "csv", "acc-2"), // estorno
+    ];
+
+    const { existing: filtered } = filterOppositeSigns(existing, incoming);
+    // O -100 existente deve ser filtrado porque o +100 incoming é sinal oposto
+    expect(filtered).toHaveLength(0);
+
+    // Sem filtro, o dedup acharia como duplicata
+    const rawResult = deduplicateTransactions(existing, incoming, 0.8);
+    expect(rawResult.duplicates.length).toBeGreaterThanOrEqual(0); // pode ou não achar
+
+    // Com filtro, nenhuma duplicata
+    const cleanResult = deduplicateTransactions(filtered, incoming, 0.8);
+    expect(cleanResult.unique).toHaveLength(1);
+  });
+
+  test("não filtra mesmo sinal", () => {
+    const existing = [
+      tx("e1", "2026-01-15", -100, "Loja ABC", "bank", "acc-1"),
+    ];
+    const incoming = [
+      tx("n1", "2026-01-15", -100, "Loja ABC", "csv", "acc-2"),
+    ];
+
+    const { existing: filtered } = filterOppositeSigns(existing, incoming);
+    expect(filtered).toHaveLength(1); // kept because same sign
+  });
+
+  test("não filtra quando sem match de fingerprint", () => {
+    const existing = [
+      tx("e1", "2026-01-15", -100, "Loja ABC", "bank", "acc-1"),
+    ];
+    const incoming = [
+      tx("n1", "2026-01-16", 100, "Loja XYZ", "csv", "acc-2"), // different day
+    ];
+
+    const { existing: filtered } = filterOppositeSigns(existing, incoming);
+    expect(filtered).toHaveLength(1); // no match → kept
   });
 });

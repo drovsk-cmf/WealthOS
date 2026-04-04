@@ -203,3 +203,221 @@ export function deduplicateTransactions(
 function round2(v: number): number {
   return Math.round(v * 100) / 100;
 }
+
+// ── E66: Learning Loop (princípios #5 e #6 da DEDUP-ENGINE-SPEC) ──
+
+/**
+ * User decision about a potential duplicate.
+ */
+export interface UserDecisionRecord {
+  /** The two transaction IDs involved */
+  existingId: string;
+  newId: string;
+  /** User's decision */
+  decision: "same" | "different";
+  /** Fingerprint at time of decision (date|amount) */
+  fingerprint: string;
+  /** Normalized description of the new transaction */
+  normalizedDescription: string;
+  /** Recorded at */
+  timestamp: string;
+}
+
+/**
+ * Learned pattern from user decisions.
+ * Stored per user, used to auto-resolve future ambiguities.
+ */
+export interface LearnedPattern {
+  /** Type of learned behavior */
+  type: "allow_same_day_duplicates" | "auto_merge";
+  /** Normalized description pattern */
+  descriptionPattern: string;
+  /** Amount (fixed, for "R$ 8,50 Padaria" same-day pattern) */
+  amount: number;
+  /** How many times this decision was made (confidence grows with repetition) */
+  occurrences: number;
+}
+
+/**
+ * Records a user decision and derives a learned pattern.
+ *
+ * Spec principle #5: "A decisão do usuário ensina o motor."
+ *
+ * @param decision - User's decision about duplicate pair
+ * @param existingPatterns - Current learned patterns
+ * @returns Updated patterns array
+ */
+export function recordUserDecision(
+  decision: UserDecisionRecord,
+  existingPatterns: LearnedPattern[]
+): LearnedPattern[] {
+  const patterns = [...existingPatterns];
+  const desc = decision.normalizedDescription;
+
+  if (decision.decision === "different") {
+    // User says these are NOT duplicates (e.g., two coffees same day same amount)
+    // Learn: this description + amount can appear multiple times same day
+    const existing = patterns.find(
+      (p) =>
+        p.type === "allow_same_day_duplicates" &&
+        p.descriptionPattern === desc &&
+        p.amount === decision.fingerprint
+          ? parseFloat(decision.fingerprint.split("|")[1])
+          : -1
+    );
+
+    const amount = parseFloat(decision.fingerprint.split("|")[1]) || 0;
+
+    if (existing) {
+      existing.occurrences++;
+    } else {
+      patterns.push({
+        type: "allow_same_day_duplicates",
+        descriptionPattern: desc,
+        amount,
+        occurrences: 1,
+      });
+    }
+  } else {
+    // User says these ARE the same transaction
+    // Learn: auto-merge this pattern in the future
+    const amount = parseFloat(decision.fingerprint.split("|")[1]) || 0;
+    const existing = patterns.find(
+      (p) =>
+        p.type === "auto_merge" &&
+        p.descriptionPattern === desc &&
+        Math.abs(p.amount - amount) < 0.01
+    );
+
+    if (existing) {
+      existing.occurrences++;
+    } else {
+      patterns.push({
+        type: "auto_merge",
+        descriptionPattern: desc,
+        amount,
+        occurrences: 1,
+      });
+    }
+  }
+
+  return patterns;
+}
+
+/**
+ * Applies learned patterns to filter dedup results.
+ *
+ * - Patterns with "allow_same_day_duplicates" remove false positives
+ *   (e.g., two R$ 8,50 coffees at the same place on the same day)
+ * - Patterns with "auto_merge" upgrade fuzzy matches to auto-merge
+ *   (confidence → 1.0, no need to ask user again)
+ *
+ * @param result - Raw dedup result
+ * @param patterns - Learned patterns for this user
+ * @returns Adjusted dedup result
+ */
+export function applyLearnedPatterns(
+  result: DeduplicationResult,
+  patterns: LearnedPattern[],
+  incoming: TransactionForDedup[]
+): DeduplicationResult {
+  if (patterns.length === 0) return result;
+
+  const adjustedDuplicates: DuplicateMatch[] = [];
+  const promotedToUnique: TransactionForDedup[] = [];
+
+  for (const dup of result.duplicates) {
+    const inTx = incoming.find((t) => t.id === dup.newId);
+    if (!inTx) {
+      adjustedDuplicates.push(dup);
+      continue;
+    }
+
+    const desc = normalizeDescription(inTx.description);
+    const amount = Math.abs(inTx.amount); // patterns store positive amounts
+
+    // Check "allow_same_day_duplicates" patterns
+    const allowPattern = patterns.find(
+      (p) =>
+        p.type === "allow_same_day_duplicates" &&
+        p.descriptionPattern === desc &&
+        Math.abs(p.amount - amount) < 0.01 &&
+        p.occurrences >= 1
+    );
+
+    if (allowPattern) {
+      // User previously said these are NOT duplicates → promote to unique
+      promotedToUnique.push(inTx);
+      continue;
+    }
+
+    // Check "auto_merge" patterns
+    const mergePattern = patterns.find(
+      (p) =>
+        p.type === "auto_merge" &&
+        p.descriptionPattern === desc &&
+        Math.abs(p.amount - amount) < 0.01 &&
+        p.occurrences >= 2 // require at least 2 confirmations before auto-merge
+    );
+
+    if (mergePattern) {
+      adjustedDuplicates.push({
+        ...dup,
+        confidence: 1.0,
+        reason: `${dup.reason} (auto-merge: padrão confirmado ${mergePattern.occurrences}x pelo usuário)`,
+      });
+      continue;
+    }
+
+    adjustedDuplicates.push(dup);
+  }
+
+  return {
+    unique: [...result.unique, ...promotedToUnique],
+    duplicates: adjustedDuplicates,
+    stats: {
+      total: result.stats.total,
+      unique: result.unique.length + promotedToUnique.length,
+      duplicates: adjustedDuplicates.length,
+      exactMatches: adjustedDuplicates.filter((d) => d.matchType === "exact").length,
+      fuzzyMatches: adjustedDuplicates.filter((d) => d.matchType === "fuzzy").length,
+    },
+  };
+}
+
+/**
+ * Spec principle #6: "Sinais opostos nunca são duplicata."
+ * +100 and -100 on the same day = purchase + refund, not a duplicate.
+ *
+ * This should be called BEFORE deduplicateTransactions to filter out
+ * cross-sign pairs from the candidate pool.
+ */
+export function filterOppositeSigns(
+  existing: TransactionForDedup[],
+  incoming: TransactionForDedup[]
+): { existing: TransactionForDedup[]; incoming: TransactionForDedup[] } {
+  // Nothing to filter if all same sign
+  // The key insight: if an incoming transaction has the opposite sign of an
+  // existing one with same date and amount, they are NOT duplicates.
+  // We mark the existing ones so they're excluded from fingerprint matching.
+
+  // Build a set of incoming fingerprints with their signs
+  const incomingSigns = new Map<string, number>();
+  for (const tx of incoming) {
+    const fp = `${tx.date}|${Math.abs(tx.amount).toFixed(2)}`;
+    incomingSigns.set(fp, tx.amount >= 0 ? 1 : -1);
+  }
+
+  // Filter existing: remove any that have opposite sign to incoming with same fingerprint
+  const filteredExisting = existing.filter((ex) => {
+    const fp = `${ex.date}|${Math.abs(ex.amount).toFixed(2)}`;
+    const inSign = incomingSigns.get(fp);
+    if (inSign === undefined) return true; // no incoming match → keep
+    const exSign = ex.amount >= 0 ? 1 : -1;
+    // If opposite signs → exclude from matching (they're not duplicates)
+    return exSign === inSign;
+  });
+
+  return { existing: filteredExisting, incoming };
+}
+
