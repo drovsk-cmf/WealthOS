@@ -22,6 +22,7 @@ import {
   Upload,
   ClipboardList,
   BarChart3,
+  ShieldCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -52,6 +53,7 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
       { href: "/categories", icon: Tag, label: "Categorias", description: "Gerenciar categorias de receita e despesa", ready: true },
       { href: "/cost-centers", icon: Target, label: "Divisões", description: "Pessoas, projetos e atividades", ready: true },
       { href: "/family", icon: Users, label: "Estrutura familiar", description: "Membros da família e alocações", ready: true },
+      { href: "/more/warranties", icon: ShieldCheck, label: "Garantias", description: "Rastrear garantias de produtos e equipamentos", ready: true },
     ],
   },
   {

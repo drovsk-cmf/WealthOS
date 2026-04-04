@@ -16,7 +16,8 @@ import { toast } from "sonner";
  */
 
 import { useState } from "react";
-import { Package, Paperclip, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Package, Paperclip, Trash2, Shield } from "lucide-react";
 import {
   useAssets,
   useAssetsSummary,
@@ -477,6 +478,18 @@ export default function AssetsPage() {
             </div>
           );
         })()}
+
+      {/* Quick link: Garantias */}
+      <Link
+        href="/more/warranties"
+        className="flex items-center gap-3 rounded-lg border border-dashed border-border/60 px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+      >
+        <Shield className="h-4 w-4 flex-shrink-0" />
+        <span>Garantias de produtos</span>
+        <svg className="ml-auto h-4 w-4 flex-shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
 
       {/* Form dialog */}
       <AssetForm open={formOpen} onClose={() => { setFormOpen(false); setEditData(null); }} editData={editData} />

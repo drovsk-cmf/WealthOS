@@ -3,7 +3,8 @@
 import { toast } from "sonner";
 
 import { useState } from "react";
-import { Tag as TagIcon } from "lucide-react";
+import Link from "next/link";
+import { Tag as TagIcon, Target } from "lucide-react";
 import {
   useCategories,
   useDeleteCategory,
@@ -197,6 +198,18 @@ export default function CategoriesPage() {
           ))}
         </div>
       )}
+
+      {/* Cross-link: Divisões (centros de custo) */}
+      <Link
+        href="/cost-centers"
+        className="flex items-center gap-3 rounded-lg border border-dashed border-border/60 px-4 py-3 text-sm text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+      >
+        <Target className="h-4 w-4 flex-shrink-0" />
+        <span>Divisões (pessoas, projetos, atividades)</span>
+        <svg className="ml-auto h-4 w-4 flex-shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
 
       {/* Form dialog */}
       <CategoryForm
