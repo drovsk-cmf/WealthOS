@@ -5275,3 +5275,99 @@ Migration 082: `installment_group_id`, `installment_current`, `installment_total
 | Engines puros | 16 | **21** | +5 (installment, pipeline, password, import-workflow, dedup extended) |
 | Zod schemas | 61 | **61** | 0 |
 | docs/ markdown | 29 | **22** ativos + 6 archive | -3 deletados, -6 movidos |
+
+## 40. Sessão 40 — Fix CI + Dívida Técnica + Docs (04/04/2026)
+
+### 40.1 Contexto
+
+CI estava vermelho desde commit `fe91f6c` (sessão 39, primeiro engine). A sessão 39 declarou "CI GREEN" no HANDOVER mas não verificou contra fonte primária (GitHub Actions API). Esta sessão corrigiu o CI, resolveu dívida técnica (C1) e atualizou documentação (D8, D17).
+
+### 40.2 Fix CI: package-lock.json corrompido
+
+**Causa raiz:** o lockfile foi regenerado com ~774 linhas alteradas: `"dev": true` adicionado indevidamente a dependências transitivas de produção (webpack, terser, ajv, schema-utils, webassembly, etc.). `npm ci` falhava antes de qualquer job rodar.
+
+**Diagnóstico:** 5 commits consecutivos com CI vermelho (`fe91f6c` → `649708e`). Último green: `d090d91`.
+
+**Fix:** restaurado `package-lock.json` do commit `d090d91`. `npm ci` + testes passaram localmente. Primeiro commit (`576ca51`) ainda falhou no CI por erro de tipo mascarado (ver §40.3).
+
+### 40.3 C1: Remover `as any` de 4 hooks + bug dedup-engine
+
+4 hooks usavam `(supabase.rpc as any)()` para contornar tipo ausente no `database.ts`:
+
+| Hook | RPC | Fix |
+|------|-----|-----|
+| use-diagnostics | get_financial_diagnostics | Tipo já existia em database.ts |
+| use-engine-v2 | get_financial_engine_v2 | Tipo já existia |
+| use-scanner | get_financial_scan | Tipo já existia |
+| use-irpf-deductions | get_irpf_deductions | **Adicionado** ao database.ts (p_user_id: string, p_year: number) |
+
+**Bug corrigido em dedup-engine.ts (linha 264):**
+```
+// ANTES (bug: number === string → sempre false)
+p.amount === decision.fingerprint
+  ? parseFloat(decision.fingerprint.split("|")[1])
+  : -1
+
+// DEPOIS
+Math.abs(p.amount - amount) < 0.01
+```
+
+**Resultado:** eslint-disable em produção: 6 → 2 (restantes são `no-console` legítimos). Type errors: 0.
+
+### 40.4 D17: ROTEIRO-TESTE-MANUAL atualizado
+
+Reescrito para refletir navegação da sessão 38+:
+- 10 → 16 blocos de teste
+- Cobre: 5 seções sidebar (18 links), 5 tabs mobile, hub "Mais" (13 itens)
+- Novos blocos: Cartões, Fluxo de Caixa, Contas a Pagar, Metas, Diagnóstico, Calculadoras (8), Família, Garantias
+- Seção de navegação com tabela de referência
+
+### 40.5 E55: liquidity_tier editável
+
+Dropdown de nível de liquidez (N1-N4) agora visível para todos os tipos de conta, não apenas `investment`. O valor default continua preenchido automaticamente via `COA_PARENT_MAP` ao trocar tipo. Help text atualizado com exemplo prático.
+
+### 40.6 D8: RASTREABILIDADE-STORY-TESTE regenerado
+
+| Métrica | Sessão 34 | Sessão 40 |
+|---------|-----------|-----------|
+| Stories rastreadas | 65 | 108 |
+| Com teste | 10 (15%) | 85 (78%) |
+| Com código fonte | 65 | 79 |
+
+Mapeamento funcional: testes associados por funcionalidade (não apenas por referência direta ao ID). 5 módulos com 100% de cobertura: CAP, FIS, CEN, BANK, IMP. 23 stories sem teste: maioria OAuth/MFA/biometria (difícil unit test) + 3 bloqueadas.
+
+### 40.7 Lint fix: installment-engine.ts
+
+Variável `original` não usada renomeada para `_original`. Warning introduzido na sessão 39 (commit `fe91f6c`).
+
+### 40.8 Commits
+
+| Hash | Mensagem |
+|------|----------|
+| `576ca51` | fix: restaurar package-lock.json + lint warning installment-engine |
+| `a98ebca` | fix(C1): remover 'as any' de 4 hooks RPC + bug dedup-engine |
+| `67d2746` | docs(D17): reescrever ROTEIRO-TESTE-MANUAL para navegação sessão 38+ |
+| `a63a049` | feat(E55): liquidity_tier editável para todos os tipos de conta |
+| `4d47b60` | docs(D8): regenerar RASTREABILIDADE-STORY-TESTE (108 stories) |
+
+### 40.9 Ground truth (atualizado final sessão 40)
+
+| Métrica | Sessão 39 | Sessão 40 | Delta |
+|---------|-----------|-----------|-------|
+| Tabelas | 37 | **37** | 0 |
+| Políticas RLS | 119 | **119** | 0 |
+| Functions | 77 | **77** | 0 |
+| Triggers | 23 | **23** | 0 |
+| ENUMs | 29 | **29** | 0 |
+| Indexes | 152 | **152** | 0 |
+| Migration files (repo) | 71 | **71** | 0 |
+| Suítes Jest | 76 | **76** | 0 |
+| Assertions | ~1.164 | **~1.164** | 0 |
+| Arquivos TS/TSX | 294 | **294** | 0 |
+| Engines puros | 21 | **21** | 0 |
+| Zod schemas | 61 | **61** | 0 |
+| eslint-disable (produção) | 6 | **2** | -4 |
+| `as any` em hooks | 4 | **0** | -4 |
+| Rastreabilidade stories | 65/108 | **108/108** | +43 |
+| Cobertura story→teste | 15% | **78%** | +63pp |
+| docs/ ativos | 22 | **22** | 0 |

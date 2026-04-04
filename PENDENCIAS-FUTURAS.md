@@ -1,7 +1,7 @@
 # Oniefy - Backlog Unificado
 
 **Single source of truth** para todo trabalho pendente, bloqueado e concluído.
-Atualizado: sessão 39 (03/04/2026). Reorganizado: itens pendentes primeiro, concluídos no final.
+Atualizado: sessão 40 (04/04/2026). Reorganizado: itens pendentes primeiro, concluídos no final.
 
 ---
 
@@ -72,7 +72,6 @@ Itens que só o Claudio pode resolver. Sem código.
 | E65 | **Web Push notifications** — tabelas existem, Settings mostra "Em breve". Web Push API + service worker. | 4-6h | Alto |
 | E62 | **Upload documentos WKF-03** — tabela documents + bucket existem. Falta: upload + vínculo. | 2-3h | Médio |
 | E64 | **OCR web (Tesseract.js + PDF.js)** — depende E62. Viável sem Mac. | 4-6h | Médio |
-| E55 | **liquidity_tier editável** — dropdown no AccountForm. | 30 min | Baixo |
 | E59 | **Edição de transferências** — edit_transaction funciona para income/expense, não transfer. | 2-3h | Médio |
 
 ### 3.2 Média prioridade (3 meses pós-lançamento)
@@ -109,7 +108,7 @@ Itens que só o Claudio pode resolver. Sem código.
 
 | ID | Item | Status |
 |----|------|--------|
-| Q1 | Cobertura ~78% lines. Gaps: API routes push/digest. | 🔄 |
+| Q1 | Cobertura ~78% lines. Gaps: API routes push/digest. Rastreabilidade story→teste: 85/108 (78%). | 🔄 |
 | Q2 | E2E Playwright como CI gate. Requer Supabase de teste isolado. | ⬜ |
 | E57 | Testes SQL para RPCs novas (edit_transaction, cron_generate_recurring, etc.) | ⬜ |
 | TEC-06 | SBOM no CI. npm sbom CycloneDX já no workflow. | ⬜ |
@@ -121,7 +120,6 @@ Itens que só o Claudio pode resolver. Sem código.
 
 | ID | Item | Gatilho |
 |----|------|---------|
-| DT-007 | 4 hooks com `as any` (diagnostics, engine-v2, scanner, irpf-deductions) | Bug de tipo |
 | DT-014 | COA órfão (FK preventivo, zero órfãos) | Inconsistência plano de contas |
 | TEC-01 | N+1 em rotas cron (push/digest) | Base > 100 usuários |
 | TEC-02 | Recharts sem lazy loading | Bundle > 500kb |
@@ -217,6 +215,8 @@ Decisões IA do adendo v1.5:
 | E68 | Bank statement pipeline (detecção→parser→normalização→parcelas) | 39 |
 | E69 | Password derivation (8 bancos, fórmulas CPF/CEP) | 39 |
 | E71 | Import failure workflows (8 tipos, classifyImportError) | 39 |
+| E55 | liquidity_tier editável para todos os tipos de conta | 40 |
+| DT-007 | Remover `as any` de 4 hooks RPC + bug dedup-engine | 40 |
 
 ---
 
@@ -228,3 +228,4 @@ Decisões IA do adendo v1.5:
 | 02/04/2026 | Sessão 37: 28 novos itens (E19-E49). |
 | 03/04/2026 | Sessão 38: 30 itens implementados + 7 visual wiring. |
 | 03/04/2026 | Sessão 39: Auditoria de coerência. +20 itens (E52-E71). Documento reorganizado: pendentes primeiro, concluídos no final. §11 Benchmark removido (vive em COMPETITIVE-ANALYSIS.md). Docs obsoletos deletados/arquivados. |
+| 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). |
