@@ -502,8 +502,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </div>
           </div>
 
-          {/* Liquidity Tier — only for investment (others are deterministic) */}
-          {type === "investment" && (
+          {/* Liquidity Tier — editável para todos os tipos (E55) */}
           <div className="space-y-1.5">
             <label htmlFor="acc-tier" className="text-sm font-medium">Nível de liquidez</label>
             <select
@@ -517,10 +516,9 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              N1 = liquidez diária (CDB, Tesouro Selic). N2 = curto prazo (fundos D+30). N3 = longo prazo.
+              Preenchido automaticamente ao escolher o tipo. Ajuste se necessário (ex: poupança com resgate em D+1 = N1, CDB com carência = N3).
             </p>
           </div>
-          )}
 
           {/* Buttons */}
           <div className="flex gap-2 pt-2">
