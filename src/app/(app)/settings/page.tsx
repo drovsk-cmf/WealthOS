@@ -1,18 +1,12 @@
 "use client";
 
 /**
- * Oniefy - Settings Hub (UX-H1-01 + P3)
+ * Oniefy - Settings Hub (Navigation v3)
  *
- * 5 subcategories (reorganizadas adendo v1.5 §2.2):
- * - Pessoal: perfil, notificações
- * - Estrutura e Cadastros: categorias, divisões, família
- * - Finanças: contas a pagar, imposto de renda
- * - Dados: exportação e privacidade
- * - Avançado: plano de contas, índices, métricas
- * - Segurança: MFA, sessões, exclusão de conta
- *
- * Importação removida (promovida à sidebar em P2).
- * Tarefas removidas (acessível via /workflows e dashboard).
+ * Central hub for low-frequency configuration and administrative pages.
+ * High-value features (Diagnóstico, Calculadoras, Indicadores, Impostos,
+ * Recorrências) live in the sidebar proper. This page houses everything
+ * the user configures once and revisits rarely.
  */
 
 import Link from "next/link";
@@ -25,9 +19,8 @@ import {
   Target,
   Users,
   BookOpen,
-  TrendingUp,
-  FileText,
-  Calendar,
+  Upload,
+  ClipboardList,
   BarChart3,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -54,31 +47,25 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
     ],
   },
   {
-    title: "Estrutura e Cadastros",
+    title: "Cadastros",
     items: [
       { href: "/categories", icon: Tag, label: "Categorias", description: "Gerenciar categorias de receita e despesa", ready: true },
       { href: "/cost-centers", icon: Target, label: "Divisões", description: "Pessoas, projetos e atividades", ready: true },
-      { href: "/family", icon: Users, label: "Estrutura Familiar", description: "Membros da família e alocações", ready: true },
-    ],
-  },
-  {
-    title: "Finanças",
-    items: [
-      { href: "/bills", icon: Calendar, label: "Contas a Pagar", description: "Gerenciar pendências e vencimentos", ready: true },
-      { href: "/tax", icon: FileText, label: "Imposto de Renda", description: "Consolidação fiscal e provisionamento IR", ready: true },
+      { href: "/family", icon: Users, label: "Estrutura familiar", description: "Membros da família e alocações", ready: true },
     ],
   },
   {
     title: "Dados",
     items: [
-      { href: "/settings/data", icon: Database, label: "Dados e Privacidade", description: "Exportar dados, política de privacidade", ready: true },
+      { href: "/connections", icon: Upload, label: "Importação", description: "Importar extratos, cadastro em massa, conciliação", ready: true },
+      { href: "/workflows", icon: ClipboardList, label: "Tarefas", description: "Checklist de pendências e rotinas periódicas", ready: true },
+      { href: "/settings/data", icon: Database, label: "Dados e privacidade", description: "Exportar dados, política de privacidade", ready: true },
     ],
   },
   {
     title: "Avançado",
     items: [
-      { href: "/chart-of-accounts", icon: BookOpen, label: "Plano de Contas", description: "Estrutura contábil (uso avançado)", ready: true },
-      { href: "/indices", icon: TrendingUp, label: "Índices Econômicos", description: "IPCA, Selic, CDI, câmbio", ready: true },
+      { href: "/chart-of-accounts", icon: BookOpen, label: "Estrutura contábil", description: "Plano de contas (uso avançado)", ready: true },
       { href: "/settings/analytics", icon: BarChart3, label: "Métricas", description: "Retenção, eventos e volume de dados", ready: true },
     ],
   },

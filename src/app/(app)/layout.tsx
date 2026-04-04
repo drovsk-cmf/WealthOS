@@ -17,10 +17,6 @@ import {
   Repeat,
   Activity,
   Calculator,
-  Upload,
-  Tag,
-  Users,
-  FileText,
   BarChart3,
   Settings,
   LogOut,
@@ -43,11 +39,11 @@ import { NotificationPanel } from "@/components/navigation/notification-panel";
 import { useNotificationItems } from "@/lib/hooks/use-notification-items";
 
 /**
- * Navigation v2 (E30 — NAVIGATION-SPEC.md)
+ * Navigation v3 (UX sidebar audit)
  *
- * Desktop: Sidebar with 5 grouped sections matching the 5-tab structure.
- * Mobile: Top header (brand + sininho) + bottom tab bar (5 tabs).
- * Sininho: bell icon top-right, persistent on all screens (E22 placeholder).
+ * Desktop: Sidebar with 4 semantic sections (Finanças, Patrimônio, Planejamento, Inteligência)
+ *          + Settings pinned at bottom. Low-frequency items moved to /settings hub.
+ * Mobile:  Top header (brand + privacy + sininho) + bottom tab bar (5 tabs).
  */
 
 /* ------------------------------------------------------------------ */
@@ -70,39 +66,35 @@ const SIDEBAR_SECTIONS: NavSection[] = [
     items: [{ href: "/dashboard", label: "Início", icon: Home }],
   },
   {
-    title: "Movimentações",
+    title: "Finanças",
     items: [
       { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
-      { href: "/cards", label: "Cartões", icon: CreditCard },
       { href: "/cash-flow", label: "Fluxo de caixa", icon: TrendingUp },
-      { href: "/bills", label: "Contas a pagar", icon: Repeat },
+      { href: "/bills", label: "Recorrências", icon: Repeat },
     ],
   },
   {
     title: "Patrimônio",
     items: [
       { href: "/accounts", label: "Contas", icon: Wallet },
-      { href: "/assets", label: "Bens e imóveis", icon: Building },
+      { href: "/cards", label: "Cartões", icon: CreditCard },
+      { href: "/assets", label: "Bens", icon: Building },
     ],
   },
   {
-    title: "Orçamento",
+    title: "Planejamento",
     items: [
       { href: "/budgets", label: "Orçamento", icon: PieChart },
       { href: "/goals", label: "Metas", icon: Target },
+      { href: "/tax", label: "Impostos / IRPF", icon: Receipt },
     ],
   },
   {
-    title: "Mais",
+    title: "Inteligência",
     items: [
-      { href: "/tax", label: "Impostos / IRPF", icon: Receipt },
       { href: "/diagnostics", label: "Diagnóstico", icon: Activity },
       { href: "/calculators", label: "Calculadoras", icon: Calculator },
-      { href: "/indices", label: "Índices", icon: BarChart3 },
-      { href: "/connections", label: "Importar", icon: Upload },
-      { href: "/family", label: "Família", icon: Users },
-      { href: "/categories", label: "Categorias", icon: Tag },
-      { href: "/workflows", label: "Relatórios", icon: FileText },
+      { href: "/indices", label: "Indicadores", icon: BarChart3 },
     ],
   },
 ];
@@ -293,6 +285,14 @@ export default function AppLayout({
             >
               {valuesHidden ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
+            {/* Settings (mobile access to low-frequency items) */}
+            <Link
+              href="/settings"
+              className="rounded-md p-2 text-muted-foreground hover:bg-accent"
+              aria-label="Configurações"
+            >
+              <Settings className="h-5 w-5" />
+            </Link>
             {/* Sininho (E22) */}
             <button
               type="button"

@@ -7,13 +7,14 @@ import {
   ArrowLeftRight,
   Building,
   PieChart,
-  MoreHorizontal,
+  Activity,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /**
  * Bottom tab bar for mobile (5 tabs).
- * Matches NAVIGATION-SPEC.md decision: Início, Movimentações, Patrimônio, Orçamento, Mais.
+ * v3: Início, Finanças, Patrimônio, Planejamento, Inteligência.
+ * Low-frequency items (settings, import, categories) accessible via header gear icon.
  * Desktop: hidden (sidebar takes over).
  */
 
@@ -33,31 +34,27 @@ const TABS: Tab[] = [
   },
   {
     href: "/transactions",
-    label: "Movimentações",
+    label: "Finanças",
     icon: ArrowLeftRight,
-    matchPrefixes: ["/cash-flow", "/bills", "/cards"],
+    matchPrefixes: ["/cash-flow", "/bills"],
   },
   {
-    href: "/assets",
+    href: "/accounts",
     label: "Patrimônio",
     icon: Building,
-    matchPrefixes: ["/accounts"],
+    matchPrefixes: ["/cards", "/assets"],
   },
   {
     href: "/budgets",
-    label: "Orçamento",
+    label: "Planejamento",
     icon: PieChart,
-    matchPrefixes: ["/goals"],
+    matchPrefixes: ["/goals", "/tax"],
   },
   {
-    href: "/more",
-    label: "Mais",
-    icon: MoreHorizontal,
-    matchPrefixes: [
-      "/tax", "/diagnostics", "/calculators", "/connections",
-      "/categories", "/chart-of-accounts", "/cost-centers",
-      "/family", "/settings", "/indices", "/workflows",
-    ],
+    href: "/diagnostics",
+    label: "Inteligência",
+    icon: Activity,
+    matchPrefixes: ["/calculators", "/indices"],
   },
 ];
 

@@ -117,7 +117,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           type,
           color,
           liquidity_tier: liquidityTier,
-          currency,
+          currency: currency || "BRL",
           // Frente B (Motor Financeiro)
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
           interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate.replace(",", ".")) : null,
@@ -136,7 +136,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           initial_balance: balance,
           color,
           liquidity_tier: liquidityTier,
-          currency,
+          currency: currency || "BRL",
           ...(type === "financing" && { coaParentCode: financingSubtype }),
           // Frente B (Motor Financeiro)
           ...(type === "investment" && investmentClass && { investment_class: investmentClass }),
@@ -279,35 +279,55 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             </>
           )}
 
-          {/* Currency */}
+          {/* Currency — progressive disclosure: BRL default, toggle for other */}
           <div className="space-y-1.5">
-            <label htmlFor="acc-currency" className="text-sm font-medium">
-              Moeda
-            </label>
-            <select
-              id="acc-currency"
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {currencyGroups.length > 0 ? (
-                currencyGroups.map((group) => (
-                  <optgroup key={group.label} label={group.label}>
-                    {group.currencies.map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.code} - {c.name} ({c.symbol})
-                      </option>
-                    ))}
-                  </optgroup>
-                ))
-              ) : (
-                <option value="BRL">BRL - Real brasileiro (R$)</option>
-              )}
-            </select>
-            {currency !== "BRL" && (
-              <p className="text-xs text-muted-foreground">
-                Saldos serão convertidos para BRL pela cotação do dia.
-              </p>
+            {currency === "BRL" ? (
+              <button
+                type="button"
+                onClick={() => setCurrency("")}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Moeda: BRL (R$) · <span className="underline">alterar</span>
+              </button>
+            ) : (
+              <>
+                <label htmlFor="acc-currency" className="text-sm font-medium">
+                  Moeda
+                </label>
+                <select
+                  id="acc-currency"
+                  value={currency}
+                  onChange={(e) => setCurrency(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <option value="">Selecione a moeda</option>
+                  {currencyGroups.length > 0 ? (
+                    currencyGroups.map((group) => (
+                      <optgroup key={group.label} label={group.label}>
+                        {group.currencies.map((c) => (
+                          <option key={c.code} value={c.code}>
+                            {c.code} - {c.name} ({c.symbol})
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))
+                  ) : (
+                    <option value="BRL">BRL - Real brasileiro (R$)</option>
+                  )}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setCurrency("BRL")}
+                  className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+                >
+                  Usar Real (BRL)
+                </button>
+                {currency && currency !== "BRL" && (
+                  <p className="text-xs text-muted-foreground">
+                    Saldos serão convertidos para BRL pela cotação do dia.
+                  </p>
+                )}
+              </>
             )}
           </div>
 

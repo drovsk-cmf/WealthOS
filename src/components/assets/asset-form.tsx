@@ -58,6 +58,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
   const [currency, setCurrency] = useState("BRL");
   const [parentAssetId, setParentAssetId] = useState<string>("");
   const [error, setError] = useState("");
+  // Progressive disclosure: depreciation + insurance hidden by default
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const { data: assets } = useAssets();
   const { data: templates } = useAssetTemplates();
@@ -94,6 +96,13 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
       setParentAssetId(defaultParentId ?? "");
     }
     setError("");
+    // Show advanced section if editing with existing advanced data
+    if (editData) {
+      const hasAdv = (editData.depreciation_rate && editData.depreciation_rate !== 0) || !!editData.insurance_policy || !!editData.insurance_expiry;
+      setShowAdvanced(!!hasAdv);
+    } else {
+      setShowAdvanced(false);
+    }
   }, [editData, open, defaultParentId]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -266,39 +275,57 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
             </div>
           </div>
 
-          {/* Acquisition date + Depreciation */}
-          <div className="grid grid-cols-2 gap-4">
-            {!isEditing && (
-              <div>
-                <label htmlFor="asset-acq-date" className="text-sm font-medium">Data de aquisição</label>
-                <input id="asset-acq-date" type="date" value={acquisitionDate} onChange={(e) => setAcquisitionDate(e.target.value)}
-                  required aria-required="true" className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          {/* Acquisition date (required for new assets) */}
+          {!isEditing && (
+            <div>
+              <label htmlFor="asset-acq-date" className="text-sm font-medium">Data de aquisição</label>
+              <input id="asset-acq-date" type="date" value={acquisitionDate} onChange={(e) => setAcquisitionDate(e.target.value)}
+                required aria-required="true" className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+          )}
+
+          {/* Advanced: Depreciation + Insurance — collapsed by default */}
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <svg className={`h-3 w-3 transition-transform ${showAdvanced ? "rotate-90" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              {showAdvanced ? "Ocultar opções avançadas" : "Depreciação, seguro e mais opções"}
+            </button>
+
+            {showAdvanced && (
+              <div className="space-y-4 rounded-lg border border-dashed border-border/60 p-4">
+                {/* Depreciation */}
+                <div>
+                  <label htmlFor="asset-depreciation" className="text-sm font-medium">Depreciação (% ao ano)</label>
+                  <input id="asset-depreciation" type="text" inputMode="decimal" value={depreciationRate}
+                    onChange={(e) => setDepreciationRate(e.target.value)} placeholder="0"
+                    className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Imóveis: 4%. Veículos: 20%. Eletrônicos: 20-33%.
+                  </p>
+                </div>
+
+                {/* Insurance */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="asset-insurance" className="text-sm font-medium">Apólice de seguro</label>
+                    <input id="asset-insurance" type="text" value={insurancePolicy} onChange={(e) => setInsurancePolicy(e.target.value)}
+                      placeholder="Opcional"
+                      className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                  </div>
+                  <div>
+                    <label htmlFor="asset-insurance-expiry" className="text-sm font-medium">Vencimento do seguro</label>
+                    <input id="asset-insurance-expiry" type="date" value={insuranceExpiry} onChange={(e) => setInsuranceExpiry(e.target.value)}
+                      className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                  </div>
+                </div>
               </div>
             )}
-            <div>
-              <label htmlFor="asset-depreciation" className="text-sm font-medium">Depreciação (% ao ano)</label>
-              <input id="asset-depreciation" type="text" inputMode="decimal" value={depreciationRate}
-                onChange={(e) => setDepreciationRate(e.target.value)} placeholder="0"
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                Imóveis: 4%. Veículos: 20%. Eletrônicos: 20-33%.
-              </p>
-            </div>
-          </div>
-
-          {/* Insurance */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="asset-insurance" className="text-sm font-medium">Apólice de seguro</label>
-              <input id="asset-insurance" type="text" value={insurancePolicy} onChange={(e) => setInsurancePolicy(e.target.value)}
-                placeholder="Opcional"
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            </div>
-            <div>
-              <label htmlFor="asset-insurance-expiry" className="text-sm font-medium">Vencimento do seguro</label>
-              <input id="asset-insurance-expiry" type="date" value={insuranceExpiry} onChange={(e) => setInsuranceExpiry(e.target.value)}
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            </div>
           </div>
 
           {error && <p role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}

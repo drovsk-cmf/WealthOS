@@ -38,6 +38,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
   const [initialBalance, setInitialBalance] = useState("");
   const [balanceMode, setBalanceMode] = useState<"total" | "last" | "zero">("total");
   const [color, setColor] = useState(PRESET_COLORS[0]);
+  const [showRateField, setShowRateField] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const { data: bankInstitutions } = useBankInstitutions();
@@ -66,6 +67,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
       setColor(PRESET_COLORS[0]);
     }
     setError(null);
+    setShowRateField(!!card?.interest_rate);
   }, [card, open]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -269,26 +271,36 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
               Dias do mês (1 a 31). Usado para alertas e calendário financeiro.
             </p>
 
-            {/* Interest rate */}
-            <div className="space-y-1.5">
-              <label htmlFor="card-rate" className="text-sm font-medium">
-                Taxa rotativo (% a.m.)
-              </label>
-              <input
-                id="card-rate"
-                type="text"
-                inputMode="decimal"
-                value={interestRate}
-                onChange={(e) => {
-                  setInterestRate(e.target.value.replace(/[^\d.,]/g, ""));
-                }}
-                placeholder="Ex: 14,90"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              />
-              <p className="text-xs text-muted-foreground">
-                Use vírgula como decimal. Usada na análise de custo de dívida.
-              </p>
-            </div>
+            {/* Interest rate — collapsed by default */}
+            {showRateField ? (
+              <div className="space-y-1.5">
+                <label htmlFor="card-rate" className="text-sm font-medium">
+                  Taxa rotativo (% a.m.)
+                </label>
+                <input
+                  id="card-rate"
+                  type="text"
+                  inputMode="decimal"
+                  value={interestRate}
+                  onChange={(e) => {
+                    setInterestRate(e.target.value.replace(/[^\d.,]/g, ""));
+                  }}
+                  placeholder="Ex: 14,90"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Use vírgula como decimal. Usada na análise de custo de dívida.
+                </p>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowRateField(true)}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+              >
+                + Informar taxa de juros do rotativo
+              </button>
+            )}
 
             {/* Initial balance - 3 alternatives (E18) */}
             {!isEdit && (

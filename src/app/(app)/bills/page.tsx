@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 
 /**
- * Oniefy - Contas a Pagar (Phase 4)
+ * Oniefy - Recorrências (Phase 4)
  *
  * CAP-01: Criar transação recorrente
  * CAP-02: Editar recorrência
@@ -143,7 +143,7 @@ export default function BillsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Contas a Pagar</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Recorrências</h1>
           <p className="text-sm text-muted-foreground">
             Gerencie suas despesas recorrentes
           </p>
