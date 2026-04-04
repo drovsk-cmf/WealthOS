@@ -5175,15 +5175,15 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 
 Auditoria completa de coerência entre documentação e implementação. Zero alterações de código funcional. Todas as métricas do ground truth (§38.8) verificadas contra fonte primária (`execute_sql`, `find`, `grep`). Framework: MATRIZ-VALIDACAO-v2_1.md.
 
-### 39.2 Achados (31 catalogados)
+### 39.2 Achados (39 catalogados)
 
 | Categoria | Qtd | Exemplos |
 |-----------|-----|----------|
-| Sujeira documental | 8 | §3.3 título 76→77, DT-026/027/028 não marcados como resolvidos |
-| Fragilidade rastreamento | 5 | RASTREABILIDADE 65/108 stories, 3 fontes de pendências sobrepostas |
-| Débito técnico | 7 | 4 hooks com `as any`, dedup sem learning loop, motor parcelamento não implementado |
+| Sujeira documental | 12 | §3.3 76→77, DT-026/027/028 stale, MIGRATE-SUPABASE-SP obsoleto, PROMPT-CLAUDE-CODE-E2E obsoleto |
+| Fragilidade rastreamento | 7 | RASTREABILIDADE 65/108, 3 fontes sobrepostas, 4 import components sem tracking, LGPD 3 tabelas faltando |
+| Débito técnico | 7 | 4 hooks `as any`, dedup sem learning loop, motor parcelamento não implementado |
 | Divergência numérica | 5 | Zod 58→61, migrations ~58→53, sidebar 19→18 |
-| Parcial / por design | 2 | Quick-register (engine OK, 0/5 formas de captura), sininho (4/18 tipos) |
+| Parcial / por design | 2 | Quick-register (engine OK, 0/5 formas), sininho (4/18 tipos) |
 | Confirmado OK | 14 | Tabelas, RLS, functions, enums, indexes, cron, hooks, pages |
 
 Segurança: 77/77 functions com search_path. 119 RLS confirmadas. 0 vulnerabilidades.
@@ -5200,6 +5200,13 @@ Segurança: 77/77 functions com search_path. 119 RLS confirmadas. 0 vulnerabilid
 | D6 | DIVIDA-TECNICA, PENDENCIAS-DECISAO | Header "ARQUIVO HISTÓRICO" adicionado |
 | D7 | PENDENCIAS-FUTURAS | 15 itens FAZER migrados como E52-E65 (§4.3) |
 | D9 | HANDOVER §35, §36 | Nota "snapshot da época" adicionada |
+| D10 | MIGRATE-SUPABASE-SP | Marcado OBSOLETO (premissa falsa us-east-1) |
+| D11 | PROMPT-CLAUDE-CODE-E2E | Marcado OBSOLETO (números stale) |
+| D12 | WCAG-AA-AUDIT | 3/4 gaps marcados ✅ (skip-to-content, lang, reduced-motion) |
+| D13 | LGPD-MAPEAMENTO | +2 tabelas: warranties, savings_goals |
+| D14 | CLAUDE.md | PENDENCIAS-DECISAO referenciado como arquivo histórico |
+| D15 | README | Badge coverage 71.2% → 78% |
+| D16 | PENDENCIAS-FUTURAS | E68-E71 (import pipeline sub-components) registrados |
 
 ### 39.4 Proposta de consolidação (aceita e executada)
 
@@ -5210,12 +5217,13 @@ Modelo 2 documentos: PENDENCIAS-FUTURAS (single source of truth para backlog) + 
 | Item | Motivo | Esforço |
 |------|--------|---------|
 | D8: Regenerar RASTREABILIDADE-STORY-TESTE (108 stories) | Escopo de ~2-3h, sessão dedicada | 2-3h |
+| D17: Revisar ROTEIRO-TESTE-MANUAL vs UI atual | Navegação mudou na sessão 38 | 1h |
 | C1: Resolver `as any` em 4 hooks | Requer regenerar database.ts types | 1-2h |
 | C2: Reconciliar bank-detection patterns com IMPORT-ENGINE-SPEC | Baixa prioridade | 15 min |
 
-Novos itens registrados em PENDENCIAS-FUTURAS a partir de B3.10-B3.14:
-- E66: Dedup learning loop (princípio #5 da spec). Engine base funciona, mas não aprende.
-- E67: Motor de parcelamento (INSTALLMENT-SYSTEM-SPEC). Apenas schema existe, motor não implementado.
+Novos itens registrados em PENDENCIAS-FUTURAS:
+- E66: Dedup learning loop. E67: Motor parcelamento.
+- E68-E71: Import pipeline (parsers bank-specific, password derivation, inbound email, workflow falhas).
 
 ### 39.6 Commits
 
@@ -5224,6 +5232,8 @@ Novos itens registrados em PENDENCIAS-FUTURAS a partir de B3.10-B3.14:
 | `5355341` | docs: sessão 39 — auditoria de coerência documental |
 | `da993ee` | docs: HANDOVER §39.6 commit hash atualizado |
 | `de67d3e` | docs: sessão 39 adendo — B3.10-B3.14 verificados, E66/E67 registrados |
+| `47cea3c` | docs: HANDOVER §39.6 commits atualizados |
+| `12fcc6f` | docs: sessão 39 final — inventário completo, B2 sistemático, B4 docs operacionais |
 
 ### 39.7 Ground truth (inalterado desde §38.8, verificado)
 
