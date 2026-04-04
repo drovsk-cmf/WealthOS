@@ -13,16 +13,16 @@
 | Body text (#241E29) on background (#FBF9F5) | 15.45 | PASSA | PASSA |
 | Primary (#4F2F69) on background (#FBF9F5) | 10.28 | PASSA | PASSA |
 | Muted (#64748B) on background (#FBF9F5) | 4.53 | PASSA | PASSA |
-| **Verdant (#2D8B5E) on background (#FBF9F5)** | **4.02** | **FALHA** | PASSA |
-| **Burnished (#C75B3F) on background (#FBF9F5)** | **4.00** | **FALHA** | PASSA |
+| **Verdant (hsl 152 55% 31% ≈ #247B52) on background (#FBF9F5)** | **4.96** | PASSA | PASSA |
+| **Burnished (hsl 35 66% 34% ≈ #906020) on background (#FBF9F5)** | **5.15** | PASSA | PASSA |
 | Body text on card (#FFFFFF) | 16.24 | PASSA | PASSA |
 | Primary on card (#FFFFFF) | 10.81 | PASSA | PASSA |
 | Muted on card (#FFFFFF) | 4.76 | PASSA | PASSA |
 | Body text on sidebar (#241E29) | 15.45 | PASSA | PASSA |
 
-**Achados:** Verdant e Burnished falham AA Normal para texto pequeno (< 18px regular ou < 14px bold). Ambos passam AA Large. No codebase, esses tons aparecem em badges (text-[9px], text-xs) onde o contraste é insuficiente.
+**Achados:** Verdant e Burnished passam AA Normal (4.96:1 e 5.15:1 respectivamente). Valores corrigidos nas sessões 38-42 via ajuste dos HSL no globals.css. Contraste verificado numericamente (sessão 42).
 
-**Recomendação:** escurecer Verdant para #247A50 (ratio ~5.1) e Burnished para #B04E34 (ratio ~4.8) para atingir AA Normal, ou garantir que nunca sejam usados em texto < 14px bold.
+**Status:** Resolvido. Nenhuma ação pendente.
 
 ## 2. Keyboard Navigation (2.1.1 / 2.4.7)
 
