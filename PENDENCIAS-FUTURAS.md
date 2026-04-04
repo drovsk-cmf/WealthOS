@@ -100,7 +100,7 @@ Itens que só o Claudio pode resolver. Sem código.
 | Q2 | E2E Playwright como CI gate. Requer Supabase de teste isolado. | ⬜ |
 | E57 | Testes SQL para RPCs novas (edit_transaction, cron_generate_recurring, etc.) | ⬜ |
 | TEC-06 | SBOM no CI. npm sbom CycloneDX já no workflow. | ✅ |
-| TEC-07 | LGPD: ROPA (L4) ✅, RIPD fiscal (L5) ✅, DPO interino (L6) ✅. L3 (consentimento CPF) pendente quando campo for adicionado à UI. | 🔄 |
+| TEC-07 | LGPD: L3 (CPF + consentimento) ✅, L4 (ROPA) ✅, L5 (RIPD fiscal) ✅, L6 (DPO) ✅. Completo. | ✅ |
 
 ---
 
@@ -225,6 +225,7 @@ Decisões IA do adendo v1.5:
 | L4 | ROPA simplificado (docs/LGPD-ROPA.md) | 42 |
 | L5 | RIPD fiscal (docs/LGPD-RIPD-FISCAL.md) | 42 |
 | L6 | DPO interino designado na /privacy | 42 |
+| L3 | CPF com consentimento explícito: campo + checkbox + criptografia AES-256 em perfil e família | 42 |
 | UX-XL | Cross-links contextuais: Bens→Garantias, Categorias→Divisões | 42 |
 
 ---
@@ -238,4 +239,4 @@ Decisões IA do adendo v1.5:
 | 03/04/2026 | Sessão 38: 30 itens implementados + 7 visual wiring. |
 | 03/04/2026 | Sessão 39: Auditoria de coerência. +20 itens (E52-E71). Documento reorganizado: pendentes primeiro, concluídos no final. §11 Benchmark removido (vive em COMPETITIVE-ANALYSIS.md). Docs obsoletos deletados/arquivados. |
 | 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). Auditoria PENDENCIAS: 11 entradas stale removidas (E52, E53, E54, E58, E59, E60, E61, E62, E63, E65 já implementados). A19 (VAPID keys) adicionado. |
-| 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD: ROPA (L4), RIPD fiscal (L5), DPO interino (L6). Cross-links contextuais. 7 commits, 24 arquivos. |
+| 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD completo: ROPA (L4), RIPD fiscal (L5), DPO interino (L6), CPF com consentimento explícito + criptografia AES-256 em perfil e família (L3). Cross-links contextuais. 8 commits, 28+ arquivos. |

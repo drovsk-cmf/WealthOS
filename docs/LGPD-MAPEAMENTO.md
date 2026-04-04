@@ -70,7 +70,7 @@ Página /privacy implementada. Cobre: dados coletados, finalidade, base legal, d
 ### L2. Exportação de dados ✅
 /settings/data exporta 14 tabelas em JSON ou CSV. Campos criptografados permanecem cifrados (DEK não incluída por design).
 
-### L3. Consentimento CPF ⬜
+### L3. Consentimento CPF ✅
 **Lacuna:** CPF é coletado sem checkbox de consentimento explícito separado. É armazenado criptografado (AES-256), mas a coleta deveria ter consentimento granular (Art. 8º).
 
 **Recomendação:** Adicionar checkbox no formulário de CPF (family members) com texto: "Autorizo o armazenamento criptografado do CPF para fins de declaração fiscal. Posso revogar a qualquer momento em Configurações."

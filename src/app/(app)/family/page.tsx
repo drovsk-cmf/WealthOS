@@ -40,6 +40,7 @@ export default function FamilyPage() {
       birth_date: m.birth_date,
       is_tax_dependent: m.is_tax_dependent,
       avatar_emoji: m.avatar_emoji,
+      cpf_encrypted: m.cpf_encrypted,
     });
     setFormOpen(true);
   }

@@ -10,9 +10,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { passwordSchema } from "@/lib/validations/auth";
+import { getActiveDEK } from "@/lib/auth/encryption-manager";
+import { encryptField, decryptField } from "@/lib/crypto";
 
 const CURRENCIES = [
   { code: "BRL", label: "Real (R$)" },
@@ -20,6 +22,29 @@ const CURRENCIES = [
   { code: "EUR", label: "Euro (€)" },
   { code: "GBP", label: "Libra (£)" },
 ] as const;
+
+/** Format raw digits as ###.###.###-## */
+function formatCpfDisplay(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+/** Basic CPF validation (11 digits + check digits) */
+function isValidCpf(raw: string): boolean {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(digits)) return false; // All same digit
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(digits[i]) * (len + 1 - i);
+    const rem = sum % 11;
+    return rem < 2 ? 0 : 11 - rem;
+  };
+  return calc(9) === Number(digits[9]) && calc(10) === Number(digits[10]);
+}
 
 export default function ProfileSettingsPage() {
   const supabase = createClient();
@@ -37,6 +62,13 @@ export default function ProfileSettingsPage() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // CPF state (L3 LGPD)
+  const [cpf, setCpf] = useState("");
+  const [cpfConsent, setCpfConsent] = useState(false);
+  const [cpfSaving, setCpfSaving] = useState(false);
+  const [cpfMessage, setCpfMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [hasDEK, setHasDEK] = useState(false);
+
   useEffect(() => {
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,13 +76,26 @@ export default function ProfileSettingsPage() {
 
       const { data } = await supabase
         .from("users_profile")
-        .select("full_name, default_currency")
+        .select("full_name, default_currency, cpf_encrypted")
         .eq("id", user.id)
         .single();
 
       if (data) {
         setFullName(data.full_name ?? "");
         setCurrency(data.default_currency ?? "BRL");
+
+        // Decrypt CPF if available
+        const dek = getActiveDEK();
+        setHasDEK(!!dek);
+        if (dek && data.cpf_encrypted) {
+          try {
+            const plain = await decryptField(data.cpf_encrypted, dek);
+            setCpf(formatCpfDisplay(plain));
+            setCpfConsent(true); // Already consented if CPF exists
+          } catch {
+            setCpf("");
+          }
+        }
       }
       setLoading(false);
     }
@@ -137,6 +182,62 @@ export default function ProfileSettingsPage() {
       });
     } finally {
       setPasswordSaving(false);
+    }
+  }
+
+  // ─── L3 LGPD: Save CPF (encrypted) ─────────────────────────
+  async function handleSaveCpf() {
+    setCpfSaving(true);
+    setCpfMessage(null);
+
+    const digits = cpf.replace(/\D/g, "");
+
+    // Allow clearing CPF (revoke consent)
+    if (!digits) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Sessão expirada.");
+        await supabase.from("users_profile").update({ cpf_encrypted: null }).eq("id", user.id);
+        setCpfConsent(false);
+        setCpfMessage({ type: "success", text: "CPF removido." });
+      } catch (err) {
+        setCpfMessage({ type: "error", text: err instanceof Error ? err.message : "Erro ao remover CPF." });
+      } finally {
+        setCpfSaving(false);
+      }
+      return;
+    }
+
+    if (!cpfConsent) {
+      setCpfMessage({ type: "error", text: "Marque o consentimento para salvar o CPF." });
+      setCpfSaving(false);
+      return;
+    }
+
+    if (!isValidCpf(digits)) {
+      setCpfMessage({ type: "error", text: "CPF inválido. Verifique os dígitos." });
+      setCpfSaving(false);
+      return;
+    }
+
+    const dek = getActiveDEK();
+    if (!dek) {
+      setCpfMessage({ type: "error", text: "Chave de criptografia indisponível. Faça login novamente." });
+      setCpfSaving(false);
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Sessão expirada.");
+
+      const encrypted = await encryptField(digits, dek);
+      await supabase.from("users_profile").update({ cpf_encrypted: encrypted }).eq("id", user.id);
+      setCpfMessage({ type: "success", text: "CPF salvo com criptografia." });
+    } catch (err) {
+      setCpfMessage({ type: "error", text: err instanceof Error ? err.message : "Erro ao salvar CPF." });
+    } finally {
+      setCpfSaving(false);
     }
   }
 
@@ -265,6 +366,86 @@ export default function ProfileSettingsPage() {
         >
           {passwordSaving ? "Alterando..." : "Alterar senha"}
         </button>
+      </div>
+
+      {/* ═══ L3 LGPD: CPF (criptografado) ═══ */}
+      <div className="space-y-4 rounded-lg border bg-card p-5">
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-verdant" />
+          <h2 className="text-sm font-semibold">CPF</h2>
+        </div>
+
+        {!hasDEK && (
+          <p className="text-xs text-muted-foreground">
+            Chave de criptografia não carregada. Faça login novamente para gerenciar o CPF.
+          </p>
+        )}
+
+        {hasDEK && (
+          <>
+            <p className="text-xs text-muted-foreground">
+              Armazenado com criptografia AES-256 no seu dispositivo. Usado para consolidação fiscal (IRPF).
+            </p>
+
+            {cpfMessage && (
+              <div className={`rounded-md border p-3 text-sm ${
+                cpfMessage.type === "success"
+                  ? "border-verdant/20 bg-verdant/10 text-verdant"
+                  : "border-destructive/50 bg-destructive/10 text-destructive"
+              }`}>
+                {cpfMessage.text}
+              </div>
+            )}
+
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                CPF
+              </label>
+              <input
+                type="text"
+                value={cpf}
+                onChange={(e) => setCpf(formatCpfDisplay(e.target.value))}
+                placeholder="000.000.000-00"
+                maxLength={14}
+                inputMode="numeric"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm tabular-nums"
+              />
+            </div>
+
+            <label className="flex items-start gap-3 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm">
+              <input
+                type="checkbox"
+                checked={cpfConsent}
+                onChange={(e) => setCpfConsent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-input"
+              />
+              <span className="text-xs text-muted-foreground">
+                Autorizo o armazenamento criptografado do CPF para fins de declaração fiscal.
+                Posso revogar a qualquer momento limpando o campo acima.
+              </span>
+            </label>
+
+            <div className="flex gap-2">
+              <button type="button"
+                onClick={handleSaveCpf}
+                disabled={cpfSaving}
+                className="flex items-center gap-2 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+              >
+                {cpfSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                Salvar CPF
+              </button>
+              {cpf && (
+                <button type="button"
+                  onClick={() => { setCpf(""); setCpfConsent(false); handleSaveCpf(); }}
+                  disabled={cpfSaving}
+                  className="rounded-md border px-4 py-2 text-sm text-muted-foreground hover:text-foreground btn-alive"
+                >
+                  Remover
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

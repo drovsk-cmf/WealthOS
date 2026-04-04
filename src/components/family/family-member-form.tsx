@@ -13,11 +13,36 @@ import {
   useUpdateFamilyMember,
   RELATIONSHIP_OPTIONS,
 } from "@/lib/hooks/use-family-members";
+import { createClient } from "@/lib/supabase/client";
+import { getActiveDEK } from "@/lib/auth/encryption-manager";
+import { encryptField, decryptField } from "@/lib/crypto";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
 
 type FamilyRelationship = Database["public"]["Enums"]["family_relationship"];
+
+/** Format raw digits as ###.###.###-## */
+function formatCpfDisplay(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+function isValidCpf(raw: string): boolean {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(digits)) return false;
+  const calc = (len: number) => {
+    let sum = 0;
+    for (let i = 0; i < len; i++) sum += Number(digits[i]) * (len + 1 - i);
+    const rem = sum % 11;
+    return rem < 2 ? 0 : 11 - rem;
+  };
+  return calc(9) === Number(digits[9]) && calc(10) === Number(digits[10]);
+}
 
 export interface FamilyEditData {
   id: string;
@@ -26,6 +51,7 @@ export interface FamilyEditData {
   birth_date: string | null;
   is_tax_dependent: boolean;
   avatar_emoji: string | null;
+  cpf_encrypted: string | null;
 }
 
 interface FamilyMemberFormProps {
@@ -42,8 +68,11 @@ export function FamilyMemberForm({ open, onClose, editData }: FamilyMemberFormPr
   const [birthDate, setBirthDate] = useState("");
   const [isTaxDep, setIsTaxDep] = useState(false);
   const [avatar, setAvatar] = useState("👤");
+  const [cpf, setCpf] = useState("");
+  const [cpfConsent, setCpfConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const supabase = createClient();
   const createMember = useCreateFamilyMember();
   const updateMember = useUpdateFamilyMember();
   const loading = createMember.isPending || updateMember.isPending;
@@ -55,12 +84,24 @@ export function FamilyMemberForm({ open, onClose, editData }: FamilyMemberFormPr
       setBirthDate(editData.birth_date || "");
       setIsTaxDep(editData.is_tax_dependent);
       setAvatar(editData.avatar_emoji || "👤");
+      // Decrypt CPF if exists
+      const dek = getActiveDEK();
+      if (dek && editData.cpf_encrypted) {
+        decryptField(editData.cpf_encrypted, dek)
+          .then((plain) => { setCpf(formatCpfDisplay(plain)); setCpfConsent(true); })
+          .catch(() => setCpf(""));
+      } else {
+        setCpf("");
+        setCpfConsent(false);
+      }
     } else {
       setName("");
       setRelationship("self");
       setBirthDate("");
       setIsTaxDep(false);
       setAvatar("👤");
+      setCpf("");
+      setCpfConsent(false);
     }
     setError(null);
   }, [editData, open]);
@@ -73,7 +114,20 @@ export function FamilyMemberForm({ open, onClose, editData }: FamilyMemberFormPr
       return;
     }
 
+    // Validate CPF if provided
+    const cpfDigits = cpf.replace(/\D/g, "");
+    if (cpfDigits && !isValidCpf(cpfDigits)) {
+      setError("CPF inválido. Verifique os dígitos.");
+      return;
+    }
+    if (cpfDigits && !cpfConsent) {
+      setError("Marque o consentimento para salvar o CPF.");
+      return;
+    }
+
     try {
+      let memberId: string | undefined;
+
       if (isEdit && editData) {
         await updateMember.mutateAsync({
           id: editData.id,
@@ -83,15 +137,29 @@ export function FamilyMemberForm({ open, onClose, editData }: FamilyMemberFormPr
           is_tax_dependent: isTaxDep,
           avatar_emoji: avatar,
         });
+        memberId = editData.id;
       } else {
-        await createMember.mutateAsync({
+        const newId = await createMember.mutateAsync({
           name: name.trim(),
           relationship,
           birth_date: birthDate || undefined,
           is_tax_dependent: isTaxDep,
           avatar_emoji: avatar,
         });
+        memberId = newId as string;
       }
+
+      // Save CPF (encrypted) separately
+      if (memberId) {
+        const dek = getActiveDEK();
+        if (cpfDigits && dek && cpfConsent) {
+          const encrypted = await encryptField(cpfDigits, dek);
+          await supabase.from("family_members").update({ cpf_encrypted: encrypted }).eq("id", memberId);
+        } else if (!cpfDigits) {
+          await supabase.from("family_members").update({ cpf_encrypted: null }).eq("id", memberId);
+        }
+      }
+
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar.");
@@ -184,6 +252,37 @@ export function FamilyMemberForm({ open, onClose, editData }: FamilyMemberFormPr
               Dependente no IRPF
             </label>
           </div>
+
+          {/* CPF (L3 LGPD) — shown when tax dependent */}
+          {isTaxDep && (
+            <div className="space-y-3 rounded-lg border border-dashed border-border/60 p-3">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">CPF do dependente</label>
+                <input
+                  type="text"
+                  value={cpf}
+                  onChange={(e) => setCpf(formatCpfDisplay(e.target.value))}
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                  inputMode="numeric"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm tabular-nums"
+                />
+              </div>
+              {cpf.replace(/\D/g, "").length > 0 && (
+                <label className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={cpfConsent}
+                    onChange={(e) => setCpfConsent(e.target.checked)}
+                    className="mt-0.5 h-3.5 w-3.5 rounded border-input"
+                  />
+                  <span>
+                    Autorizo o armazenamento criptografado do CPF para fins fiscais.
+                  </span>
+                </label>
+              )}
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex gap-2 pt-2">
