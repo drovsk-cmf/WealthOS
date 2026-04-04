@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import FocusTrap from "focus-trap-react";
 import { X, AlertTriangle, Bell, CheckCircle2 } from "lucide-react";
 import { OnieLoader } from "@/components/ui/onie-loader";
 import type { NotificationItem, NotificationPriority } from "@/lib/hooks/use-notification-items";
@@ -80,7 +81,8 @@ export function NotificationPanel({
   if (!open) return null;
 
   return (
-    <>
+    <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true, initialFocus: false }}>
+      <div>
       {/* Backdrop */}
       <div className="fixed inset-0 z-50 bg-black/30" />
 
@@ -175,6 +177,7 @@ export function NotificationPanel({
           )}
         </div>
       </div>
-    </>
+      </div>
+    </FocusTrap>
   );
 }
