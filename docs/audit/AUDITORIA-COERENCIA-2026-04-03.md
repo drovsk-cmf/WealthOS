@@ -303,3 +303,84 @@ O projeto mantém 3 documentos de rastreamento de pendências com sobreposição
 ---
 
 *Gerado por Claude (Sessão 39). Verificado contra fonte primária para cada achado.*
+
+---
+
+## Adendo: B3.10-B3.14 (verificações completadas na sessão)
+
+Verificações originalmente omitidas e executadas após revisão.
+
+### B3.10: DEDUP-ENGINE-SPEC (264L) vs dedup-engine.ts (205L)
+
+| Requisito da spec | Implementado? | Evidência |
+|-------------------|--------------|-----------|
+| 3 filtros: exact → fuzzy → auth_code | ✅ | matchType: "exact" \| "fuzzy" \| "auth_code" (L29) |
+| Fingerprint (date + normalized amount) | ✅ | `fingerprint()` L50-69 |
+| Levenshtein distance | ✅ | `levenshtein()` L71-89, similarity score L91-102 |
+| Cross-account exclusion | ⚠️ Parcial | L158-159: skip same account + same source. Spec pede exclusão por `transfer_pair_id` (mais robusto) |
+| User feedback/learning loop (princípio #5) | ❌ | 0 ocorrências de learn/feedback/teach/pattern no código. Motor não aprende com decisões do usuário |
+| Sinais opostos nunca duplicata (princípio #6) | ❌ | Sem verificação de sinal no código |
+
+**Veredicto:** Engine cobre o núcleo (3 filtros + fingerprint + Levenshtein). Faltam 2 features de spec: learning loop adaptativo e exclusão por sinal oposto. Categoria: **Débito técnico** (funciona para importação batch, não tem a inteligência adaptativa descrita).
+
+---
+
+### B3.12: INSTALLMENT-SYSTEM-SPEC (239L) vs implementação
+
+| Requisito da spec | Implementado? | Evidência |
+|-------------------|--------------|-----------|
+| Campos credit_limit, closing_day, due_day | ✅ | Migration 078, database.ts L55-61 |
+| Aritmética do centavo (1ª parcela absorve resto) | ❌ | Nenhuma função de split em parcelas no codebase |
+| Geração de N parcelas a partir de compra parcelada | ❌ | Sem installment_of, installment_total, installment_group_id em transactions |
+| Distribuição em faturas futuras por closing_day | ❌ | Nenhuma lógica de distribuição |
+| Reconciliação de parcelas com fatura real | ❌ | Depende de E19 (import engine, não implementado) |
+
+**Veredicto:** Apenas infraestrutura de schema (3 colunas em accounts). O **motor de parcelamento** descrito na spec não existe. Categoria: **Débito técnico** (spec documenta feature não implementada). PENDENCIAS-FUTURAS não tem item específico para isso. Deveria ser registrado.
+
+---
+
+### B3.13: QUICK-REGISTER-SPEC (182L) vs quick-register.ts (205L)
+
+| Requisito da spec | Implementado? | Evidência |
+|-------------------|--------------|-----------|
+| Engine de sugestões contextuais (hora/dia/frequência) | ✅ | `generateSuggestions()` com time-based + history-based + amount-range |
+| Forma 1: Captura push notification | ❌ | Depende de CFG-04 (Apple) + push web (E65) |
+| Forma 2: Share Extension | ❌ | Depende de Apple Developer Account |
+| Forma 3: Widget na tela inicial | ❌ | Requer Capacitor plugin nativo |
+| Forma 4: Mensagem de texto para Onie | ❌ | Nenhuma barra de texto na UI |
+| Forma 5: Voz (Speech-to-Text) | ❌ | Nenhum código de STT |
+
+**Veredicto:** Engine de sugestões (inteligência por trás) implementado e testado (9 testes). Nenhuma das 5 formas de captura da spec implementada. Isso é esperado: a spec é roadmap, o engine é a fundação. Categoria: **Débito técnico aceitável** (por design, formas de captura dependem de infra nativa).
+
+---
+
+### B3.14: NOTIFICATION-BELL-SPEC (113L) vs notification-panel.tsx + use-notification-items.ts
+
+| Requisito da spec | Implementado? | Evidência |
+|-------------------|--------------|-----------|
+| Sininho persistente em todas as telas | ✅ | layout.tsx (header), bottom-tab-bar.tsx |
+| Overlay/modal (não navegação) | ✅ | notification-panel.tsx como Sheet overlay |
+| Badge numérico (ações) vs ponto (info) | ✅ | `actionable: boolean` no NotificationItem |
+| Inbox zero com Onie orb + "Tudo em ordem" | ✅ | L126-133: OnieLoader + mensagem |
+| Fonte 1: Recorrências detectadas (E26) | ✅ | L57-71 |
+| Fonte 2: Alertas de preço (E27) | ✅ | L73-98 |
+| Fonte 3: Vencimentos próximos (3 dias) | ✅ | L100-123 |
+| Fonte 4: Calendário fiscal (E51) | ✅ | L125-138 |
+| 9 tipos de ação da spec (duplicata, fatura, etc.) | ❌ | 4 de ~18 tipos implementados. Restantes dependem de features futuras (E19, E20, E24) |
+| Garantias prestes a vencer | ❌ | warranties existe mas não alimenta sininho |
+| Budget excedido | ❌ | useBudgets existe mas não alimenta sininho |
+
+**Veredicto:** Estrutura correta (overlay, badge, inbox zero, Onie orb). 4 de ~18 tipos de notificação implementados. Coerente com o estágio do projeto: features alimentadoras (import, dedup, investimentos) ainda não existem. Categoria: **Parcial, por design.**
+
+---
+
+### Novos achados (A035-A038)
+
+| ID | Bloco | Origem | Afirmação | Status | Categoria | Ação |
+|----|-------|--------|-----------|--------|-----------|------|
+| A035 | B3 | DEDUP-ENGINE-SPEC | Motor aprende com decisões do usuário (princípio #5) | Não implementado | Débito técnico | Registrar como item em PENDENCIAS-FUTURAS |
+| A036 | B3 | INSTALLMENT-SYSTEM-SPEC | Motor de parcelamento gera N parcelas com aritmética do centavo | Não implementado (apenas schema) | Débito técnico | Registrar como item em PENDENCIAS-FUTURAS |
+| A037 | B3 | QUICK-REGISTER-SPEC | 5 formas de captura coexistentes | 0/5 implementadas (engine de sugestões OK) | Débito técnico (aceitável) | Já coberto por dependências (E65, CFG-04, etc.) |
+| A038 | B3 | NOTIFICATION-BELL-SPEC | ~18 tipos de notificação no painel | 4/18 implementados | Parcial (por design) | Expandir conforme features alimentadoras forem implementadas |
+
+**Total de achados atualizado: 31 (era 27).**

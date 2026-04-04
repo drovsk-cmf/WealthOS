@@ -5175,14 +5175,15 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 
 Auditoria completa de coerência entre documentação e implementação. Zero alterações de código funcional. Todas as métricas do ground truth (§38.8) verificadas contra fonte primária (`execute_sql`, `find`, `grep`). Framework: MATRIZ-VALIDACAO-v2_1.md.
 
-### 39.2 Achados (27 catalogados)
+### 39.2 Achados (31 catalogados)
 
 | Categoria | Qtd | Exemplos |
 |-----------|-----|----------|
 | Sujeira documental | 8 | §3.3 título 76→77, DT-026/027/028 não marcados como resolvidos |
 | Fragilidade rastreamento | 5 | RASTREABILIDADE 65/108 stories, 3 fontes de pendências sobrepostas |
-| Débito técnico | 3 | 4 hooks com `as any`, seções históricas sem nota |
+| Débito técnico | 7 | 4 hooks com `as any`, dedup sem learning loop, motor parcelamento não implementado |
 | Divergência numérica | 5 | Zod 58→61, migrations ~58→53, sidebar 19→18 |
+| Parcial / por design | 2 | Quick-register (engine OK, 0/5 formas de captura), sininho (4/18 tipos) |
 | Confirmado OK | 14 | Tabelas, RLS, functions, enums, indexes, cron, hooks, pages |
 
 Segurança: 77/77 functions com search_path. 119 RLS confirmadas. 0 vulnerabilidades.
@@ -5211,6 +5212,10 @@ Modelo 2 documentos: PENDENCIAS-FUTURAS (single source of truth para backlog) + 
 | D8: Regenerar RASTREABILIDADE-STORY-TESTE (108 stories) | Escopo de ~2-3h, sessão dedicada | 2-3h |
 | C1: Resolver `as any` em 4 hooks | Requer regenerar database.ts types | 1-2h |
 | C2: Reconciliar bank-detection patterns com IMPORT-ENGINE-SPEC | Baixa prioridade | 15 min |
+
+Novos itens registrados em PENDENCIAS-FUTURAS a partir de B3.10-B3.14:
+- E66: Dedup learning loop (princípio #5 da spec). Engine base funciona, mas não aprende.
+- E67: Motor de parcelamento (INSTALLMENT-SYSTEM-SPEC). Apenas schema existe, motor não implementado.
 
 ### 39.6 Commits
 
