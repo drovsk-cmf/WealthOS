@@ -5185,14 +5185,14 @@ Implementado conforme `docs/ONIE-ORB-SPEC.md`:
 
 Auditoria completa de coerência entre documentação e implementação. Zero alterações de código funcional. Todas as métricas do ground truth (§38.8) verificadas contra fonte primária (`execute_sql`, `find`, `grep`). Framework: MATRIZ-VALIDACAO-v2_1.md.
 
-### 39.2 Achados (39 catalogados)
+### 39.2 Achados (39 catalogados, 5 resolvidos por implementação)
 
 | Categoria | Qtd | Exemplos |
 |-----------|-----|----------|
-| Sujeira documental | 12 | §3.3 76→77, DT-026/027/028 stale, MIGRATE-SUPABASE-SP obsoleto, PROMPT-CLAUDE-CODE-E2E obsoleto |
-| Fragilidade rastreamento | 7 | RASTREABILIDADE 65/108, 3 fontes sobrepostas, 4 import components sem tracking, LGPD 3 tabelas faltando |
-| Débito técnico | 7 | 4 hooks `as any`, dedup sem learning loop, motor parcelamento não implementado |
-| Divergência numérica | 5 | Zod 58→61, migrations ~58→53, sidebar 19→18 |
+| Sujeira documental | 12 | §3.3 76→77, DT-026/027/028 stale, MIGRATE-SUPABASE-SP obsoleto (deletado) |
+| Fragilidade rastreamento | 7 | RASTREABILIDADE 65/108, 3 fontes sobrepostas (consolidado), LGPD 3 tabelas |
+| Débito técnico | 2 | 4 hooks `as any`. ~~dedup sem learning (E66), parcelamento (E67)~~ → implementados |
+| Divergência numérica | 5 | Zod 58→61, migrations ~58→53, sidebar 19→18 (todos corrigidos) |
 | Parcial / por design | 2 | Quick-register (engine OK, 0/5 formas), sininho (4/18 tipos) |
 | Confirmado OK | 14 | Tabelas, RLS, functions, enums, indexes, cron, hooks, pages |
 
@@ -5222,20 +5222,27 @@ Segurança: 77/77 functions com search_path. 119 RLS confirmadas. 0 vulnerabilid
 
 Modelo 2 documentos: PENDENCIAS-FUTURAS (single source of truth para backlog) + HANDOVER (contexto + ground truth). DIVIDA-TECNICA e PENDENCIAS-DECISAO convertidos em arquivo histórico read-only.
 
-### 39.5 Pendente (não executado nesta sessão)
+### 39.5 Implementações (5 engines do redesign)
+
+| § | Item | Engine | Testes | Commit |
+|---|------|--------|--------|--------|
+| 39.5.1 | E67: Motor de parcelamento | `installment-engine.ts` (splitInstallments, parseInstallmentInfo 6 regex, calculateInstallmentDates, generateInstallmentTransactions, projectFutureBills, reconcileInstallment, estimateTotalFromInstallment) | 29 | `fe91f6c` |
+| 39.5.2 | E68: Bank statement pipeline | `bank-statement-pipeline.ts` (parseBankStatement, normalizers por banco, integração E67 para parcelas, countInstallments) | 8 | `197b8fb` |
+| 39.5.3 | E66: Dedup learning loop | `dedup-engine.ts` estendido (recordUserDecision, applyLearnedPatterns, filterOppositeSigns) | 8 | `197b8fb` |
+| 39.5.4 | E69: Password derivation | `password-derivation.ts` (derivePassword 8 bancos, fórmulas CPF/CEP, fallback banco desconhecido) | 21 | `385c1fc` |
+| 39.5.5 | E71: Import failure workflows | `import-workflow.ts` (generateImportWorkflow 8 tipos, classifyImportError) | 19 | `385c1fc` |
+
+Migration 082: `installment_group_id`, `installment_current`, `installment_total`, `installment_original_amount` em transactions + índice parcial.
+
+### 39.6 Pendente
 
 | Item | Motivo | Esforço |
 |------|--------|---------|
 | D8: Regenerar RASTREABILIDADE-STORY-TESTE (108 stories) | Escopo de ~2-3h, sessão dedicada | 2-3h |
 | D17: Revisar ROTEIRO-TESTE-MANUAL vs UI atual | Navegação mudou na sessão 38 | 1h |
 | C1: Resolver `as any` em 4 hooks | Requer regenerar database.ts types | 1-2h |
-| C2: Reconciliar bank-detection patterns com IMPORT-ENGINE-SPEC | Baixa prioridade | 15 min |
 
-Novos itens registrados em PENDENCIAS-FUTURAS:
-- E66: Dedup learning loop. E67: Motor parcelamento.
-- E68-E71: Import pipeline (parsers bank-specific, password derivation, inbound email, workflow falhas).
-
-### 39.6 Commits
+### 39.7 Commits
 
 | Hash | Mensagem |
 |------|----------|
@@ -5244,7 +5251,27 @@ Novos itens registrados em PENDENCIAS-FUTURAS:
 | `de67d3e` | docs: sessão 39 adendo — B3.10-B3.14 verificados, E66/E67 registrados |
 | `47cea3c` | docs: HANDOVER §39.6 commits atualizados |
 | `12fcc6f` | docs: sessão 39 final — inventário completo, B2 sistemático, B4 docs operacionais |
+| `41aadef` | docs: HANDOVER §39 consolidado final (39 achados) |
+| `20f5245` | docs: consolidação documental — 3 deletados, 6 movidos para archive/ |
+| `d090d91` | docs: PENDENCIAS-FUTURAS reorganizado |
+| `fe91f6c` | feat(E67): motor de parcelamento |
+| `197b8fb` | feat(E66,E68): dedup learning loop + bank statement pipeline |
+| `385c1fc` | feat(E69,E71): password derivation + import failure workflows |
 
-### 39.7 Ground truth (inalterado desde §38.8, verificado)
+### 39.8 Ground truth (atualizado final sessão 39)
 
-Todas as métricas de §38.8 confirmadas contra fonte primária, exceto ajustes documentais aplicados (D1-D4). Nenhuma alteração de código ou banco nesta sessão.
+| Métrica | Sessão 38 | Sessão 39 | Delta |
+|---------|-----------|-----------|-------|
+| Tabelas | 37 | **37** | 0 |
+| Políticas RLS | 119 | **119** | 0 |
+| Functions | 77 | **77** | 0 |
+| Triggers | 23 | **23** | 0 |
+| ENUMs | 29 | **29** | 0 |
+| Indexes | 151 | **152** | +1 (idx_transactions_installment_group) |
+| Migration files (repo) | 70 | **71** | +1 (082) |
+| Suítes Jest | 72 | **76** | +4 (installment, pipeline, password, workflow) |
+| Assertions | ~1.079 | **~1.164** | +85 |
+| Arquivos TS/TSX | 286 | **294** | +8 |
+| Engines puros | 16 | **21** | +5 (installment, pipeline, password, import-workflow, dedup extended) |
+| Zod schemas | 61 | **61** | 0 |
+| docs/ markdown | 29 | **22** ativos + 6 archive | -3 deletados, -6 movidos |

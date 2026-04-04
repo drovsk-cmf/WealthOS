@@ -67,9 +67,7 @@ Itens que só o Claudio pode resolver. Sem código.
 |----|------|---------|---------|
 | E4 | **Onboarding: valor em <5 min** — fixes aplicados (sessão 36). Falta validação empírica (A7 corredor). | Depende A7 | Alto |
 | E24 | **Módulo de investimentos** — 9 tipos, crons fallback, marcação a mercado. Ref: INVESTMENTS-MODULE-SPEC | Alto | Alto |
-| E67 | **Motor de parcelamento** — aritmética do centavo, N parcelas, distribuição por fatura. Schema existe. Ref: INSTALLMENT-SYSTEM-SPEC | 4-6h | Alto |
 | E16 | **Compartilhamento familiar** — permissões granulares, RBAC. Muda cobrança pessoa→família. Reclassificado H1 por Claudio. | Alto | Alto |
-| E68 | **Parsers bank-specific** — BTG XLSX, XP CSV, Porto PDF, Itaú PDF, etc. Genéricos cobrem parcialmente. Ref: IMPORT-ENGINE-SPEC §4 | 4-6h | Alto |
 | E70 | **Inbound email para faturas** — endereço por usuário, allowlist, processamento automático. Requer Resend/SES. Ref: IMPORT-ENGINE-SPEC §2 | 6-8h | Alto |
 | E65 | **Web Push notifications** — tabelas existem, Settings mostra "Em breve". Web Push API + service worker. | 4-6h | Alto |
 | E62 | **Upload documentos WKF-03** — tabela documents + bucket existem. Falta: upload + vínculo. | 2-3h | Médio |
@@ -89,9 +87,6 @@ Itens que só o Claudio pode resolver. Sem código.
 | E60 | **Rateio overhead UI** — tabela + RPC existem, zero UI. | 2-3h | Baixo |
 | E61 | **Reajuste IPCA/IGP-M** — índices coletados, opções removidas da UI. Reconectar. | 3-4h | Médio |
 | E63 | **Anexar documentos a bens (PAT-06)** — depende E62. | +1h | Baixo |
-| E66 | **Dedup learning loop** — motor não aprende com decisões do usuário. | 3-4h | Médio |
-| E69 | **Password derivation faturas** — derivar senha por CPF/CEP, regras por banco. | 2-3h | Médio |
-| E71 | **Workflow para falhas de importação** — workflow automático quando import falha. | 2-3h | Médio |
 | E42 | **Valorização imóveis (FipeZap/DataZAP)** — ninguém faz no BR. | Médio | Médio |
 | E43 | **Assistente WhatsApp** — registro por texto/áudio. Gap competitivo. | Alto | Alto |
 | E35 | **Acesso read-only contador** — link temporário, só módulo fiscal. | Baixo | Baixo |
@@ -217,6 +212,11 @@ Decisões IA do adendo v1.5:
 | TEC-11 | WCAG AA (cores, skip-link, reduced-motion) | 38 |
 | TEC-12 | Chunking import | 38 |
 | TEC-13 | Regenerar database.ts types | 38 |
+| E66 | Dedup learning loop (recordUserDecision, applyLearnedPatterns, filterOppositeSigns) | 39 |
+| E67 | Motor de parcelamento (aritmética centavo, regex 6 bancos, projeção faturas) | 39 |
+| E68 | Bank statement pipeline (detecção→parser→normalização→parcelas) | 39 |
+| E69 | Password derivation (8 bancos, fórmulas CPF/CEP) | 39 |
+| E71 | Import failure workflows (8 tipos, classifyImportError) | 39 |
 
 ---
 
