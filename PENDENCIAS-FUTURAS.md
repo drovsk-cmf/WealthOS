@@ -77,7 +77,6 @@ Itens que só o Claudio pode resolver. Sem código.
 |----|------|---------|---------|
 | E42 | **Valorização imóveis (FipeZap/DataZAP)** — ninguém faz no BR. | Médio | Médio |
 | E43 | **Assistente WhatsApp** — registro por texto/áudio. Gap competitivo. | Alto | Alto |
-| E35 | **Acesso read-only contador** — link temporário, só módulo fiscal. | Baixo | Baixo |
 | E46 | **Score de crédito (Serasa/Boa Vista)** | Médio | Baixo |
 
 ### 3.3 Futuro (📌 com gatilho)
@@ -218,6 +217,7 @@ Decisões IA do adendo v1.5:
 | E65 | Web Push notifications (SW + hook + API routes + Settings UI). Bloqueado: VAPID keys | 38 |
 | E56 | FocusTrap em notification-panel (último modal sem trap, 16/16 cobertos) | 40 |
 | E64 | OCR web: PDF.js text extraction + rasterize fallback + Tesseract.js. Regex boleto/NF-e | 40 |
+| E35 | Acesso read-only contador: tabela + RPC + hook + página pública + UI | 40 |
 
 ---
 

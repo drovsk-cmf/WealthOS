@@ -5379,16 +5379,18 @@ Auditoria de 16 modals overlay no app. 15 já tinham FocusTrap. Adicionado no ú
 
 | Métrica | Sessão 39 | Sessão 40 | Delta |
 |---------|-----------|-----------|-------|
-| Tabelas | 37 | **37** | 0 |
-| Políticas RLS | 119 | **119** | 0 |
-| Functions | 77 | **77** | 0 |
+| Tabelas | 37 | **38** | +1 (shared_access_tokens) |
+| Políticas RLS | 119 | **123** | +4 |
+| Functions | 77 | **78** | +1 (validate_shared_token) |
 | Triggers | 23 | **23** | 0 |
 | ENUMs | 29 | **29** | 0 |
-| Indexes | 152 | **152** | 0 |
-| Migration files (repo) | 71 | **71** | 0 |
+| Indexes | 152 | **154** | +2 |
+| Migration files (repo) | 71 | **72** | +1 (083) |
 | Suítes Jest | 76 | **76** | 0 |
-| Assertions | ~1.164 | **~1.164** | 0 |
-| Arquivos TS/TSX | 294 | **294** | 0 |
+| Assertions | ~1.164 | **~1.172** | +8 |
+| Arquivos TS/TSX | 294 | **297** | +3 |
+| Hooks | 42 | **43** | +1 (use-shared-access) |
+| Páginas | 43 | **44** | +1 (/share/[token]) |
 | Engines puros | 21 | **21** | 0 |
 | Zod schemas | 61 | **61** | 0 |
 | eslint-disable (produção) | 6 | **2** | -4 |
@@ -5396,3 +5398,37 @@ Auditoria de 16 modals overlay no app. 15 já tinham FocusTrap. Adicionado no ú
 | Rastreabilidade stories | 65/108 | **108/108** | +43 |
 | Cobertura story→teste | 15% | **78%** | +63pp |
 | docs/ ativos | 22 | **22** | 0 |
+
+### 40.12 E64: OCR para PDF
+
+Estendido `ocr-service.ts` com suporte a PDF via `pdfjs-dist@5.6.205`:
+- **Fast path:** PDF.js `getTextContent()` para PDFs com texto (ex: NF-e, boleto digital). Confiança 95%.
+- **Fallback:** Rasteriza primeira página (2x scale) → Tesseract.js OCR para PDFs escaneados.
+- Novo regex: `VALOR DO DOCUMENTO/NOTA` para padrões de boleto e NF-e.
+- `transaction-form.tsx`: file input aceita `application/pdf`, label "foto ou PDF".
+- 8 novos testes de parsing para padrões de texto extraído de PDF.
+
+### 40.13 E35: Acesso read-only para contador
+
+Feature completa:
+- **Tabela:** `shared_access_tokens` (token hex 64 chars, scope, expires_at, access_count, is_revoked)
+- **RPC:** `validate_shared_token` (SECURITY DEFINER, retorna deduções IRPF + receitas + bens)
+- **Hook:** `use-shared-access.ts` (create/revoke/list tokens)
+- **Página pública:** `/share/[token]` — 3 cards resumo + 3 seções detalhadas (deduções, receitas, bens)
+- **UI no /tax:** botão "Compartilhar" + painel de links ativos (copiar/revogar)
+- Migration 083, 4 RLS policies, 2 indexes
+
+### 40.14 Commits completos
+
+| Hash | Mensagem |
+|------|----------|
+| `576ca51` | fix: restaurar package-lock.json + lint warning installment-engine |
+| `a98ebca` | fix(C1): remover 'as any' de 4 hooks RPC + bug dedup-engine |
+| `67d2746` | docs(D17): reescrever ROTEIRO-TESTE-MANUAL para navegação sessão 38+ |
+| `a63a049` | feat(E55): liquidity_tier editável para todos os tipos de conta |
+| `4d47b60` | docs(D8): regenerar RASTREABILIDADE-STORY-TESTE (108 stories) |
+| `9102e3b` | docs: HANDOVER §40 + PENDENCIAS atualizados |
+| `e1f517c` | docs: auditoria PENDENCIAS — 11 stale removidos, A19 adicionado |
+| `ab5291d` | feat(E56): FocusTrap no notification-panel |
+| `7d67002` | feat(E64): OCR para PDF via PDF.js + regex boleto/NF-e |
+| `91f143b` | feat(E35): acesso read-only para contador via link temporário |
