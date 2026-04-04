@@ -1,6 +1,6 @@
 # Oniefy (formerly WealthOS) - Handover de Sessão
 
-**Última atualização:** 29 de março de 2026
+**Última atualização:** 04 de abril de 2026
 **Projeto:** Oniefy - Any asset, one clear view.
 **Repositório GitHub:** drovsk-cmf/WealthOS (público)
 **Supabase Project ID:** mngjbrbxapazdddzgoje (sa-east-1 São Paulo) — "oniefy-prod"
@@ -5432,3 +5432,115 @@ Feature completa:
 | `ab5291d` | feat(E56): FocusTrap no notification-panel |
 | `7d67002` | feat(E64): OCR para PDF via PDF.js + regex boleto/NF-e |
 | `91f143b` | feat(E35): acesso read-only para contador via link temporário |
+
+---
+
+## 42. Sessão 42 — Auditoria UX + LGPD completa (04/04/2026)
+
+### 42.1 Contexto
+
+Auditoria completa de UX focada em navegação, consistência de interação e campos desnecessários. Seguida de fechamento de todas as lacunas LGPD (L3-L6).
+
+### 42.2 Navigation v3 — Sidebar reestruturado
+
+Sidebar desktop passou de 5 seções (17 itens + Settings) para 4 seções semânticas (12 itens + Settings):
+
+| Seção | Itens | Modelo mental |
+|-------|-------|---------------|
+| Finanças | Transações, Fluxo de caixa, Recorrências | Registrar |
+| Patrimônio | Contas, Cartões, Bens | Posicionar |
+| Planejamento | Orçamento, Metas, Impostos / IRPF | Planejar |
+| Inteligência | Diagnóstico, Calculadoras, Indicadores | Analisar |
+
+Mudanças-chave:
+- Cartões movido de Finanças para Patrimônio (instrumento, não operação)
+- Impostos promovido de "Mais" para Planejamento
+- Diagnóstico, Calculadoras e Indicadores promovidos para seção própria "Inteligência"
+- Itens de baixa frequência (Importação, Categorias, Família, Tarefas, Garantias) movidos para /settings
+
+### 42.3 Bottom tab bar mobile
+
+Tab 5 "Mais" (gaveta com 13 itens) substituída por "Inteligência" (3 itens core). Ícone de engrenagem adicionado ao header mobile para acesso a Settings.
+
+### 42.4 Página /more eliminada
+
+Substituída por `redirect("/settings")`. Settings reestruturado para absorver itens removidos do sidebar.
+
+### 42.5 Renomeações
+
+| Antes | Depois |
+|-------|--------|
+| Contas a pagar | Recorrências |
+| Bens e imóveis | Bens |
+| Índices | Indicadores |
+| Plano de Contas | Estrutura contábil (em Settings > Avançado) |
+| Workflows / Relatórios | Tarefas |
+| Movimentações (seção) | Finanças |
+| Orçamento (seção) | Planejamento |
+
+### 42.6 Progressive disclosure nos formulários
+
+| Form | Campo | Comportamento |
+|------|-------|---------------|
+| Account | Moeda | "BRL (R$) · alterar" — expande seletor só quando clicado |
+| Asset | Depreciação + seguro | Toggle "Depreciação, seguro e mais opções" |
+| Card | Taxa de juros | "+ Informar taxa de juros do rotativo" |
+| Budget | Índice de reajuste | "+ Reajuste automático (IPCA, IGP-M)" |
+
+### 42.7 Padronização de formulários (Padrão A)
+
+Todos os 11 CRUDs agora seguem Padrão A (componente separado em `src/components/*/`, modal overlay com FocusTrap):
+
+Novos componentes extraídos nesta sessão:
+- `src/components/goals/goal-form.tsx` (antes inline em goals/page.tsx)
+- `src/components/cost-centers/cost-center-form.tsx` (antes inline em cost-centers/page.tsx)
+- `src/components/warranties/warranty-form.tsx` (antes inline em warranties/page.tsx)
+
+FormError migrado: 9 form components agora usam `<FormError>` de `form-primitives.tsx` em vez de divs inline duplicadas.
+
+### 42.8 Cross-links contextuais
+
+- Bens → link para Garantias
+- Categorias → link para Divisões (centros de custo)
+- Settings > Cadastros → Garantias adicionada
+
+### 42.9 Calculadoras: tab bar → grid
+
+Tab bar horizontal com 8 tabs (scroll hidden no mobile) substituída por grid de pills com wrap. Todas as calculadoras visíveis sem scroll.
+
+### 42.10 LGPD — L3 a L6 completo
+
+| Lacuna | Solução | Arquivo |
+|--------|---------|---------|
+| L3: Consentimento CPF | Campo CPF com máscara, validação de dígitos, checkbox de consentimento explícito (Art. 8º), criptografia AES-256-GCM client-side via DEK. Em perfil (/settings/profile) e família (family-member-form) | profile/page.tsx, family-member-form.tsx |
+| L4: ROPA | Registro de Operações de Tratamento (12 operações, 3 processadores). Simplificado conforme Res. ANPD nº 2/2022 | docs/LGPD-ROPA.md |
+| L5: RIPD | Relatório de Impacto para módulo fiscal (7 riscos, mitigações, Art. 38) | docs/LGPD-RIPD-FISCAL.md |
+| L6: DPO | Seção 11 da /privacy atualizada com designação de encarregado e prazo de resposta (15 dias úteis, Art. 41) | privacy/page.tsx |
+
+### 42.11 Commits
+
+| Hash | Mensagem |
+|------|----------|
+| `d223bbe` | refactor(nav): Navigation v3 — reestruturação completa sidebar + progressive disclosure |
+| `da2dad1` | refactor(ux): GoalForm Padrão A + progressive disclosure budget + calculadoras grid |
+| `f5274eb` | refactor(ux): FamilyMemberForm Padrão A |
+| `015b910` | feat(ux): cross-links contextuais + garantias em Settings |
+| `312e899` | refactor(forms): CostCenterForm + WarrantyForm extraídos para Padrão A |
+| `4b678d0` | refactor(D6): migrar FormError para todos os 9 form components |
+| `b4af953` | docs(lgpd): ROPA (L4) + RIPD fiscal (L5) + DPO interino (L6) + PENDENCIAS sync |
+| `824a2d1` | feat(lgpd-L3): campo CPF com consentimento explícito + criptografia AES-256 |
+
+### 42.12 Ground truth (atualizado final sessão 42)
+
+| Métrica | Sessão 40 | Sessão 42 | Delta |
+|---------|-----------|-----------|-------|
+| Tabelas | 38 | **38** | 0 |
+| Políticas RLS | 123 | **123** | 0 |
+| Functions | 78 | **78** | 0 |
+| Arquivos TS/TSX | 296 | **300** | +4 (3 form components + 1 goal-form) |
+| Hooks | 43 | **43** | 0 |
+| Páginas | 44 | **44** | 0 |
+| docs/ ativos | 22 | **24** | +2 (LGPD-ROPA, LGPD-RIPD-FISCAL) |
+| Sidebar items | 17+Settings | **12+Settings** | -5 (reagrupados) |
+| Form components (Padrão A) | 8 | **11** | +3 (goals, cost-centers, warranties) |
+| LGPD lacunas abertas | 4 (L3-L6) | **0** | -4 |

@@ -23,13 +23,13 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 ## Navegação atual
 
 **Desktop:** sidebar com 5 seções (18 links) + settings na parte inferior.
-**Mobile:** 5 tabs (Início, Movimentações, Patrimônio, Orçamento, Mais) + hub "Mais" com 13 itens.
+**Mobile:** 5 tabs (Início, Finanças, Patrimônio, Planejamento, Inteligência) + Settings via ícone no header.
 
 | Seção | Links |
 |-------|-------|
 | (topo) | Início |
-| Movimentações | Transações, Cartões, Fluxo de caixa, Contas a pagar |
-| Patrimônio | Contas, Bens e imóveis |
+| Finanças | Transações, Fluxo de caixa, Recorrências |
+| Patrimônio | Contas, Cartões, Bens |
 | Orçamento | Orçamento, Metas |
 | Mais | Impostos/IRPF, Diagnóstico, Calculadoras, Índices, Importar, Família, Categorias, Relatórios |
 | (inferior) | Configurações → Perfil, Segurança, Notificações, Dados, Análise |
@@ -80,15 +80,15 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
   - Valores NaN ou undefined → problema de tipo no retorno
 
 ### 2.2 Navegação desktop (sidebar)
-- [ ] Verificar 5 seções: (topo), Movimentações, Patrimônio, Orçamento, Mais
+- [ ] Verificar 4 seções: Finanças, Patrimônio, Planejamento, Inteligência
 - [ ] Clicar em cada um dos 18 links:
   - Início (`/dashboard`)
   - Transações (`/transactions`)
   - Cartões (`/cards`)
   - Fluxo de caixa (`/cash-flow`)
-  - Contas a pagar (`/bills`)
+  - Recorrências (`/bills`)
   - Contas (`/accounts`)
-  - Bens e imóveis (`/assets`)
+  - Bens (`/assets`)
   - Orçamento (`/budgets`)
   - Metas (`/goals`)
   - Impostos / IRPF (`/tax`)
@@ -104,8 +104,8 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ### 2.3 Navegação mobile (5 tabs)
 - [ ] Redimensionar janela para < 1024px (ou DevTools responsive)
-- [ ] Barra inferior com 5 tabs: Início, Movimentações, Patrimônio, Orçamento, Mais
-- [ ] Tab "Mais" → hub com 13 itens (Impostos, Diagnóstico, Calculadoras, Fluxo de caixa, Contas a pagar, Índices, Importação, Metas, Família, Categorias, Relatórios, Garantias, Configurações)
+- [ ] Barra inferior com 5 tabs: Início, Finanças, Patrimônio, Planejamento, Inteligência
+- [ ] Tab "Inteligência" → Diagnóstico, Calculadoras, Indicadores. Settings via ⚙️ no header
 - **Esperado:** todos os itens clicáveis e carregam a página correta
 
 ### 2.4 Sininho de notificações
@@ -192,7 +192,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 ## Bloco 7 - Bens e Imóveis (2 min)
 
 ### 7.1 Criar bem
-- [ ] Sidebar → Bens e imóveis (`/assets`)
+- [ ] Sidebar → Bens (`/assets`)
 - [ ] Clicar "Novo bem"
 - [ ] Nome: "MacBook Teste", valor: `15000,00`, tipo: Equipamento
 - [ ] Salvar
@@ -226,8 +226,8 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 - [ ] Gráfico de receitas vs despesas carrega
 - **Esperado:** dados refletem as transações criadas
 
-### 9.2 Contas a pagar / Recorrências
-- [ ] Sidebar → Contas a pagar (`/bills`)
+### 9.2 Recorrências
+- [ ] Sidebar → Recorrências (`/bills`)
 - [ ] Lista de assinaturas e recorrências
 - **Esperado:** página carrega (pode estar vazia em conta nova)
 

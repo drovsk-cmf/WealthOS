@@ -1,85 +1,112 @@
-# ONIEFY - Estrutura de Navegação
+# ONIEFY - Estrutura de Navegação v3
 
-## Decisão Final (02/04/2026)
+## Decisão Final (04/04/2026 — Sessão 42)
 
 ```
-[Início]  [Movimentações]  [Patrimônio]  [Orçamento]  [Mais]
-                                                    + Sininho (topo direito)
+Desktop sidebar:
+[Início]
+[Finanças]      Transações, Fluxo de caixa, Recorrências
+[Patrimônio]    Contas, Cartões, Bens
+[Planejamento]  Orçamento, Metas, Impostos / IRPF
+[Inteligência]  Diagnóstico, Calculadoras, Indicadores
+───────────────
+[Configurações]
+
+Mobile bottom tabs:
+[Início] [Finanças] [Patrimônio] [Planejamento] [Inteligência]
+Header: [Logo]                    [⚙️ Settings] [🔔 Sininho]
 ```
 
 ---
 
-## Tabs
+## Modelo mental
 
-### Tab 1: Início
-Briefing diário da Onie.
-- Saudação da Onie com orb animado
-- Patrimônio líquido (número grande, variação MoM)
-- Cash-flow resumido (receitas - despesas do mês)
-- Cards de alerta (vencimentos, duplicatas, parcelas, reajustes)
-- Atalho contextual: na época do IRPF (mar-mai), Onie promove acesso direto a Impostos
+A navegação segue o ciclo financeiro natural do usuário:
 
-### Tab 2: Movimentações
-Tudo que é fluxo de dinheiro.
-- Extrato consolidado (todas as contas)
-- Receitas e despesas
-- Cartões de crédito e faturas
-- Parcelas em andamento
-- Dívidas bancárias e financiamentos (sub-seção: são movimentações recorrentes com saldo devedor)
-- Filtros: por conta, categoria, período, membro da família
+**Registrar** (Finanças) → **Posicionar** (Patrimônio) → **Planejar** (Planejamento) → **Analisar** (Inteligência) → retroalimenta ações
 
-### Tab 3: Patrimônio
-Tudo que o usuário possui.
-- Bens físicos (imóveis, veículos) com custo de manutenção
-- Investimentos consolidados (ações, renda fixa, cripto, previdência)
-- Seguros e proteção
-- Reserva de emergência
-- Solvência: LCR, runway, D/E (cockpit de fôlego)
-- Net worth histórico (gráfico)
+---
 
-### Tab 4: Orçamento
-Tudo que é planejamento e futuro.
-- Orçamento por categoria (planejado vs. real)
-- Metas de economia (savings goals)
-- Calendário financeiro (vencimentos, concentração)
-- Projeções (receitas/despesas futuras, AI forecasting)
-- Provisão sazonal
-- Simulações (calculadoras TVM)
+## Sidebar desktop (4 seções + Settings)
 
-### Tab 5: Mais
-Hub organizado (não lixão). Cada item com ícone e descrição.
-- **Impostos / IRPF** (primeiro item, destaque visual)
-- Diagnóstico financeiro (11 métricas)
-- Calculadoras (7 tabs)
-- Assinaturas e recorrências
-- Relatórios e exportações
-- Membros da família
-- Importação (email, faturas, OFX)
-- Categorias e regras
-- Configurações e perfil
-- Acesso ao contador (E35)
+### Seção 1: Finanças
+Registro operacional diário.
+- Transações (extrato consolidado, filtros, CRUD)
+- Fluxo de caixa (Sankey, comparativo anual, granularidade dia/mês/ano)
+- Recorrências (assinaturas, parcelas, receitas recorrentes)
+
+### Seção 2: Patrimônio
+Posição patrimonial.
+- Contas (bancárias, investimento, empréstimos)
+- Cartões (limite, fatura, vencimento)
+- Bens (imóveis, veículos, eletrônicos + link para garantias)
+
+### Seção 3: Planejamento
+Futuro financeiro.
+- Orçamento (planejado vs. real por categoria)
+- Metas (savings goals com progresso visual)
+- Impostos / IRPF (consolidação fiscal, tabelas, provisionamento)
+
+### Seção 4: Inteligência
+CFA pessoal. Seção diferenciadora do produto.
+- Diagnóstico (11 métricas, Motor JARVIS, scanner R01-R10)
+- Calculadoras (8 simuladores: affordability, SAC vs Price, CET, etc.)
+- Indicadores (CDI, Selic, IPCA, IGP-M, câmbio)
+
+### Settings (bottom, fixo)
+Itens de baixa frequência. Acessível no mobile via ícone no header.
+- Pessoal: Perfil (nome, senha, CPF, moeda), Notificações
+- Cadastros: Categorias, Divisões (centros de custo), Estrutura familiar, Garantias
+- Dados: Importação (CSV/OFX + bulk + conciliação), Tarefas (workflows), Dados e privacidade
+- Avançado: Estrutura contábil (plano de contas), Métricas
+- Segurança: MFA, sessões, exclusão de conta
+
+---
+
+## Bottom tab bar mobile (5 tabs)
+
+| Tab | Label | Ícone | matchPrefixes |
+|-----|-------|-------|---------------|
+| 1 | Início | Home | — |
+| 2 | Finanças | ArrowLeftRight | /cash-flow, /bills |
+| 3 | Patrimônio | Building | /cards, /assets |
+| 4 | Planejamento | PieChart | /goals, /tax |
+| 5 | Inteligência | Activity | /calculators, /indices |
+
+Settings acessível via ícone de engrenagem no header mobile (ao lado do sininho).
 
 ---
 
 ## Sininho (topo direito)
 
 Persistente em todas as telas. Não é tab.
-
-- Badge numérico (vermelho): ações pendentes (duplicatas para resolver, parcelas para confirmar)
+- Badge numérico (vermelho): ações pendentes (duplicatas, parcelas, tarefas)
 - Ponto vermelho (sem número): informativos (alertas de vencimento, insights)
-- Toque abre overlay/modal, não navega para outra página
-- "Inbox zero": quando todas as pendências resolvidas, sininho sem badge
+- Toque abre overlay/modal
+- "Inbox zero": sininho sem badge quando tudo resolvido
 
 ---
 
-## Decisões
+## Decisões e justificativas
 
 | # | Decisão | Motivo |
 |---|---------|--------|
-| 1 | 5 tabs, não 4 ou 6 | 5 é o limite ergonômico. Menos = muito aglomerado. Mais = confuso. |
-| 2 | "Mais" em vez de "Perfil" | Perfil sugere configurações. "Mais" é hub funcional onde Impostos vive com destaque. |
-| 3 | Impostos dentro de "Mais" como 1º item | Uso intenso 2 meses/ano (mar-mai). Nos outros 10, não justifica tab permanente. Frequência vence. |
-| 4 | Sininho libera 1 posição de tab | Pendências saem da navegação principal. Atenção fica no topo. |
-| 5 | Dívidas dentro de Movimentações | Dívida é movimentação recorrente com saldo. Não justifica tab própria. |
-| 6 | Diagnóstico e Calculadoras dentro de "Mais" | Uso esporádico. Power users encontram; iniciantes não precisam no dia 1. |
-| 7 | Na época do IRPF, Onie promove atalho direto no Início | Contexto temporal resolve o problema de Impostos não ter tab própria. |
+| 1 | 4 seções sidebar (não 5) | "Mais" como gaveta violava discoverability. 4 seções com nomes semânticos > 5 com lixeira. |
+| 2 | Tab 5 = Inteligência (não Mais) | Seção diferenciadora do produto. Diagnóstico e Calculadoras são drivers de retenção. |
+| 3 | Impostos em Planejamento | Planejamento fiscal é planejamento financeiro. Melhor que enterrar em "Mais". |
+| 4 | Cartões em Patrimônio (não Finanças) | Cartão é instrumento (tem saldo, limite). Transações do cartão aparecem em Transações. |
+| 5 | Settings absorve baixa frequência | Categorias, Importação, Família: configura uma vez, revisita raramente. |
+| 6 | /more eliminada | Com sidebar semântico, hub intermediário é redundante. Redirect → /settings. |
+| 7 | Cada página = 1 caminho | Eliminada duplicação (antes: mesma página aparecia em sidebar + /more + settings). |
+| 8 | Progressive disclosure em forms | Campos avançados (depreciação, moeda, juros, reajuste) colapsados por default. |
+| 9 | Na época do IRPF, Onie promove atalho no Início | Contexto temporal complementa a posição fixa em Planejamento. |
+
+---
+
+## Histórico
+
+| Versão | Data | Mudanças |
+|--------|------|----------|
+| v1 | 23/03/2026 | 4 tabs + hamburger (descartada) |
+| v2 | 02/04/2026 | 5 tabs (Início, Movimentações, Patrimônio, Orçamento, Mais) + Sininho |
+| v3 | 04/04/2026 | 4 seções semânticas + Inteligência como tab 5. /more eliminada. Progressive disclosure. |
