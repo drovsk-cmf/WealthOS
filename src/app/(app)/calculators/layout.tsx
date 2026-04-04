@@ -69,18 +69,18 @@ export default function CalculatorsLayout({ children }: { children: ReactNode })
         </p>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex gap-1 overflow-x-auto rounded-lg border bg-muted p-1">
+      {/* Calculator selector — wrapping grid instead of horizontal scroll */}
+      <div className="flex flex-wrap gap-1.5">
         {TABS.map((tab) => {
           const isActive = pathname === tab.href;
           return (
             <Link
               key={tab.href}
               href={tab.href}
-              className={`flex-1 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors text-center ${
+              className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-card shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               }`}
             >
               {tab.label}

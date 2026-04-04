@@ -8,7 +8,7 @@
  * - Valor mensal sugerido para atingir a meta no prazo
  * - Meses restantes
  * - Marcar como concluída
- * - Form inline para criar/editar
+ * - Form modal (Padrão A — componente separado)
  */
 
 import { useState } from "react";
@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { Target, Plus, Check, Trash2, Pencil, Trophy } from "lucide-react";
 import {
   useSavingsGoals,
-  useCreateGoal,
   useUpdateGoal,
   useDeleteGoal,
 } from "@/lib/hooks/use-savings-goals";
@@ -24,136 +23,8 @@ import type { SavingsGoalWithProgress } from "@/lib/hooks/use-savings-goals";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { formatCurrency, formatDate, formatDecimalBR } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
-
-const GOAL_COLORS = [
-  { value: "#56688F", label: "Azul" },
-  { value: "#2F7A68", label: "Verde" },
-  { value: "#A97824", label: "Dourado" },
-  { value: "#A64A45", label: "Vermelho" },
-  { value: "#6F6678", label: "Roxo" },
-  { value: "#4F2F69", label: "Plum" },
-];
-
-interface GoalFormData {
-  name: string;
-  target_amount: string;
-  current_amount: string;
-  target_date: string;
-  color: string;
-}
-
-const EMPTY_FORM: GoalFormData = {
-  name: "",
-  target_amount: "",
-  current_amount: "0",
-  target_date: "",
-  color: "#56688F",
-};
-
-function GoalForm({
-  initial,
-  onSubmit,
-  onCancel,
-  isPending,
-  submitLabel,
-}: {
-  initial: GoalFormData;
-  onSubmit: (data: GoalFormData) => void;
-  onCancel: () => void;
-  isPending: boolean;
-  submitLabel: string;
-}) {
-  const [form, setForm] = useState<GoalFormData>(initial);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    onSubmit(form);
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border bg-card p-5 shadow-card">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <label className="text-xs font-medium text-muted-foreground">Nome da meta</label>
-          <input
-            type="text"
-            required
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Ex: Reserva de emergência, Viagem Europa"
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">Valor alvo (R$)</label>
-          <input
-            type="number"
-            required
-            min={1}
-            step="0.01"
-            value={form.target_amount}
-            onChange={(e) => setForm({ ...form, target_amount: e.target.value })}
-            placeholder="50000"
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">Valor atual (R$)</label>
-          <input
-            type="number"
-            min={0}
-            step="0.01"
-            value={form.current_amount}
-            onChange={(e) => setForm({ ...form, current_amount: e.target.value })}
-            placeholder="0"
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">Data alvo (opcional)</label>
-          <input
-            type="date"
-            value={form.target_date}
-            onChange={(e) => setForm({ ...form, target_date: e.target.value })}
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs font-medium text-muted-foreground">Cor</label>
-          <div className="mt-1.5 flex gap-2">
-            {GOAL_COLORS.map((c) => (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => setForm({ ...form, color: c.value })}
-                className={`h-7 w-7 rounded-full border-2 transition-transform ${
-                  form.color === c.value ? "scale-110 border-foreground" : "border-transparent"
-                }`}
-                style={{ backgroundColor: c.value }}
-                title={c.label}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-2 justify-end">
-        <button type="button" onClick={onCancel}
-          className="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground btn-alive">
-          Cancelar
-        </button>
-        <button type="submit" disabled={isPending || !form.name || !form.target_amount}
-          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40">
-          {submitLabel}
-        </button>
-      </div>
-    </form>
-  );
-}
+import { GoalForm } from "@/components/goals/goal-form";
+import type { GoalEditData } from "@/components/goals/goal-form";
 
 function GoalCard({
   goal,
@@ -281,12 +152,11 @@ function GoalCard({
 
 export default function GoalsPage() {
   const { data: goals, isLoading } = useSavingsGoals();
-  const createGoal = useCreateGoal();
   const updateGoal = useUpdateGoal();
   const deleteGoal = useDeleteGoal();
 
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editData, setEditData] = useState<GoalEditData | null>(null);
 
   const activeGoals = goals?.filter((g) => !g.is_completed) ?? [];
   const completedGoals = goals?.filter((g) => g.is_completed) ?? [];
@@ -294,32 +164,6 @@ export default function GoalsPage() {
   const totalTarget = activeGoals.reduce((s, g) => s + g.target_amount, 0);
   const totalCurrent = activeGoals.reduce((s, g) => s + g.current_amount, 0);
   const totalProgress = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
-
-  async function handleCreate(data: GoalFormData) {
-    await createGoal.mutateAsync({
-      name: data.name,
-      target_amount: parseFloat(data.target_amount) || 0,
-      current_amount: parseFloat(data.current_amount) || 0,
-      target_date: data.target_date || null,
-      color: data.color,
-    });
-    toast.success("Meta criada.");
-    setShowForm(false);
-  }
-
-  async function handleUpdate(data: GoalFormData) {
-    if (!editingId) return;
-    await updateGoal.mutateAsync({
-      id: editingId,
-      name: data.name,
-      target_amount: parseFloat(data.target_amount) || 0,
-      current_amount: parseFloat(data.current_amount) || 0,
-      target_date: data.target_date || null,
-      color: data.color,
-    });
-    toast.success("Meta atualizada.");
-    setEditingId(null);
-  }
 
   async function handleDelete(id: string) {
     await deleteGoal.mutateAsync(id);
@@ -336,8 +180,15 @@ export default function GoalsPage() {
   }
 
   function startEdit(goal: SavingsGoalWithProgress) {
-    setEditingId(goal.id);
-    setShowForm(false);
+    setEditData({
+      id: goal.id,
+      name: goal.name,
+      target_amount: goal.target_amount,
+      current_amount: goal.current_amount,
+      target_date: goal.target_date ?? null,
+      color: goal.color,
+    });
+    setFormOpen(true);
   }
 
   if (isLoading) {
@@ -361,8 +212,8 @@ export default function GoalsPage() {
             Defina objetivos e acompanhe o progresso
           </p>
         </div>
-        {!showForm && !editingId && (
-          <button type="button" onClick={() => setShowForm(true)}
+        {!formOpen && (
+          <button type="button" onClick={() => { setEditData(null); setFormOpen(true); }}
             className="flex items-center gap-1.5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
             <Plus className="h-4 w-4" /> Nova meta
           </button>
@@ -395,19 +246,8 @@ export default function GoalsPage() {
         </div>
       )}
 
-      {/* Create form */}
-      {showForm && (
-        <GoalForm
-          initial={EMPTY_FORM}
-          onSubmit={handleCreate}
-          onCancel={() => setShowForm(false)}
-          isPending={createGoal.isPending}
-          submitLabel="Criar meta"
-        />
-      )}
-
       {/* Empty state */}
-      {(!goals || goals.length === 0) && !showForm && (
+      {(!goals || goals.length === 0) && !formOpen && (
         <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Target className="h-7 w-7 text-muted-foreground" />
@@ -417,7 +257,7 @@ export default function GoalsPage() {
             Metas financeiras tornam o progresso visível. Comece com algo concreto: reserva de
             emergência, uma viagem, ou a entrada de um imóvel.
           </p>
-          <button type="button" onClick={() => setShowForm(true)}
+          <button type="button" onClick={() => { setEditData(null); setFormOpen(true); }}
             className="mt-5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">
             + Criar meta
           </button>
@@ -426,23 +266,7 @@ export default function GoalsPage() {
 
       {/* Active goals */}
       <div className="space-y-4">
-        {activeGoals.map((goal) =>
-          editingId === goal.id ? (
-            <GoalForm
-              key={goal.id}
-              initial={{
-                name: goal.name,
-                target_amount: String(goal.target_amount),
-                current_amount: String(goal.current_amount),
-                target_date: goal.target_date ?? "",
-                color: goal.color,
-              }}
-              onSubmit={handleUpdate}
-              onCancel={() => setEditingId(null)}
-              isPending={updateGoal.isPending}
-              submitLabel="Salvar"
-            />
-          ) : (
+        {activeGoals.map((goal) => (
             <GoalCard
               key={goal.id}
               goal={goal}
@@ -450,8 +274,7 @@ export default function GoalsPage() {
               onDelete={() => handleDelete(goal.id)}
               onToggleComplete={() => handleToggleComplete(goal)}
             />
-          )
-        )}
+        ))}
       </div>
 
       {/* Completed goals */}
@@ -468,9 +291,16 @@ export default function GoalsPage() {
               onDelete={() => handleDelete(goal.id)}
               onToggleComplete={() => handleToggleComplete(goal)}
             />
-          ))}
+          ))}\
         </div>
       )}
+
+      {/* Form modal (Padrão A) */}
+      <GoalForm
+        open={formOpen}
+        onClose={() => { setFormOpen(false); setEditData(null); }}
+        editData={editData}
+      />
     </div>
   );
 }

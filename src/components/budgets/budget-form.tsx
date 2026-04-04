@@ -46,6 +46,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   const [threshold, setThreshold] = useState("80");
   const [adjustmentIndex, setAdjustmentIndex] = useState<AdjustmentIndex>("none");
   const [isProposed, setIsProposed] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const { symbol: currSymbol } = useCurrencyLabel();
   const [error, setError] = useState("");
 
@@ -72,6 +73,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
       setIsProposed(false);
     }
     setError("");
+    setShowAdvanced(!!(editData?.adjustment_index && editData.adjustment_index !== "none"));
   }, [editData, open]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -204,24 +206,34 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
             </p>
           </div>
 
-          {/* Adjustment index */}
-          <div>
-            <label htmlFor="budget-index" className="text-sm font-medium">Índice de reajuste</label>
-            <select
-              id="budget-index"
-              value={adjustmentIndex}
-              onChange={(e) =>
-                setAdjustmentIndex(e.target.value as AdjustmentIndex)
-              }
-              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          {/* Adjustment index — collapsed by default */}
+          {showAdvanced ? (
+            <div>
+              <label htmlFor="budget-index" className="text-sm font-medium">Índice de reajuste</label>
+              <select
+                id="budget-index"
+                value={adjustmentIndex}
+                onChange={(e) =>
+                  setAdjustmentIndex(e.target.value as AdjustmentIndex)
+                }
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {ADJUSTMENT_INDEX_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(true)}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
             >
-              {ADJUSTMENT_INDEX_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              + Reajuste automático (IPCA, IGP-M)
+            </button>
+          )}
 
           {/* Proposed flag (only when creating for a family member) */}
           {!isEditing && familyMemberId && (
