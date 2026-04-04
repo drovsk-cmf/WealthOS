@@ -11,6 +11,7 @@ import { getColorName } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
+import { FormError } from "@/components/ui/form-primitives";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type CategoryType = Database["public"]["Enums"]["category_type"];
@@ -95,11 +96,7 @@ export function CategoryForm({ category, open, onClose, defaultType = "expense" 
           {isEdit ? "Editar categoria" : "Nova categoria"}
         </h2>
 
-        {error && (
-          <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+        <FormError message={error} />
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Name */}

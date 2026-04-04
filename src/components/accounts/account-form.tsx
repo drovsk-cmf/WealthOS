@@ -16,6 +16,7 @@ import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-c
 import { formatCurrency, getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
+import { FormError } from "@/components/ui/form-primitives";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type AccountType = Database["public"]["Enums"]["account_type"];
@@ -178,11 +179,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
             : "Cadastre uma conta, cartão, empréstimo ou financiamento."}
         </p>
 
-        {error && (
-          <div role="alert" className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
-            {error}
-          </div>
-        )}
+        <FormError message={error} />
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Name */}

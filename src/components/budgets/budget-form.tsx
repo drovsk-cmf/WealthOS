@@ -20,6 +20,7 @@ import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
+import { FormError } from "@/components/ui/form-primitives";
 
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
@@ -249,11 +250,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
           )}
 
           {/* Error */}
-          {error && (
-            <p id="budget-error" role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">
-              {error}
-            </p>
-          )}
+          <FormError message={error} />
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-2">

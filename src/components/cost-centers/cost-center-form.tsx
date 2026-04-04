@@ -16,6 +16,7 @@ import {
 import { getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
+import { FormError } from "@/components/ui/form-primitives";
 
 type CenterType = Database["public"]["Enums"]["center_type"];
 
@@ -89,9 +90,7 @@ export function CostCenterForm({ open, onClose, editData }: CostCenterFormProps)
       <div className="relative z-10 w-full max-w-md rounded-xl border bg-card p-6 shadow-lg mx-4">
         <h2 className="text-lg font-bold">{isEdit ? "Editar divisão" : "Nova divisão"}</h2>
 
-        {error && (
-          <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">{error}</div>
-        )}
+        <FormError message={error} />
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="space-y-1.5">

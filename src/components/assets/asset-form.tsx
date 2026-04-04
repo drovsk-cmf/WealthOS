@@ -21,6 +21,7 @@ import { useAssetTemplates, searchTemplates } from "@/lib/hooks/use-asset-templa
 import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
+import { FormError } from "@/components/ui/form-primitives";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
 
@@ -328,7 +329,7 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
             )}
           </div>
 
-          {error && <p role="alert" className="rounded bg-terracotta/10 px-3 py-2 text-sm text-terracotta">{error}</p>}
+          <FormError message={error} />
 
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} disabled={isPending}
