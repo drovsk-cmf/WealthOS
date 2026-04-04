@@ -37,6 +37,7 @@ Itens que só o Claudio pode resolver. Sem código.
 | A11 | Sentry DSN: criar conta free + env var Vercel | P2 | ⏳ | Logging de erros em produção |
 | A13 | CNPJ placeholder em terms/page.tsx | P3 | ⏳ | Aguarda constituição PJ |
 | A14 | Assets de marca: favicon, apple-touch-icon, PWA icons | P1 | ⬜ | Ícone genérico sem isso |
+| A19 | VAPID keys: gerar par + env vars NEXT_PUBLIC_VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY | P1 | ⬜ | Web Push funcional (E65 código pronto) |
 | A15 | B3 API: criar conta em developers.b3.com.br | P2 | ⬜ | 10 min, gratuito |
 | A16 | B3 API: gerar Kit de Acesso no sandbox | P2 | ⬜ | Depende A15 |
 | A17 | B3 API: explorar APIs com dados fictícios | P2 | ⬜ | Depende A16, 2-4h |
@@ -69,23 +70,13 @@ Itens que só o Claudio pode resolver. Sem código.
 | E24 | **Módulo de investimentos** — 9 tipos, crons fallback, marcação a mercado. Ref: INVESTMENTS-MODULE-SPEC | Alto | Alto |
 | E16 | **Compartilhamento familiar** — permissões granulares, RBAC. Muda cobrança pessoa→família. Reclassificado H1 por Claudio. | Alto | Alto |
 | E70 | **Inbound email para faturas** — endereço por usuário, allowlist, processamento automático. Requer Resend/SES. Ref: IMPORT-ENGINE-SPEC §2 | 6-8h | Alto |
-| E65 | **Web Push notifications** — tabelas existem, Settings mostra "Em breve". Web Push API + service worker. | 4-6h | Alto |
-| E62 | **Upload documentos WKF-03** — tabela documents + bucket existem. Falta: upload + vínculo. | 2-3h | Médio |
-| E64 | **OCR web (Tesseract.js + PDF.js)** — depende E62. Viável sem Mac. | 4-6h | Médio |
-| E59 | **Edição de transferências** — edit_transaction funciona para income/expense, não transfer. | 2-3h | Médio |
+| E64 | **OCR web (Tesseract.js + PDF.js)** — infraestrutura de upload pronta (E62 ✅). | 4-6h | Médio |
 
 ### 3.2 Média prioridade (3 meses pós-lançamento)
 
 | ID | Item | Esforço | Impacto |
 |----|------|---------|---------|
-| E52 | **Calendário de vencimentos (CAP-05)** — visualização calendário para bills. | 3-4h | Médio |
-| E53 | **Export criptografado (ZIP AES-256)** | 2-3h | Baixo |
-| E54 | **Logs de acesso (90 dias)** — tabela access_logs + triggers. | 2-3h | Médio |
-| E56 | **Focus trap em 6 dialogs** — forms já têm, dialogs de confirmação não. | 1h | Baixo |
-| E58 | **Sparklines de solvência** — monthly_snapshots popula, SolvencyPanel sem tendência. | 2-3h | Médio |
-| E60 | **Rateio overhead UI** — tabela + RPC existem, zero UI. | 2-3h | Baixo |
-| E61 | **Reajuste IPCA/IGP-M** — índices coletados, opções removidas da UI. Reconectar. | 3-4h | Médio |
-| E63 | **Anexar documentos a bens (PAT-06)** — depende E62. | +1h | Baixo |
+| E56 | **Focus trap em ~10 dialogs de confirmação** — forms já têm (15 componentes), dialogs de confirmação/panels não. | 2h | Baixo |
 | E42 | **Valorização imóveis (FipeZap/DataZAP)** — ninguém faz no BR. | Médio | Médio |
 | E43 | **Assistente WhatsApp** — registro por texto/áudio. Gap competitivo. | Alto | Alto |
 | E35 | **Acesso read-only contador** — link temporário, só módulo fiscal. | Baixo | Baixo |
@@ -217,6 +208,16 @@ Decisões IA do adendo v1.5:
 | E71 | Import failure workflows (8 tipos, classifyImportError) | 39 |
 | E55 | liquidity_tier editável para todos os tipos de conta | 40 |
 | DT-007 | Remover `as any` de 4 hooks RPC + bug dedup-engine | 40 |
+| E52 | Calendário de vencimentos (CAP-05) — tab calendário em /bills | 38 |
+| E53 | Export criptografado (AES-256-GCM no client) | 32 |
+| E54 | Logs de acesso (tabela access_logs, login + export) | 32 |
+| E58 | Sparklines solvência (SolvencyPanel + monthly_snapshots) | 38 |
+| E59 | Edição de transferências (RPC edit_transfer + UI) | 38 |
+| E60 | Rateio overhead UI (botão em cost-centers) | 38 |
+| E61 | Reajuste IPCA/IGP-M (adjustment_index em recorrências) | 38 |
+| E62 | Upload documentos WKF-03 (hook + UI em workflows + assets) | 38 |
+| E63 | Anexar documentos a bens PAT-06 (AssetDocuments) | 38 |
+| E65 | Web Push notifications (SW + hook + API routes + Settings UI). Bloqueado: VAPID keys | 38 |
 
 ---
 
@@ -228,4 +229,4 @@ Decisões IA do adendo v1.5:
 | 02/04/2026 | Sessão 37: 28 novos itens (E19-E49). |
 | 03/04/2026 | Sessão 38: 30 itens implementados + 7 visual wiring. |
 | 03/04/2026 | Sessão 39: Auditoria de coerência. +20 itens (E52-E71). Documento reorganizado: pendentes primeiro, concluídos no final. §11 Benchmark removido (vive em COMPETITIVE-ANALYSIS.md). Docs obsoletos deletados/arquivados. |
-| 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). |
+| 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). Auditoria PENDENCIAS: 11 entradas stale removidas (E52, E53, E54, E58, E59, E60, E61, E62, E63, E65 já implementados). A19 (VAPID keys) adicionado. |
