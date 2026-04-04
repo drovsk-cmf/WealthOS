@@ -10,6 +10,9 @@
  */
 
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
+import { clearEncryptionKey } from "@/lib/auth/encryption-manager";
+import { clearAuthCache } from "@/lib/supabase/cached-auth";
 import {
   User,
   Shield,
@@ -23,6 +26,7 @@ import {
   ClipboardList,
   BarChart3,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -80,6 +84,18 @@ const SETTINGS_GROUPS: SettingsGroup[] = [
 ];
 
 export default function SettingsPage() {
+  const supabase = createClient();
+
+  async function handleLogout() {
+    clearEncryptionKey();
+    clearAuthCache();
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({ type: "CLEAR_CACHE" });
+    }
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
@@ -138,6 +154,26 @@ export default function SettingsPage() {
           </div>
         </div>
       ))}
+
+      {/* Logout (C1: acessível em todas as plataformas) */}
+      <div className="border-t pt-6">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="flex w-full items-center justify-between rounded-lg border border-destructive/20 bg-card p-4 text-destructive transition-colors hover:bg-destructive/5"
+        >
+          <div className="flex items-center gap-3">
+            <LogOut className="h-5 w-5" />
+            <div className="text-left">
+              <p className="text-sm font-medium">Sair</p>
+              <p className="text-xs text-destructive/70">Encerrar sessão neste dispositivo</p>
+            </div>
+          </div>
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -23,6 +23,7 @@ import {
   Eye,
   EyeOff,
   Bell,
+  CircleUser,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -124,6 +125,20 @@ export default function AppLayout({
   const pendingCount = notifications.actionCount;
   const hasInfo = notifications.infoCount > 0;
   const [bellOpen, setBellOpen] = useState(false);
+
+  // Mobile avatar dropdown (C3)
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const avatarRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!avatarOpen) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [avatarOpen]);
 
   async function handleLogout() {
     clearEncryptionKey();
@@ -264,35 +279,20 @@ export default function AppLayout({
           }}
         />
 
-        {/* Mobile header: brand (left) + privacy + sininho (right) */}
+        {/* Mobile header (C3): logomark (left) + sininho + avatar (right) */}
         <header className="flex h-14 items-center justify-between border-b px-4 lg:hidden">
+          {/* Logomark: symbol only, bigger impact */}
           <Image
-            src="/brand/lockup-h-bone-transparent.svg"
+            src="/brand/logomark-plum-transparent.svg"
             alt="Oniefy"
-            width={1588}
-            height={617}
-            className="h-6 w-auto"
+            width={200}
+            height={200}
+            className="h-8 w-8"
             priority
             unoptimized
           />
+
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={toggleValues}
-              className="rounded-md p-2 text-muted-foreground hover:bg-accent"
-              title={valuesHidden ? "Exibir valores" : "Ocultar valores"}
-              aria-label={valuesHidden ? "Exibir valores financeiros" : "Ocultar valores financeiros"}
-            >
-              {valuesHidden ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-            </button>
-            {/* Settings (mobile access to low-frequency items) */}
-            <Link
-              href="/settings"
-              className="rounded-md p-2 text-muted-foreground hover:bg-accent"
-              aria-label="Configurações"
-            >
-              <Settings className="h-5 w-5" />
-            </Link>
             {/* Sininho (E22) */}
             <button
               type="button"
@@ -309,6 +309,65 @@ export default function AppLayout({
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
               ) : null}
             </button>
+
+            {/* Avatar dropdown: user identity hub (C1 + C3) */}
+            <div ref={avatarRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setAvatarOpen((v) => !v)}
+                className="rounded-full p-1.5 text-muted-foreground hover:bg-accent"
+                aria-label="Menu do usuário"
+                aria-expanded={avatarOpen}
+              >
+                <CircleUser className="h-6 w-6" />
+              </button>
+
+              {avatarOpen && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-lg border bg-card shadow-lg">
+                  {/* User identity */}
+                  {userName && (
+                    <div className="border-b px-4 py-3">
+                      <p className="truncate text-sm font-medium">{userName}</p>
+                    </div>
+                  )}
+
+                  {/* Actions */}
+                  <div className="p-1.5">
+                    {/* Privacy toggle */}
+                    <button
+                      type="button"
+                      onClick={() => { toggleValues(); setAvatarOpen(false); }}
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                    >
+                      {valuesHidden ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                      {valuesHidden ? "Exibir valores" : "Ocultar valores"}
+                    </button>
+
+                    {/* Settings */}
+                    <Link
+                      href="/settings"
+                      onClick={() => setAvatarOpen(false)}
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent"
+                    >
+                      <Settings className="h-4 w-4 text-muted-foreground" />
+                      Configurações
+                    </Link>
+                  </div>
+
+                  {/* Logout (C1) */}
+                  <div className="border-t p-1.5">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sair
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
