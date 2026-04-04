@@ -5384,11 +5384,11 @@ Auditoria de 16 modals overlay no app. 15 já tinham FocusTrap. Adicionado no ú
 | Functions | 77 | **78** | +1 (validate_shared_token) |
 | Triggers | 23 | **23** | 0 |
 | ENUMs | 29 | **29** | 0 |
-| Indexes | 152 | **154** | +2 |
+| Indexes | 152 | **156** | +4 (2 explícitos + PK + UNIQUE) |
 | Migration files (repo) | 71 | **72** | +1 (083) |
 | Suítes Jest | 76 | **76** | 0 |
 | Assertions | ~1.164 | **~1.172** | +8 |
-| Arquivos TS/TSX | 294 | **297** | +3 |
+| Arquivos TS/TSX | 294 | **296** | +2 |
 | Hooks | 42 | **43** | +1 (use-shared-access) |
 | Páginas | 43 | **44** | +1 (/share/[token]) |
 | Engines puros | 21 | **21** | 0 |
