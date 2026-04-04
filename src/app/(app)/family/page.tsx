@@ -2,106 +2,46 @@
 
 import { toast } from "sonner";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Users, Archive } from "lucide-react";
 import {
   useFamilyMembers,
-  useCreateFamilyMember,
-  useUpdateFamilyMember,
   useDeactivateFamilyMember,
-  RELATIONSHIP_OPTIONS,
   RELATIONSHIP_LABELS,
   ROLE_LABELS,
 } from "@/lib/hooks/use-family-members";
-import { useAutoReset, useEscapeClose } from "@/lib/hooks/use-dialog-helpers";
+import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import type { Database } from "@/types/database";
-import FocusTrap from "focus-trap-react";
+import { FamilyMemberForm } from "@/components/family/family-member-form";
+import type { FamilyEditData } from "@/components/family/family-member-form";
 
 type FamilyMember = Database["public"]["Tables"]["family_members"]["Row"];
-type FamilyRelationship = Database["public"]["Enums"]["family_relationship"];
 
 export default function FamilyPage() {
   const { data: members, isLoading } = useFamilyMembers();
-  const createMember = useCreateFamilyMember();
-  const updateMember = useUpdateFamilyMember();
   const deactivateMember = useDeactivateFamilyMember();
 
-  const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<FamilyMember | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editData, setEditData] = useState<FamilyEditData | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useAutoReset(confirmDelete, setConfirmDelete);
-  useEscapeClose(showForm, () => { setShowForm(false); setEditing(null); });
-
-  // Form state
-  const [name, setName] = useState("");
-  const [relationship, setRelationship] = useState<FamilyRelationship>("self");
-  const [birthDate, setBirthDate] = useState("");
-  const [isTaxDep, setIsTaxDep] = useState(false);
-  const [avatar, setAvatar] = useState("👤");
-  const [error, setError] = useState<string | null>(null);
-
-  const loading = createMember.isPending || updateMember.isPending;
-
-  useEffect(() => {
-    if (editing) {
-      setName(editing.name);
-      setRelationship(editing.relationship);
-      setBirthDate(editing.birth_date || "");
-      setIsTaxDep(editing.is_tax_dependent);
-      setAvatar(editing.avatar_emoji || "👤");
-    } else {
-      setName("");
-      setRelationship("self");
-      setBirthDate("");
-      setIsTaxDep(false);
-      setAvatar("👤");
-    }
-    setError(null);
-  }, [editing, showForm]);
 
   function handleNew() {
-    setEditing(null);
-    setShowForm(true);
+    setEditData(null);
+    setFormOpen(true);
   }
 
   function handleEdit(m: FamilyMember) {
-    setEditing(m);
-    setShowForm(true);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!name.trim()) {
-      setError("Nome é obrigatório.");
-      return;
-    }
-
-    try {
-      if (editing) {
-        await updateMember.mutateAsync({
-          id: editing.id,
-          name: name.trim(),
-          relationship,
-          birth_date: birthDate || null,
-          is_tax_dependent: isTaxDep,
-          avatar_emoji: avatar,
-        });
-      } else {
-        await createMember.mutateAsync({
-          name: name.trim(),
-          relationship,
-          birth_date: birthDate || undefined,
-          is_tax_dependent: isTaxDep,
-          avatar_emoji: avatar,
-        });
-      }
-      setShowForm(false);
-      setEditing(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar.");
-    }
+    setEditData({
+      id: m.id,
+      name: m.name,
+      relationship: m.relationship,
+      birth_date: m.birth_date,
+      is_tax_dependent: m.is_tax_dependent,
+      avatar_emoji: m.avatar_emoji,
+    });
+    setFormOpen(true);
   }
 
   async function handleDeactivate(id: string) {
@@ -251,118 +191,12 @@ export default function FamilyPage() {
         </div>
       )}
 
-      {/* Form dialog */}
-      {showForm && (
-        <FocusTrap focusTrapOptions={{ escapeDeactivates: false }}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} />
-          <div className="relative z-10 w-full max-w-md rounded-lg bg-card p-6 shadow-elevated">
-            <h2 className="text-lg font-semibold">
-              {editing ? "Editar membro" : "Novo membro"}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {editing
-                ? "Atualize os dados do membro."
-                : "Uma divisão será criada automaticamente."}
-            </p>
-
-            {error && (
-              <div className="mt-3 rounded-md border border-destructive/50 bg-destructive/10 p-2 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-              {/* Name */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Nome</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: João, Luna (pet)"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  autoFocus
-                />
-              </div>
-
-              {/* Relationship */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium">Parentesco</label>
-                <select
-                  value={relationship}
-                  onChange={(e) => {
-                    const r = e.target.value as FamilyRelationship;
-                    setRelationship(r);
-                    setAvatar(RELATIONSHIP_OPTIONS.find((o) => o.value === r)?.emoji || "👤");
-                  }}
-                  disabled={!!editing}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50"
-                >
-                  {RELATIONSHIP_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.emoji} {opt.label}
-                    </option>
-                  ))}
-                </select>
-                {(relationship === "self" || relationship === "spouse") && (
-                  <p className="text-xs text-verdant">
-                    Será criado como centro de lucro (gera receita).
-                  </p>
-                )}
-              </div>
-
-              {/* Birth date */}
-              {relationship !== "pet" && (
-                <div className="space-y-1.5">
-                  <label className="text-sm font-medium">
-                    Data de nascimento <span className="font-normal text-muted-foreground">(opcional)</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  />
-                </div>
-              )}
-
-              {/* Tax dependent */}
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="tax-dep"
-                  checked={isTaxDep}
-                  onChange={(e) => setIsTaxDep(e.target.checked)}
-                  className="h-4 w-4 rounded border-input"
-                />
-                <label htmlFor="tax-dep" className="text-sm">
-                  Dependente no IRPF
-                </label>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => { setShowForm(false); setEditing(null); }}
-                  className="flex-1 rounded-md btn-alive border px-4 py-2.5 text-sm font-medium hover:bg-accent"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 rounded-md btn-cta px-4 py-2.5 text-sm font-medium text-primary-foreground disabled:opacity-50"
-                >
-                  {loading ? "Salvando" : editing ? "Salvar" : "Criar membro"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        </FocusTrap>
-      )}
+      {/* Form modal (Padrão A) */}
+      <FamilyMemberForm
+        open={formOpen}
+        onClose={() => { setFormOpen(false); setEditData(null); }}
+        editData={editData}
+      />
     </div>
   );
 }
