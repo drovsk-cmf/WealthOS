@@ -1,8 +1,9 @@
 # Oniefy - Roteiro de Teste Manual
 
-**Objetivo:** validar os fluxos críticos antes do deploy.
-**Tempo estimado:** 25-35 minutos (fluxo completo).
+**Objetivo:** validar fluxos críticos antes do deploy.
+**Tempo estimado:** 35-45 minutos (fluxo completo).
 **Pré-requisito:** `.\scripts\preflight.ps1 -SkipBuild -StartDev` passou sem [FALHA].
+**Atualizado:** sessão 40 (04/04/2026).
 
 > Dica: abra o DevTools (F12) → Console antes de começar. Erros JS aparecem lá antes de qualquer tela branca.
 
@@ -15,7 +16,23 @@ Cada item tem:
 - **Esperado:** o que deve acontecer
 - **Se falhar:** diagnóstico rápido
 
-Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do Console - isso é suficiente para eu diagnosticar.
+Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do Console.
+
+---
+
+## Navegação atual
+
+**Desktop:** sidebar com 5 seções (18 links) + settings na parte inferior.
+**Mobile:** 5 tabs (Início, Movimentações, Patrimônio, Orçamento, Mais) + hub "Mais" com 13 itens.
+
+| Seção | Links |
+|-------|-------|
+| (topo) | Início |
+| Movimentações | Transações, Cartões, Fluxo de caixa, Contas a pagar |
+| Patrimônio | Contas, Bens e imóveis |
+| Orçamento | Orçamento, Metas |
+| Mais | Impostos/IRPF, Diagnóstico, Calculadoras, Índices, Importar, Família, Categorias, Relatórios |
+| (inferior) | Configurações → Perfil, Segurança, Notificações, Dados, Análise |
 
 ---
 
@@ -23,7 +40,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ### 1.1 Registro de novo usuário
 - [ ] Acessar `http://localhost:3000/register`
-- [ ] Preencher nome, email (use um temporário, ex: `teste-HHMMSS@seudominio.com`), senha (min 12 chars, 1 maiúscula, 1 número, 1 especial)
+- [ ] Preencher nome, email (use `teste-HHMMSS@seudominio.com`), senha (min 12 chars, 1 maiúscula, 1 número, 1 especial)
 - [ ] Clicar "Criar conta"
 - **Esperado:** toast de sucesso + redirect para `/onboarding`
 - **Se falhar:**
@@ -38,60 +55,86 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 - [ ] Redirect para `/dashboard`
 - **Esperado:** dashboard com estado vazio (sem transações, mensagem motivacional)
 - **Se falhar:**
-  - Travou no loading → Console: erro no `completeOnboardingSeeds`? RPC falhou?
-  - Dashboard mostra erro 500 → algum RPC do dashboard não existe no projeto ativo
+  - Travou no loading → Console: erro no `completeOnboardingSeeds`?
+  - Dashboard mostra erro 500 → RPC do dashboard não existe no projeto ativo
 
 ### 1.3 Logout e Login
-- [ ] Clicar no ícone de logout (sidebar, parte inferior)
+- [ ] Clicar no ícone de logout (sidebar inferior, desktop) ou Mais → Configurações → sair (mobile)
 - [ ] Redirect para `/login`
 - [ ] Fazer login com o email/senha recém-criados
 - **Esperado:** redirect para `/dashboard`
 - **Se falhar:**
-  - "Credenciais inválidas" → email não confirmado? Supabase pode exigir confirmação por email
-  - Loop infinito login→dashboard→login → middleware/cookie issue. Abrir Console e checar cookies
+  - "Credenciais inválidas" → email não confirmado?
+  - Loop infinito login→dashboard→login → middleware/cookie issue
 
 ---
 
-## Bloco 2 - Dashboard + Navegação (3 min)
+## Bloco 2 - Dashboard + Navegação (5 min)
 
 ### 2.1 Dashboard vazio
 - [ ] Dashboard carrega sem erros
-- [ ] Cards de resumo visíveis (saldo, receitas, despesas - todos R$ 0,00)
+- [ ] Cards de resumo visíveis (saldo, receitas, despesas, todos R$ 0,00)
 - [ ] Nenhum texto em inglês ("No data", "Loading" etc.)
 - **Se falhar:**
-  - Spinner infinito → Console: qual RPC falhou? Anotar nome
-  - Valores NaN ou undefined → problema de tipo no retorno do RPC
+  - Spinner infinito → Console: qual RPC falhou?
+  - Valores NaN ou undefined → problema de tipo no retorno
 
-### 2.2 Navegação sidebar
-- [ ] Clicar em cada item: Início, Transações, Importar, Contas, Orçamento, Patrimônio
-- [ ] Cada página carrega sem tela branca
-- [ ] Clicar em Configurações (ícone engrenagem) → subpáginas: Perfil, Segurança, Notificações, Dados, Análise
-- **Se falhar:**
-  - Tela branca em rota específica → anotar qual rota (ex: `/budgets`)
+### 2.2 Navegação desktop (sidebar)
+- [ ] Verificar 5 seções: (topo), Movimentações, Patrimônio, Orçamento, Mais
+- [ ] Clicar em cada um dos 18 links:
+  - Início (`/dashboard`)
+  - Transações (`/transactions`)
+  - Cartões (`/cards`)
+  - Fluxo de caixa (`/cash-flow`)
+  - Contas a pagar (`/bills`)
+  - Contas (`/accounts`)
+  - Bens e imóveis (`/assets`)
+  - Orçamento (`/budgets`)
+  - Metas (`/goals`)
+  - Impostos / IRPF (`/tax`)
+  - Diagnóstico (`/diagnostics`)
+  - Calculadoras (`/calculators`)
+  - Índices (`/indices`)
+  - Importar (`/connections`)
+  - Família (`/family`)
+  - Categorias (`/categories`)
+  - Relatórios (`/workflows`)
+- [ ] Configurações (ícone engrenagem) → 5 subpáginas: Perfil, Segurança, Notificações, Dados, Análise
+- **Esperado:** todas as páginas carregam sem tela branca
+
+### 2.3 Navegação mobile (5 tabs)
+- [ ] Redimensionar janela para < 1024px (ou DevTools responsive)
+- [ ] Barra inferior com 5 tabs: Início, Movimentações, Patrimônio, Orçamento, Mais
+- [ ] Tab "Mais" → hub com 13 itens (Impostos, Diagnóstico, Calculadoras, Fluxo de caixa, Contas a pagar, Índices, Importação, Metas, Família, Categorias, Relatórios, Garantias, Configurações)
+- **Esperado:** todos os itens clicáveis e carregam a página correta
+
+### 2.4 Sininho de notificações
+- [ ] Ícone de sino visível na sidebar (desktop, ao lado dos ícones de olho/logout)
+- [ ] Clicar → painel de pendências abre
+- **Esperado:** lista de pendências (pode estar vazio em conta nova)
 
 ---
 
-## Bloco 3 - Transação (5 min) ★ Crítico
+## Bloco 3 - Transações (5 min) ★ Crítico
 
 ### 3.1 Criar despesa
-- [ ] Na página Transações, clicar botão "Nova transação"
-- [ ] Formulário abre (modal ou inline)
+- [ ] Transações → botão "Nova transação"
 - [ ] Tipo: Despesa (default)
-- [ ] Valor: digitar `150,50` (formato BR com vírgula)
+- [ ] Valor: `150,50` (formato BR com vírgula)
 - [ ] Descrição: "Teste supermercado"
 - [ ] Categoria: selecionar qualquer uma (ex: Alimentação)
 - [ ] Conta: selecionar conta padrão
 - [ ] Clicar "Salvar"
-- **Esperado:** toast de sucesso, transação aparece na lista, saldo atualizado
+- **Esperado:** toast de sucesso, transação na lista, saldo atualizado
 - **Se falhar:**
-  - Botão salvar não faz nada → Console: erro de validação Zod? Campo obrigatório faltando?
-  - 500 → RPC `create_transaction_with_journal` falhou. Anotar mensagem do Console
+  - Botão salvar inerte → Console: erro de validação Zod?
+  - 500 → RPC `create_transaction_with_journal` falhou
 
 ### 3.2 Criar receita
 - [ ] Nova transação → tipo: Receita
 - [ ] Valor: `3000,00`, descrição: "Teste salário"
 - [ ] Salvar
-- **Esperado:** transação aparece, saldo fica positivo
+- **Esperado:** transação aparece, saldo positivo
 
 ### 3.3 Editar transação
 - [ ] Clicar na transação "Teste supermercado"
@@ -102,16 +145,16 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 ### 3.4 Verificar dashboard
 - [ ] Voltar para Dashboard
 - [ ] Cards mostram: Receitas R$ 3.000,00 / Despesas R$ 200,00
-- **Esperado:** valores coerentes com o que foi criado
+- **Esperado:** valores coerentes
 
 ---
 
 ## Bloco 4 - Contas (3 min)
 
 ### 4.1 Listar contas
-- [ ] Ir para Contas
+- [ ] Sidebar → Contas (`/accounts`)
 - [ ] Contas-semente visíveis (Conta Corrente, Poupança, Cartão, etc.)
-- **Se falhar:** onboarding não rodou o seed corretamente
+- **Se falhar:** onboarding não rodou o seed
 
 ### 4.2 Criar conta
 - [ ] Clicar "Nova conta"
@@ -121,21 +164,35 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ---
 
-## Bloco 5 - Orçamento (3 min)
+## Bloco 5 - Cartões (2 min)
 
-### 5.1 Criar orçamento
-- [ ] Ir para Orçamento
-- [ ] Clicar "Novo orçamento" (ou equivalente)
-- [ ] Categoria: Alimentação, valor: `800,00`, mês vigente
-- [ ] Salvar
-- **Esperado:** barra de progresso mostra gasto (R$ 200,00 da despesa) vs planejado (R$ 800,00)
+### 5.1 Cartões de crédito
+- [ ] Sidebar → Cartões (`/cards`)
+- [ ] Contas tipo cartão separadas dos demais
+- **Esperado:** página carrega, mostra cartões com fatura atual (vazia em conta nova)
 
 ---
 
-## Bloco 6 - Patrimônio (3 min)
+## Bloco 6 - Orçamento + Metas (3 min)
 
-### 6.1 Criar bem
-- [ ] Ir para Patrimônio
+### 6.1 Criar orçamento
+- [ ] Sidebar → Orçamento (`/budgets`)
+- [ ] Clicar "Novo orçamento"
+- [ ] Categoria: Alimentação, valor: `800,00`, mês vigente
+- [ ] Salvar
+- **Esperado:** barra de progresso mostra gasto vs planejado
+
+### 6.2 Metas
+- [ ] Sidebar → Metas (`/goals`)
+- [ ] Criar meta (ex: "Reserva emergência", R$ 10.000)
+- **Esperado:** meta aparece com progresso 0%
+
+---
+
+## Bloco 7 - Bens e Imóveis (2 min)
+
+### 7.1 Criar bem
+- [ ] Sidebar → Bens e imóveis (`/assets`)
 - [ ] Clicar "Novo bem"
 - [ ] Nome: "MacBook Teste", valor: `15000,00`, tipo: Equipamento
 - [ ] Salvar
@@ -143,69 +200,138 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ---
 
-## Bloco 7 - Importação (5 min)
+## Bloco 8 - Importação (5 min)
 
-### 7.1 Import CSV
-- [ ] Ir para Importar
-- [ ] Upload de um arquivo CSV simples (3-5 linhas: data, descrição, valor)
+### 8.1 Import CSV
+- [ ] Sidebar → Importar (`/connections`)
+- [ ] Upload de arquivo CSV simples (3-5 linhas: data, descrição, valor)
 - [ ] Mapeamento de colunas aparece
 - [ ] Confirmar importação
-- **Esperado:** transações importadas aparecem em Transações
+- **Esperado:** transações importadas em Transações
 - **Se falhar:**
-  - Parsing falhou → formato do CSV incompatível. Testar com separador `;` e `,`
+  - Parsing falhou → formato CSV incompatível. Testar separador `;` e `,`
   - Auto-categorização não funcionou → GEMINI_API_KEY ausente (degradação esperada)
 
-### 7.2 Import OFX (se tiver arquivo)
+### 8.2 Import OFX (se tiver arquivo)
 - [ ] Upload de arquivo .ofx de banco
-- [ ] Transações parseadas aparecem para revisão
+- [ ] Transações parseadas para revisão
 - [ ] Confirmar
 
 ---
 
-## Bloco 8 - Configurações (3 min)
+## Bloco 9 - Fluxo de Caixa + Contas a Pagar (3 min)
 
-### 8.1 Perfil
-- [ ] Configurações → Perfil
-- [ ] Alterar nome → Salvar
-- **Esperado:** toast de sucesso
+### 9.1 Fluxo de caixa
+- [ ] Sidebar → Fluxo de caixa (`/cash-flow`)
+- [ ] Gráfico de receitas vs despesas carrega
+- **Esperado:** dados refletem as transações criadas
 
-### 8.2 Categorias
-- [ ] Configurações → Categorias
+### 9.2 Contas a pagar / Recorrências
+- [ ] Sidebar → Contas a pagar (`/bills`)
+- [ ] Lista de assinaturas e recorrências
+- **Esperado:** página carrega (pode estar vazia em conta nova)
+
+---
+
+## Bloco 10 - Impostos / IRPF (3 min)
+
+### 10.1 Painel fiscal
+- [ ] Sidebar → Impostos / IRPF (`/tax`)
+- [ ] Tabela progressiva IRPF visível (valores 2025/2026)
+- [ ] Calendário fiscal mostra prazos
+
+### 10.2 Deduções IRPF
+- [ ] Aba ou seção de deduções
+- **Esperado:** categorias de dedução (saúde, educação) listadas
+
+---
+
+## Bloco 11 - Diagnóstico + Calculadoras (3 min)
+
+### 11.1 Diagnóstico financeiro
+- [ ] Sidebar → Diagnóstico (`/diagnostics`)
+- [ ] 11 métricas carregam (savings rate, HHI, WACC, D/E, working capital, breakeven, income volatility, DuPont, category trends, warning signs, monthly history)
+- **Esperado:** valores calculados (ou zeros em conta nova)
+
+### 11.2 Calculadoras
+- [ ] Sidebar → Calculadoras (`/calculators`)
+- [ ] Hub com 8 calculadoras: Projeção, Independência, Posso Comprar, Comprar vs Alugar, CET, SAC vs Price, Quitar Dívidas, Capital Humano
+- [ ] Abrir qualquer uma → preencher valores → resultado renderiza
+- **Esperado:** cálculos corretos, sem NaN
+
+---
+
+## Bloco 12 - Índices Econômicos (2 min)
+
+### 12.1 Índices
+- [ ] Sidebar → Índices (`/indices`)
+- [ ] Gráficos de IPCA, Selic, CDI, câmbio
+- **Esperado:** dados recentes (últimas semanas)
+- **Se falhar:** cron de fetch pode não ter rodado
+
+---
+
+## Bloco 13 - Família + Categorias (2 min)
+
+### 13.1 Família
+- [ ] Sidebar → Família (`/family`)
+- [ ] Criar membro: "Cônjuge Teste", relação: Cônjuge
+- **Esperado:** membro aparece
+
+### 13.2 Categorias
+- [ ] Sidebar → Categorias (`/categories`)
+- [ ] Árvore de categorias visível, editável
 - [ ] Editar cor de uma categoria → Salvar
 - **Esperado:** cor atualizada
 
-### 8.3 Plano de Contas
-- [ ] Configurações → Plano de Contas
-- [ ] Árvore de 140 contas visível, navegável
-- **Esperado:** expansão/colapso funciona
+---
+
+## Bloco 14 - Configurações (3 min)
+
+### 14.1 Perfil
+- [ ] Configurações → Perfil (`/settings/profile`)
+- [ ] Alterar nome → Salvar
+- **Esperado:** toast de sucesso
+
+### 14.2 Segurança
+- [ ] Configurações → Segurança (`/settings/security`)
+- [ ] Opções de MFA, senha visíveis
+- **Esperado:** página carrega
+
+### 14.3 Notificações
+- [ ] Configurações → Notificações (`/settings/notifications`)
+- [ ] Toggles de preferência visíveis
+- **Esperado:** Web Push mostra "Em breve" (E65 pendente)
+
+### 14.4 Dados
+- [ ] Configurações → Dados (`/settings/data`)
+- [ ] Opções de export/delete visíveis
+- **Esperado:** botão de exportar funcional
+
+### 14.5 Análise
+- [ ] Configurações → Análise (`/settings/analytics`)
+- [ ] Motor financeiro / scanner carregam
+- **Esperado:** resultados ou estado vazio
 
 ---
 
-## Bloco 9 - Fiscal + Índices (3 min)
+## Bloco 15 - Garantias (2 min)
 
-### 9.1 Painel Fiscal
-- [ ] Configurações → Fiscal
-- [ ] Dados IRPF visíveis (tabela progressiva, deduções)
-- **Esperado:** valores da tabela 2025/2026
-
-### 9.2 Índices Econômicos
-- [ ] Configurações → Índices
-- [ ] Gráficos de IPCA, Selic, câmbio
-- **Esperado:** dados recentes (últimas semanas)
-- **Se falhar:** cron de fetch pode não ter rodado. Dados podem estar vazios no projeto novo
+### 15.1 Garantias
+- [ ] Mais → Garantias (`/more/warranties`) via hub mobile ou acesso direto
+- [ ] Criar garantia de produto
+- **Esperado:** garantia aparece com data de expiração
 
 ---
 
-## Bloco 10 - Cleanup
+## Bloco 16 - Cleanup
 
-- [ ] Excluir as transações de teste (se quiser manter a conta limpa)
-- [ ] Ou: excluir o usuário de teste via Supabase Dashboard → Authentication → Users
+- [ ] Excluir transações de teste (se quiser conta limpa)
+- [ ] Ou: excluir usuário de teste via Supabase Dashboard → Authentication → Users
 
 ---
 
 ## Template de Reporte de Bug
-
-Quando encontrar um problema, copie e preencha:
 
 ```
 ROTA: /transactions
@@ -216,5 +342,3 @@ ACONTECEU: botão ficou em loading infinito
 CONSOLE (F12): POST /rest/v1/rpc/create_transaction_with_journal 400 - "account_id is required"
 SCREENSHOT: [colar se possível]
 ```
-
-Isso me dá informação suficiente para diagnosticar sem eu precisar reproduzir o cenário inteiro.
