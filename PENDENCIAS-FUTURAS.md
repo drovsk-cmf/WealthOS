@@ -70,13 +70,11 @@ Itens que só o Claudio pode resolver. Sem código.
 | E24 | **Módulo de investimentos** — 9 tipos, crons fallback, marcação a mercado. Ref: INVESTMENTS-MODULE-SPEC | Alto | Alto |
 | E16 | **Compartilhamento familiar** — permissões granulares, RBAC. Muda cobrança pessoa→família. Reclassificado H1 por Claudio. | Alto | Alto |
 | E70 | **Inbound email para faturas** — endereço por usuário, allowlist, processamento automático. Requer Resend/SES. Ref: IMPORT-ENGINE-SPEC §2 | 6-8h | Alto |
-| E64 | **OCR web (Tesseract.js + PDF.js)** — infraestrutura de upload pronta (E62 ✅). | 4-6h | Médio |
 
 ### 3.2 Média prioridade (3 meses pós-lançamento)
 
 | ID | Item | Esforço | Impacto |
 |----|------|---------|---------|
-| E56 | **Focus trap em ~10 dialogs de confirmação** — forms já têm (15 componentes), dialogs de confirmação/panels não. | 2h | Baixo |
 | E42 | **Valorização imóveis (FipeZap/DataZAP)** — ninguém faz no BR. | Médio | Médio |
 | E43 | **Assistente WhatsApp** — registro por texto/áudio. Gap competitivo. | Alto | Alto |
 | E35 | **Acesso read-only contador** — link temporário, só módulo fiscal. | Baixo | Baixo |
@@ -218,6 +216,8 @@ Decisões IA do adendo v1.5:
 | E62 | Upload documentos WKF-03 (hook + UI em workflows + assets) | 38 |
 | E63 | Anexar documentos a bens PAT-06 (AssetDocuments) | 38 |
 | E65 | Web Push notifications (SW + hook + API routes + Settings UI). Bloqueado: VAPID keys | 38 |
+| E56 | FocusTrap em notification-panel (último modal sem trap, 16/16 cobertos) | 40 |
+| E64 | OCR web: PDF.js text extraction + rasterize fallback + Tesseract.js. Regex boleto/NF-e | 40 |
 
 ---
 

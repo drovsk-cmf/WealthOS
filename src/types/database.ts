@@ -1458,6 +1458,45 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_access_tokens: {
+        Row: {
+          id: string
+          user_id: string
+          token: string
+          scope: string
+          label: string | null
+          expires_at: string
+          is_revoked: boolean
+          last_accessed_at: string | null
+          access_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          token?: string
+          scope?: string
+          label?: string | null
+          expires_at?: string
+          is_revoked?: boolean
+          last_accessed_at?: string | null
+          access_count?: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          token?: string
+          scope?: string
+          label?: string | null
+          expires_at?: string
+          is_revoked?: boolean
+          last_accessed_at?: string | null
+          access_count?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       setup_journey: {
         Row: {
           completed_at: string | null
@@ -2290,6 +2329,7 @@ export type Database = {
         }
         Returns: Json
       }
+      validate_shared_token: { Args: { p_token: string }; Returns: Json }
     }
     Enums: {
       account_type:

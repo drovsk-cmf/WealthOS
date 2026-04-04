@@ -21,8 +21,14 @@
  */
 
 import { useState } from "react";
-import { FileSearch, Building, Landmark, Download } from "lucide-react";
+import { FileSearch, Building, Landmark, Download, Share2, Copy, X, Link2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  useSharedAccessTokens,
+  useCreateSharedToken,
+  useRevokeSharedToken,
+  buildShareUrl,
+} from "@/lib/hooks/use-shared-access";
 import {
   useFiscalReport,
   useFiscalProjection,
@@ -64,6 +70,30 @@ export default function FiscalPage() {
   const liabilityAccounts = accounts?.filter(a => ["credit_card", "loan", "financing"].includes(a.type) && a.current_balance !== 0) ?? [];
 
   const years = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - i);
+
+  // E35: Shared access for accountant
+  const { data: shareTokens } = useSharedAccessTokens();
+  const createShareToken = useCreateSharedToken();
+  const revokeShareToken = useRevokeSharedToken();
+  const [showSharePanel, setShowSharePanel] = useState(false);
+
+  async function handleCreateShareLink() {
+    try {
+      const token = await createShareToken.mutateAsync({ scope: "tax", expiresInDays: 7 });
+      const url = buildShareUrl(token.token);
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copiado! Válido por 7 dias.");
+      setShowSharePanel(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao gerar link.");
+    }
+  }
+
+  async function handleCopyLink(token: string) {
+    const url = buildShareUrl(token);
+    await navigator.clipboard.writeText(url);
+    toast.success("Link copiado.");
+  }
 
   const isLoading = loadingReport || loadingProjection;
 
@@ -155,6 +185,16 @@ export default function FiscalPage() {
             <Download className="h-4 w-4" />
             {exporting ? "Gerando" : "Exportar"}
           </button>
+          <button
+            type="button"
+            onClick={handleCreateShareLink}
+            disabled={createShareToken.isPending}
+            className="flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-40"
+            title="Gerar link temporário para o contador"
+          >
+            <Share2 className="h-4 w-4" />
+            Compartilhar
+          </button>
         </div>
       </div>
 
@@ -169,6 +209,68 @@ export default function FiscalPage() {
           para planejamento; consulte seu contador para a declaração oficial.
         </p>
       </details>
+
+      {/* E35: Share panel — active links */}
+      {(showSharePanel || (shareTokens && shareTokens.length > 0)) && (
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Link2 className="h-4 w-4 text-muted-foreground" />
+              <p className="text-sm font-semibold">Links compartilhados</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSharePanel(false)}
+              className="rounded-md p-1 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+          {shareTokens && shareTokens.length > 0 ? (
+            <div className="space-y-2">
+              {shareTokens.map((t) => (
+                <div key={t.id} className="flex items-center justify-between rounded border bg-muted/30 px-3 py-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs font-mono text-muted-foreground">
+                      {buildShareUrl(t.token).replace(/^https?:\/\//, "")}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Expira: {new Date(t.expires_at).toLocaleDateString("pt-BR")}
+                      {t.access_count > 0 ? ` · ${t.access_count} acesso(s)` : ""}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 ml-2">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyLink(t.token)}
+                      className="rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+                      title="Copiar link"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => revokeShareToken.mutate(t.id)}
+                      disabled={revokeShareToken.isPending}
+                      className="rounded-md p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                      title="Revogar"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Nenhum link ativo. Use o botão &quot;Compartilhar&quot; para gerar um link temporário para seu contador.
+            </p>
+          )}
+          <p className="text-[10px] text-muted-foreground">
+            Links dão acesso somente leitura ao resumo fiscal (deduções, receitas, bens). Expiram automaticamente.
+          </p>
+        </div>
+      )}
 
       {/* ═══ PAINEL DE PROVISIONAMENTO (Inteligência principal) ═══ */}
       {prov && !prov.status && (
