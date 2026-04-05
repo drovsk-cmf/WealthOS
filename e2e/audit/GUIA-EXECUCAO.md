@@ -231,7 +231,7 @@ npm install -g @anthropic-ai/claude-code
 
 ```powershell
 cd C:\Users\claud\Documents\PC_WealthOS
-claude
+claude --dangerously-skip-permissions
 ```
 
 ### 9c. Colar este prompt dentro do Claude Code
