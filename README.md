@@ -12,14 +12,12 @@
 
 | Módulo | O que resolve |
 |--------|--------------|
-| **Financeiro** | Receitas e despesas com contabilidade partidas dobradas (journal entries). Importação CSV/OFX/XLSX. Reconciliação bancária. |
-| **Patrimônio** | Bens, veículos, investimentos com depreciação, seguros e valorização. Classificação por liquidez (N1-N4). |
-| **Fiscal** | Consolidação automática por tratamento fiscal (tributável, isento, dedutível). Provisionamento de IR com projeção anual. Exportação IRPF formatada (XLSX 6 abas). |
-| **Orçamento** | Planejamento mensal por categoria com workflows de aprovação. |
-| **Contas a Pagar** | Vencimentos, recorrências com reajuste indexado (IPCA, IGP-M), alertas push. |
-| **Metas** | Objetivos de economia com progresso, sugestão de quanto poupar/mês. |
-| **Dashboard** | Solvência em linguagem direta ("Você sobrevive 14 meses sem renda"), patrimônio líquido temporal, gráfico evolutivo. |
-| **Calculadoras** | 7 ferramentas de análise financeira: simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, capital humano (DCF da carreira). |
+| **Finanças** | Receitas e despesas com contabilidade partidas dobradas (journal entries). Importação CSV/OFX/XLSX com OCR (PDF). Reconciliação bancária. |
+| **Patrimônio** | Contas, cartões, bens e veículos com depreciação, seguros e valorização. Classificação por liquidez (N1-N4). |
+| **Planejamento** | Orçamento mensal por categoria. Metas com progresso e sugestão de quanto poupar. Recorrências com reajuste indexado (IPCA, IGP-M). |
+| **Fiscal** | Consolidação automática por tratamento fiscal (tributável, isento, dedutível). Provisionamento de IR com projeção anual. Exportação IRPF formatada (XLSX 6 abas). Compartilhamento read-only para contador. |
+| **Inteligência** | Diagnóstico financeiro (DuPont adaptado). 8 calculadoras (simulador "Posso comprar?", projeção indexada, independência financeira, comprar vs alugar, CET, SAC vs Price, quitar dívida, capital humano). Indicadores econômicos em tempo real. |
+| **Dashboard** | Solvência em linguagem direta ("Você sobrevive 14 meses sem renda"), patrimônio líquido temporal, gráfico evolutivo, scanner financeiro, narrativa contextual. |
 | **Motor Financeiro** | 10 regras automáticas de inteligência financeira (alertas de solvência, distribuição de custos, reconciliação). |
 
 ## Stack
@@ -33,18 +31,41 @@
 | Deploy | Vercel (www.oniefy.com) |
 | CI/CD | GitHub Actions (Lint + TypeCheck + Jest + Build + Security + Health Check) |
 | IA | Gemini Flash-Lite (categorização) + Claude Sonnet (assistente) |
+| Testes E2E | Playwright (2 suites: audit + audit-kit) |
 
 ## Números
 
 | Métrica | Valor |
 |---------|-------|
-| Tabelas | 35 |
-| Políticas RLS | 107 |
-| Functions PostgreSQL | 74 |
+| Tabelas | 38 |
+| Políticas RLS | 123 |
+| Functions PostgreSQL | 78 |
 | pg_cron jobs | 13 |
-| Testes (Jest + RTL) | 50 suítes, 775 assertions |
-| Cobertura | 71.2% statements, 75.3% functions |
-| Arquivos TypeScript | 213 |
+| Testes unitários (Jest) | 76 suítes, 1.172 assertions |
+| Testes E2E (Playwright) | 37 specs, ~360 testes |
+| Cobertura story→teste | 78% (85/108 stories) |
+| Arquivos TypeScript | 300 |
+| Hooks React Query | 43 |
+| Schemas Zod | 61 |
+| Migrations | 73 |
+| Calculadoras | 8 + diagnóstico financeiro |
+
+## Testes
+
+```bash
+npm test                  # Jest (unitários)
+npm run lint              # ESLint
+npm run type-check        # TypeScript
+```
+
+Testes E2E contra produção:
+```bash
+$env:PLAYWRIGHT_BASE_URL = "https://www.oniefy.com"
+npx playwright test e2e/audit/                                              # Suite original (18 specs)
+npx playwright test --config=e2e/audit-kit/playwright.config.ts             # Audit Kit (19 specs universais + 6 gerados)
+```
+
+O Audit Kit (`e2e/audit-kit/`) é agnóstico de backend e reutilizável em qualquer projeto web. Inclui: acessibilidade (axe-core), responsividade multi-breakpoint, performance (Web Vitals), security headers, SEO, navegação por teclado, monkey testing e variações de fluxo.
 
 ## Setup local
 
@@ -81,14 +102,6 @@ npm run dev
 
 Acessar: http://localhost:3000
 
-### 5. Testes
-
-```bash
-npm test              # Jest
-npm run lint          # ESLint
-npm run type-check    # TypeScript
-```
-
 ## Estrutura
 
 ```
@@ -97,28 +110,34 @@ src/
   app/(app)/           # Dashboard, transações, fiscal, patrimônio, metas...
   app/api/             # Route handlers (auth, IA, push, digest, índices)
   components/          # Componentes por domínio (dashboard, calculators, ...)
-  lib/hooks/           # 31 hooks React Query por domínio
+  lib/hooks/           # 43 hooks React Query por domínio
   lib/crypto/          # Criptografia AES-256 (DEK/KEK) para CPF
-  lib/parsers/         # Parsers CSV, OFX, XLSX para importação bancária
-  lib/schemas/         # 33 schemas Zod para contratos RPC
-  lib/services/        # Transaction engine, fiscal export, onboarding seeds
+  lib/parsers/         # Parsers CSV, OFX, XLSX, PDF (OCR) para importação
+  lib/schemas/         # 61 schemas Zod para contratos RPC
+  lib/services/        # 21 engines puros (transaction, fiscal, dedup, onboarding...)
+e2e/
+  audit/               # Suite de auditoria UX original (18 specs)
+  audit-kit/           # Playwright Audit Kit universal (19 specs + discovery)
 supabase/
-  migrations/          # 60 migration files (schema, RLS, RPCs, triggers)
+  migrations/          # 73 migration files (schema, RLS, RPCs, triggers)
+docs/
+  MATRIZ-VALIDACAO-v2_2.md  # 48 auditorias em 11 camadas
+  LGPD-*.md                 # ROPA, RIPD, mapeamento de dados pessoais
 ```
 
 Fonte de verdade para arquitetura e roadmap: `HANDOVER-WealthOS.md`.
 
-## Segurança
+## Segurança e compliance
 
-- Row Level Security em 100% das tabelas (107 políticas, initplan pattern)
-- Criptografia AES-256 para dados sensíveis (CPF)
+- Row Level Security em 100% das tabelas (123 políticas, initplan pattern)
+- Criptografia AES-256-GCM para dados sensíveis (CPF) com DEK/KEK
 - Sanitização PII obrigatória antes de toda chamada de IA
 - Rate limiting em middleware
 - Session timeout com purge de chaves criptográficas
-- CSP, HSTS, X-Frame-Options, Permissions-Policy
-- Sentry com beforeSend PII scrub
-- Audit log (access_logs com IP, user_agent, ação)
-- 5 cron jobs de cleanup (logs, analytics, cache, notificações, soft-deleted)
+- CSP nonce-based, HSTS, X-Frame-Options, Permissions-Policy
+- LGPD: ROPA, RIPD fiscal, mapeamento de dados pessoais, DPO designado
+- WCAG AA: 33/35 rotas passam auditoria automatizada (axe-core)
+- Matriz de Validação com 48 auditorias em 11 camadas (ISO 25010, OWASP ASVS, IEEE 1012)
 
 ## Licença
 
