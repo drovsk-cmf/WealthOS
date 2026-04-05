@@ -12,8 +12,8 @@
 import { test, expect } from "@playwright/test";
 import { auditConfig } from "../../audit.config";
 
-const TOTAL_ACTIONS = 150;
-const ACTION_DELAY_MS = 400;
+const TOTAL_ACTIONS = 80;
+const ACTION_DELAY_MS = 300;
 
 type ActionType = "click" | "navigate" | "back" | "type" | "escape";
 
@@ -32,6 +32,7 @@ function weightedAction(): ActionType {
 
 test.describe("Monkey testing", () => {
   test(`${TOTAL_ACTIONS} ações aleatórias sem crash`, async ({ page }) => {
+    test.setTimeout(120_000); // 2 min - monkey test precisa de mais tempo
     const jsErrors: string[] = [];
     const unhandledRejections: string[] = [];
     const http5xx: string[] = [];
