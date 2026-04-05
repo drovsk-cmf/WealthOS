@@ -245,6 +245,9 @@ Decisões IA do adendo v1.5:
 | UX-02 | Modal de transação não faz scroll trap (página atrás scrolla junto). Auditoria 7.5 | 43 |
 | UX-06 | Audit trail + undo: tabela de histórico (who/when/what/old/new) com triggers em tabelas financeiras. Página /settings/history. Opção de desfazer por janela de tempo (1h, 6h, 12h, 24h, 3d, 7d, 30d, 60d, 90d). Requer decisão de schema antes de implementar. Auditoria 11.4 | 44 |
 | UX-07 | Nomenclatura "Índices Econômicos" vs "Indicadores": sidebar diz "Indicadores" (sessão 42) mas heading da página pode ainda dizer "Índices Econômicos". Padronizar. Auditoria 2.6 | 44 |
+| B25 | Acumulação de índices econômicos: código soma taxas (r₁+r₂+...+rₙ) ao invés de compor geometricamente ((1+r₁)×(1+r₂)×...×(1+rₙ)-1). Enviado ao Claude Code sessão 44. Auditoria 11.1 | 44 |
+| B26 | Saldo inicial bloqueado em contas e cartões: campo fica disabled após salvar, impossibilitando correção de erros. Enviado ao Claude Code sessão 44. Auditoria 7.6 | 44 |
+| UX-08 | MoneyInput com máscara automática: usuário digita só números, formatação pt-BR em tempo real ("150000"→"1.500,00"). Migrar todos os campos monetários do app. Enviado ao Claude Code sessão 44. Auditoria 7.6 | 44 |
 
 ---
 
@@ -259,4 +262,4 @@ Decisões IA do adendo v1.5:
 | 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). Auditoria PENDENCIAS: 11 entradas stale removidas (E52, E53, E54, E58, E59, E60, E61, E62, E63, E65 já implementados). A19 (VAPID keys) adicionado. |
 | 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD completo: ROPA (L4), RIPD fiscal (L5), DPO interino (L6), CPF com consentimento explícito + criptografia AES-256 em perfil e família (L3). Cross-links contextuais. 8 commits, 28+ arquivos. |
 | 05/04/2026 | Sessão 43: Auditoria UX exploratória + suite E2E. B1 (alert_threshold overflow) e B4 (timezone) corrigidos. C1 (logout mobile) e C3 (header redesign) implementados. 8 arquivos Playwright audit (1.916 linhas). Usuário e2e-test@oniefy.com criado. Achados pendentes: C2, A1, A3, A4, R2, UX-01, UX-02. |
-| 05/04/2026 | Sessão 44: Audit Kit v2 (13 specs universais + 6 gerados). 9 bugs de produção corrigidos (B5-B13). 340 testes, 94% pass rate. Monkey test detectou B14 (double-submit). B17-B24 registrados (modal viewport, CLS, empty states, contrast, touch targets, analytics, overflow). 3 fixes em specs. |
+| 05/04/2026 | Sessão 44: Audit Kit v2 (13 specs universais + 6 gerados). 16 bugs de produção corrigidos (B5-B16). ~360 testes, 94%+ pass rate. Monkey test detectou B14 (double-submit). B17-B24 registrados. 7 achados §43.7 migrados (C2, UX-01..05, R2). 6 docs atualizados (README, CLAUDE.md, WCAG, SETUP-LOCAL, DEPLOY-VERCEL, ROTEIRO). Matriz v2.1 arquivada. iOS build status corrigido. B25 (índices), B26 (saldo editável), UX-06 (audit trail), UX-07 (nomenclatura), UX-08 (MoneyInput) registrados. B25/B26/UX-08 enviados ao Claude Code. |

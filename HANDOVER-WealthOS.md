@@ -5771,16 +5771,88 @@ Commits: `75f1129`, `c968ee7`.
 
 A sessão 40 preparou `docs/SESSION-41-PROMPT.md` com backlog para sessão 41 (E24 investimentos, E16 compartilhamento familiar). O trabalho executado na sessão seguinte foi diferente (auditoria UX + LGPD) e documentado como sessão 42. A numeração 41 ficou vaga. O prompt continua em `docs/SESSION-41-PROMPT.md` como referência.
 
-### 44.11 Ground truth (atualizado final sessão 44c)
+### 44.11 Sessão 44d — Documentação final + 3 tarefas enviadas ao Claude Code
 
-| Métrica | Sessão 43 | Sessão 44c | Delta |
+**Documentação atualizada nesta sessão (6 arquivos):**
+- `README.md`: números atualizados (38 tabelas, 123 RLS, 300 TS/TSX, 76 suítes, 1.172 assertions, etc.), seção E2E, compliance
+- `CLAUDE.md`: comandos Playwright, audit-kit, discovery, convenções atualizadas
+- `docs/WCAG-AA-AUDIT.md`: 7 fixes a11y, resultado 33/35, testes automatizados
+- `docs/SETUP-LOCAL.md`: 15x WealthOS → Oniefy
+- `docs/DEPLOY-VERCEL.md`: URL Vercel corrigida
+- `docs/ROTEIRO-TESTE-MANUAL.md`: Navigation v3 (12 links, 4 seções, /more eliminado)
+
+**Outros ajustes documentais:**
+- Matriz v2.1 arquivada em `docs/archive/`
+- 7 achados da §43.7 migrados para PENDENCIAS com IDs sem colisão (C2, UX-01..05, R2)
+- iOS build status corrigido no HANDOVER (bloqueado → parcialmente desbloqueado via GitHub Actions)
+- SESSION-41-PROMPT.md documentada como sessão pulada
+
+**3 tarefas enviadas ao Claude Code (em execução):**
+- B25: Acumulação de índices (composição geométrica vs soma)
+- B26: Saldo inicial editável em contas e cartões
+- UX-08: MoneyInput com máscara automática pt-BR + migração de todos os campos monetários
+
+**Pendências registradas nesta sessão:**
+- UX-06: Audit trail + undo (requer decisão de schema)
+- UX-07: Nomenclatura Indicadores vs Índices Econômicos
+- B25, B26, UX-08: em execução pelo Claude Code
+
+### 44.12 Commits desta sessão (Claude.ai)
+
+| Hash | Mensagem |
+|------|----------|
+| `dd70c37` | feat(audit): Playwright Audit Kit universal + Matriz de Validação v2.2 |
+| `75f1129` | feat(audit-kit): monkey test + flow variations (13 specs universais) |
+| `c968ee7` | fix(audit-kit): monkey test timeout — 80 ações + 120s limit |
+| `d9e0a47` | docs: B14 double-submit |
+| `de247ac` | docs: B18-B24 |
+| `a93607f` | docs: HANDOVER §44c |
+| `f73f288` | docs: arquivar MATRIZ-VALIDACAO v2.1 |
+| `a6bc874` | docs: atualizar README, CLAUDE.md, WCAG-AA-AUDIT |
+| `ba81e75` | docs: atualizar SETUP-LOCAL, DEPLOY-VERCEL, ROTEIRO |
+| `205a4a2` | docs: migrar §43.7 + fix iOS build status |
+| `6dc9635` | docs: UX-06, UX-07 |
+
+### 44.13 Commits desta sessão (Claude Code)
+
+| Hash | Mensagem |
+|------|----------|
+| `9eae8b8` | feat(audit-kit): configuração Oniefy + specs gerados + fixes a11y |
+| `f6348e2` | docs: sessão 44 — Audit Kit v2 + 340 testes |
+| `5dac1ae` | fix: CI TS2352 + sidebar contrast + mobile overflow + LCP dashboard |
+| `a18bf5f` | fix(a11y+mobile): B15 button-name, B16 label, overflow |
+| `a41c6f0` | docs: HANDOVER §44b |
+| `8337a9e` | fix(e2e): 3 bugs na suite audit original |
+
+### 44.14 Ground truth (atualizado final sessão 44)
+
+| Métrica | Sessão 43 | Sessão 44 | Delta |
 |---------|-----------|-----------|-------|
+| Tabelas | 38 | **38** | 0 |
+| Políticas RLS | 123 | **123** | 0 |
+| Functions | 78 | **78** | 0 |
+| Migrations | 72 | **73** | +1 (084) |
+| Arquivos TS/TSX | 300 | **300** | 0 |
+| Suítes Jest | 76 | **76** | 0 |
+| Assertions | ~1.172 | **~1.172** | 0 |
 | E2E specs (audit) | 18 | **18** | 0 |
 | E2E specs (audit-kit) | 0 | **19** (13 universal + 6 gerados) | +19 |
 | E2E audit-kit testes | 0 | **~360** | +360 |
 | Pass rate a11y | — | **94%** (33/35) | — |
 | Bugs corrigidos | 2 (B1,B4) | **16** (B5-B16) | +14 |
-| Pendências registradas | — | **11** (B14, B17-B24, CLS, overflow) | +11 |
-| A11y fixes total | 0 | **7** (5 selects + button-name + label) | +7 |
+| Pendências registradas | 7 (§43.7) | **22** (B14-B26, C2, UX-01..08, R2) | +15 |
+| A11y fixes | 0 | **7** | +7 |
 | LCP dashboard | >2500ms | **1544ms** | -38% |
+| Docs atualizados | — | **9** | +9 |
 | CI status | ❌ TS2352 | ✅ green | fixed |
+
+### 44.15 Próximos passos
+
+1. **Verificar resultado do Claude Code** (B25 índices, B26 saldo editável, UX-08 MoneyInput)
+2. **Decidir schema de audit trail** (UX-06) — discussão arquitetural
+3. **Corrigir B14** (double-submit em 5 formulários) — `disabled={mutation.isPending}`
+4. **Corrigir B20** (color-contrast muted-foreground em ~8 páginas)
+5. **Verificar deploy** dos commits no Vercel — B15/B16 devem passar após deploy
+6. **UX-03** (verificar se calc tabs já foram resolvidos na sessão 42)
+7. **UX-04** (error handling em ~50% das páginas)
+8. **Teste de corredor** com 3 pessoas (A7)
