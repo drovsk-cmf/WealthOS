@@ -1,0 +1,4957 @@
+[
+  {
+    "route": "/dashboard",
+    "name": "Dashboard",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/transactions",
+    "name": "Transações",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Buscar por descrição",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/cards",
+    "name": "Cartões de Crédito",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/cash-flow",
+    "name": "Fluxo de Caixa",
+    "forms": {
+      "inputs": [],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 22
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/bills",
+    "name": "Contas a Pagar",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Buscar pendentes",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/accounts",
+    "name": "Contas",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Buscar conta por nome",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões de créditoGerenciar cartões →",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/assets",
+    "name": "Patrimônio (Bens)",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Garantias de produtos",
+        "href": "/more/warranties",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/budgets",
+    "name": "Orçamento",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/goals",
+    "name": "Metas",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/tax",
+    "name": "Imposto de Renda",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "clt-gross",
+          "placeholder": "5.000,00",
+          "required": false
+        }
+      ],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 5
+        },
+        {
+          "name": "clt-deps",
+          "optionCount": 6
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/diagnostics",
+    "name": "Diagnóstico Financeiro",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators",
+    "name": "Calculadoras",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "50.000",
+          "required": false
+        }
+      ],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 3
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/indices",
+    "name": "Índices Econômicos",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [
+      {
+        "columnCount": 4,
+        "rowCount": 5
+      }
+    ],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings",
+    "name": "Configurações (hub)",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "PerfilNome, senha, moeda padrão",
+        "href": "/settings/profile",
+        "isExternal": false
+      },
+      {
+        "text": "NotificaçõesPush, alertas, lembretes",
+        "href": "/settings/notifications",
+        "isExternal": false
+      },
+      {
+        "text": "CategoriasGerenciar categorias de receita e despes",
+        "href": "/categories",
+        "isExternal": false
+      },
+      {
+        "text": "DivisõesPessoas, projetos e atividades",
+        "href": "/cost-centers",
+        "isExternal": false
+      },
+      {
+        "text": "Estrutura familiarMembros da família e alocações",
+        "href": "/family",
+        "isExternal": false
+      },
+      {
+        "text": "GarantiasRastrear garantias de produtos e equipame",
+        "href": "/more/warranties",
+        "isExternal": false
+      },
+      {
+        "text": "ImportaçãoImportar extratos, cadastro em massa, co",
+        "href": "/connections",
+        "isExternal": false
+      },
+      {
+        "text": "TarefasChecklist de pendências e rotinas periódica",
+        "href": "/workflows",
+        "isExternal": false
+      },
+      {
+        "text": "Dados e privacidadeExportar dados, política de pri",
+        "href": "/settings/data",
+        "isExternal": false
+      },
+      {
+        "text": "Estrutura contábilPlano de contas (uso avançado)",
+        "href": "/chart-of-accounts",
+        "isExternal": false
+      },
+      {
+        "text": "MétricasRetenção, eventos e volume de dados",
+        "href": "/settings/analytics",
+        "isExternal": false
+      },
+      {
+        "text": "SegurançaMFA, sessões, exclusão de conta",
+        "href": "/settings/security",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings/profile",
+    "name": "Perfil",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Seu nome",
+          "required": false
+        },
+        {
+          "type": "password",
+          "name": "",
+          "placeholder": "Nova senha",
+          "required": false
+        },
+        {
+          "type": "password",
+          "name": "",
+          "placeholder": "Repita a nova senha",
+          "required": false
+        }
+      ],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 4
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings/notifications",
+    "name": "Notificações",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings/security",
+    "name": "Segurança",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [
+      {
+        "text": "Solicitar exclusão da conta",
+        "selector": "button:has-text(\"Solicitar exclusão da conta\")"
+      }
+    ],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings/data",
+    "name": "Dados e Privacidade",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Ler Política de Privacidade completa",
+        "href": "/privacy",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/settings/analytics",
+    "name": "Métricas",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [
+      {
+        "columnCount": 2,
+        "rowCount": 3
+      }
+    ],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/categories",
+    "name": "Categorias",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Buscar categoria",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Divisões (pessoas, projetos, atividades)",
+        "href": "/cost-centers",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/cost-centers",
+    "name": "Divisões",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/family",
+    "name": "Estrutura Familiar",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/connections",
+    "name": "Importação",
+    "forms": {
+      "inputs": [
+        {
+          "type": "file",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 22
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/workflows",
+    "name": "Tarefas",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/chart-of-accounts",
+    "name": "Estrutura Contábil",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/more/warranties",
+    "name": "Garantias",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/affordability",
+    "name": "Calc: Posso Comprar?",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "50.000",
+          "required": false
+        }
+      ],
+      "selects": [
+        {
+          "name": "",
+          "optionCount": 3
+        }
+      ],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/projection",
+    "name": "Calc: Projeção",
+    "forms": {
+      "inputs": [],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/independence",
+    "name": "Calc: Independência",
+    "forms": {
+      "inputs": [
+        {
+          "type": "number",
+          "name": "calc-fi-expense",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-fi-return",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-fi-inflation",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-fi-savings",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-fi-monthly",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/buy-vs-rent",
+    "name": "Calc: Comprar vs Alugar",
+    "forms": {
+      "inputs": [
+        {
+          "type": "number",
+          "name": "calc-bvr-value",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-down",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-frate",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-fterm",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-condo",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-iptu",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-maint",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-appr",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-rent",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-rentadj",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-opp",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-bvr-horizon",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/cet",
+    "name": "Calc: CET",
+    "forms": {
+      "inputs": [
+        {
+          "type": "number",
+          "name": "calc-cet-principal",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-cet-payment",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-cet-periods",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-cet-reg",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-cet-iof",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-cet-insurance",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/sac-vs-price",
+    "name": "Calc: SAC vs Price",
+    "forms": {
+      "inputs": [
+        {
+          "type": "number",
+          "name": "calc-sp-principal",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-sp-rate",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "calc-sp-periods",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [
+      {
+        "columnCount": 6,
+        "rowCount": 11
+      }
+    ],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/debt-payoff",
+    "name": "Calc: Quitar Dívida",
+    "forms": {
+      "inputs": [
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Ex: Cartão Nubank",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "5.000",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "180",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "200",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "Ex: Cartão Nubank",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "5.000",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "180",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "200",
+          "required": false
+        },
+        {
+          "type": "text",
+          "name": "",
+          "placeholder": "500",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  },
+  {
+    "route": "/calculators/human-capital",
+    "name": "Calc: Capital Humano",
+    "forms": {
+      "inputs": [
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        },
+        {
+          "type": "number",
+          "name": "",
+          "placeholder": "",
+          "required": false
+        }
+      ],
+      "selects": [],
+      "textareas": [],
+      "submitButtons": []
+    },
+    "destructiveButtons": [],
+    "modals": [],
+    "toggles": [],
+    "tables": [],
+    "links": [
+      {
+        "text": "Pular para o conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Ir para conteúdo",
+        "href": "#main-content",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Transações",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Fluxo de caixa",
+        "href": "/cash-flow",
+        "isExternal": false
+      },
+      {
+        "text": "Recorrências",
+        "href": "/bills",
+        "isExternal": false
+      },
+      {
+        "text": "Contas",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Cartões",
+        "href": "/cards",
+        "isExternal": false
+      },
+      {
+        "text": "Bens",
+        "href": "/assets",
+        "isExternal": false
+      },
+      {
+        "text": "Orçamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Metas",
+        "href": "/goals",
+        "isExternal": false
+      },
+      {
+        "text": "Impostos / IRPF",
+        "href": "/tax",
+        "isExternal": false
+      },
+      {
+        "text": "Diagnóstico",
+        "href": "/diagnostics",
+        "isExternal": false
+      },
+      {
+        "text": "Calculadoras",
+        "href": "/calculators",
+        "isExternal": false
+      },
+      {
+        "text": "Indicadores",
+        "href": "/indices",
+        "isExternal": false
+      },
+      {
+        "text": "Configurações",
+        "href": "/settings",
+        "isExternal": false
+      },
+      {
+        "text": "Posso comprar?",
+        "href": "/calculators/affordability",
+        "isExternal": false
+      },
+      {
+        "text": "Projeção",
+        "href": "/calculators/projection",
+        "isExternal": false
+      },
+      {
+        "text": "Independência",
+        "href": "/calculators/independence",
+        "isExternal": false
+      },
+      {
+        "text": "Comprar vs Alugar",
+        "href": "/calculators/buy-vs-rent",
+        "isExternal": false
+      },
+      {
+        "text": "CET",
+        "href": "/calculators/cet",
+        "isExternal": false
+      },
+      {
+        "text": "SAC vs Price",
+        "href": "/calculators/sac-vs-price",
+        "isExternal": false
+      },
+      {
+        "text": "Capital Humano",
+        "href": "/calculators/human-capital",
+        "isExternal": false
+      },
+      {
+        "text": "Quitar Dívidas",
+        "href": "/calculators/debt-payoff",
+        "isExternal": false
+      },
+      {
+        "text": "Início",
+        "href": "/dashboard",
+        "isExternal": false
+      },
+      {
+        "text": "Finanças",
+        "href": "/transactions",
+        "isExternal": false
+      },
+      {
+        "text": "Patrimônio",
+        "href": "/accounts",
+        "isExternal": false
+      },
+      {
+        "text": "Planejamento",
+        "href": "/budgets",
+        "isExternal": false
+      },
+      {
+        "text": "Inteligência",
+        "href": "/diagnostics",
+        "isExternal": false
+      }
+    ]
+  }
+]

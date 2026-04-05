@@ -66,7 +66,7 @@ test.describe("Resiliência a erros", () => {
       return;
     }
 
-    await page.goto(resilience.formRoute, { waitUntil: "networkidle" });
+    await page.goto(resilience.formRoute, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(500);
 
     // Preencher campo

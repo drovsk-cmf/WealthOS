@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import { auditConfig } from "./audit.config";
 
 export default defineConfig({
-  testDir: "./specs",
+  testDir: ".",
   fullyParallel: false,
   workers: 1,
   retries: 0,
@@ -22,7 +22,14 @@ export default defineConfig({
       use: { storageState: undefined },
     },
     {
+      name: "discovery",
+      testMatch: /discovery\/.*\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
+    },
+    {
       name: "chromium",
+      testMatch: /specs\/.*\.spec\.ts/,
       use: { ...devices["Desktop Chrome"] },
       dependencies: ["setup"],
     },

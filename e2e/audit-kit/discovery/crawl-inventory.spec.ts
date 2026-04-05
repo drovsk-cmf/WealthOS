@@ -33,11 +33,12 @@ interface RouteInventory {
 }
 
 test("Inventário de elementos interativos", async ({ page }) => {
+  test.setTimeout(300_000); // 5 min para 35+ rotas
   const inventory: RouteInventory[] = [];
 
   for (const route of auditConfig.routes) {
-    await page.goto(route.path, { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000);
+    await page.goto(route.path, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    await page.waitForTimeout(2000);
 
     const data = await page.evaluate((routeInfo) => {
       const result: Omit<RouteInventory, "route" | "name"> = {

@@ -169,6 +169,7 @@ export default function FiscalPage() {
           <select
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
+            aria-label="Ano fiscal"
             className="rounded-md border border-input bg-background px-3 py-2 text-sm font-medium"
           >
             {years.map((y) => (

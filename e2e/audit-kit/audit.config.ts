@@ -89,20 +89,55 @@ export const auditConfig: AuditConfig = {
   auth: {
     loginUrl: "/login",
     credentials: {
-      email: "e2e-test@example.com",
-      password: "SenhaSegura123!",
+      email: "e2e-test@oniefy.com",
+      password: "E2eTest!Secure2026",
     },
-    emailSelector: 'input[name="email"], input[type="email"]',
-    passwordSelector: 'input[name="password"], input[type="password"]',
+    emailSelector: "#email",
+    passwordSelector: "#password",
     submitSelector: 'button[type="submit"]',
     successUrl: "/dashboard",
     storageStatePath: "e2e/.auth/user.json",
   },
 
   routes: [
+    // ── Navegação principal ──
     { path: "/dashboard", name: "Dashboard", critical: true },
-    { path: "/settings", name: "Configurações", hasForms: true },
-    // Adicione suas rotas aqui
+    { path: "/transactions", name: "Transações", critical: true, hasForms: true },
+    { path: "/cards", name: "Cartões de Crédito" },
+    { path: "/cash-flow", name: "Fluxo de Caixa", critical: true },
+    { path: "/bills", name: "Contas a Pagar", hasForms: true },
+    { path: "/accounts", name: "Contas", critical: true, hasForms: true },
+    { path: "/assets", name: "Patrimônio (Bens)", hasForms: true },
+    { path: "/budgets", name: "Orçamento", hasForms: true },
+    { path: "/goals", name: "Metas", hasForms: true },
+    { path: "/tax", name: "Imposto de Renda" },
+    { path: "/diagnostics", name: "Diagnóstico Financeiro", requiresData: true },
+    { path: "/calculators", name: "Calculadoras" },
+    { path: "/indices", name: "Índices Econômicos" },
+    // ── Configurações ──
+    { path: "/settings", name: "Configurações (hub)", hasForms: true },
+    { path: "/settings/profile", name: "Perfil", hasForms: true },
+    { path: "/settings/notifications", name: "Notificações", hasForms: true },
+    { path: "/settings/security", name: "Segurança", hasForms: true },
+    { path: "/settings/data", name: "Dados e Privacidade" },
+    { path: "/settings/analytics", name: "Métricas" },
+    // ── Auxiliares ──
+    { path: "/categories", name: "Categorias", hasForms: true },
+    { path: "/cost-centers", name: "Divisões", hasForms: true },
+    { path: "/family", name: "Estrutura Familiar", hasForms: true },
+    { path: "/connections", name: "Importação" },
+    { path: "/workflows", name: "Tarefas" },
+    { path: "/chart-of-accounts", name: "Estrutura Contábil" },
+    { path: "/more/warranties", name: "Garantias", hasForms: true },
+    // ── Calculadoras (sub-rotas) ──
+    { path: "/calculators/affordability", name: "Calc: Posso Comprar?", hasForms: true },
+    { path: "/calculators/projection", name: "Calc: Projeção", hasForms: true },
+    { path: "/calculators/independence", name: "Calc: Independência", hasForms: true },
+    { path: "/calculators/buy-vs-rent", name: "Calc: Comprar vs Alugar", hasForms: true },
+    { path: "/calculators/cet", name: "Calc: CET", hasForms: true },
+    { path: "/calculators/sac-vs-price", name: "Calc: SAC vs Price", hasForms: true },
+    { path: "/calculators/debt-payoff", name: "Calc: Quitar Dívida", hasForms: true },
+    { path: "/calculators/human-capital", name: "Calc: Capital Humano", hasForms: true },
   ],
 
   thresholds: {
@@ -120,13 +155,19 @@ export const auditConfig: AuditConfig = {
 
   options: {
     notFoundTestPath: "/pagina-que-nao-existe-xyz-404",
-    hasDarkMode: false,
+    hasDarkMode: true,
     expectedSecurityHeaders: [
       "x-frame-options",
       "x-content-type-options",
       "referrer-policy",
+      "x-xss-protection",
+      "content-security-policy",
     ],
-    expectedAnalytics: [],
-    resilience: undefined,
+    expectedAnalytics: ["vercel"],
+    resilience: {
+      formRoute: "/calculators/independence",
+      fieldSelector: 'input[name="calc-fi-expense"]',
+      testValue: "5000",
+    },
   },
 };

@@ -295,6 +295,7 @@ export default function ProfileSettingsPage() {
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
+              aria-label="Moeda padrão"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
               {CURRENCIES.map((c) => (
