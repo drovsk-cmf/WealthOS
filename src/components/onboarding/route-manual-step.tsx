@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useCreateAccount } from "@/lib/hooks/use-accounts";
 import { useCreateTransaction } from "@/lib/services/transaction-engine";
+import { toLocalDateString } from "@/lib/utils";
 
 type AccountTypeOption = "checking" | "savings" | "credit_card";
 
@@ -87,7 +88,7 @@ export function RouteManualStep({ onComplete, currencySymbol = "R$" }: RouteManu
     setError(null);
 
     try {
-      const today = new Date().toISOString().split("T")[0];
+      const today = toLocalDateString();
       await createTransaction.mutateAsync({
         account_id: createdAccountId,
         type: txType,

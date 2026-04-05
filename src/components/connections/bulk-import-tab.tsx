@@ -1,4 +1,5 @@
 "use client";
+import { toLocalDateString } from "@/lib/utils";
 
 /**
  * BulkImportTab - P8 + P9 (Adendo v1.5 §4.2.1-4.3)
@@ -125,7 +126,7 @@ function parseNumber(val: unknown): number {
 }
 
 function parseDate(val: unknown): string {
-  if (typeof val !== "string" || !val.trim()) return new Date().toISOString().split("T")[0];
+  if (typeof val !== "string" || !val.trim()) return toLocalDateString();
   // DD/MM/YYYY → YYYY-MM-DD
   const dmy = val.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (dmy) return `${dmy[3]}-${dmy[2].padStart(2, "0")}-${dmy[1].padStart(2, "0")}`;

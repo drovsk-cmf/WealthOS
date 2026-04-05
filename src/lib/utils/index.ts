@@ -174,3 +174,15 @@ const COLOR_NAME_MAP: Record<string, string> = {
 export function getColorName(hex: string): string {
   return COLOR_NAME_MAP[hex.toUpperCase()] ?? COLOR_NAME_MAP[hex] ?? hex;
 }
+
+/**
+ * Returns today's date as YYYY-MM-DD in the browser's local timezone.
+ * Avoid: new Date().toISOString().split("T")[0] — that returns UTC,
+ * which is tomorrow in São Paulo (UTC-3) after 21:00.
+ */
+export function toLocalDateString(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}

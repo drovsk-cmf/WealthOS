@@ -26,7 +26,7 @@ import { useAutoCategory, learnCategoryPattern } from "@/lib/hooks/use-auto-cate
 import { useCreateTransaction, useCreateTransfer, useEditTransaction, useEditTransfer } from "@/lib/services/transaction-engine";
 import { useOcrReceipt } from "@/lib/services/ocr-service";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
-import { formatCurrency, formatDecimalBR } from "@/lib/utils";
+import { formatCurrency, formatDecimalBR, toLocalDateString } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
@@ -79,7 +79,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const [assetId, setAssetId] = useState("");
   const [amount, setAmount] = useState(prefill?.amount ?? "");
   const [description, setDescription] = useState(prefill?.description ?? "");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(toLocalDateString());
   const [isPaid, setIsPaid] = useState(true);
   const [notes, setNotes] = useState(prefill?.notes ?? "");
   const { symbol: currSymbol } = useCurrencyLabel();
@@ -117,7 +117,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
       setFamilyMemberId(prefill?.familyMemberId ?? "");
       setAmount(prefill?.amount ?? "");
       setDescription(prefill?.description ?? "");
-      setDate(new Date().toISOString().split("T")[0]);
+      setDate(toLocalDateString());
       setIsPaid(true);
       setNotes(prefill?.notes ?? "");
       setAssetId("");

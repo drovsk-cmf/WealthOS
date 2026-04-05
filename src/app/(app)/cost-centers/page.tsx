@@ -27,7 +27,7 @@ import {
   CENTER_TYPE_LABELS,
 } from "@/lib/hooks/use-cost-centers";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, toLocalDateString } from "@/lib/utils";
 import { Mv } from "@/components/ui/masked-value";
 import { CostCenterForm } from "@/components/cost-centers/cost-center-form";
 import type { CostCenterEditData } from "@/components/cost-centers/cost-center-form";
@@ -360,7 +360,7 @@ export default function CostCentersPage() {
               <button type="button"
                 onClick={async () => {
                   try {
-                    const currentMonth = new Date().toISOString().split("T")[0].slice(0, 8) + "01";
+                    const currentMonth = toLocalDateString().slice(0, 8) + "01";
                     const result = await distributeOverhead.mutateAsync(currentMonth);
                     if (result.status === "no_target") {
                       toast.error(result.message ?? "Nenhuma divisão destino com despesas.");

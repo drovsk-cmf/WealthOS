@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useCreateAsset } from "@/lib/hooks/use-assets";
 import type { Database } from "@/types/database";
+import { toLocalDateString } from "@/lib/utils";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
 
@@ -91,7 +92,7 @@ export function RouteSnapshotStep({ onComplete, currencySymbol = "R$" }: RouteSn
 
     for (const asset of valid) {
       const numValue = parseFloat(asset.value.replace(",", "."));
-      const today = new Date().toISOString().split("T")[0];
+      const today = toLocalDateString();
 
       try {
         await createAsset.mutateAsync({
