@@ -22,7 +22,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ## Navegação atual
 
-**Desktop:** sidebar com 5 seções (18 links) + settings na parte inferior.
+**Desktop:** sidebar com 4 seções (12 links: Finanças, Patrimônio, Planejamento, Inteligência) + Settings na parte inferior.
 **Mobile:** 5 tabs (Início, Finanças, Patrimônio, Planejamento, Inteligência) + Settings via ícone no header.
 
 | Seção | Links |
@@ -30,9 +30,9 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 | (topo) | Início |
 | Finanças | Transações, Fluxo de caixa, Recorrências |
 | Patrimônio | Contas, Cartões, Bens |
-| Orçamento | Orçamento, Metas |
-| Mais | Impostos/IRPF, Diagnóstico, Calculadoras, Índices, Importar, Família, Categorias, Relatórios |
-| (inferior) | Configurações → Perfil, Segurança, Notificações, Dados, Análise |
+| Planejamento | Orçamento, Metas, Impostos/IRPF |
+| Inteligência | Diagnóstico, Calculadoras, Indicadores |
+| (inferior) | Configurações → Perfil, Segurança, Notificações, Dados, Análise, Cadastros (Categorias, Divisões, Família, Importação, Tarefas, Estrutura contábil, Garantias) |
 
 ---
 
@@ -59,7 +59,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
   - Dashboard mostra erro 500 → RPC do dashboard não existe no projeto ativo
 
 ### 1.3 Logout e Login
-- [ ] Clicar no ícone de logout (sidebar inferior, desktop) ou Mais → Configurações → sair (mobile)
+- [ ] Clicar no ícone de logout (sidebar inferior, desktop) ou Settings via ícone engrenagem no header (mobile)
 - [ ] Redirect para `/login`
 - [ ] Fazer login com o email/senha recém-criados
 - **Esperado:** redirect para `/dashboard`
@@ -81,7 +81,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 
 ### 2.2 Navegação desktop (sidebar)
 - [ ] Verificar 4 seções: Finanças, Patrimônio, Planejamento, Inteligência
-- [ ] Clicar em cada um dos 18 links:
+- [ ] Clicar em cada um dos 12 links do sidebar:
   - Início (`/dashboard`)
   - Transações (`/transactions`)
   - Cartões (`/cards`)
@@ -318,7 +318,7 @@ Marque com `[x]` conforme avançar. Se travar, anote o passo exato e o erro do C
 ## Bloco 15 - Garantias (2 min)
 
 ### 15.1 Garantias
-- [ ] Mais → Garantias (`/more/warranties`) via hub mobile ou acesso direto
+- [ ] Settings → Cadastros → Garantias (`/more/warranties`)
 - [ ] Criar garantia de produto
 - **Esperado:** garantia aparece com data de expiração
 

@@ -132,7 +132,7 @@ Se pedir autenticação:
 ### 1.3 Entrar na pasta do projeto
 
 ```powershell
-cd WealthOS
+cd Oniefy
 ```
 
 ### 1.4 Verificar que deu certo
@@ -145,8 +145,8 @@ Deve listar arquivos e pastas como: `package.json`, `next.config.js`, `src`,
 `supabase`, `docs`, etc. Se aparecer isso, deu certo.
 
 **A partir de agora, todos os comandos deste guia devem ser executados dentro
-desta pasta** (`C:\Projetos\WealthOS`). Se fechar o PowerShell e abrir de novo,
-rode `cd C:\Projetos\WealthOS` antes de qualquer coisa.
+desta pasta** (`C:\Projetos\Oniefy`). Se fechar o PowerShell e abrir de novo,
+rode `cd C:\Projetos\Oniefy` antes de qualquer coisa.
 
 ---
 
@@ -190,7 +190,7 @@ Este arquivo contém as chaves de acesso ao banco de dados. Ele precisa ficar
 **dentro da pasta do projeto**, no mesmo local onde está o `package.json`:
 
 ```
-C:\Projetos\WealthOS\          ← pasta raiz do projeto
+C:\Projetos\Oniefy\          ← pasta raiz do projeto
 ├── .env.local                  ← AQUI (mesmo nível que package.json)
 ├── package.json
 ├── next.config.js
@@ -207,11 +207,11 @@ o Next.js não o encontra e o app não consegue se conectar ao banco.
 No PowerShell:
 
 ```powershell
-cd C:\Projetos\WealthOS
+cd C:\Projetos\Oniefy
 pwd
 ```
 
-Deve mostrar: `C:\Projetos\WealthOS`
+Deve mostrar: `C:\Projetos\Oniefy`
 
 Confirme que o `package.json` existe aqui:
 
@@ -357,7 +357,7 @@ No PowerShell, dentro da pasta do projeto:
 
 ```powershell
 # Confirme que está na pasta certa:
-cd C:\Projetos\WealthOS
+cd C:\Projetos\Oniefy
 
 # Instale as dependências:
 npm install
@@ -389,7 +389,7 @@ npm run dev
 **Verificações:**
 - A linha `Environments: .env.local` **precisa aparecer**. Se não aparecer, o
   arquivo `.env.local` não foi encontrado (volte à Etapa 3 e confirme que ele
-  está em `C:\Projetos\WealthOS\.env.local`)
+  está em `C:\Projetos\Oniefy\.env.local`)
 - O PowerShell fica "travado" sem aceitar novos comandos. **Isso é normal.** O
   servidor está rodando. Não feche essa janela.
 - Para parar o servidor depois: pressione **Ctrl+C**
@@ -397,7 +397,7 @@ npm run dev
 
 **Se precisar usar o PowerShell para outra coisa** enquanto o servidor roda:
 abra uma segunda janela do PowerShell (Win + R > powershell > Enter) e navegue
-para a pasta do projeto (`cd C:\Projetos\WealthOS`).
+para a pasta do projeto (`cd C:\Projetos\Oniefy`).
 
 ### 5.3 Abrir no navegador
 
@@ -462,7 +462,7 @@ Sempre que quiser abrir o Oniefy de novo:
 # 1. Abra o PowerShell (Win + R > powershell > Enter)
 
 # 2. Navegue até a pasta do projeto:
-cd C:\Projetos\WealthOS
+cd C:\Projetos\Oniefy
 
 # 3. (Opcional) Puxe atualizações do GitHub:
 git pull origin main
@@ -482,9 +482,9 @@ Para parar: Ctrl+C no PowerShell.
 Marque cada item quando concluir:
 
 - [ ] Git, Node.js e npm instalados e funcionando
-- [ ] Repositório clonado em `C:\Projetos\WealthOS` (NÃO no Google Drive/OneDrive)
+- [ ] Repositório clonado em `C:\Projetos\Oniefy` (NÃO no Google Drive/OneDrive)
 - [ ] service_role key copiada do dashboard Supabase
-- [ ] `.env.local` criado em `C:\Projetos\WealthOS\.env.local` com as chaves
+- [ ] `.env.local` criado em `C:\Projetos\Oniefy\.env.local` com as chaves
 - [ ] `npm install` executado sem erros
 - [ ] `npm run dev` mostrando "Ready" + "Environments: .env.local"
 - [ ] Tela de login visível em http://localhost:3000/login

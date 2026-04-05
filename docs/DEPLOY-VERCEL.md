@@ -51,7 +51,7 @@ Adicione todas as variáveis abaixo em Settings > Environment Variables.
 
 1. Clique **Deploy**
 2. Aguarde o build (~2-3 minutos)
-3. Vercel vai mostrar a URL: `https://wealthos-XXXX.vercel.app`
+3. Vercel vai mostrar a URL: `https://www.oniefy.com`
 
 ## Passo 4: Domínio customizado
 
