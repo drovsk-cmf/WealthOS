@@ -530,7 +530,7 @@ export default function BudgetsPage() {
                   <span>
                     Restante: <Mv>{formatCurrency(b.planned_amount - actual)}</Mv>
                   </span>
-                  <span>Alerta: {b.alert_threshold} %</span>
+                  <span>Alerta: {Math.round(b.alert_threshold * 100)} %</span>
                 </div>
               </div>
             );

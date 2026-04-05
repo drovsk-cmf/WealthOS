@@ -63,7 +63,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
     if (editData) {
       setCategoryId(editData.category_id);
       setAmount(editData.planned_amount.toString());
-      setThreshold(editData.alert_threshold.toString());
+      setThreshold(Math.round(editData.alert_threshold * 100).toString());
       setAdjustmentIndex(editData.adjustment_index ?? "none");
       setIsProposed(false);
     } else {

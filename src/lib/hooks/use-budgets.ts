@@ -192,7 +192,7 @@ export function useCreateBudget() {
           category_id: input.category_id,
           month: input.month,
           planned_amount: input.planned_amount,
-          alert_threshold: input.alert_threshold ?? 80,
+          alert_threshold: (input.alert_threshold ?? 80) / 100,
           coa_id: input.coa_id ?? null,
           cost_center_id: input.cost_center_id ?? null,
           adjustment_index: input.adjustment_index ?? null,
@@ -228,7 +228,7 @@ export function useUpdateBudget() {
       if (updates.planned_amount !== undefined)
         payload.planned_amount = updates.planned_amount;
       if (updates.alert_threshold !== undefined)
-        payload.alert_threshold = updates.alert_threshold;
+        payload.alert_threshold = updates.alert_threshold / 100;
       if (updates.coa_id !== undefined) payload.coa_id = updates.coa_id;
       if (updates.cost_center_id !== undefined)
         payload.cost_center_id = updates.cost_center_id;
