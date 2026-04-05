@@ -393,7 +393,7 @@ Tipografia: DM Sans (corpo) + JetBrains Mono (dados financeiros) + Instrument Se
 
 A última fase é um conjunto de refinamentos, não stories novas:
 - ~~PWA icons, manifest.json, Service Worker~~ — **FEITO** (manifest.json, sw.js v2 em public/)
-- Capacitor iOS build + App Store — **bloqueado** (requer Mac + Apple Developer Account)
+- Capacitor iOS build + App Store — **parcialmente desbloqueado** (build CI via GitHub Actions macOS runner, sessão 38). Bloqueio restante: Apple Developer Account para deploy na App Store
 - ~~Next.js upgrade (14 → 15+)~~ — **FEITO** (Next.js 15.5.14 + React 19.2.4)
 - OCR real (WKF-03) — web fallback Tesseract.js implementado, nativo iOS bloqueado por Mac
 
@@ -5603,17 +5603,19 @@ Guia de execução: `e2e/audit/GUIA-EXECUCAO.md` (instruções PowerShell passo 
 - Auth setup salva sessão em `e2e/.auth/user.json`
 - Testa contra produção: `PLAYWRIGHT_BASE_URL=https://www.oniefy.com`
 
-### 43.7 Achados UX pendentes (não corrigidos)
+### 43.7 Achados UX pendentes (migrados para PENDENCIAS-FUTURAS.md)
 
-| # | Problema | Severidade |
-|---|---------|-----------|
-| C2 | Sub-navegação mobile ausente (tabs não mostram sub-páginas) | Alta |
-| A1 | Calculadoras: 8 tabs sem scroll indicator no mobile | Alta |
-| A3 | Error handling em ~50% das páginas (sem toast/fallback quando API falha) | Média |
-| A4 | Dashboard first-fold para usuário novo: 4 cards R$0 dominam | Média |
-| R2 | Capitalização "Abr. De 2026" → "Abr. de 2026" | Trivial |
-| UX-01 | Valor no form de recorrência não formata em tempo real (diferente do form de conta) | Baixa |
-| UX-02 | Modal de transação não faz scroll trap (página atrás scrolla) | Baixa |
+IDs A1/A3/A4 renomeados para UX-03/UX-04/UX-05 (evitar colisão com itens de infra A1/A3/A4).
+
+| Original | PENDENCIAS | Problema | Severidade |
+|----------|-----------|---------|-----------|
+| C2 | C2 | Sub-navegação mobile ausente | Alta |
+| A1 | UX-03 | Calculadoras: tabs sem scroll indicator (possivelmente resolvido sessão 42) | Alta |
+| A3 | UX-04 | Error handling em ~50% das páginas | Média |
+| A4 | UX-05 | Dashboard first-fold: 4 cards R$0 dominam | Média |
+| R2 | R2 | Capitalização "Abr. De 2026" → "Abr. de 2026" | Trivial |
+| UX-01 | UX-01 | Recorrência sem formatação em tempo real | Baixa |
+| UX-02 | UX-02 | Modal de transação sem scroll trap | Baixa |
 
 ### 43.8 Commits desta sessão
 

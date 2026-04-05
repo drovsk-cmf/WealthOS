@@ -236,6 +236,13 @@ Decisões IA do adendo v1.5:
 | B22 | Diagnóstico financeiro mostra valores zero/NaN sem contexto explicativo quando usuário tem poucos dados. Deveria explicar o que o usuário precisa fazer para gerar métricas úteis. Auditoria 7.2 | 44 |
 | B23 | Vercel Analytics não configurado. Nenhuma request de analytics detectada em produção. Sentry também ausente (A11). Fix: ativar Vercel Web Analytics no dashboard Vercel ou em vercel.json. Auditoria 9.2 | 44 |
 | B24 | overflow-x-hidden em 5 páginas (/accounts, /bills, /connections, /tax, /calculators/layout) esconde conteúdo ao invés de permitir scroll. Refinamento: trocar para overflow-x-auto nos containers internos que estourem. Auditoria 7.7 | 44 |
+| C2 | Sub-navegação mobile ausente: tabs não mostram sub-páginas (ex: /settings/* não tem tabs no mobile). Auditoria 7.7 | 43 |
+| UX-03 | Calculadoras: tabs sem scroll indicator no mobile. Possivelmente resolvido na sessão 42 (tabs → pill grid com wrap). Verificar. Auditoria 7.7 | 43 |
+| UX-04 | Error handling ausente em ~50% das páginas: sem toast/fallback quando API falha. Auditoria 3.5, 7.2 | 43 |
+| UX-05 | Dashboard first-fold para usuário novo: 4 cards R$0 dominam a tela sem orientação. Auditoria 7.2 | 43 |
+| R2 | Capitalização incorreta: "Abr. De 2026" deveria ser "Abr. de 2026" (preposição minúscula). Auditoria 2.6 | 43 |
+| UX-01 | Valor no form de recorrência não formata em tempo real (diferente do form de conta). Auditoria 7.6 | 43 |
+| UX-02 | Modal de transação não faz scroll trap (página atrás scrolla junto). Auditoria 7.5 | 43 |
 
 ---
 
