@@ -61,9 +61,9 @@ export default function CalculatorsLayout({ children }: { children: ReactNode })
   const active = TABS.find((t) => pathname === t.href) ?? TABS[0];
 
   return (
-    <div className="space-y-6 overflow-x-hidden pb-20">
+    <div className="space-y-6 pb-20">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Calculadoras</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Simuladores</h2>
         <p className="text-sm text-muted-foreground">
           Ferramentas de análise e planejamento financeiro
         </p>

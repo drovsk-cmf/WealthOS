@@ -60,7 +60,7 @@ export default function AccountsPage() {
   // ─── Loading ──────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         <div className="grid grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
@@ -76,10 +76,10 @@ export default function AccountsPage() {
 
   // ─── Render ───────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Contas</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Contas Bancárias</h1>
         <button type="button"
           onClick={handleNew}
           className="shrink-0 whitespace-nowrap rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"

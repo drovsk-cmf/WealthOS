@@ -191,7 +191,7 @@ export default function CostCentersPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
@@ -201,7 +201,7 @@ export default function CostCentersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

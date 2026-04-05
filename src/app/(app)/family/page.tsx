@@ -53,7 +53,7 @@ export default function FamilyPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-64 animate-pulse rounded bg-muted" />
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-20 animate-pulse rounded-lg bg-muted" />
@@ -63,7 +63,7 @@ export default function FamilyPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 pb-12">
+    <div className="space-y-6 pb-12">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

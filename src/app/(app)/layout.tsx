@@ -70,16 +70,16 @@ const SIDEBAR_SECTIONS: NavSection[] = [
     title: "Finanças",
     items: [
       { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
-      { href: "/cash-flow", label: "Fluxo de caixa", icon: TrendingUp },
-      { href: "/bills", label: "Recorrências", icon: Repeat },
+      { href: "/cash-flow", label: "Fluxo de Caixa", icon: TrendingUp },
+      { href: "/bills", label: "Contas a Pagar", icon: Repeat },
     ],
   },
   {
     title: "Patrimônio",
     items: [
-      { href: "/accounts", label: "Contas", icon: Wallet },
-      { href: "/cards", label: "Cartões", icon: CreditCard },
-      { href: "/assets", label: "Bens", icon: Building },
+      { href: "/accounts", label: "Contas Bancárias", icon: Wallet },
+      { href: "/cards", label: "Cartões de Crédito", icon: CreditCard },
+      { href: "/assets", label: "Bens e Investimentos", icon: Building },
     ],
   },
   {
@@ -87,14 +87,14 @@ const SIDEBAR_SECTIONS: NavSection[] = [
     items: [
       { href: "/budgets", label: "Orçamento", icon: PieChart },
       { href: "/goals", label: "Metas", icon: Target },
-      { href: "/tax", label: "Impostos / IRPF", icon: Receipt },
+      { href: "/tax", label: "Imposto de Renda", icon: Receipt },
     ],
   },
   {
     title: "Inteligência",
     items: [
       { href: "/diagnostics", label: "Diagnóstico", icon: Activity },
-      { href: "/calculators", label: "Calculadoras", icon: Calculator },
+      { href: "/calculators", label: "Simuladores", icon: Calculator },
       { href: "/indices", label: "Indicadores", icon: BarChart3 },
     ],
   },

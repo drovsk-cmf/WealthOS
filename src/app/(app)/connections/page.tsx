@@ -35,7 +35,7 @@ export default function ConnectionsPage() {
   const [tab, setTab] = useState<Tab>("import");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
+    <div className="space-y-6 overflow-x-hidden">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Importar</h1>
       </div>

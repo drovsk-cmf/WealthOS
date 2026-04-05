@@ -202,7 +202,7 @@ export default function AssetsPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
@@ -214,11 +214,11 @@ export default function AssetsPage() {
   const expiringInsurance = summary?.expiring_insurance ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Patrimônio</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Bens e Investimentos</h1>
           <p className="text-sm text-muted-foreground">
             Bens, investimentos e ativos
           </p>

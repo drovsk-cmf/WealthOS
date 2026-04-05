@@ -177,7 +177,7 @@ export default function IndicesPage() {
 
   if (loadingLatest) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
@@ -189,7 +189,7 @@ export default function IndicesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 pb-12">
+    <div className="space-y-8 pb-12">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

@@ -53,7 +53,7 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         <div className="h-10 w-64 animate-pulse rounded bg-muted" />
         {[1, 2, 3, 4, 5].map((i) => (
@@ -64,7 +64,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Categorias</h1>

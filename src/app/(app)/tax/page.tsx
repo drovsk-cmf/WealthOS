@@ -99,7 +99,7 @@ export default function FiscalPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         <div className="h-32 animate-pulse rounded-lg bg-muted" />
         <div className="h-64 animate-pulse rounded-lg bg-muted" />
@@ -155,7 +155,7 @@ export default function FiscalPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 overflow-x-hidden pb-12">
+    <div className="space-y-8 overflow-x-hidden pb-12">
       {/* Header + Year selector (FIS-06) */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">

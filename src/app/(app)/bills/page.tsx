@@ -127,7 +127,7 @@ export default function BillsPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-muted" />
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-20 animate-pulse rounded-lg bg-muted" />
@@ -139,7 +139,7 @@ export default function BillsPage() {
   const totalPending = pendingBills?.reduce((s, b) => s + b.amount, 0) ?? 0;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
+    <div className="space-y-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
