@@ -88,18 +88,16 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Transações</h1>
-        <div className="flex items-center gap-2">
-                <button type="button"
-            onClick={() => { setEditingTransactionId(null); setDuplicateData(null); setFormOpen(true); }}
-            className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            + Nova transação
-          </button>
-        </div>
+        <button type="button"
+          onClick={() => { setEditingTransactionId(null); setDuplicateData(null); setFormOpen(true); }}
+          className="shrink-0 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground whitespace-nowrap"
+        >
+          + Nova transação
+        </button>
       </div>
 
       {/* Quick filters */}

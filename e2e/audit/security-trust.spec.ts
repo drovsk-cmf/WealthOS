@@ -234,7 +234,9 @@ test.describe("Segurança percebida e confiança", () => {
   // ── CONSISTÊNCIA VISUAL DE SEGURANÇA ───────────────────
 
   test("Sessão expirada redireciona com mensagem clara", async ({ page }) => {
-    // Verificar que a URL de timeout mostra mensagem
+    // Limpar cookies para simular sessão expirada (middleware redireciona
+    // usuários autenticados para /dashboard, impedindo ver /login)
+    await page.context().clearCookies();
     await page.goto("/login?reason=timeout");
     await page.waitForTimeout(1000);
 

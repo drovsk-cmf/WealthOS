@@ -165,6 +165,7 @@ export default function CashFlowPage() {
 
           {/* Account filter */}
           <select value={accountFilter} onChange={(e) => setAccountFilter(e.target.value)}
+            aria-label="Filtrar por conta"
             className="h-9 rounded-md border border-input bg-background px-2 text-xs">
             <option value="all">Todas as contas</option>
             {accounts?.filter((a) => a.is_active).map((a) => (

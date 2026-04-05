@@ -57,8 +57,8 @@ test.describe("Formulários e interações", () => {
 
     // Preencher formulário
     await page.fill('input[placeholder="Ex: Banco Principal"]', "Bradesco Teste E2E");
-    await page.selectOption("select >> nth=0", { label: /Conta Corrente/ });
-    await page.selectOption("select >> nth=1", { label: /237 - Bradesco/ });
+    await page.selectOption("select >> nth=0", { label: "Conta Corrente" });
+    await page.selectOption("select >> nth=1", { label: "237 - Bradesco" });
     await page.fill('input[placeholder="0,00"]', "1500");
 
     // Submeter
@@ -82,8 +82,8 @@ test.describe("Formulários e interações", () => {
     await page.goto("/dashboard");
     await waitForPage(page);
 
-    // Clicar FAB
-    await page.click('button:has-text("Novo lançamento")');
+    // Clicar FAB (botão com ícone, sem texto visível — usa aria-label)
+    await page.click('button[aria-label="Novo lançamento"]');
     await page.waitForTimeout(500);
 
     // Preencher rápido
@@ -163,18 +163,18 @@ test.describe("Formulários e interações", () => {
     await page.goto("/bills");
     await waitForPage(page);
 
-    // Verificar 4 abas
-    await expect(page.locator("text=Pendentes")).toBeVisible();
-    await expect(page.locator("text=Recorrências")).toBeVisible();
-    await expect(page.locator("text=Assinaturas")).toBeVisible();
-    await expect(page.locator("text=Calendário")).toBeVisible();
+    // Verificar 4 abas (usar button para evitar ambiguidade com empty state)
+    await expect(page.locator('button:has-text("Pendentes")')).toBeVisible();
+    await expect(page.locator('button:has-text("Recorrências")')).toBeVisible();
+    await expect(page.locator('button:has-text("Assinaturas")')).toBeVisible();
+    await expect(page.locator('button:has-text("Calendário")')).toBeVisible();
 
     // Navegar entre abas
-    await page.click("text=Recorrências");
+    await page.locator('button:has-text("Recorrências")').click();
     await page.waitForTimeout(500);
-    await page.click("text=Assinaturas");
+    await page.locator('button:has-text("Assinaturas")').click();
     await page.waitForTimeout(500);
-    await page.click("text=Calendário");
+    await page.locator('button:has-text("Calendário")').click();
     await page.waitForTimeout(500);
     await page.click("text=Pendentes");
     await page.waitForTimeout(500);
@@ -213,7 +213,9 @@ test.describe("Formulários e interações", () => {
     // Preencher e submeter
     await page.selectOption("select >> nth=0", { index: 1 }); // primeira categoria
     await page.fill('input[placeholder="0,00"]', "500");
-    await page.click("button:has-text('Criar')");
+    // O select "índice de reajuste" pode sobrepor o botão no modal
+    await page.locator("button", { hasText: "Criar" }).last().scrollIntoViewIfNeeded();
+    await page.locator("button", { hasText: "Criar" }).last().click({ force: true });
     await page.waitForTimeout(3000);
 
     // Verificar resultado (sem HTTP errors)
@@ -248,8 +250,8 @@ test.describe("Formulários e interações", () => {
     await page.goto("/assets");
     await waitForPage(page);
 
-    // Verificar empty state ou lista
-    const hasNovo = await page.locator("text=+ Novo bem").or(page.locator("text=+ Cadastrar bem")).isVisible();
+    // Verificar empty state ou lista (usar .first() para evitar strict mode com 2 botões)
+    const hasNovo = await page.locator("text=+ Novo bem").or(page.locator("text=+ Cadastrar bem")).first().isVisible();
     expect(hasNovo, "Botão de criar bem visível").toBe(true);
 
     expect(errors.filter((e) => e.startsWith("[CRASH]"))).toHaveLength(0);
