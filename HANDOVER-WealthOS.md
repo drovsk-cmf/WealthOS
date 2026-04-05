@@ -5642,9 +5642,101 @@ Guia de execução: `e2e/audit/GUIA-EXECUCAO.md` (instruções PowerShell passo 
 
 ### 43.10 Próximos passos
 
-1. **Claudio roda a suite**: `cd C:\Users\claud\Documents\PC_WealthOS && claude --dangerously-skip-permissions` → prompt de auditoria
-2. **Claude Code analisa resultados** e corrige bugs encontrados
+1. ~~**Claudio roda a suite**~~ ✅ Sessão 44
+2. ~~**Claude Code analisa resultados**~~ ✅ Sessão 44
 3. **Corrigir C2**: sub-navegação mobile
 4. **Corrigir A1-A4, R2**: achados pendentes da auditoria
 5. **Verificar deploy** dos 8 commits no Vercel
 6. **Teste de corredor** com 3 pessoas (A7)
+
+## Sessão 44 — 05 abril 2026 (Claude Opus 4.6, 1M ctx) — Audit Kit + Suite Completa
+
+### 44.1 Contexto
+
+Execução da suite de auditoria UX E2E (e2e/audit/) contra produção + setup do Playwright Audit Kit v2 (e2e/audit-kit/). Duas suites independentes coexistem no repo.
+
+### 44.2 Setup do usuário E2E
+
+Usuário `e2e-test@oniefy.com` configurado no Supabase produção:
+- Password resetado com bcrypt $2a$10$ (GoTrue não aceitava hash $2a$06$)
+- Campos `email_change`/`phone` corrigidos de NULL → '' (GoTrue scan error bloqueava login)
+- Onboarding completado: seeds (categories, chart_of_accounts, cost_center) + flag `onboarding_completed=true`
+
+### 44.3 Bugs de produção corrigidos
+
+| # | Severidade | Local | Bug | Fix |
+|---|-----------|-------|-----|-----|
+| B5 | Crítica | RPC `get_financial_diagnostics` | Division by zero no breakeven quando `v_variable_exp == v_avg_expense` (usuário sem recorrências fixas) | Guard `v_contribution_margin` com check `< v_avg_expense` |
+| B6 | Crítica | `/cash-flow` select | `<select>` sem aria-label → violação WCAG AA CRITICAL | `aria-label="Filtrar por conta"` |
+| B7 | Alta | `/bills` mobile | Overflow horizontal 530px em viewport 390px (header + tabs) | `shrink-0`, `min-w-0 truncate`, `gap-2` |
+| B8 | Alta | `/transactions` mobile | Overflow horizontal 472px em viewport 390px | `overflow-x-hidden`, `whitespace-nowrap` |
+| B9 | Média | RPC alias | `get_cfa_diagnostics` renomeado em migration 076 mas prod code ainda referencia nome antigo | Alias SQL + PostgREST reload |
+| B10 | Média | `/tax` select | Select de ano sem aria-label | `aria-label="Ano fiscal"` |
+| B11 | Média | `/settings/profile` select | Select de moeda sem aria-label | `aria-label="Moeda padrão"` |
+| B12 | Média | Affordability select | Select de forma de pagamento sem aria-label | `aria-label="Forma de pagamento"` |
+| B13 | Média | `/connections` select | Select de conta destino sem aria-label | `aria-label="Conta de destino"` |
+
+### 44.4 Suite e2e/audit/ (original) — Resultados
+
+| Spec | Testes | Passou | Falhou | Notas |
+|------|--------|--------|--------|-------|
+| accessibility | 24 | 4 | 1 | /cash-flow select-name (B6, fix pendente deploy) |
+| ai-ux | 6 | 5 | 1 | Calculadoras sem empty state |
+| all-pages-crawl | 35 | 30 | 1 | /more/warranties 404 (deploy pendente) |
+| forms-and-interactions | 24 | 6 | 1 | Orçamento: select overlap no modal |
+| mobile-responsive | 18 | 4 | 1 | /transactions overflow (B8, fix pendente deploy) |
+| observability | 4 | 4 | 0 | ✅ |
+| performance | 6 | 6 | 0 | ✅ |
+| security-trust | 10 | 10 | 0 | ✅ |
+
+### 44.5 Suite e2e/audit-kit/ (Audit Kit v2) — Resultados
+
+**340 testes executados, 320 passaram (94%), 20 falharam**
+
+| Categoria | Falhas | Causa raiz |
+|-----------|--------|------------|
+| Generated specs (calculators/tax) | 5 | Selectors de input errados → corrigidos |
+| A11y select-name | 7 | Selects sem aria-label → 4 corrigidos, 3 pendentes deploy |
+| Mobile overflow (390px) | 6 | /transactions, /bills, /accounts, /tax, /connections, /sac-vs-price |
+| Error resilience | 1 | Form field dentro de modal, reconfigurado para /calculators |
+| Performance (LCP/CLS) | 1 | LCP > threshold no dashboard |
+
+**Specs universais 100% passing**: all-pages-crawl, dead-links, keyboard-navigation, loading-states, security-headers, seo-meta, observability.
+
+### 44.6 Achados que precisam decisão humana
+
+1. **Sidebar color-contrast** (SERIOUS WCAG AA): Labels `MOVIMENTAÇÕES`, `PATRIMÔNIO`, etc. têm contraste 3.45:1 (mínimo 4.5:1). CSS: `text-[hsl(var(--sidebar-fg)/0.4)]`. Sugestão: aumentar opacidade para ≥ 0.6.
+2. **Mobile overflow em 6 páginas**: /transactions e /bills corrigidos; /accounts, /tax, /connections, /calculators/sac-vs-price precisam de mesma abordagem.
+3. **LCP dashboard**: Largest Contentful Paint acima do threshold 2500ms. Investigar se SSR/prefetch pode ajudar.
+4. **Calculadoras sem empty state**: Falta mensagem explicativa quando dados são insuficientes.
+
+### 44.7 Arquivos criados/modificados
+
+```
+e2e/audit-kit/audit.config.ts           — configuração Oniefy (35 rotas, auth, thresholds)
+e2e/audit-kit/playwright.config.ts       — projects: setup, discovery, chromium
+e2e/audit-kit/discovery/crawl-inventory  — timeout + domcontentloaded
+e2e/audit-kit/specs/auth.setup.ts        — clearCookies para sessão limpa
+e2e/audit-kit/specs/generated/*.spec.ts  — 6 specs gerados (accounts, calculators, connections, settings-profile, settings-security, tax)
+e2e/audit-kit/reports/inventory.json     — inventário: 59 campos, 1 ação destrutiva
+supabase/migrations/084_*                — fix division by zero + alias
+src/app/(app)/cash-flow/page.tsx         — aria-label select
+src/app/(app)/bills/page.tsx             — mobile overflow fix
+src/app/(app)/transactions/page.tsx      — mobile overflow fix
+src/app/(app)/tax/page.tsx               — aria-label select
+src/app/(app)/settings/profile/page.tsx  — aria-label select
+src/components/calculators/affordability-simulator.tsx — aria-label select
+src/components/connections/import-step-upload.tsx       — aria-label select
+```
+
+### 44.8 Ground truth (atualizado final sessão 44)
+
+| Métrica | Sessão 43 | Sessão 44 | Delta |
+|---------|-----------|-----------|-------|
+| E2E specs (audit) | 18 | **18** | 0 |
+| E2E specs (audit-kit) | 0 | **17** (11 universal + 6 gerados) | +17 |
+| E2E audit-kit testes | 0 | **340** | +340 |
+| Pass rate audit-kit | — | **94%** (320/340) | — |
+| Bugs corrigidos | 2 (B1,B4) | **11** (B5-B13 + 2 test) | +9 |
+| A11y selects corrigidos | 0 | **5** | +5 |
+| Inventory campos | 0 | **59** | +59 |
