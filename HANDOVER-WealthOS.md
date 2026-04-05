@@ -5544,3 +5544,107 @@ Tab bar horizontal com 8 tabs (scroll hidden no mobile) substituída por grid de
 | Sidebar items | 17+Settings | **12+Settings** | -5 (reagrupados) |
 | Form components (Padrão A) | 8 | **11** | +3 (goals, cost-centers, warranties) |
 | LGPD lacunas abertas | 4 (L3-L6) | **0** | -4 |
+
+## Sessão 43 — 05 abril 2026 (Claude Opus, Projeto Claude) — Auditoria UX Exploratória + Suite E2E
+
+### 43.1 Contexto
+
+Sessão focada em auditoria UX completa do frontend. Claudio quer otimizar a interface antes do lançamento público. Referência visual: app UniFi (Ubiquiti). Preocupações: versão mobile fraca, logo sem destaque, botão sair ausente.
+
+### 43.2 Teste exploratório via Chrome MCP
+
+Fluxos testados com sucesso (logado como Claudio):
+- Setup Journey: data de corte → etapa 2 (transição suave, progressive disclosure funciona)
+- Criar conta Nubank (R$5.000): formulário com progressive disclosure (campos bancários aparecem ao selecionar banco), 94+ bancos BR, 36 moedas (incl. crypto), 10 cores nomeadas, formatação automática BRL
+- Criar recorrência aluguel (R$2.500 com IGP-M): reajuste automático por índices econômicos (IPCA/IGP-M/INPC/Selic)
+- Criar transação via FAB (+): Supermercado R$89,90 com auto-categorização IA ("Alimentação" inferido de "Supermercado Extra")
+- Dashboard recalculou instantaneamente (R$5.000 → R$4.910,10)
+- Calendário de bills: aluguel visível no dia 5
+- Índices econômicos com dados reais
+
+### 43.3 Bugs encontrados e corrigidos
+
+| # | Bug | Severidade | Status | Commit |
+|---|-----|-----------|--------|--------|
+| B1 | POST /budgets retorna 400 — `alert_threshold NUMERIC(3,2)` recebia 80 em vez de 0.80 | Crítica | **Corrigido** | `e5e1faa` |
+| B4 | Data padrão de transação = amanhã — `toISOString().split("T")[0]` retorna UTC, que em SP (UTC-3) após 21h vira o dia seguinte. 6 arquivos client-side corrigidos com nova utility `toLocalDateString()` | Média | **Corrigido** | `1fd45de` |
+| B3 | Botão "Pagar" em /bills sem efeito aparente | Alta → Baixa | **Não é bug** — confirmação 2 passos com `useAutoReset(5s)`. Latência do Chrome MCP impediu de ver os botões "Confirmar"/"Não" |
+
+### 43.4 UX implementado
+
+| # | Feature | Commit |
+|---|---------|--------|
+| C1 | Logout mobile: botão "Sair" adicionado ao `/settings`. Avatar dropdown no header com: nome, privacidade, configurações, sair | `b555fa9` |
+| C3 | Header mobile redesenhado: logomark substitui lockup-h comprimido. CircleUser com dropdown. Ícones reorganizados com hierarquia | `b555fa9` |
+
+### 43.5 Suite de auditoria E2E (Playwright)
+
+Criados 8 arquivos de teste automatizado em `e2e/audit/` cobrindo os 13 pontos do checklist UX de Claudio:
+
+| Arquivo | Linhas | Cobertura |
+|---------|--------|-----------|
+| `all-pages-crawl.spec.ts` | 231 | 35 páginas: screenshot desktop+mobile, console errors, network errors, headings, tempo de carga |
+| `accessibility.spec.ts` | 145 | 22 rotas: axe-core WCAG AA (contraste, labels, roles, focus, ARIA) |
+| `forms-and-interactions.spec.ts` | 466 | 15 cenários: CRUD contas, transações, recorrências, orçamento, metas, cartões, calculadoras |
+| `mobile-responsive.spec.ts` | 142 | 16 rotas: viewport 390×844, sidebar oculta, header, bottom tab, overflow, touch targets |
+| `performance.spec.ts` | 166 | 7 rotas: tempo de carga, JS bundle, LCP/CLS, resiliência com rede bloqueada |
+| `ai-ux.spec.ts` | 201 | Categorização automática, narrativa, scanner, diagnóstico, calculadoras, OCR |
+| `security-trust.spec.ts` | 269 | Confirmações destrutivas, privacy mode, login errors, MFA banner, disclaimers |
+| `observability.spec.ts` | 296 | Analytics requests, Sentry, console.error, 5xx, setup journey, timestamp |
+| **Total** | **1.916** | **13/13 pontos do checklist cobertos** |
+
+Guia de execução: `e2e/audit/GUIA-EXECUCAO.md` (instruções PowerShell passo a passo).
+
+### 43.6 Infraestrutura de teste
+
+- Usuário e2e criado: `e2e-test@oniefy.com` / `E2eTest!Secure2026` (user_id: `e7a6554f-a75a-4080-9eb7-1c310a5f8bbf`)
+- Identity (GoTrue) e profile criados
+- 16 categorias default semeadas
+- Auth setup salva sessão em `e2e/.auth/user.json`
+- Testa contra produção: `PLAYWRIGHT_BASE_URL=https://www.oniefy.com`
+
+### 43.7 Achados UX pendentes (não corrigidos)
+
+| # | Problema | Severidade |
+|---|---------|-----------|
+| C2 | Sub-navegação mobile ausente (tabs não mostram sub-páginas) | Alta |
+| A1 | Calculadoras: 8 tabs sem scroll indicator no mobile | Alta |
+| A3 | Error handling em ~50% das páginas (sem toast/fallback quando API falha) | Média |
+| A4 | Dashboard first-fold para usuário novo: 4 cards R$0 dominam | Média |
+| R2 | Capitalização "Abr. De 2026" → "Abr. de 2026" | Trivial |
+| UX-01 | Valor no form de recorrência não formata em tempo real (diferente do form de conta) | Baixa |
+| UX-02 | Modal de transação não faz scroll trap (página atrás scrolla) | Baixa |
+
+### 43.8 Commits desta sessão
+
+| Hash | Mensagem |
+|------|----------|
+| `b555fa9` | fix(ux): C1+C3 — logout mobile + header redesign com avatar dropdown |
+| `e5e1faa` | fix(budgets): B1 — alert_threshold numeric overflow |
+| `1fd45de` | fix(dates): B4 — timezone bug corrigido em 6 arquivos client-side |
+| `923cfa4` | feat(e2e): suite de auditoria UX completa — 5 arquivos, 1154 linhas |
+| `63e8ea7` | feat(e2e): testes 6, 11, 12 — IA UX, segurança percebida, observabilidade |
+| `31cf352` | docs(e2e): guia detalhado de execução para PowerShell |
+| `65cbd29` | docs(e2e): ajustar caminho para C:\Users\claud\Documents\PC_WealthOS |
+| `b072970` | docs(e2e): adicionar --dangerously-skip-permissions ao comando claude |
+
+### 43.9 Ground truth (atualizado final sessão 43)
+
+| Métrica | Sessão 42 | Sessão 43 | Delta |
+|---------|-----------|-----------|-------|
+| Tabelas | 38 | **38** | 0 |
+| Arquivos TS/TSX | 300 | **300** | 0 |
+| Páginas | 44 | **44** | 0 |
+| E2E specs | 10 | **18** | +8 (audit suite) |
+| E2E audit linhas | 0 | **1.916** | +1.916 |
+| Bugs corrigidos | — | **2** (B1, B4) | +2 |
+| Utility functions | — | `toLocalDateString()` em utils/index.ts | +1 |
+
+### 43.10 Próximos passos
+
+1. **Claudio roda a suite**: `cd C:\Users\claud\Documents\PC_WealthOS && claude --dangerously-skip-permissions` → prompt de auditoria
+2. **Claude Code analisa resultados** e corrige bugs encontrados
+3. **Corrigir C2**: sub-navegação mobile
+4. **Corrigir A1-A4, R2**: achados pendentes da auditoria
+5. **Verificar deploy** dos 8 commits no Vercel
+6. **Teste de corredor** com 3 pessoas (A7)
