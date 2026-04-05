@@ -5756,15 +5756,29 @@ Continuação da sessão 44. Foco: CI verde, a11y, mobile overflow, LCP.
 - Causado por reflow de dados carregados assincronamente + font swap
 - Requer ajuste fino de skeleton heights — item de backlog
 
-### 44.9 Ground truth (atualizado final sessão 44b)
+### 44.9 Sessão 44c — Monkey test + Flow variations
 
-| Métrica | Sessão 43 | Sessão 44b | Delta |
+Adicionados 2 specs universais ao Audit Kit:
+
+- `monkey.spec.ts`: 80 ações aleatórias (click, navigate, type, back, escape), navegação rápida 20x sem esperar carregamento, double-click em botões de submit. Detectou B14 (5 formulários sem proteção contra double-submit).
+- `flow-variations.spec.ts`: modal escape/reopen, botão voltar do browser, abandono de formulário sem salvar, cliques durante carregamento, F5 em rotas críticas. 5/5 passed.
+
+Commits: `75f1129`, `c968ee7`.
+
+### 44.10 Nota: Sessão 41 pulada
+
+A sessão 40 preparou `docs/SESSION-41-PROMPT.md` com backlog para sessão 41 (E24 investimentos, E16 compartilhamento familiar). O trabalho executado na sessão seguinte foi diferente (auditoria UX + LGPD) e documentado como sessão 42. A numeração 41 ficou vaga. O prompt continua em `docs/SESSION-41-PROMPT.md` como referência.
+
+### 44.11 Ground truth (atualizado final sessão 44c)
+
+| Métrica | Sessão 43 | Sessão 44c | Delta |
 |---------|-----------|-----------|-------|
 | E2E specs (audit) | 18 | **18** | 0 |
-| E2E specs (audit-kit) | 0 | **17** (11 universal + 6 gerados) | +17 |
-| E2E audit-kit testes | 0 | **340** | +340 |
+| E2E specs (audit-kit) | 0 | **19** (13 universal + 6 gerados) | +19 |
+| E2E audit-kit testes | 0 | **~360** | +360 |
 | Pass rate a11y | — | **94%** (33/35) | — |
 | Bugs corrigidos | 2 (B1,B4) | **16** (B5-B16) | +14 |
+| Pendências registradas | — | **11** (B14, B17-B24, CLS, overflow) | +11 |
 | A11y fixes total | 0 | **7** (5 selects + button-name + label) | +7 |
 | LCP dashboard | >2500ms | **1544ms** | -38% |
-| CI status | ❌ TS2352 | ✅ zero errors | fixed |
+| CI status | ❌ TS2352 | ✅ green | fixed |
