@@ -166,7 +166,7 @@ export const auditConfig: AuditConfig = {
     expectedAnalytics: ["vercel"],
     resilience: {
       formRoute: "/calculators/independence",
-      fieldSelector: 'input[name="calc-fi-expense"]',
+      fieldSelector: "#calc-fi-expense",
       testValue: "5000",
     },
   },

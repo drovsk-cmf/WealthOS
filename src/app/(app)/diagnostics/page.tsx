@@ -71,6 +71,7 @@ function MetricCard({
         {explanation && (
           <button
             onClick={() => setExpanded(!expanded)}
+            aria-label={expanded ? "Ocultar explicação" : "Ver explicação"}
             className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
           >
             {expanded ? <ChevronUp className="h-4 w-4" /> : <Info className="h-4 w-4" />}

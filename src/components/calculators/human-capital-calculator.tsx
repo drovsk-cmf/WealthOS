@@ -115,9 +115,10 @@ function InputField({
   step?: number;
   help?: string;
 }) {
+  const fieldId = `hc-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-muted-foreground">
+      <label htmlFor={fieldId} className="mb-1 block text-xs font-medium text-muted-foreground">
         {label}
       </label>
       <div className="relative">
@@ -127,6 +128,7 @@ function InputField({
           </span>
         )}
         <input
+          id={fieldId}
           type="number"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}

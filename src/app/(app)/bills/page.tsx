@@ -139,7 +139,7 @@ export default function BillsPage() {
   const totalPending = pendingBills?.reduce((s, b) => s + b.amount, 0) ?? 0;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
