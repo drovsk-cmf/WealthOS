@@ -58,3 +58,6 @@ e2e/.auth/
 # OS
 Thumbs.db
 coverage/
+-e 
+# Audit screenshots (generated)
+e2e/audit/screenshots/*.png
