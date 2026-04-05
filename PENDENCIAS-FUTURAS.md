@@ -243,6 +243,8 @@ Decisões IA do adendo v1.5:
 | R2 | Capitalização incorreta: "Abr. De 2026" deveria ser "Abr. de 2026" (preposição minúscula). Auditoria 2.6 | 43 |
 | UX-01 | Valor no form de recorrência não formata em tempo real (diferente do form de conta). Auditoria 7.6 | 43 |
 | UX-02 | Modal de transação não faz scroll trap (página atrás scrolla junto). Auditoria 7.5 | 43 |
+| UX-06 | Audit trail + undo: tabela de histórico (who/when/what/old/new) com triggers em tabelas financeiras. Página /settings/history. Opção de desfazer por janela de tempo (1h, 6h, 12h, 24h, 3d, 7d, 30d, 60d, 90d). Requer decisão de schema antes de implementar. Auditoria 11.4 | 44 |
+| UX-07 | Nomenclatura "Índices Econômicos" vs "Indicadores": sidebar diz "Indicadores" (sessão 42) mas heading da página pode ainda dizer "Índices Econômicos". Padronizar. Auditoria 2.6 | 44 |
 
 ---
 
