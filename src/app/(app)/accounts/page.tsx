@@ -137,7 +137,7 @@ export default function AccountsPage() {
           </div>
           <h2 className="text-lg font-semibold">Adicione suas contas</h2>
           <p className="mt-1 max-w-md text-sm text-muted-foreground">
-            Cadastre suas contas bancárias e investimentos para ver saldos consolidados. Para cartões de crédito, use a página dedicada.
+            Cadastre suas contas bancárias para ver saldos consolidados. Para cartões de crédito, use a página dedicada. Para investimentos e ativos financeiros, acesse Bens e Investimentos.
           </p>
           <div className="mt-5 flex gap-3">
             <button type="button"
@@ -155,14 +155,13 @@ export default function AccountsPage() {
 
       {/* Account list — grouped by type (FIX #7, E17: cards moved to /cards) */}
       {accounts && accounts.length > 0 && (() => {
-        const nonCards = accounts.filter((a) => a.type !== "credit_card");
+        const nonCards = accounts.filter((a) => a.type !== "credit_card" && a.type !== "investment");
         const filtered = search
           ? nonCards.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
           : nonCards;
 
         const groups: { key: string; label: string; types: AccountType[]; accounts: Account[] }[] = [
           { key: "banking", label: "Contas Bancárias", types: ["checking" as AccountType, "savings" as AccountType, "cash" as AccountType], accounts: [] },
-          { key: "investments", label: "Investimentos", types: ["investment" as AccountType], accounts: [] },
           { key: "debts", label: "Empréstimos e Financiamentos", types: ["loan" as AccountType, "financing" as AccountType], accounts: [] },
         ];
 

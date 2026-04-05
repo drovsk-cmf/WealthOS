@@ -28,6 +28,7 @@ import {
   ASSET_CATEGORY_COLORS,
 } from "@/lib/hooks/use-assets";
 import { useDocuments, useUploadDocument, useDeleteDocument } from "@/lib/hooks/use-documents";
+import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
 import { formatCurrency, formatDate, formatDecimalBR } from "@/lib/utils";
@@ -162,6 +163,8 @@ export default function AssetsPage() {
 
   const { data: assets, isLoading } = useAssets();
   const { data: summary } = useAssetsSummary();
+  const { data: allAccounts } = useAccounts();
+  const investmentAccounts = allAccounts?.filter((a) => a.type === "investment") ?? [];
   const deleteAsset = useDeleteAsset();
   const depreciateAsset = useDepreciateAsset();
 
@@ -292,8 +295,25 @@ export default function AssetsPage() {
         </div>
       )}
 
+      {/* Investment accounts (from accounts table, type=investment) */}
+      {investmentAccounts.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Ativos Financeiros</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {investmentAccounts.map((inv) => (
+              <div key={inv.id} className="rounded-lg border bg-card p-4">
+                <p className="text-sm font-medium">{inv.name}</p>
+                <p className="mt-1 text-lg font-bold tabular-nums">
+                  <Mv>{formatCurrency(Number(inv.current_balance))}</Mv>
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Empty state (UX-H1-03) */}
-      {(!assets || assets.length === 0) && (
+      {(!assets || assets.length === 0) && investmentAccounts.length === 0 && (
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
