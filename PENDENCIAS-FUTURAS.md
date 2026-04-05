@@ -228,6 +228,7 @@ Decisões IA do adendo v1.5:
 | L3 | CPF com consentimento explícito: campo + checkbox + criptografia AES-256 em perfil e família | 42 |
 | UX-XL | Cross-links contextuais: Bens→Garantias, Categorias→Divisões | 42 |
 | B14 | Double-submit: 5 formulários sem proteção visível (/transactions, /bills, /accounts, /assets, /budgets). Botão de submit não desabilita durante request. Fix: `disabled={mutation.isPending}` + spinner. Auditoria 11.3 | 44 |
+| B17 | Modal de criação de conta (/accounts) não cabe no viewport padrão (1280x720). Botão submit fica fora da tela. Workaround E2E: JS click via evaluate(). Fix real: scroll interno no modal ou reduzir altura do formulário (remover campos opcionais para progressive disclosure). Auditoria 7.6 | 44 |
 
 ---
 
@@ -242,4 +243,4 @@ Decisões IA do adendo v1.5:
 | 04/04/2026 | Sessão 40: Fix CI (lockfile corrompido). C1 (as any → 0), D8 (rastreabilidade 108 stories), D17 (roteiro teste), E55 (liquidity_tier). Auditoria PENDENCIAS: 11 entradas stale removidas (E52, E53, E54, E58, E59, E60, E61, E62, E63, E65 já implementados). A19 (VAPID keys) adicionado. |
 | 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD completo: ROPA (L4), RIPD fiscal (L5), DPO interino (L6), CPF com consentimento explícito + criptografia AES-256 em perfil e família (L3). Cross-links contextuais. 8 commits, 28+ arquivos. |
 | 05/04/2026 | Sessão 43: Auditoria UX exploratória + suite E2E. B1 (alert_threshold overflow) e B4 (timezone) corrigidos. C1 (logout mobile) e C3 (header redesign) implementados. 8 arquivos Playwright audit (1.916 linhas). Usuário e2e-test@oniefy.com criado. Achados pendentes: C2, A1, A3, A4, R2, UX-01, UX-02. |
-| 05/04/2026 | Sessão 44: Audit Kit v2 (13 specs universais + 6 gerados). 9 bugs de produção corrigidos (B5-B13). 340 testes, 94% pass rate. Monkey test detectou B14 (double-submit sem proteção em 5 formulários). |
+| 05/04/2026 | Sessão 44: Audit Kit v2 (13 specs universais + 6 gerados). 9 bugs de produção corrigidos (B5-B13). 340 testes, 94% pass rate. Monkey test detectou B14 (double-submit). B17 (modal /accounts fora do viewport). 3 fixes em specs (JS click, exact locator, try/catch unroute). |
