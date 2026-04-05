@@ -17,10 +17,10 @@ import {
   ADJUSTMENT_INDEX_OPTIONS,
 } from "@/lib/hooks/use-budgets";
 import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
-import { formatCurrency } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
 
@@ -43,7 +43,7 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   const isEditing = !!editData;
 
   const [categoryId, setCategoryId] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [threshold, setThreshold] = useState("80");
   const [adjustmentIndex, setAdjustmentIndex] = useState<AdjustmentIndex>("none");
   const [isProposed, setIsProposed] = useState(false);
@@ -62,13 +62,13 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
   useEffect(() => {
     if (editData) {
       setCategoryId(editData.category_id);
-      setAmount(editData.planned_amount.toString());
+      setAmount(editData.planned_amount);
       setThreshold(Math.round(editData.alert_threshold * 100).toString());
       setAdjustmentIndex(editData.adjustment_index ?? "none");
       setIsProposed(false);
     } else {
       setCategoryId("");
-      setAmount("");
+      setAmount(0);
       setThreshold("80");
       setAdjustmentIndex("none");
       setIsProposed(false);
@@ -81,8 +81,8 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
     e.preventDefault();
     setError("");
 
-    const parsedAmount = parseFloat(amount.replace(",", "."));
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    const parsedAmount = amount;
+    if (!parsedAmount || parsedAmount <= 0) {
       setError("Informe um valor positivo.");
       return;
     }
@@ -170,22 +170,13 @@ export function BudgetForm({ open, onClose, month, familyMemberId, editData }: B
           {/* Amount */}
           <div>
             <label htmlFor="budget-amount" className="text-sm font-medium">Valor orçado ({currSymbol})</label>
-            <input
+            <MoneyInput
               id="budget-amount"
-              type="text"
-              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0,00"
-              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              required
+              onChange={setAmount}
               aria-required="true"
+              className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
-            {amount && !isNaN(parseFloat(amount.replace(",", "."))) && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                {formatCurrency(parseFloat(amount.replace(",", ".")))}
-              </p>
-            )}
           </div>
 
           {/* Alert threshold */}

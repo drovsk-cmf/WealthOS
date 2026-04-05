@@ -30,6 +30,7 @@ import { formatCurrency, formatDecimalBR, toLocalDateString } from "@/lib/utils"
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type TransactionType = Database["public"]["Enums"]["transaction_type"];
 type CategoryType = Database["public"]["Enums"]["category_type"];
@@ -41,7 +42,7 @@ interface TransactionFormProps {
   /** Pre-fill fields (for Duplicate or Edit) */
   prefill?: {
     type?: TransactionType;
-    amount?: string;
+    amount?: string | number;
     description?: string;
     accountId?: string;
     categoryId?: string;
@@ -77,7 +78,11 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
   const [categoryId, setCategoryId] = useState(prefill?.categoryId ?? "");
   const [familyMemberId, setFamilyMemberId] = useState(prefill?.familyMemberId ?? "");
   const [assetId, setAssetId] = useState("");
-  const [amount, setAmount] = useState(prefill?.amount ?? "");
+  const [amount, setAmount] = useState(() => {
+    if (!prefill?.amount) return 0;
+    if (typeof prefill.amount === "number") return prefill.amount;
+    return parseFloat(prefill.amount.replace(",", ".")) || 0;
+  });
   const [description, setDescription] = useState(prefill?.description ?? "");
   const [date, setDate] = useState(toLocalDateString());
   const [isPaid, setIsPaid] = useState(true);
@@ -115,7 +120,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
       setToAccountId(prefill?.toAccountId ?? "");
       setCategoryId(prefill?.categoryId ?? "");
       setFamilyMemberId(prefill?.familyMemberId ?? "");
-      setAmount(prefill?.amount ?? "");
+      setAmount(prefill?.amount ? (typeof prefill.amount === "number" ? prefill.amount : parseFloat(prefill.amount.replace(",", ".")) || 0) : 0);
       setDescription(prefill?.description ?? "");
       setDate(toLocalDateString());
       setIsPaid(true);
@@ -146,7 +151,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
     e.preventDefault();
     setError(null);
 
-    const parsedAmount = parseFloat(amount.replace(",", "."));
+    const parsedAmount = amount;
     if (!parsedAmount || parsedAmount <= 0) {
       setError("Valor deve ser maior que zero.");
       return;
@@ -264,7 +269,7 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
                   try {
                     const result = await ocrReceipt.mutateAsync(file);
                     if (result.parsed.amount) {
-                      setAmount(formatDecimalBR(result.parsed.amount));
+                      setAmount(result.parsed.amount);
                     }
                     if (result.parsed.date) {
                       setDate(result.parsed.date);
@@ -297,22 +302,14 @@ export function TransactionForm({ open, onClose, defaultType = "expense", prefil
             <label htmlFor="tx-amount" className="text-sm font-medium">
               Valor ({currSymbol})
             </label>
-            <input
+            <MoneyInput
               id="tx-amount"
-              type="text"
-              inputMode="decimal"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0,00"
+              onChange={setAmount}
               aria-required="true"
               className="flex h-14 w-full rounded-md border border-input bg-background px-4 py-2 text-2xl font-bold tabular-nums ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               autoFocus
             />
-            {amount && parseFloat(amount.replace(",", ".")) > 0 && (
-              <p className="text-xs text-muted-foreground">
-                {formatCurrency(parseFloat(amount.replace(",", ".")))}
-              </p>
-            )}
           </div>
 
           {/* Decision 2: Description (quick, triggers auto-categorization) */}

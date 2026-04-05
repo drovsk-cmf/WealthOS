@@ -126,8 +126,54 @@ export default function IndicesPage() {
   }, [multiHistory, selectedIndices]);
 
   // Table data for primary index (single-selection only)
+  // Compute accumulated_year and accumulated_12m geometrically on the frontend
+  // (DB columns may be NULL for data fetched via API after seed)
   const primaryIndex = Array.from(selectedIndices)[0];
-  const primaryHistory = multiHistory?.[primaryIndex] ?? [];
+  const primaryHistory = useMemo(() => {
+    const raw = multiHistory?.[primaryIndex] ?? [];
+    if (!raw.length) return raw;
+    const canAccumulate = ACCUMULATION_INDICES.has(primaryIndex);
+    if (!canAccumulate) return raw;
+
+    const sorted = [...raw].sort((a, b) =>
+      a.reference_date.localeCompare(b.reference_date)
+    );
+
+    // Group by year for accumulated_year
+    const yearProducts = new Map<string, number>();
+    // Sliding window for accumulated_12m
+    const allSorted = sorted.map((p) => ({
+      ...p,
+      _val: Number(p.value),
+      _year: p.reference_date.slice(0, 4),
+    }));
+
+    return allSorted.map((p, i) => {
+      // Accumulated year: geometric product from Jan of p's year
+      const yearKey = p._year;
+      if (!yearProducts.has(yearKey)) yearProducts.set(yearKey, 1);
+      yearProducts.set(yearKey, yearProducts.get(yearKey)! * (1 + p._val / 100));
+      const accYear = (yearProducts.get(yearKey)! - 1) * 100;
+
+      // Accumulated 12m: geometric product of last 12 months up to and including this one
+      let acc12m = 1;
+      for (let j = i; j >= 0; j--) {
+        const diff =
+          (parseInt(p._year) - parseInt(allSorted[j]._year)) * 12 +
+          (parseInt(p.reference_date.slice(5, 7)) -
+            parseInt(allSorted[j].reference_date.slice(5, 7)));
+        if (diff >= 12) break;
+        acc12m *= 1 + allSorted[j]._val / 100;
+      }
+      const accum12m = (acc12m - 1) * 100;
+
+      return {
+        ...p,
+        accumulated_year: accYear,
+        accumulated_12m: accum12m,
+      };
+    });
+  }, [multiHistory, primaryIndex]);
 
   if (loadingLatest) {
     return (
@@ -147,7 +193,7 @@ export default function IndicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Índices Econômicos</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Indicadores Econômicos</h1>
           <p className="text-sm text-muted-foreground">
             Indicadores macroeconômicos do BCB e IBGE
           </p>
@@ -351,10 +397,10 @@ export default function IndicesPage() {
                         {formatDecimalBR(Number(p.value), primaryIndex === "usd_brl" ? 4 : 2)}
                       </td>
                       <td className="py-1 text-right tabular-nums">
-                        {p.accumulated_year !== null ? `${formatPercent(Number(p.accumulated_year))} %` : "-"}
+                        {p.accumulated_year != null ? `${formatPercent(Number(p.accumulated_year))} %` : "-"}
                       </td>
                       <td className="py-1 text-right tabular-nums">
-                        {p.accumulated_12m !== null ? `${formatPercent(Number(p.accumulated_12m))} %` : "-"}
+                        {p.accumulated_12m != null ? `${formatPercent(Number(p.accumulated_12m))} %` : "-"}
                       </td>
                     </tr>
                   ))}

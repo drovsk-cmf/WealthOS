@@ -22,6 +22,7 @@ import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-c
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type AssetCategory = Database["public"]["Enums"]["asset_category"];
 
@@ -51,8 +52,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
   const [name, setName] = useState("");
   const [category, setCategory] = useState<AssetCategory>("other");
   const [acquisitionDate, setAcquisitionDate] = useState("");
-  const [acquisitionValue, setAcquisitionValue] = useState("");
-  const [currentValue, setCurrentValue] = useState("");
+  const [acquisitionValue, setAcquisitionValue] = useState(0);
+  const [currentValue, setCurrentValue] = useState(0);
   const [depreciationRate, setDepreciationRate] = useState("0");
   const [insurancePolicy, setInsurancePolicy] = useState("");
   const [insuranceExpiry, setInsuranceExpiry] = useState("");
@@ -77,8 +78,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
       setName(editData.name);
       setCategory(editData.category);
       setAcquisitionDate(editData.acquisition_date);
-      setAcquisitionValue(String(editData.acquisition_value));
-      setCurrentValue(String(editData.current_value));
+      setAcquisitionValue(editData.acquisition_value);
+      setCurrentValue(editData.current_value);
       setDepreciationRate(String(editData.depreciation_rate));
       setInsurancePolicy(editData.insurance_policy ?? "");
       setInsuranceExpiry(editData.insurance_expiry ?? "");
@@ -88,8 +89,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
       setName("");
       setCategory("other");
       setAcquisitionDate(new Date().toISOString().slice(0, 10));
-      setAcquisitionValue("");
-      setCurrentValue("");
+      setAcquisitionValue(0);
+      setCurrentValue(0);
       setDepreciationRate("0");
       setInsurancePolicy("");
       setInsuranceExpiry("");
@@ -110,8 +111,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
     e.preventDefault();
     setError("");
 
-    const acqVal = parseFloat(acquisitionValue.replace(",", "."));
-    const curVal = parseFloat(currentValue.replace(",", "."));
+    const acqVal = acquisitionValue;
+    const curVal = currentValue;
     const depRate = parseFloat(depreciationRate.replace(",", "."));
 
     if (!name.trim()) { setError("Informe o nome do bem."); return; }
@@ -193,8 +194,8 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
                         setCategory(t.category as AssetCategory);
                         setDepreciationRate(String(t.default_depreciation_rate));
                         if (t.reference_value_brl) {
-                          setAcquisitionValue(String(t.reference_value_brl));
-                          setCurrentValue(String(t.reference_value_brl));
+                          setAcquisitionValue(t.reference_value_brl);
+                          setCurrentValue(t.reference_value_brl);
                         }
                         setShowSuggestions(false);
                         toast.success(`Template "${t.name}" aplicado.`);
@@ -263,15 +264,15 @@ export function AssetForm({ open, onClose, editData, defaultParentId }: AssetFor
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="asset-acq-value" className="text-sm font-medium">Valor de aquisição ({currency})</label>
-              <input id="asset-acq-value" type="text" inputMode="decimal" value={acquisitionValue}
-                onChange={(e) => { setAcquisitionValue(e.target.value); if (!isEditing && !currentValue) setCurrentValue(e.target.value); }}
-                placeholder="0,00" required={!isEditing} aria-required={!isEditing} disabled={isEditing}
+              <MoneyInput id="asset-acq-value" value={acquisitionValue}
+                onChange={(v) => { setAcquisitionValue(v); if (!isEditing && !currentValue) setCurrentValue(v); }}
+                aria-required={!isEditing} disabled={isEditing}
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:opacity-50" />
             </div>
             <div>
               <label htmlFor="asset-cur-value" className="text-sm font-medium">Valor atual ({currency})</label>
-              <input id="asset-cur-value" type="text" inputMode="decimal" value={currentValue}
-                onChange={(e) => setCurrentValue(e.target.value)} placeholder="0,00" required aria-required="true"
+              <MoneyInput id="asset-cur-value" value={currentValue}
+                onChange={setCurrentValue} aria-required="true"
                 className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
           </div>

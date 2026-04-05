@@ -8,10 +8,11 @@ import {
   PRESET_COLORS,
 } from "@/lib/hooks/use-accounts";
 import { useBankInstitutions } from "@/lib/hooks/use-bank-institutions";
-import { formatCurrency, getColorName } from "@/lib/utils";
+import { getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 
@@ -32,11 +33,11 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
 
   const [name, setName] = useState("");
   const [bankInstitutionId, setBankInstitutionId] = useState("");
-  const [creditLimit, setCreditLimit] = useState("");
+  const [creditLimit, setCreditLimit] = useState(0);
   const [closingDay, setClosingDay] = useState("");
   const [dueDay, setDueDay] = useState("");
   const [interestRate, setInterestRate] = useState("");
-  const [initialBalance, setInitialBalance] = useState("");
+  const [initialBalance, setInitialBalance] = useState(0);
   const [balanceMode, setBalanceMode] = useState<"total" | "last" | "zero">("total");
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [showRateField, setShowRateField] = useState(false);
@@ -51,19 +52,21 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
     if (card) {
       setName(card.name);
       setBankInstitutionId(card.bank_institution_id ?? "");
-      setCreditLimit(card.credit_limit ? String(card.credit_limit) : "");
+      setCreditLimit(card.credit_limit ? Number(card.credit_limit) : 0);
       setClosingDay(card.closing_day ? String(card.closing_day) : "");
       setDueDay(card.due_day ? String(card.due_day) : "");
       setInterestRate(card.interest_rate ? String(card.interest_rate).replace(".", ",") : "");
+      setInitialBalance(Math.abs(card.initial_balance));
+      setBalanceMode("total");
       setColor(card.color || PRESET_COLORS[0]);
     } else {
       setName("");
       setBankInstitutionId("");
-      setCreditLimit("");
+      setCreditLimit(0);
       setClosingDay("");
       setDueDay("");
       setInterestRate("");
-      setInitialBalance("");
+      setInitialBalance(0);
       setBalanceMode("total");
       setColor(PRESET_COLORS[0]);
     }
@@ -80,9 +83,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
       return;
     }
 
-    const parsedLimit = creditLimit
-      ? parseFloat(creditLimit.replace(/\./g, "").replace(",", "."))
-      : null;
+    const parsedLimit = creditLimit || null;
     const parsedClosing = closingDay ? parseInt(closingDay, 10) : null;
     const parsedDue = dueDay ? parseInt(dueDay, 10) : null;
     const parsedRate = interestRate
@@ -100,6 +101,12 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
 
     try {
       if (isEdit && card) {
+        // Compute initial_balance delta for balance adjustment
+        let newInitial = initialBalance;
+        if (newInitial > 0) newInitial = -newInitial;
+        const oldInitial = card.initial_balance ?? 0;
+        const delta = newInitial - oldInitial;
+
         await updateAccount.mutateAsync({
           id: card.id,
           name: name.trim(),
@@ -110,10 +117,12 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
           due_day: parsedDue,
           interest_rate: parsedRate,
           bank_institution_id: bankInstitutionId || null,
+          initial_balance: newInitial,
+          current_balance: (card.current_balance ?? 0) + delta,
+          projected_balance: (card.projected_balance ?? 0) + delta,
         } as Parameters<typeof updateAccount.mutateAsync>[0]);
       } else {
-        const balanceRaw = initialBalance.replace(/\./g, "").replace(",", ".");
-        let balance = parseFloat(balanceRaw) || 0;
+        let balance = initialBalance;
         if (balance > 0) balance = -balance;
 
         await createAccount.mutateAsync({
@@ -199,27 +208,10 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
               <label htmlFor="card-limit" className="text-sm font-medium">
                 Limite (R$)
               </label>
-              <input
+              <MoneyInput
                 id="card-limit"
-                type="text"
-                inputMode="decimal"
                 value={creditLimit}
-                onChange={(e) => {
-                  setCreditLimit(e.target.value.replace(/[^\d.,]/g, ""));
-                }}
-                onBlur={() => {
-                  if (!creditLimit) return;
-                  const n = parseFloat(creditLimit.replace(/\./g, "").replace(",", "."));
-                  if (!isNaN(n)) {
-                    setCreditLimit(
-                      n.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })
-                    );
-                  }
-                }}
-                placeholder="0,00"
+                onChange={setCreditLimit}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
@@ -296,7 +288,7 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
               </button>
             )}
 
-            {/* Initial balance - 3 alternatives (E18) */}
+            {/* Initial balance - 3 alternatives (E18) / editable in edit mode */}
             {!isEdit && (
               <div className="space-y-3">
                 <p className="text-sm font-medium">Como quer informar o saldo?</p>
@@ -329,54 +321,30 @@ export function CardForm({ card, open, onClose }: CardFormProps) {
                     </label>
                   ))}
                 </div>
-
-                {balanceMode !== "zero" && (
-                  <div className="space-y-1.5">
-                    <label htmlFor="card-balance" className="text-sm font-medium">
-                      {balanceMode === "total"
-                        ? "Valor total da fatura aberta (R$)"
-                        : "Valor da última fatura paga (R$)"}
-                    </label>
-                    <input
-                      id="card-balance"
-                      type="text"
-                      inputMode="decimal"
-                      value={initialBalance}
-                      onChange={(e) => {
-                        setInitialBalance(e.target.value.replace(/[^\d.,]/g, ""));
-                      }}
-                      onBlur={() => {
-                        if (!initialBalance) return;
-                        const n = parseFloat(
-                          initialBalance.replace(/\./g, "").replace(",", ".")
-                        );
-                        if (!isNaN(n)) {
-                          setInitialBalance(
-                            n.toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                          );
-                        }
-                      }}
-                      placeholder="0,00"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    />
-                    {balanceMode === "last" && (
-                      <p className="text-xs text-burnished">
-                        Este valor será usado como estimativa inicial. Importe faturas depois para ajustar.
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
-            {isEdit && (
-              <div className="rounded-md bg-muted p-3">
-                <p className="text-xs text-muted-foreground">Saldo devedor</p>
-                <p className="text-sm font-medium">
-                  {formatCurrency(Math.abs(card!.current_balance))}
+            {(isEdit || balanceMode !== "zero") && (
+              <div className="space-y-1.5">
+                <label htmlFor="card-balance" className="text-sm font-medium">
+                  {isEdit
+                    ? "Saldo devedor inicial (R$)"
+                    : balanceMode === "total"
+                      ? "Valor total da fatura aberta (R$)"
+                      : "Valor da última fatura paga (R$)"}
+                </label>
+                <MoneyInput
+                  id="card-balance"
+                  value={initialBalance}
+                  onChange={setInitialBalance}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {isEdit
+                    ? "Ao alterar, a diferença será aplicada como ajuste ao saldo atual."
+                    : balanceMode === "last"
+                      ? "Este valor será usado como estimativa inicial. Importe faturas depois para ajustar."
+                      : "Informe o valor total que você deve. Não use sinal negativo."}
                 </p>
               </div>
             )}

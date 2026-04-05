@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { formatCurrency, formatDecimalBR } from "@/lib/utils";
 import { useSolvencyMetrics } from "@/lib/hooks/use-dashboard";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type PaymentMethod = "cash" | "installment" | "financed";
 
@@ -244,13 +245,13 @@ function MetricCard({
 export function AffordabilitySimulator() {
   const { data: solvency, isLoading } = useSolvencyMetrics();
 
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState(0);
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [months, setMonths] = useState<string>("12");
   const [rate, setRate] = useState<string>("1.5");
   const [simulated, setSimulated] = useState(false);
 
-  const parsedValue = parseFloat(value.replace(/\./g, "").replace(",", ".")) || 0;
+  const parsedValue = value;
   const parsedMonths = parseInt(months, 10) || 12;
   const parsedRate = parseFloat(rate.replace(",", ".")) || 0;
 
@@ -323,15 +324,12 @@ export function AffordabilitySimulator() {
           <label className="text-xs font-medium text-muted-foreground">
             Valor do bem (R$)
           </label>
-          <input
-            type="text"
-            inputMode="decimal"
+          <MoneyInput
             value={value}
-            onChange={(e) => {
-              setValue(e.target.value);
+            onChange={(v) => {
+              setValue(v);
               setSimulated(false);
             }}
-            placeholder="50.000"
             className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-ring"
           />
         </div>

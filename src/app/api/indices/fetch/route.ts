@@ -168,6 +168,10 @@ export async function POST() {
             fetchResult.errors.push(`Upsert falhou: ${upsertErr.message}`);
           } else {
             fetchResult.inserted = rows.length;
+            // Recalculate accumulated values (geometric composition)
+            await adminClient.rpc("recalculate_index_accumulated" as never, {
+              p_index_type: source.index_type,
+            } as never);
           }
         }
       } catch (err) {

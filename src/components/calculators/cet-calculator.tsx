@@ -11,6 +11,7 @@
 
 import { useState, useMemo } from "react";
 import { formatCurrency, formatDecimalBR } from "@/lib/utils";
+import { MoneyInput } from "@/components/ui/money-input";
 
 /**
  * Newton-Raphson IRR solver for equal-payment loan.
@@ -41,20 +42,20 @@ function solveIRR(netReceived: number, payment: number, periods: number): number
 }
 
 export function CetCalculator() {
-  const [principal, setPrincipal] = useState("50000");
-  const [payment, setPayment] = useState("1500");
+  const [principal, setPrincipal] = useState(50000);
+  const [payment, setPayment] = useState(1500);
   const [periods, setPeriods] = useState("48");
-  const [registrationFee, setRegistrationFee] = useState("800");
+  const [registrationFee, setRegistrationFee] = useState(800);
   const [iof, setIof] = useState("1.5");
-  const [insuranceMonthly, setInsuranceMonthly] = useState("50");
+  const [insuranceMonthly, setInsuranceMonthly] = useState(50);
 
   const result = useMemo(() => {
-    const P = parseFloat(principal) || 0;
-    const pmt = parseFloat(payment) || 0;
+    const P = principal;
+    const pmt = payment;
     const n = parseInt(periods) || 0;
-    const regFee = parseFloat(registrationFee) || 0;
+    const regFee = registrationFee;
     const iofPct = (parseFloat(iof) || 0) / 100;
-    const insurance = parseFloat(insuranceMonthly) || 0;
+    const insurance = insuranceMonthly;
 
     if (P <= 0 || pmt <= 0 || n <= 0) return null;
 
@@ -102,11 +103,10 @@ export function CetCalculator() {
           <label htmlFor="calc-cet-principal" className="text-sm font-medium">
             Valor do empréstimo (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-cet-principal"
-            type="number"
             value={principal}
-            onChange={(e) => setPrincipal(e.target.value)}
+            onChange={setPrincipal}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -114,11 +114,10 @@ export function CetCalculator() {
           <label htmlFor="calc-cet-payment" className="text-sm font-medium">
             Parcela mensal (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-cet-payment"
-            type="number"
             value={payment}
-            onChange={(e) => setPayment(e.target.value)}
+            onChange={setPayment}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -138,11 +137,10 @@ export function CetCalculator() {
           <label htmlFor="calc-cet-reg" className="text-sm font-medium">
             Taxa de cadastro (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-cet-reg"
-            type="number"
             value={registrationFee}
-            onChange={(e) => setRegistrationFee(e.target.value)}
+            onChange={setRegistrationFee}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -163,11 +161,10 @@ export function CetCalculator() {
           <label htmlFor="calc-cet-insurance" className="text-sm font-medium">
             Seguro mensal (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-cet-insurance"
-            type="number"
             value={insuranceMonthly}
-            onChange={(e) => setInsuranceMonthly(e.target.value)}
+            onChange={setInsuranceMonthly}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>

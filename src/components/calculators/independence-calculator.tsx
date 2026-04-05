@@ -11,20 +11,21 @@
 
 import { useState, useMemo } from "react";
 import { formatCurrency, formatDecimalBR } from "@/lib/utils";
+import { MoneyInput } from "@/components/ui/money-input";
 
 export function IndependenceCalculator() {
-  const [monthlyExpense, setMonthlyExpense] = useState("10000");
+  const [monthlyExpense, setMonthlyExpense] = useState(10000);
   const [nominalReturn, setNominalReturn] = useState("12");
   const [inflation, setInflation] = useState("4.5");
-  const [currentSavings, setCurrentSavings] = useState("0");
-  const [monthlySaving, setMonthlySaving] = useState("3000");
+  const [currentSavings, setCurrentSavings] = useState(0);
+  const [monthlySaving, setMonthlySaving] = useState(3000);
 
   const result = useMemo(() => {
-    const expense = parseFloat(monthlyExpense) || 0;
+    const expense = monthlyExpense;
     const nominal = parseFloat(nominalReturn) / 100 || 0;
     const infl = parseFloat(inflation) / 100 || 0;
-    const savings = parseFloat(currentSavings) || 0;
-    const monthly = parseFloat(monthlySaving) || 0;
+    const savings = currentSavings;
+    const monthly = monthlySaving;
 
     if (expense <= 0 || nominal <= infl) return null;
 
@@ -69,11 +70,10 @@ export function IndependenceCalculator() {
           <label htmlFor="calc-fi-expense" className="text-sm font-medium">
             Despesa mensal desejada (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-fi-expense"
-            type="number"
             value={monthlyExpense}
-            onChange={(e) => setMonthlyExpense(e.target.value)}
+            onChange={setMonthlyExpense}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -107,11 +107,10 @@ export function IndependenceCalculator() {
           <label htmlFor="calc-fi-savings" className="text-sm font-medium">
             Patrimônio atual (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-fi-savings"
-            type="number"
             value={currentSavings}
-            onChange={(e) => setCurrentSavings(e.target.value)}
+            onChange={setCurrentSavings}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>
@@ -119,11 +118,10 @@ export function IndependenceCalculator() {
           <label htmlFor="calc-fi-monthly" className="text-sm font-medium">
             Aporte mensal (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-fi-monthly"
-            type="number"
             value={monthlySaving}
-            onChange={(e) => setMonthlySaving(e.target.value)}
+            onChange={setMonthlySaving}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>

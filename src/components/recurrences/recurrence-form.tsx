@@ -22,6 +22,7 @@ import { useCurrencyLabel } from "@/lib/hooks/use-currency-label";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type Frequency = Database["public"]["Enums"]["recurrence_frequency"];
 type AdjustmentIndex = Database["public"]["Enums"]["adjustment_index_type"];
@@ -46,7 +47,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
   const [accountId, setAccountId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [type, setType] = useState<"expense" | "income">("expense");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [frequency, setFrequency] = useState<Frequency>("monthly");
   const [intervalCount, setIntervalCount] = useState("1");
@@ -72,7 +73,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
       setAccountId((t.account_id as string) ?? "");
       setCategoryId((t.category_id as string) ?? "");
       setType((t.type as "expense" | "income") ?? "expense");
-      setAmount(String(t.amount ?? ""));
+      setAmount(Number(t.amount) || 0);
       setDescription((t.description as string) ?? "");
       setFrequency(editData.frequency);
       setIntervalCount(String(editData.interval_count));
@@ -83,7 +84,7 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
       setAccountId("");
       setCategoryId("");
       setType("expense");
-      setAmount("");
+      setAmount(0);
       setDescription("");
       setFrequency("monthly");
       setIntervalCount("1");
@@ -99,8 +100,8 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
     e.preventDefault();
     setError("");
 
-    const parsedAmount = parseFloat(amount.replace(",", "."));
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    const parsedAmount = amount;
+    if (!parsedAmount || parsedAmount <= 0) {
       setError("Informe um valor positivo.");
       return;
     }
@@ -215,9 +216,10 @@ export function RecurrenceForm({ open, onClose, editData }: RecurrenceFormProps)
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="rec-amount" className="text-sm font-medium">Valor ({currSymbol})</label>
-              <input id="rec-amount" type="text" inputMode="decimal" value={amount}
-                onChange={(e) => setAmount(e.target.value)} placeholder="0,00"
-                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required aria-required="true" />
+              <MoneyInput id="rec-amount" value={amount}
+                onChange={setAmount}
+                aria-required="true"
+                className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
             <div>
               <label htmlFor="rec-description" className="text-sm font-medium">Descrição</label>

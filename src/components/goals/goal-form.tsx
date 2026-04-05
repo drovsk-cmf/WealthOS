@@ -14,6 +14,7 @@ import {
   useUpdateGoal,
 } from "@/lib/hooks/use-savings-goals";
 import FocusTrap from "focus-trap-react";
+import { MoneyInput } from "@/components/ui/money-input";
 
 const GOAL_COLORS = [
   { value: "#56688F", label: "Azul" },
@@ -43,8 +44,8 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
   const isEdit = !!editData;
 
   const [name, setName] = useState("");
-  const [targetAmount, setTargetAmount] = useState("");
-  const [currentAmount, setCurrentAmount] = useState("0");
+  const [targetAmount, setTargetAmount] = useState(0);
+  const [currentAmount, setCurrentAmount] = useState(0);
   const [targetDate, setTargetDate] = useState("");
   const [color, setColor] = useState(GOAL_COLORS[0].value);
 
@@ -55,14 +56,14 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
   useEffect(() => {
     if (editData) {
       setName(editData.name);
-      setTargetAmount(String(editData.target_amount));
-      setCurrentAmount(String(editData.current_amount));
+      setTargetAmount(editData.target_amount);
+      setCurrentAmount(editData.current_amount);
       setTargetDate(editData.target_date ?? "");
       setColor(editData.color);
     } else {
       setName("");
-      setTargetAmount("");
-      setCurrentAmount("0");
+      setTargetAmount(0);
+      setCurrentAmount(0);
       setTargetDate("");
       setColor(GOAL_COLORS[0].value);
     }
@@ -70,15 +71,15 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !targetAmount) return;
+    if (!name.trim() || targetAmount <= 0) return;
 
     try {
       if (isEdit && editData) {
         await updateGoal.mutateAsync({
           id: editData.id,
           name: name.trim(),
-          target_amount: parseFloat(targetAmount) || 0,
-          current_amount: parseFloat(currentAmount) || 0,
+          target_amount: targetAmount,
+          current_amount: currentAmount,
           target_date: targetDate || null,
           color,
         });
@@ -86,8 +87,8 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
       } else {
         await createGoal.mutateAsync({
           name: name.trim(),
-          target_amount: parseFloat(targetAmount) || 0,
-          current_amount: parseFloat(currentAmount) || 0,
+          target_amount: targetAmount,
+          current_amount: currentAmount,
           target_date: targetDate || null,
           color,
         });
@@ -124,27 +125,18 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
 
             <div>
               <label className="text-xs font-medium text-muted-foreground">Valor alvo (R$)</label>
-              <input
-                type="number"
-                required
-                min={1}
-                step="0.01"
+              <MoneyInput
                 value={targetAmount}
-                onChange={(e) => setTargetAmount(e.target.value)}
-                placeholder="50000"
+                onChange={setTargetAmount}
                 className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
             <div>
               <label className="text-xs font-medium text-muted-foreground">Valor atual (R$)</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
+              <MoneyInput
                 value={currentAmount}
-                onChange={(e) => setCurrentAmount(e.target.value)}
-                placeholder="0"
+                onChange={setCurrentAmount}
                 className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
@@ -183,9 +175,9 @@ export function GoalForm({ open, onClose, editData }: GoalFormProps) {
               className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent btn-alive">
               Cancelar
             </button>
-            <button type="submit" disabled={isPending || !name || !targetAmount}
+            <button type="submit" disabled={isPending || !name || targetAmount <= 0}
               className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40">
-              {isPending ? "Salvando" : isEdit ? "Salvar" : "Criar meta"}
+              {isPending ? "Salvando..." : isEdit ? "Salvar" : "Criar meta"}
             </button>
           </div>
         </form>

@@ -13,10 +13,11 @@ import {
 } from "@/lib/hooks/use-accounts";
 import { useBankInstitutions } from "@/lib/hooks/use-bank-institutions";
 import { useSupportedCurrencies, groupCurrenciesByTier } from "@/lib/hooks/use-currencies";
-import { formatCurrency, getColorName } from "@/lib/utils";
+import { getColorName } from "@/lib/utils";
 import type { Database } from "@/types/database";
 import FocusTrap from "focus-trap-react";
 import { FormError } from "@/components/ui/form-primitives";
+import { MoneyInput } from "@/components/ui/money-input";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
 type AccountType = Database["public"]["Enums"]["account_type"];
@@ -33,7 +34,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
   const [name, setName] = useState("");
   const [type, setType] = useState<AccountType>("checking");
   const [financingSubtype, setFinancingSubtype] = useState(FINANCING_SUBTYPES[0].value);
-  const [initialBalance, setInitialBalance] = useState("");
+  const [initialBalance, setInitialBalance] = useState(0);
   const [color, setColor] = useState(PRESET_COLORS[0]);
   const [liquidityTier, setLiquidityTier] = useState("T1");
   const [currency, setCurrency] = useState("BRL");
@@ -60,7 +61,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
     if (account) {
       setName(account.name);
       setType(account.type);
-      setInitialBalance(String(account.initial_balance));
+      setInitialBalance(Math.abs(account.initial_balance));
       setColor(account.color || PRESET_COLORS[0]);
       setLiquidityTier(account.liquidity_tier || COA_PARENT_MAP[account.type]?.tier || "T1");
       setCurrency(account.currency || "BRL");
@@ -78,7 +79,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setName("");
       setType("checking");
       setFinancingSubtype(FINANCING_SUBTYPES[0].value);
-      setInitialBalance("");
+      setInitialBalance(0);
       setColor(PRESET_COLORS[0]);
       setLiquidityTier("T1");
       setCurrency("BRL");
@@ -103,15 +104,18 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       return;
     }
 
-    const balanceRaw = initialBalance.replace(/\./g, "").replace(",", ".");
-    let balance = parseFloat(balanceRaw) || 0;
     // Auto-negate for debt types: user enters positive, system stores negative
+    let balance = initialBalance;
     if (["credit_card", "loan", "financing"].includes(type) && balance > 0) {
       balance = -balance;
     }
 
     try {
       if (isEdit && account) {
+        // Compute initial_balance delta for balance adjustment
+        const oldInitial = account.initial_balance ?? 0;
+        const delta = balance - oldInitial;
+
         await updateAccount.mutateAsync({
           id: account.id,
           name: name.trim(),
@@ -119,6 +123,9 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           color,
           liquidity_tier: liquidityTier,
           currency: currency || "BRL",
+          initial_balance: balance,
+          current_balance: (account.current_balance ?? 0) + delta,
+          projected_balance: (account.projected_balance ?? 0) + delta,
           // Frente B (Motor Financeiro)
           investment_class: type === "investment" && investmentClass ? investmentClass : null,
           interest_rate: ["loan", "financing", "credit_card"].includes(type) && interestRate ? parseFloat(interestRate.replace(",", ".")) : null,
@@ -448,55 +455,31 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
           )}
 
           {/* Initial Balance — FIX #6: formatting + FIX #9: credit card sign */}
-          {!isEdit && (
-            <div className="space-y-1.5">
-              <label htmlFor="acc-balance" className="text-sm font-medium">
-                {type === "credit_card"
-                  ? `Quanto você deve neste cartão? (${currency})`
-                  : type === "loan" || type === "financing"
-                    ? `Saldo devedor atual (${currency})`
-                    : `Saldo inicial (${currency})`}
-              </label>
-              <input
-                id="acc-balance"
-                type="text"
-                inputMode="decimal"
-                value={initialBalance}
-                onChange={(e) => {
-                  // Accept digits, comma and dot only
-                  const raw = e.target.value.replace(/[^\d.,]/g, "");
-                  setInitialBalance(raw);
-                }}
-                onBlur={() => {
-                  // Format on blur: normalize to number then back to display
-                  if (!initialBalance) return;
-                  const normalized = initialBalance.replace(/\./g, "").replace(",", ".");
-                  const num = parseFloat(normalized);
-                  if (!isNaN(num)) {
-                    setInitialBalance(num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                  }
-                }}
-                placeholder="0,00"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              />
-              <p className="text-xs text-muted-foreground">
-                {type === "credit_card"
+          <div className="space-y-1.5">
+            <label htmlFor="acc-balance" className="text-sm font-medium">
+              {type === "credit_card"
+                ? `Quanto você deve neste cartão? (${currency})`
+                : type === "loan" || type === "financing"
+                  ? `Saldo devedor atual (${currency})`
+                  : `Saldo inicial (${currency})`}
+            </label>
+            <MoneyInput
+              id="acc-balance"
+              value={initialBalance}
+              onChange={setInitialBalance}
+              placeholder="0,00"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <p className="text-xs text-muted-foreground">
+              {isEdit
+                ? "Ao alterar, a diferença será aplicada como ajuste ao saldo atual."
+                : type === "credit_card"
                   ? "Informe o valor total da fatura aberta. Não use sinal negativo."
                   : type === "loan" || type === "financing"
                     ? "Informe o saldo devedor total. Não use sinal negativo."
                     : "Saldo atual da conta no momento do cadastro."}
-              </p>
-            </div>
-          )}
-
-          {isEdit && (
-            <div className="rounded-md bg-muted p-3">
-              <p className="text-xs text-muted-foreground">Saldo inicial</p>
-              <p className="text-sm font-medium">
-                {formatCurrency(account!.initial_balance)}
-              </p>
-            </div>
-          )}
+            </p>
+          </div>
 
           {/* Color */}
           <div className="space-y-1.5">

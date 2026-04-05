@@ -11,20 +11,21 @@
 
 import { useState, useMemo } from "react";
 import { formatCurrency } from "@/lib/utils";
+import { MoneyInput } from "@/components/ui/money-input";
 
 export function BuyVsRentCalculator() {
   // Buy inputs
-  const [propertyValue, setPropertyValue] = useState("500000");
+  const [propertyValue, setPropertyValue] = useState(500000);
   const [downPaymentPct, setDownPaymentPct] = useState("20");
   const [financingRate, setFinancingRate] = useState("0.95");
   const [financingTerm, setFinancingTerm] = useState("360");
-  const [condoFee, setCondoFee] = useState("800");
-  const [iptuMonthly, setIptuMonthly] = useState("300");
+  const [condoFee, setCondoFee] = useState(800);
+  const [iptuMonthly, setIptuMonthly] = useState(300);
   const [maintenancePct, setMaintenancePct] = useState("1");
   const [appreciation, setAppreciation] = useState("3");
 
   // Rent inputs
-  const [monthlyRent, setMonthlyRent] = useState("2500");
+  const [monthlyRent, setMonthlyRent] = useState(2500);
   const [rentAdjustment, setRentAdjustment] = useState("5");
 
   // Common
@@ -32,15 +33,15 @@ export function BuyVsRentCalculator() {
   const [opportunityCost, setOpportunityCost] = useState("1.0");
 
   const result = useMemo(() => {
-    const value = parseFloat(propertyValue) || 0;
+    const value = propertyValue;
     const downPct = (parseFloat(downPaymentPct) || 0) / 100;
     const fRate = (parseFloat(financingRate) || 0) / 100;
     const fTerm = parseInt(financingTerm) || 0;
-    const condo = parseFloat(condoFee) || 0;
-    const iptu = parseFloat(iptuMonthly) || 0;
+    const condo = condoFee;
+    const iptu = iptuMonthly;
     const maintPct = (parseFloat(maintenancePct) || 0) / 100;
     const apprAnnual = (parseFloat(appreciation) || 0) / 100;
-    const rent = parseFloat(monthlyRent) || 0;
+    const rent = monthlyRent;
     const rentAdj = (parseFloat(rentAdjustment) || 0) / 100;
     const months = parseInt(horizon) || 0;
     const oppRate = (parseFloat(opportunityCost) || 0) / 100;
@@ -118,7 +119,7 @@ export function BuyVsRentCalculator() {
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
             <label htmlFor="calc-bvr-value" className="text-xs font-medium">Valor do imóvel (R$)</label>
-            <input id="calc-bvr-value" type="number" value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)}
+            <MoneyInput id="calc-bvr-value" value={propertyValue} onChange={setPropertyValue}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           </div>
           <div className="space-y-1">
@@ -138,12 +139,12 @@ export function BuyVsRentCalculator() {
           </div>
           <div className="space-y-1">
             <label htmlFor="calc-bvr-condo" className="text-xs font-medium">Condomínio (R$/mês)</label>
-            <input id="calc-bvr-condo" type="number" value={condoFee} onChange={(e) => setCondoFee(e.target.value)}
+            <MoneyInput id="calc-bvr-condo" value={condoFee} onChange={setCondoFee}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           </div>
           <div className="space-y-1">
             <label htmlFor="calc-bvr-iptu" className="text-xs font-medium">IPTU (R$/mês)</label>
-            <input id="calc-bvr-iptu" type="number" value={iptuMonthly} onChange={(e) => setIptuMonthly(e.target.value)}
+            <MoneyInput id="calc-bvr-iptu" value={iptuMonthly} onChange={setIptuMonthly}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           </div>
           <div className="space-y-1">
@@ -165,7 +166,7 @@ export function BuyVsRentCalculator() {
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
             <label htmlFor="calc-bvr-rent" className="text-xs font-medium">Aluguel (R$/mês)</label>
-            <input id="calc-bvr-rent" type="number" value={monthlyRent} onChange={(e) => setMonthlyRent(e.target.value)}
+            <MoneyInput id="calc-bvr-rent" value={monthlyRent} onChange={setMonthlyRent}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           </div>
           <div className="space-y-1">

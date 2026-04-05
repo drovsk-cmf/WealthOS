@@ -13,6 +13,7 @@
 
 import { useState, useMemo } from "react";
 import { formatCurrency } from "@/lib/utils";
+import { MoneyInput } from "@/components/ui/money-input";
 
 interface AmortRow {
   period: number;
@@ -49,12 +50,12 @@ function buildPrice(principal: number, rate: number, periods: number): AmortRow[
 }
 
 export function SacVsPriceCalculator() {
-  const [principal, setPrincipal] = useState("300000");
+  const [principal, setPrincipal] = useState(300000);
   const [rate, setRate] = useState("1.0");
   const [periods, setPeriods] = useState("360");
 
   const result = useMemo(() => {
-    const P = parseFloat(principal) || 0;
+    const P = principal;
     const r = (parseFloat(rate) || 0) / 100;
     const n = parseInt(periods) || 0;
 
@@ -94,11 +95,10 @@ export function SacVsPriceCalculator() {
           <label htmlFor="calc-sp-principal" className="text-sm font-medium">
             Valor financiado (R$)
           </label>
-          <input
+          <MoneyInput
             id="calc-sp-principal"
-            type="number"
             value={principal}
-            onChange={(e) => setPrincipal(e.target.value)}
+            onChange={setPrincipal}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           />
         </div>

@@ -31,6 +31,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { formatCurrency, formatDecimalBR, formatAxisBR } from "@/lib/utils";
+import { MoneyInput } from "@/components/ui/money-input";
 
 // ─── Calculation ────────────────────────────────────────────────
 
@@ -198,14 +199,17 @@ export function HumanCapitalCalculator() {
           min={currentAge + 1}
           max={80}
         />
-        <InputField
-          label="Renda mensal bruta"
-          value={monthlyIncome}
-          onChange={setMonthlyIncome}
-          prefix="R$"
-          min={1000}
-          step={500}
-        />
+        <div>
+          <label htmlFor="hc-renda-mensal-bruta" className="mb-1 block text-xs font-medium text-muted-foreground">
+            Renda mensal bruta
+          </label>
+          <MoneyInput
+            id="hc-renda-mensal-bruta"
+            value={monthlyIncome}
+            onChange={setMonthlyIncome}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums"
+          />
+        </div>
         <InputField
           label="Crescimento real"
           value={growthRate}
@@ -226,15 +230,18 @@ export function HumanCapitalCalculator() {
           step={0.5}
           help="Custo de oportunidade (CDI real ~5%)"
         />
-        <InputField
-          label="Patrimônio acumulado"
-          value={currentWealth}
-          onChange={setCurrentWealth}
-          prefix="R$"
-          min={0}
-          step={10000}
-          help="Total de investimentos e bens hoje"
-        />
+        <div>
+          <label htmlFor="hc-patrimonio-acumulado" className="mb-1 block text-xs font-medium text-muted-foreground">
+            Patrimônio acumulado
+          </label>
+          <MoneyInput
+            id="hc-patrimonio-acumulado"
+            value={currentWealth}
+            onChange={setCurrentWealth}
+            className="w-full rounded-md border bg-background px-3 py-2 text-sm tabular-nums"
+          />
+          <p className="mt-0.5 text-[10px] text-muted-foreground">Total de investimentos e bens hoje</p>
+        </div>
       </div>
 
       {/* Results */}
