@@ -221,7 +221,7 @@ export default function AppLayout({
             {SIDEBAR_SECTIONS.map((section, si) => (
               <div key={si}>
                 {section.title && (
-                  <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-[hsl(var(--sidebar-fg)/0.4)]">
+                  <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-[hsl(var(--sidebar-fg)/0.65)]">
                     {section.title}
                   </p>
                 )}

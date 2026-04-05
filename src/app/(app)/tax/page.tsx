@@ -155,16 +155,16 @@ export default function FiscalPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 pb-12">
+    <div className="mx-auto max-w-4xl space-y-8 overflow-x-hidden pb-12">
       {/* Header + Year selector (FIS-06) */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight">Imposto de Renda</h1>
           <p className="text-sm text-muted-foreground">
             Consolidação fiscal automática via classificação contábil
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <label className="text-sm font-medium text-muted-foreground">Ano:</label>
           <select
             value={selectedYear}
@@ -180,7 +180,7 @@ export default function FiscalPage() {
             type="button"
             onClick={handleExport}
             disabled={exporting || !report}
-            className="flex items-center gap-1.5 rounded-md btn-cta px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md btn-cta px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-40"
             title="Exportar XLSX para o contador"
           >
             <Download className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function FiscalPage() {
             type="button"
             onClick={handleCreateShareLink}
             disabled={createShareToken.isPending}
-            className="flex items-center gap-1.5 rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-40"
+            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent disabled:opacity-40"
             title="Gerar link temporário para o contador"
           >
             <Share2 className="h-4 w-4" />

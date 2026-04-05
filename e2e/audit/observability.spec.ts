@@ -79,7 +79,7 @@ test.describe("Observabilidade e instrumentação", () => {
 
     // Verificar se web-vitals está instrumentado
     const hasWebVitals = await page.evaluate(() => {
-      return typeof (window as Record<string, unknown>).__WEB_VITALS_POLYFILL__ !== "undefined" ||
+      return typeof (window as unknown as Record<string, unknown>).__WEB_VITALS_POLYFILL__ !== "undefined" ||
         document.querySelector('script[src*="web-vitals"]') !== null;
     });
 
@@ -107,7 +107,7 @@ test.describe("Observabilidade e instrumentação", () => {
       const scripts = Array.from(document.querySelectorAll("script[src]"));
       return (
         scripts.some((s) => s.getAttribute("src")?.includes("sentry")) ||
-        typeof (window as Record<string, unknown>).__SENTRY__ !== "undefined"
+        typeof (window as unknown as Record<string, unknown>).__SENTRY__ !== "undefined"
       );
     });
 

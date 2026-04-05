@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 
 /**
  * Oniefy - Início (Dashboard) - UX-H1-06 + UX-H2-03 + P5
@@ -12,6 +12,7 @@ import React from "react";
  * - Avançado (opt-in, futuro): tudo
  *
  * Performance: single RPC get_dashboard_all (1 roundtrip instead of 9+)
+ * LCP optimization: below-fold chart components lazy-loaded via React.lazy
  */
 
 import {
@@ -27,18 +28,24 @@ import {
   TopCategoriesCard,
   UpcomingBillsCard,
   BudgetSummaryCard,
-  SolvencyPanel,
-  BalanceEvolutionChart,
   QuickEntryFab,
   NarrativeCard,
   AttentionQueue,
   SetupJourneyCard,
   ImportCTA,
   MfaReminderBanner,
-  ScannerCard,
-  NetWorthChart,
-  ForecastCard,
 } from "@/components/dashboard";
+
+// Below-fold: lazy-loaded para reduzir LCP (Recharts + SVG)
+const SolvencyPanel = React.lazy(() => import("@/components/dashboard/solvency-panel").then(m => ({ default: m.SolvencyPanel })));
+const BalanceEvolutionChart = React.lazy(() => import("@/components/dashboard/balance-evolution-chart").then(m => ({ default: m.BalanceEvolutionChart })));
+const ScannerCard = React.lazy(() => import("@/components/dashboard/scanner-card").then(m => ({ default: m.ScannerCard })));
+const NetWorthChart = React.lazy(() => import("@/components/dashboard/net-worth-chart").then(m => ({ default: m.NetWorthChart })));
+const ForecastCard = React.lazy(() => import("@/components/dashboard/forecast-card").then(m => ({ default: m.ForecastCard })));
+
+function ChartSkeleton({ h = "h-56" }: { h?: string }) {
+  return <div className={`${h} animate-pulse rounded-lg bg-muted`} />;
+}
 
 export default function DashboardPage() {
   const { trackDashboardView } = useAnalytics();
@@ -133,7 +140,7 @@ export default function DashboardPage() {
       {/* ═══ SEÇÃO 3: Resumo Financeiro (abaixo da dobra) ═══ */}
 
       {/* Scanner: "Limpeza de Disco" Financeira (P5: ativo+) */}
-      {showMidTier && <ScannerCard />}
+      {showMidTier && <Suspense fallback={<ChartSkeleton />}><ScannerCard /></Suspense>}
 
       {/* 3-column layout: Top Categorias | Contas a Vencer | Orçamento (P5: ativo+) */}
       {showMidTier && (
@@ -162,36 +169,44 @@ export default function DashboardPage() {
             data={d?.balanceSheet}
             isLoading={dash.isLoading}
           />
-          <BalanceEvolutionChart
-            data={d?.evolution}
-            isLoading={dash.isLoading}
-          />
+          <Suspense fallback={<ChartSkeleton />}>
+            <BalanceEvolutionChart
+              data={d?.evolution}
+              isLoading={dash.isLoading}
+            />
+          </Suspense>
         </div>
       )}
 
       {/* E2: Patrimônio Líquido ao longo do tempo (P5: engajado+) */}
       {showFullTier && (
-        <NetWorthChart
-          snapshots={snapshots.data ?? []}
-          isLoading={snapshots.isLoading}
-        />
+        <Suspense fallback={<ChartSkeleton h="h-72" />}>
+          <NetWorthChart
+            snapshots={snapshots.data ?? []}
+            isLoading={snapshots.isLoading}
+          />
+        </Suspense>
       )}
 
       {/* ═══ Fôlego Financeiro (P5: engajado+) ═══ */}
 
       {/* DASH-09 to DASH-12 + DASH-06: KPIs de solvência + Níveis */}
       {showFullTier && (
-        <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
+        <Suspense fallback={<ChartSkeleton h="h-48" />}>
+          <SolvencyPanel data={d?.solvency} isLoading={dash.isLoading} snapshots={snapshots.data} />
+        </Suspense>
       )}
 
       {/* E38: Projeção de saldo 6 meses */}
       {showMidTier && d?.summary && (
-        <ForecastCard
-          currentBalance={d.summary.total_current_balance}
-          avgMonthlyIncome={d.summary.month_income}
-          avgMonthlyExpenses={d.summary.month_expense}
-          isLoading={dash.isLoading}
-        />
+        <Suspense fallback={<ChartSkeleton />}>
+          <ForecastCard
+            currentBalance={d.summary.total_current_balance}
+            avgMonthlyIncome={d.summary.month_income}
+            avgMonthlyExpenses={d.summary.month_expense}
+            isLoading={dash.isLoading}
+          />
+        </Suspense>
       )}
 
       {/* DASH-08: FAB lançamento rápido */}

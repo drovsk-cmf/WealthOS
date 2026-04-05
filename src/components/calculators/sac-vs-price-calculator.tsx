@@ -89,7 +89,7 @@ export function SacVsPriceCalculator() {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <label htmlFor="calc-sp-principal" className="text-sm font-medium">
             Valor financiado (R$)
@@ -132,7 +132,7 @@ export function SacVsPriceCalculator() {
       {result && (
         <div className="space-y-4">
           {/* Summary comparison */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
               <p className="text-sm font-semibold">SAC</p>
               <div className="text-xs space-y-1">

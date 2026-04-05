@@ -35,7 +35,7 @@ export default function ConnectionsPage() {
   const [tab, setTab] = useState<Tab>("import");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Importar</h1>
       </div>
@@ -50,7 +50,7 @@ export default function ConnectionsPage() {
           <button type="button"
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+            className={`min-w-0 flex-1 truncate rounded-md px-2 py-2 text-sm font-medium transition-colors ${
               tab === t.key ? "bg-card shadow-sm" : "text-muted-foreground hover:text-foreground"
             }`}
           >

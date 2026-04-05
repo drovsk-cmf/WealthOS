@@ -76,13 +76,13 @@ export default function AccountsPage() {
 
   // ─── Render ───────────────────────────────────────────────
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 overflow-x-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h1 className="text-2xl font-bold tracking-tight">Contas</h1>
         <button type="button"
           onClick={handleNew}
-          className="rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="shrink-0 whitespace-nowrap rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           + Nova conta
         </button>
