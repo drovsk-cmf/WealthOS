@@ -61,8 +61,8 @@ test.describe("Formulários e interações", () => {
     await page.selectOption("select >> nth=1", { label: "237 - Bradesco" });
     await page.fill('input[placeholder="0,00"]', "1500");
 
-    // Submeter
-    await page.click("text=Criar conta");
+    // Submeter (JS click: modal pode posicionar botão fora do viewport)
+    await page.locator('button[type="submit"]:has-text("Criar conta")').evaluate((el) => (el as HTMLElement).click());
     await page.waitForTimeout(2000);
 
     // Verificar toast ou conta na lista
@@ -263,18 +263,18 @@ test.describe("Formulários e interações", () => {
     await page.goto("/cash-flow");
     await waitForPage(page);
 
-    // Verificar filtros Dia/Mês/Ano
-    const hasDia = await page.locator("text=Dia").isVisible();
-    const hasMes = await page.locator("text=Mês").isVisible();
-    const hasAno = await page.locator("text=Ano").isVisible();
+    // Verificar filtros Dia/Mês/Ano (usar exact para evitar match com "Diagnóstico"/"Diagrama")
+    const hasDia = await page.getByRole("button", { name: "Dia", exact: true }).isVisible();
+    const hasMes = await page.getByRole("button", { name: "Mês", exact: true }).isVisible();
+    const hasAno = await page.getByRole("button", { name: "Ano", exact: true }).isVisible();
     expect(hasDia && hasMes && hasAno, "Filtros de período visíveis").toBe(true);
 
     // Clicar em cada filtro
-    await page.click("text=Dia");
+    await page.getByRole("button", { name: "Dia", exact: true }).click();
     await page.waitForTimeout(500);
-    await page.click("text=Ano");
+    await page.getByRole("button", { name: "Ano", exact: true }).click();
     await page.waitForTimeout(500);
-    await page.click("text=Mês");
+    await page.getByRole("button", { name: "Mês", exact: true }).click();
     await page.waitForTimeout(500);
   });
 

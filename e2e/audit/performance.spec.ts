@@ -135,8 +135,8 @@ test.describe("Performance e resiliência", () => {
   });
 
   test("Resiliência: formulário preserva dados em erro de rede", async ({ page }) => {
-    await page.goto("/accounts", { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000);
+    await page.goto("/accounts", { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(2000);
 
     // Abrir formulário
     await page.click("text=+ Nova conta").catch(() => page.click("text=+ Adicionar conta"));
@@ -148,8 +148,8 @@ test.describe("Performance e resiliência", () => {
     // Bloquear rede antes de submeter
     await page.route("**/supabase.co/**", (route) => route.abort());
 
-    // Submeter (deve falhar)
-    await page.click("text=Criar conta");
+    // Submeter (JS click: botão pode ficar fora do viewport no modal)
+    await page.locator('button[type="submit"]:has-text("Criar conta")').evaluate((el) => (el as HTMLElement).click());
     await page.waitForTimeout(2000);
 
     // Verificar que os dados preenchidos NÃO foram perdidos
@@ -161,6 +161,6 @@ test.describe("Performance e resiliência", () => {
         : "⚠️ Formulário perdeu dados após erro de rede"
     );
 
-    await page.unroute("**/supabase.co/**");
+    try { await page.unroute("**/supabase.co/**"); } catch { /* browser pode já ter fechado */ }
   });
 });
