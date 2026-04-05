@@ -65,14 +65,14 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 
 | Métrica | Valor |
 |---|---|
-| Tabelas | 37 (todas com RLS) |
-| Políticas RLS | 119 (112 public + 7 storage) |
-| Functions (total) | 77 no schema public. Todas com `SET search_path = public`. SECURITY DEFINER com auth.uid() guard |
+| Tabelas | 38 (todas com RLS) |
+| Políticas RLS | 116 (public) |
+| Functions (total) | 80 no schema public. Todas com `SET search_path = public`. SECURITY DEFINER com auth.uid() guard |
 | Triggers | 23 |
 | ENUMs | 29 (index_type com 46 valores: 13 originais + 33 moedas; + investment_class, rate_type) |
-| Indexes | 151 |
-| Migrations aplicadas (MCP) | 53 rastreadas em schema_migrations; ~17 adicionais aplicadas via execute_sql (padrão do projeto: execute_sql, não apply_migration) |
-| Migration files (repo) | 70 em supabase/migrations/ |
+| Indexes | 156 |
+| Migrations aplicadas (MCP) | 53 rastreadas em schema_migrations; ~20 adicionais aplicadas via execute_sql (padrão do projeto: execute_sql, não apply_migration) |
+| Migration files (repo) | 73 em supabase/migrations/ |
 | pg_cron jobs | 13: mark-overdue (01h), generate-recurring-transactions (01:30), generate-workflow-tasks (02h), depreciate-assets (mensal 03h), process-account-deletions (03:30), balance-integrity-check (dom 04h), generate-monthly-snapshots (mensal 04:30), cron_fetch_indices (06h), cleanup-access-logs (dom 05h), cleanup-analytics (dom), cleanup-notifications (dom), cleanup-ai-cache (dom 03:30), cleanup-soft-deleted (dom 05:30) |
 | Contas no plano-semente | 140 (5 grupos raiz, originalmente 133, expandido com subcontas multicurrency) |
 | Centros de custo | 1 (Família Geral, is_overhead) |
@@ -110,11 +110,11 @@ Sistema de gestão financeira e patrimonial para uso pessoal, posicionado como "
 | **AI Gateway** | **check_ai_rate_limit, get_ai_cache, save_ai_result** |
 | Cron (pg_cron) | cron_mark_overdue_transactions (01h), cron_generate_recurring_transactions (01:30), cron_generate_workflow_tasks (02h), cron_depreciate_assets (mensal 03h), cron_process_account_deletions (03:30), cron_balance_integrity_check (dom 04h), cron_generate_monthly_snapshots (mensal 04:30), cron_fetch_economic_indices (06h), cron_cleanup_access_logs (dom 05h), **cron_cleanup_analytics_events (dom), cron_cleanup_notification_log (dom), cron_cleanup_ai_cache (dom 03:30), cron_cleanup_soft_deleted (dom 05:30)** |
 
-### 3.4 Código Fonte (286 arquivos TS/TSX em src/, 72 suítes de teste, 1.079 assertions)
+### 3.4 Código Fonte (301 arquivos TS/TSX em src/, 76 suítes de teste, 1.172 assertions)
 
 ```
 src/
-├── __tests__/                    # 72 suítes de teste (Jest + RTL), 1.079 assertions
+├── __tests__/                    # 76 suítes de teste (Jest + RTL), 1.172 assertions
 │   ├── accounts-mutations.test.tsx
 │   ├── ai-chat-route.test.ts
 │   ├── api-routes-cron.test.ts        # 9: push/send + digest/send auth paths
@@ -5856,3 +5856,102 @@ A sessão 40 preparou `docs/SESSION-41-PROMPT.md` com backlog para sessão 41 (E
 6. **UX-03** (verificar se calc tabs já foram resolvidos na sessão 42)
 7. **UX-04** (error handling em ~50% das páginas)
 8. **Teste de corredor** com 3 pessoas (A7)
+
+## 45. Sessão 45: Validação Claude Code (05/04/2026)
+
+Sessão de validação do trabalho executado pelo Claude Code na sessão 44d (B25, B26, UX-08). Validação feita pelo Claude.ai com acesso ao repo e Supabase MCP.
+
+### 45.1 Validação B25 — Acumulação de índices econômicos
+
+**Status: ✅ APROVADO**
+
+O que foi implementado:
+- Heading da página corrigido de "Índices Econômicos" para "Indicadores Econômicos" (alinhado com sidebar)
+- Acumulação geométrica no frontend via `useMemo`: `(1+r₁)×(1+r₂)×...×(1+rₙ)-1` para `accumulated_year` e `accumulated_12m`
+- `ACCUMULATION_INDICES` set filtra quais índices recebem acumulação (ipca, inpc, igpm, tr)
+- Função SQL `recalculate_index_accumulated(p_index_type)` criada no banco via `execute_sql`, usando `EXP(SUM(LN(1+v/100)))-1`
+- Chamada via `adminClient.rpc()` após cada upsert em `/api/indices/fetch`
+- Fix do warning ESLint: `primaryHistoryRaw` movido para dentro do `useMemo`, dependência corrigida para `[multiHistory, primaryIndex]`
+
+**Risco residual (baixo):** a versão SQL usa `LN()` que é indefinido para valores < -100%. Na prática, índices econômicos brasileiros nunca atingem -100% mensal.
+
+### 45.2 Validação B26 — Saldo inicial editável
+
+**Status: ✅ APROVADO**
+
+O que foi implementado:
+- `AccountForm`: campo `initialBalance` visível em edit mode (era `disabled`), lógica de delta correta (`delta = newBalance - oldInitial`, aplicado a `current_balance` e `projected_balance`)
+- `CardForm`: mesma lógica, com auto-negação para tipos de dívida (`if (balance > 0) balance = -balance`)
+- Mensagem contextual: "Ao alterar, a diferença será aplicada como ajuste ao saldo atual."
+
+### 45.3 Validação UX-08 — MoneyInput com máscara automática
+
+**Status: ✅ APROVADO com ressalva (B27)**
+
+Componente `src/components/ui/money-input.tsx`:
+- Abordagem "estilo app bancário": digits-only, últimos 2 = centavos, formatação pt-BR em tempo real
+- Estado interno em centavos (inteiro via `useRef`) para evitar float drift
+- `inputMode="numeric"` para teclado numérico no mobile
+- Cap em R$ 999.999.999,99
+
+**13 formulários migrados:**
+- AccountForm, TransactionForm, CardForm, BudgetForm, GoalForm, RecurrenceForm, AssetForm
+- 6 calculadoras: buy-vs-rent, CET, independência financeira, affordability, SAC vs Price, capital humano
+
+**Migração correta em todos os casos:**
+- State migrado de `string` para `number`
+- `parseFloat(amount.replace(",", "."))` eliminado em todos os submits
+- `onChange` recebe valor float direto
+- Guards de validação adaptados (`!amount || amount <= 0` em vez de `isNaN(parseFloat(...))`)
+
+**Ressalva B27 (registrada em PENDENCIAS):** O componente usa exclusivamente `onKeyDown` para capturar input. Em Android Chrome, o virtual keyboard frequentemente dispara `key: "Unidentified"` no `onKeyDown`, o que impediria a digitação. O componente funciona em desktop e iOS Safari. Fix recomendado: adicionar handler `onBeforeInput` como fallback.
+
+### 45.4 Itens resolvidos colateralmente
+
+| ID | Item | Como foi resolvido |
+|----|------|--------------------|
+| UX-01 | Valor no form de recorrência sem formatação em tempo real | MoneyInput aplicado a RecurrenceForm |
+| UX-07 | Nomenclatura "Índices Econômicos" vs "Indicadores" | Heading corrigido para "Indicadores Econômicos" |
+
+### 45.5 Verificações executadas
+
+| Check | Resultado |
+|-------|-----------|
+| tsc --noEmit | ✅ Limpo |
+| ESLint | ✅ 0 warnings (2 corrigidos: import não usado, useMemo dependency) |
+| Jest | ✅ 76 suítes, 1.172 assertions |
+| E2E (43 testes) | ✅ 43/43 passed (all-pages-crawl + accounts + calculators) |
+| SQL function no banco | ✅ `recalculate_index_accumulated` existe e usa composição geométrica |
+| Git push + deploy Vercel | ✅ Commit `def822f` em produção |
+
+### 45.6 Discrepância RLS corrigida
+
+O HANDOVER reportava 123 políticas RLS desde a sessão 43. A contagem real verificada por `SELECT count(*) FROM pg_policies WHERE schemaname='public'` retorna **116**. A diferença de 7 não foi causada pelo Claude Code (nenhuma RLS foi tocada). Provável causa: a contagem 123 incluía políticas de storage (schema `storage`) ou foi estimada sem query real. Corrigido no header do HANDOVER para 116.
+
+### 45.7 Ground truth (verificado sessão 45)
+
+| Métrica | Sessão 44 | Sessão 45 | Delta |
+|---------|-----------|-----------|-------|
+| Tabelas | 38 | **38** | 0 |
+| Políticas RLS | 123 (incorreto) | **116** (corrigido) | -7 (correção) |
+| Functions | 78 | **80** | +2 |
+| Indexes | 156 | **156** | 0 |
+| Migration files | 73 | **73** | 0 |
+| Arquivos TS/TSX | 300 | **301** | +1 (money-input.tsx) |
+| Suítes Jest | 76 | **76** | 0 |
+| Assertions | ~1.172 | **~1.172** | 0 |
+| E2E specs (audit-kit) | 19 | **19** | 0 |
+| Pendências resolvidas | — | **5** (B25, B26, UX-01, UX-07, UX-08) | -5 |
+| Pendências registradas | — | **1** (B27 MoneyInput Android) | +1 |
+
+### 45.8 Commits validados (Claude Code)
+
+| Hash | Mensagem |
+|------|----------|
+| `def822f` | feat: MoneyInput com máscara, saldo inicial editável, indicadores geométricos |
+
+### 45.9 Documentação atualizada (sessão 45)
+
+- `PENDENCIAS-FUTURAS.md`: B25, B26, UX-01, UX-07, UX-08 movidos para concluídos. B27 registrado. Histórico atualizado.
+- `HANDOVER-WealthOS.md`: Header atualizado (38 tabelas, 116 RLS, 80 functions, 156 indexes, 301 TS/TSX, 76 suítes, 1.172 assertions). Seção 45 adicionada.
+- `README.md`: números atualizados.

@@ -64,7 +64,7 @@ O módulo **não** transmite dados à Receita Federal. O usuário usa as informa
 
 **Controle de acesso:**
 - RLS (Row Level Security) em todas as 38 tabelas
-- 123 políticas RLS ativas
+- 116 políticas RLS ativas
 - MFA TOTP disponível
 - Session timeout configurável
 

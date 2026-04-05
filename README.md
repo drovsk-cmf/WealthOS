@@ -38,13 +38,13 @@
 | Métrica | Valor |
 |---------|-------|
 | Tabelas | 38 |
-| Políticas RLS | 123 |
-| Functions PostgreSQL | 78 |
+| Políticas RLS | 116 |
+| Functions PostgreSQL | 80 |
 | pg_cron jobs | 13 |
 | Testes unitários (Jest) | 76 suítes, 1.172 assertions |
 | Testes E2E (Playwright) | 37 specs, ~360 testes |
 | Cobertura story→teste | 78% (85/108 stories) |
-| Arquivos TypeScript | 300 |
+| Arquivos TypeScript | 301 |
 | Hooks React Query | 43 |
 | Schemas Zod | 61 |
 | Migrations | 73 |
@@ -129,7 +129,7 @@ Fonte de verdade para arquitetura e roadmap: `HANDOVER-WealthOS.md`.
 
 ## Segurança e compliance
 
-- Row Level Security em 100% das tabelas (123 políticas, initplan pattern)
+- Row Level Security em 100% das tabelas (116 políticas, initplan pattern)
 - Criptografia AES-256-GCM para dados sensíveis (CPF) com DEK/KEK
 - Sanitização PII obrigatória antes de toda chamada de IA
 - Rate limiting em middleware

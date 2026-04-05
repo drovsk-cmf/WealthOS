@@ -227,6 +227,11 @@ Decisões IA do adendo v1.5:
 | L6 | DPO interino designado na /privacy | 42 |
 | L3 | CPF com consentimento explícito: campo + checkbox + criptografia AES-256 em perfil e família | 42 |
 | UX-XL | Cross-links contextuais: Bens→Garantias, Categorias→Divisões | 42 |
+| B25 | Acumulação de índices econômicos: composição geométrica (1+r₁)×(1+r₂)×...×(1+rₙ)-1 no frontend + SQL `recalculate_index_accumulated`. Heading padronizado para "Indicadores Econômicos" | 45 |
+| B26 | Saldo inicial editável em contas e cartões: campo visível em edit mode, delta aplicado a current_balance e projected_balance | 45 |
+| UX-01 | MoneyInput em RecurrenceForm: formatação em tempo real resolvida pela migração MoneyInput | 45 |
+| UX-07 | Nomenclatura padronizada: heading "Indicadores Econômicos" alinhado com sidebar | 45 |
+| UX-08 | MoneyInput com máscara automática pt-BR: 13 formulários migrados, state string→number, parsing manual eliminado | 45 |
 | B14 | Double-submit: 5 formulários sem proteção visível (/transactions, /bills, /accounts, /assets, /budgets). Botão de submit não desabilita durante request. Fix: `disabled={mutation.isPending}` + spinner. Auditoria 11.3 | 44 |
 | B17 | Modal de criação de conta (/accounts) não cabe no viewport padrão (1280x720). Botão submit fica fora da tela. Workaround E2E: JS click via evaluate(). Fix real: scroll interno no modal ou reduzir altura do formulário (remover campos opcionais para progressive disclosure). Auditoria 7.6 | 44 |
 | B18 | CLS dashboard 0.33 (threshold 0.25). Layout shift causado por reflow de dados assíncronos + font swap. Fix: ajustar skeleton heights para corresponder ao tamanho real dos componentes carregados, evitando reflow. Auditoria 5.1 | 44 |
@@ -241,13 +246,9 @@ Decisões IA do adendo v1.5:
 | UX-04 | Error handling ausente em ~50% das páginas: sem toast/fallback quando API falha. Auditoria 3.5, 7.2 | 43 |
 | UX-05 | Dashboard first-fold para usuário novo: 4 cards R$0 dominam a tela sem orientação. Auditoria 7.2 | 43 |
 | R2 | Capitalização incorreta: "Abr. De 2026" deveria ser "Abr. de 2026" (preposição minúscula). Auditoria 2.6 | 43 |
-| UX-01 | Valor no form de recorrência não formata em tempo real (diferente do form de conta). Auditoria 7.6 | 43 |
 | UX-02 | Modal de transação não faz scroll trap (página atrás scrolla junto). Auditoria 7.5 | 43 |
 | UX-06 | Audit trail + undo: tabela de histórico (who/when/what/old/new) com triggers em tabelas financeiras. Página /settings/history. Opção de desfazer por janela de tempo (1h, 6h, 12h, 24h, 3d, 7d, 30d, 60d, 90d). Requer decisão de schema antes de implementar. Auditoria 11.4 | 44 |
-| UX-07 | Nomenclatura "Índices Econômicos" vs "Indicadores": sidebar diz "Indicadores" (sessão 42) mas heading da página pode ainda dizer "Índices Econômicos". Padronizar. Auditoria 2.6 | 44 |
-| B25 | Acumulação de índices econômicos: código soma taxas (r₁+r₂+...+rₙ) ao invés de compor geometricamente ((1+r₁)×(1+r₂)×...×(1+rₙ)-1). Enviado ao Claude Code sessão 44. Auditoria 11.1 | 44 |
-| B26 | Saldo inicial bloqueado em contas e cartões: campo fica disabled após salvar, impossibilitando correção de erros. Enviado ao Claude Code sessão 44. Auditoria 7.6 | 44 |
-| UX-08 | MoneyInput com máscara automática: usuário digita só números, formatação pt-BR em tempo real ("150000"→"1.500,00"). Migrar todos os campos monetários do app. Enviado ao Claude Code sessão 44. Auditoria 7.6 | 44 |
+| B27 | MoneyInput: `onKeyDown` é o único handler de input. Em Android Chrome, virtual keyboard dispara `key: "Unidentified"` no `onKeyDown`, o que impede digitação. Funciona em desktop e iOS. Fix: adicionar handler `onBeforeInput`/`onInput` como fallback para Android. | 45 |
 
 ---
 
@@ -263,3 +264,4 @@ Decisões IA do adendo v1.5:
 | 04/04/2026 | Sessão 42: Auditoria UX completa. Navigation v3 (sidebar 4 seções semânticas, /more eliminada, tab bar Inteligência). Progressive disclosure em 4 forms. Padrão A padronizado em 11 entidades. FormError migrado (D6). LGPD completo: ROPA (L4), RIPD fiscal (L5), DPO interino (L6), CPF com consentimento explícito + criptografia AES-256 em perfil e família (L3). Cross-links contextuais. 8 commits, 28+ arquivos. |
 | 05/04/2026 | Sessão 43: Auditoria UX exploratória + suite E2E. B1 (alert_threshold overflow) e B4 (timezone) corrigidos. C1 (logout mobile) e C3 (header redesign) implementados. 8 arquivos Playwright audit (1.916 linhas). Usuário e2e-test@oniefy.com criado. Achados pendentes: C2, A1, A3, A4, R2, UX-01, UX-02. |
 | 05/04/2026 | Sessão 44: Audit Kit v2 (13 specs universais + 6 gerados). 16 bugs de produção corrigidos (B5-B16). ~360 testes, 94%+ pass rate. Monkey test detectou B14 (double-submit). B17-B24 registrados. 7 achados §43.7 migrados (C2, UX-01..05, R2). 6 docs atualizados (README, CLAUDE.md, WCAG, SETUP-LOCAL, DEPLOY-VERCEL, ROTEIRO). Matriz v2.1 arquivada. iOS build status corrigido. B25 (índices), B26 (saldo editável), UX-06 (audit trail), UX-07 (nomenclatura), UX-08 (MoneyInput) registrados. B25/B26/UX-08 enviados ao Claude Code. |
+| 05/04/2026 | Sessão 45 (validação Claude Code): B25 (acumulação geométrica), B26 (saldo editável), UX-08 (MoneyInput) e UX-01 (recurrence formatting), UX-07 (nomenclatura) concluídos. MoneyInput migrado em 13 formulários + 6 calculadoras. SQL `recalculate_index_accumulated` criada. Novo B27 registrado (MoneyInput Android fallback). Ground truth: 38 tabelas, 116 RLS, 80 functions, 156 indexes, 301 TS/TSX, 76 suítes, 1.172 assertions. |
