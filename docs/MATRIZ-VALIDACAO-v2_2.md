@@ -487,6 +487,8 @@ O Playwright Audit Kit é uma suite de testes E2E universais que automatiza part
 | `error-resilience.spec.ts` | 9.3 (Resiliência), 7.6 (UX formulários, parcial) | Médio - 404, fallback de rede, preservação de form |
 | `seo-meta.spec.ts` | 2.6 (Nomenclatura, parcial) | Alto para SEO técnico |
 | `observability.spec.ts` | 9.2 (Observabilidade) | Médio - detecta presença de analytics/error tracking |
+| `monkey.spec.ts` | 3.5 (Error handling), 9.3 (Resiliência), 6.5 (Carga, parcial) | Médio - detecta crashes JS, 5xx, telas em branco sob uso aleatório. Inclui navegação rápida e double-click em submits |
+| `flow-variations.spec.ts` | 11.3 (Concorrência), 3.4 (Cache), 7.6 (UX formulários) | Médio - testa modal escape/reopen, botão voltar, abandono de form sem salvar, cliques durante carregamento, F5 em rotas críticas |
 
 ### C.2 Auditorias → nível de automação
 
@@ -538,7 +540,7 @@ O Playwright Audit Kit é uma suite de testes E2E universais que automatiza part
 | 8.4 | SBOM | CI | `npm sbom` |
 | 9.1 | Config ambientes | Manual | Revisão |
 | 9.2 | Observab. + alerting | **Playwright** (parcial) | `observability.spec.ts` |
-| 9.3 | Resiliência op. | **Playwright** (parcial) | `error-resilience.spec.ts` |
+| 9.3 | Resiliência op. | **Playwright** (parcial) | `error-resilience.spec.ts` + `monkey.spec.ts` |
 | 9.4 | Disaster recovery | Manual | Teste de restore |
 | 9.5 | Feature flags | Manual | grep |
 | 10.1 | LGPD | Manual | Análise |
@@ -546,7 +548,7 @@ O Playwright Audit Kit é uma suite de testes E2E universais que automatiza part
 | 10.3 | ISO 27001 A.8.28 | Manual | Checklist |
 | 11.1 | Precisão numérica | Jest + Manual | Testes unitários |
 | 11.2 | Timezone/datas | Jest + Manual | Testes unitários |
-| 11.3 | Concorrência | Manual | Teste com 2 tabs |
+| 11.3 | Concorrência | **Playwright** (parcial) + Manual | `flow-variations.spec.ts` + `monkey.spec.ts` + teste manual com 2 tabs |
 | 11.4 | Audit trail | Semi-auto | SQL query |
 | 11.5 | Backup/restore | Manual | Teste de restore |
 

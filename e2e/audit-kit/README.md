@@ -58,7 +58,9 @@ playwright-audit-kit/
 │   │   ├── security-headers.spec.ts   4.6  CSP, HSTS, X-Frame
 │   │   ├── error-resilience.spec.ts   9.3  404, rede, form data
 │   │   ├── seo-meta.spec.ts           2.6  Title, OG, canonical
-│   │   └── observability.spec.ts      9.2  Analytics, 5xx, erros
+│   │   ├── observability.spec.ts      9.2  Analytics, 5xx, erros
+│   │   ├── monkey.spec.ts             3.5  Ações aleatórias, double-click
+│   │   └── flow-variations.spec.ts    11.3 Back button, modal, abandono
 │   └── generated/               ← Specs gerados pelo discovery
 ├── discovery/
 │   ├── crawl-inventory.spec.ts  ← Inventaria elementos interativos
@@ -85,6 +87,8 @@ Os 11 specs universais cobrem verificações que se aplicam a qualquer aplicaç�
 | error-resilience | 9.3, 7.6 | Página 404 customizada, preservação de form em erro de rede |
 | seo-meta | 2.6 | Title, meta description, Open Graph, canonical, lang |
 | observability | 9.2 | Analytics carregado, sem 5xx, sem console.error |
+| monkey | 3.5, 9.3, 6.5 | 150 ações aleatórias, navegação rápida, double-click |
+| flow-variations | 11.3, 3.4, 7.6 | Modal escape/reopen, back button, abandono de form, F5 |
 
 ## Discovery: gerar specs específicos
 
