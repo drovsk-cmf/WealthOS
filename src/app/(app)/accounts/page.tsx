@@ -17,7 +17,6 @@ import { Mv } from "@/components/ui/masked-value";
 import type { Database } from "@/types/database";
 
 type Account = Database["public"]["Tables"]["accounts"]["Row"];
-type AccountType = Database["public"]["Enums"]["account_type"];
 
 export default function AccountsPage() {
   const { data: accounts, isLoading } = useAccounts();
@@ -31,7 +30,7 @@ export default function AccountsPage() {
   useAutoReset(confirmDelete, setConfirmDelete);
 
   // ─── Totals (credit cards excluded — see /cards) ─────────
-  const nonCardAccounts = accounts?.filter((a) => a.type !== "credit_card") ?? [];
+  const nonCardAccounts = accounts?.filter((a) => ["checking", "savings", "cash"].includes(a.type)) ?? [];
   const totals = nonCardAccounts.reduce(
     (acc, a) => {
       acc.current += a.current_balance;
@@ -155,27 +154,14 @@ export default function AccountsPage() {
 
       {/* Account list — grouped by type (FIX #7, E17: cards moved to /cards) */}
       {accounts && accounts.length > 0 && (() => {
-        const nonCards = accounts.filter((a) => a.type !== "credit_card" && a.type !== "investment");
+        const liquidOnly = accounts.filter((a) => ["checking", "savings", "cash"].includes(a.type));
         const filtered = search
-          ? nonCards.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
-          : nonCards;
-
-        const groups: { key: string; label: string; types: AccountType[]; accounts: Account[] }[] = [
-          { key: "banking", label: "Contas Bancárias", types: ["checking" as AccountType, "savings" as AccountType, "cash" as AccountType], accounts: [] },
-          { key: "debts", label: "Empréstimos e Financiamentos", types: ["loan" as AccountType, "financing" as AccountType], accounts: [] },
-        ];
-
-        for (const a of filtered) {
-          const group = groups.find((g) => g.types.includes(a.type as AccountType));
-          if (group) group.accounts.push(a);
-        }
+          ? liquidOnly.filter((a) => a.name.toLowerCase().includes(search.toLowerCase()))
+          : liquidOnly;
 
         return (
-        <div className="space-y-6">
-          {groups.filter((g) => g.accounts.length > 0).map((group) => (
-            <div key={group.key} className="space-y-3">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">{group.label}</h2>
-              {group.accounts.map((account) => (
+        <div className="space-y-3">
+          {filtered.map((account) => (
             <div
               key={account.id}
               className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
@@ -289,8 +275,6 @@ export default function AccountsPage() {
                   </button>
                 )}
               </div>
-            </div>
-          ))}
             </div>
           ))}
         </div>

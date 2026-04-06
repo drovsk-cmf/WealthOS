@@ -28,7 +28,6 @@ import {
   ASSET_CATEGORY_COLORS,
 } from "@/lib/hooks/use-assets";
 import { useDocuments, useUploadDocument, useDeleteDocument } from "@/lib/hooks/use-documents";
-import { useAccounts } from "@/lib/hooks/use-accounts";
 import { useAutoReset } from "@/lib/hooks/use-dialog-helpers";
 import { AssetForm } from "@/components/assets/asset-form";
 import { formatCurrency, formatDate, formatDecimalBR } from "@/lib/utils";
@@ -163,8 +162,6 @@ export default function AssetsPage() {
 
   const { data: assets, isLoading } = useAssets();
   const { data: summary } = useAssetsSummary();
-  const { data: allAccounts } = useAccounts();
-  const investmentAccounts = allAccounts?.filter((a) => a.type === "investment") ?? [];
   const deleteAsset = useDeleteAsset();
   const depreciateAsset = useDepreciateAsset();
 
@@ -221,9 +218,9 @@ export default function AssetsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Bens e Investimentos</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Bens e Direitos</h1>
           <p className="text-sm text-muted-foreground">
-            Bens, investimentos e ativos
+            Imóveis, veículos e outros bens patrimoniais
           </p>
         </div>
         <button type="button" onClick={handleNew}
@@ -295,33 +292,16 @@ export default function AssetsPage() {
         </div>
       )}
 
-      {/* Investment accounts (from accounts table, type=investment) */}
-      {investmentAccounts.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Ativos Financeiros</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {investmentAccounts.map((inv) => (
-              <div key={inv.id} className="rounded-lg border bg-card p-4">
-                <p className="text-sm font-medium">{inv.name}</p>
-                <p className="mt-1 text-lg font-bold tabular-nums">
-                  <Mv>{formatCurrency(Number(inv.current_balance))}</Mv>
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Empty state (UX-H1-03) */}
-      {(!assets || assets.length === 0) && investmentAccounts.length === 0 && (
+      {(!assets || assets.length === 0) && (
         <div className="space-y-4">
           <div className="flex flex-col items-center justify-center rounded-lg border bg-card py-16 text-center">
             <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
               <Package className="h-7 w-7 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-semibold">Registre seus bens e investimentos</h2>
+            <h2 className="text-lg font-semibold">Registre seus bens</h2>
             <p className="mt-1 max-w-md text-sm text-muted-foreground">
-              Cadastre o que você tem (imóveis, veículos, investimentos) e o que deve (financiamentos) para ver seu patrimônio líquido consolidado. Leva cerca de 5 minutos.
+              Cadastre imóveis, veículos e outros bens para acompanhar seu patrimônio. Para investimentos financeiros, acesse a página Investimentos.
             </p>
             <button type="button" onClick={handleNew}
               className="mt-5 rounded-md btn-cta px-4 py-2 text-sm font-medium text-primary-foreground">

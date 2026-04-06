@@ -10,6 +10,7 @@ import {
   TrendingUp,
   CreditCard,
   Building,
+  Landmark,
   Wallet,
   PieChart,
   Target,
@@ -78,8 +79,10 @@ const SIDEBAR_SECTIONS: NavSection[] = [
     title: "Patrimônio",
     items: [
       { href: "/accounts", label: "Contas Bancárias", icon: Wallet },
+      { href: "/loans", label: "Empréstimos", icon: Landmark },
       { href: "/cards", label: "Cartões de Crédito", icon: CreditCard },
-      { href: "/assets", label: "Bens e Investimentos", icon: Building },
+      { href: "/investments", label: "Investimentos", icon: TrendingUp },
+      { href: "/assets", label: "Bens e Direitos", icon: Building },
     ],
   },
   {

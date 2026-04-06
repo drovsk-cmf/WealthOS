@@ -26,13 +26,14 @@ interface AccountFormProps {
   account?: Account | null;
   open: boolean;
   onClose: () => void;
+  defaultType?: AccountType;
 }
 
-export function AccountForm({ account, open, onClose }: AccountFormProps) {
+export function AccountForm({ account, open, onClose, defaultType }: AccountFormProps) {
   const isEdit = !!account;
 
   const [name, setName] = useState("");
-  const [type, setType] = useState<AccountType>("checking");
+  const [type, setType] = useState<AccountType>(defaultType ?? "checking");
   const [financingSubtype, setFinancingSubtype] = useState(FINANCING_SUBTYPES[0].value);
   const [initialBalance, setInitialBalance] = useState(0);
   const [color, setColor] = useState(PRESET_COLORS[0]);
@@ -77,7 +78,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setAccountDigit((account as Record<string, unknown>).account_digit as string ?? "");
     } else {
       setName("");
-      setType("checking");
+      setType(defaultType ?? "checking");
       setFinancingSubtype(FINANCING_SUBTYPES[0].value);
       setInitialBalance(0);
       setColor(PRESET_COLORS[0]);
@@ -93,7 +94,7 @@ export function AccountForm({ account, open, onClose }: AccountFormProps) {
       setAccountDigit("");
     }
     setError(null);
-  }, [account, open]);
+  }, [account, open, defaultType]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
