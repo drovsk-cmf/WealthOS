@@ -70,11 +70,11 @@ const SIDEBAR_SECTIONS: NavSection[] = [
   {
     title: "Finanças",
     items: [
-      { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
       { href: "/cash-flow", label: "Fluxo de Caixa", icon: TrendingUp },
       { href: "/bills", label: "Contas a Pagar", icon: Repeat },
-      { href: "/loans", label: "Empréstimos", icon: Landmark },
+      { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
       { href: "/cards", label: "Cartões de Crédito", icon: CreditCard },
+      { href: "/loans", label: "Empréstimos", icon: Landmark },
     ],
   },
   {
