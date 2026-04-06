@@ -73,14 +73,14 @@ const SIDEBAR_SECTIONS: NavSection[] = [
       { href: "/transactions", label: "Transações", icon: ArrowLeftRight },
       { href: "/cash-flow", label: "Fluxo de Caixa", icon: TrendingUp },
       { href: "/bills", label: "Contas a Pagar", icon: Repeat },
+      { href: "/loans", label: "Empréstimos", icon: Landmark },
+      { href: "/cards", label: "Cartões de Crédito", icon: CreditCard },
     ],
   },
   {
     title: "Patrimônio",
     items: [
       { href: "/accounts", label: "Contas Bancárias", icon: Wallet },
-      { href: "/loans", label: "Empréstimos", icon: Landmark },
-      { href: "/cards", label: "Cartões de Crédito", icon: CreditCard },
       { href: "/investments", label: "Investimentos", icon: TrendingUp },
       { href: "/assets", label: "Bens e Direitos", icon: Building },
     ],
