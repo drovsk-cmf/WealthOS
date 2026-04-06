@@ -329,11 +329,8 @@ export default function DiagnosticsPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 p-4 sm:p-6">
-        <div className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-xl font-semibold">Diagnóstico Financeiro</h1>
-        </div>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold tracking-tight">Diagnóstico Financeiro</h1>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-32 animate-pulse rounded-lg border bg-muted/30" />
@@ -360,16 +357,13 @@ export default function DiagnosticsPage() {
   const de = data.debt_to_equity.value;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Activity className="h-5 w-5 text-muted-foreground" />
-        <div>
-          <h1 className="text-xl font-semibold">Diagnóstico Financeiro</h1>
-          <p className="text-xs text-muted-foreground">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Diagnóstico Financeiro</h1>
+        <p className="text-sm text-muted-foreground">
             {data.savings_rate.months_analyzed} meses analisados. Análise baseada em métricas de finanças quantitativas aplicadas ao contexto pessoal.
           </p>
-        </div>
       </div>
 
       {/* Warning Signs (full width if active) */}

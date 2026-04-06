@@ -394,7 +394,7 @@ export default function AppLayout({
         </div>
 
         {/* Content area — pb-24 on mobile for bottom tab bar clearance */}
-        <div className="px-4 pb-24 pt-6 sm:px-6 lg:pb-6 lg:pt-10">
+        <div className="px-6 pb-24 pt-8 sm:px-8 lg:px-10 lg:pb-8 lg:pt-10">
           {!isOnline && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-burnished/30 bg-burnished/10 px-4 py-2.5 text-sm text-burnished">
               <svg
