@@ -176,7 +176,7 @@ export default function AppLayout({
       {/* ============================================================ */}
       <aside
         aria-label="Menu de navegação"
-        className="fixed inset-y-0 left-0 z-50 hidden w-60 flex-col bg-[hsl(var(--sidebar-bg))] lg:flex lg:sticky lg:top-0 lg:z-auto lg:h-screen"
+        className="fixed inset-y-0 left-0 z-50 hidden w-72 flex-col bg-[hsl(var(--sidebar-bg))] lg:flex lg:sticky lg:top-0 lg:z-auto lg:h-screen"
       >
         {/* Brand + user */}
         <div className="flex-shrink-0 border-b border-[hsl(var(--sidebar-fg)/0.15)] px-4 py-5">
