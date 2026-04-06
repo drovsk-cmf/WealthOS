@@ -20,7 +20,7 @@
 | Muted on card (#FFFFFF) | 4.76 | PASSA | PASSA |
 | Sidebar section labels (opacidade 0.65) | ~5.3 | PASSA | PASSA |
 
-**Achado aberto (B20):** `text-muted-foreground` em ~8 páginas gera contraste 3.57-4.38:1 (abaixo do mínimo 4.5:1). Detectado como SERIOUS (não CRITICAL) pelo axe-core. Afeta labels secundários, timestamps, e texto descritivo em /dashboard, /transactions, /cash-flow, /bills, /assets, /tax, /diagnostics. Registrado em PENDENCIAS-FUTURAS.md.
+**Achado aberto (B20):** `text-muted-foreground` em ~8 páginas gera contraste 3.57-4.38:1 (abaixo do mínimo 4.5:1). Detectado como SERIOUS (não CRITICAL) pelo axe-core. Afeta labels secundários, timestamps, e texto descritivo em /dashboard, /transactions, /cash-flow, /bills, /assets, /tax, /diagnostics. Registrado em docs/PENDENCIAS.md.
 
 ## 2. Keyboard Navigation (2.1.1 / 2.4.7)
 

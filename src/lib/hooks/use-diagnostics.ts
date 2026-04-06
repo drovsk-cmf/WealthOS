@@ -8,7 +8,7 @@
  *                Breakeven, Income CV, DuPont Pessoal, Category Trends,
  *                Warning Signs (FRA R29), Monthly History.
  *
- * Ref: FINANCIAL-METHODOLOGY.md §2-3, PENDENCIAS-FUTURAS Camada A+B
+ * Ref: FINANCIAL-METHODOLOGY.md §2-3, docs/PENDENCIAS Camada A+B
  */
 
 import { useQuery } from "@tanstack/react-query";

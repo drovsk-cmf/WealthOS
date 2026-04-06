@@ -5,7 +5,7 @@
  * Calls get_financial_scan RPC which runs 6 deterministic rules (R03,R06,R07,R08,R09,R10)
  * and returns findings with severity, savings projections, and solvency context.
  *
- * Ref: FINANCIAL-METHODOLOGY.md §6, PENDENCIAS-FUTURAS E8b
+ * Ref: FINANCIAL-METHODOLOGY.md §6, docs/PENDENCIAS E8b
  */
 
 import { useQuery } from "@tanstack/react-query";

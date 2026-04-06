@@ -125,7 +125,7 @@ docs/
   LGPD-*.md                 # ROPA, RIPD, mapeamento de dados pessoais
 ```
 
-Fonte de verdade para arquitetura e roadmap: `HANDOVER-WealthOS.md`.
+Fonte de verdade para arquitetura e roadmap: `docs/HANDOVER.md`.
 
 ## Segurança e compliance
 

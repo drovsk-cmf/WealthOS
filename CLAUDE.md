@@ -8,11 +8,11 @@ Repo público: `drovsk-cmf/WealthOS`. Deploy: `www.oniefy.com`.
 Next.js 15 / React 19 / TypeScript / Supabase (PostgreSQL + Auth + RLS) / Capacitor 6 / shadcn/ui / Tailwind / Vercel / Playwright.
 
 ## Documentos-chave
-- `HANDOVER-WealthOS.md` — source of truth do projeto (contexto, histórico, ground truth)
-- `PENDENCIAS-FUTURAS.md` — backlog com status (pendentes primeiro, concluídos no final)
-- `docs/MATRIZ-VALIDACAO-v2_2.md` — 48 auditorias em 11 camadas (ISO 25010, OWASP ASVS)
-- `docs/RASTREABILIDADE-STORY-TESTE.md` — mapa story→código→teste (108 stories)
-- `docs/ROTEIRO-TESTE-MANUAL.md` — 16 blocos de teste manual
+- `docs/HANDOVER.md` — source of truth do projeto (contexto, histórico, ground truth)
+- `docs/PENDENCIAS.md` — backlog com status (pendentes primeiro, concluídos no final)
+- `docs/engineering/MATRIZ-VALIDACAO-v2_2.md` — 48 auditorias em 11 camadas (ISO 25010, OWASP ASVS)
+- `docs/engineering/RASTREABILIDADE-STORY-TESTE.md` — mapa story→código→teste (108 stories)
+- `docs/guides/ROTEIRO-TESTE-MANUAL.md` — 16 blocos de teste manual
 
 ## Comandos úteis
 ```bash

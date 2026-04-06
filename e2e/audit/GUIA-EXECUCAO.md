@@ -257,7 +257,7 @@ Passo 3: Gere um relatório final com:
 
 Passo 4: Commit e push das correções.
 
-Contexto: o HANDOVER-WealthOS.md na raiz do repo tem todo o contexto
+Contexto: o docs/HANDOVER.md tem todo o contexto
 do projeto. O usuário de teste é e2e-test@oniefy.com / E2eTest!Secure2026.
 ```
 
